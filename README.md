@@ -1,6 +1,10 @@
 # Streamline Mapping of Landscape Structure: slm  #
 
-The **slm** package provides a set of tools to map landscape structure using topographic streamline tracing. 
+The **slm** package provides a set of tools to map landscape structure using topographic streamline tracing. These tools are implemented in Python, OpenCL and OCaml.
+
+***proviso:*** *this is a work in progress *
+
+## What **slm** can do
 
 Capabilities available now or anticipate soon include:
    - mapping channels and identifying the locations of channel heads
@@ -14,10 +18,7 @@ Capabilities available now or anticipate soon include:
       - with the goal of estimating channel inundation, in contrast to typical GIS methods of DTM flow routing which have no sense of channel width or flow geometry
    - deployment of these methods in a landscape evolution model
 
-The main repository is located here. Companion repos house [Jupyter notebooks](https://github.com/cstarknyc/slmnb) and [DTM  data](https://github.com/cstarknyc/slmdata) (lidar digital terrain model).
-
-
-***proviso:*** *this is a work in progress *
+## Documentation
 
    - [**slm** hub](https://cstarknyc.github.io/slm)
       - core documentation of **slm** idea, implementation and example results
@@ -29,6 +30,8 @@ The main repository is located here. Companion repos house [Jupyter notebooks](h
    - [OCaml docs](https://cstarknyc.github.io/slm/ocaml)
       - not yet implemented
       - will document the OCaml portion of **slm**
+
+## Code base
 
 **slm** has a code base founded on:
    - [Python 3](https://docs.python.org/3/)
@@ -42,3 +45,5 @@ The main repository is located here. Companion repos house [Jupyter notebooks](h
        - porting currently underway
        - will work with common OpenCL code base
    
+The main repository is located here. Companion repos house [Jupyter notebooks](https://github.com/cstarknyc/slmnb) and [DTM  data](https://github.com/cstarknyc/slmdata) (lidar digital terrain model).
+
