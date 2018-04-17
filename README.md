@@ -6,7 +6,7 @@ The **slm** package provides a set of tools to map landscape structure using top
 
 ## What **slm** can do
 
-Capabilities available now or anticipate soon include:
+Capabilities available now or anticipated soon include:
    - mapping channels and identifying the locations of channel heads
    - visualization of patterns of topographic surface flow
    - measuring hillslope lengths across a DTM landscape
