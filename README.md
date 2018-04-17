@@ -20,7 +20,7 @@ The main repository is located here; companion repos house [Jupyter notebooks](h
    - [OpenCL](https://www.khronos.org/opencl/) 
       - accessed from Python using [PyOpenCL](https://documen.tician.de/pyopencl/index.html)
       - development is with [version 1.2](https://www.khronos.org/registry/OpenCL/sdk/1.2/docs/man/xhtml/) on AMD and NVIDIA GPUs
-   - [OCaml]
+   - [OCaml](https://ocaml.org/)
        - intended to be a fast replacement for the Python component of **slm**
        - works with common OpenCL code base
    
