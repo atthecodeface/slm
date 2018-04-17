@@ -1,0 +1,15 @@
+``segment.py`` 
+==================
+
+
+Usage
+-------
+.. automodule:: streamlines.segment
+   :members: 
+   :private-members:
+
+
+Code
+-------
+
+.. literalinclude:: ../../streamlines/segment.py

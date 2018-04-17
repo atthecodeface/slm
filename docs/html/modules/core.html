@@ -1,0 +1,317 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>core.py &#8212; Streamlines  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geodata.py" href="geodata.html" />
+    <link rel="prev" title="parameters.py" href="parameters.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="core-py">
+<h1><code class="docutils literal notranslate"><span class="pre">core.py</span></code><a class="headerlink" href="#core-py" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-streamlines.core">
+<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.core" title="Permalink to this headline">¶</a></h2>
+<p>This <a class="reference internal" href="#module-streamlines.core" title="streamlines.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code></a> module provides a base initialization class
+that is inherited by each workflow class.
+On instantiation of each such class, the base initialization parses the parameter dictionary loaded
+from the ‘job’ <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.6)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">JSON</span></code></a> file specified at the command line,
+extracts the set of parameters pertaining to the workflow class,
+and assigns the values to the workflow class instance accordingly.</p>
+<p>The following workflow classes inherit
+the <a class="reference internal" href="#module-streamlines.core" title="streamlines.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code></a> class:</p>
+<ul class="simple">
+<li><a class="reference internal" href="geodata.html#streamlines.geodata.Geodata" title="streamlines.geodata.Geodata"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.geodata.Geodata</span></code></a></li>
+<li><a class="reference internal" href="preprocess.html#streamlines.preprocess.Preprocess" title="streamlines.preprocess.Preprocess"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.preprocess.Preprocess</span></code></a></li>
+<li><a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.trace.Trace</span></code></a></li>
+<li><a class="reference internal" href="analysis.html#streamlines.analysis.Analysis" title="streamlines.analysis.Analysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.analysis.Analysis</span></code></a></li>
+<li><a class="reference internal" href="plot.html#streamlines.plot.Plot" title="streamlines.plot.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.plot.Plot</span></code></a></li>
+</ul>
+<dl class="class">
+<dt id="streamlines.core.Core">
+<em class="property">class </em><code class="descclassname">streamlines.core.</code><code class="descname">Core</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.core.Core" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class inherited by all workflow classes to provide a one-stop-shop
+initialization that loads up their parameter sets as class instance attributes.</p>
+<dl class="method">
+<dt id="streamlines.core.Core.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.core.Core.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the class instance by loading up parameters as attributes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><em>object</em></a>) – The <a class="reference internal" href="state.html#streamlines.state.State" title="streamlines.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> class instance.</li>
+<li><strong>imported_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – The parameters dictionary loaded from a <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.6)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">JSON</span></code></a> file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt>
+<code class="descname">Class instance variables</code></dt>
+<dd><p><em>various types</em> – Set according to the parameters sub-dict             corresponding to the class name.</p>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<p>When instantiating the <a class="reference internal" href="geodata.html#streamlines.geodata.Geodata" title="streamlines.geodata.Geodata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geodata</span></code></a> class,             the <code class="docutils literal notranslate"><span class="pre">geodata</span></code> sub-dictionary             is extracted from the imported parameters dictionary, and its parameters are parsed             out and set as attributes of the  <a class="reference internal" href="geodata.html#streamlines.geodata.Geodata" title="streamlines.geodata.Geodata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geodata</span></code></a>:             e.g., <code class="docutils literal notranslate"><span class="pre">[title:</span> <span class="pre">&quot;Indian</span> <span class="pre">Creek&quot;]</span></code> becomes the variable <code class="docutils literal notranslate"><span class="pre">Geodata.title</span></code> with the value              <code class="docutils literal notranslate"><span class="pre">&quot;Indian</span> <span class="pre">Creek&quot;</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.core.Core.inventorize">
+<code class="descname">inventorize</code><span class="sig-paren">(</span><em>state</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.core.Core.inventorize" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><em>object</em></a>) – The <a class="reference internal" href="state.html#streamlines.state.State" title="streamlines.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> class instance.</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt>
+<code class="descname">Workflow state inventory</code></dt>
+<dd><p><em>dict</em> – The state inventory is updated with a sub-dict            added (replacing if necessary) corresponding to the class instance calling this method.             The sub-dict items are lists entitled            <em>jsonable</em>, <em>nparray</em>, <em>list_nparrays</em>, <em>object</em> and <em>other</em>: each list            is populated with class attributes whose type matches these items.</p>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<p>If the <a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> instance calls            this method, the <a class="reference internal" href="state.html#streamlines.state.State" title="streamlines.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> inventory dict            will be assigned a sub-dict entitled <em>trace</em> with list items as above            to record the state of the <a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> object.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="code">
+<h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This :mod:`core &lt;streamlines.core&gt;` module provides a base initialization class </span>
+<span class="sd">that is inherited by each workflow class.</span>
+<span class="sd">On instantiation of each such class, the base initialization parses the parameter dictionary loaded</span>
+<span class="sd">from the &#39;job&#39; :py:mod:`JSON &lt;json&gt;` file specified at the command line,</span>
+<span class="sd">extracts the set of parameters pertaining to the workflow class,</span>
+<span class="sd">and assigns the values to the workflow class instance accordingly. </span>
+
+<span class="sd">The following workflow classes inherit</span>
+<span class="sd">the :mod:`core &lt;streamlines.core&gt;` class:</span>
+
+<span class="sd">- :class:`streamlines.geodata.Geodata`</span>
+<span class="sd">- :class:`streamlines.preprocess.Preprocess`</span>
+<span class="sd">- :class:`streamlines.trace.Trace`</span>
+<span class="sd">- :class:`streamlines.analysis.Analysis`</span>
+<span class="sd">- :class:`streamlines.plot.Plot`</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">json</span> <span class="k">import</span> <span class="n">dumps</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">streamlines</span>
+<span class="n">pdebug</span> <span class="o">=</span> <span class="nb">print</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Core&#39;</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">Core</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class inherited by all workflow classes to provide a one-stop-shop </span>
+<span class="sd">    initialization that loads up their parameter sets as class instance attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the class instance by loading up parameters as attributes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">             state (object): The :class:`State &lt;.state.State&gt;` class instance.</span>
+<span class="sd">             imported_parameters (dict): The parameters dictionary loaded from a :py:mod:`JSON &lt;json&gt;` file.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            Class instance variables (various types): Set according to the parameters sub-dict \</span>
+<span class="sd">            corresponding to the class name. </span>
+<span class="sd">        </span>
+<span class="sd">        Example:</span>
+<span class="sd">            When instantiating the :class:`Geodata &lt;.geodata.Geodata&gt;` class, \</span>
+<span class="sd">            the ``geodata`` sub-dictionary \</span>
+<span class="sd">            is extracted from the imported parameters dictionary, and its parameters are parsed \</span>
+<span class="sd">            out and set as attributes of the  :class:`Geodata &lt;.geodata.Geodata&gt;`: \</span>
+<span class="sd">            e.g., ``[title: &quot;Indian Creek&quot;]`` becomes the variable ``Geodata.title`` with the value \</span>
+<span class="sd">             ``&quot;Indian Creek&quot;``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Fetch path to the ``streamlines`` module so we can later find the CL code</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">streamlines</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">obj_list</span> <span class="o">+=</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+            
+        <span class="n">workflow_class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">imported_parameters</span><span class="p">[</span><span class="n">workflow_class_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">inventorize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">             state (object): The :class:`State &lt;.state.State&gt;` class instance.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            Workflow state inventory (dict): The state inventory is updated with a sub-dict\</span>
+<span class="sd">            added (replacing if necessary) corresponding to the class instance calling this method. \</span>
+<span class="sd">            The sub-dict items are lists entitled\</span>
+<span class="sd">            *jsonable*, *nparray*, *list_nparrays*, *object* and *other*: each list\</span>
+<span class="sd">            is populated with class attributes whose type matches these items.</span>
+<span class="sd">            </span>
+<span class="sd">        Example: </span>
+<span class="sd">            If the :class:`Trace &lt;.trace.Trace&gt;` instance calls\</span>
+<span class="sd">            this method, the :class:`Trace &lt;.state.State&gt;` inventory dict\</span>
+<span class="sd">            will be assigned a sub-dict entitled *trace* with list items as above\</span>
+<span class="sd">            to record the state of the :class:`Trace &lt;streamlines.trace.Trace&gt;` object.</span>
+<span class="sd">            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">class_dict</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
+        <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;jsonable&#39;</span> <span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;nparray&#39;</span> <span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;list_nparrays&#39;</span> <span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;object&#39;</span> <span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;other&#39;</span> <span class="p">:</span> <span class="p">[]</span>
+            <span class="p">}</span> 
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">class_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;__dict__&#39;</span><span class="p">):</span>
+                <span class="n">data_dict</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="n">data_dict</span><span class="p">[</span><span class="s1">&#39;nparray&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+                    <span class="n">conv_item</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span> \
+                        <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span> \
+                        <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span> \
+                        <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">:</span>
+                        <span class="n">conv_item</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">bool8</span><span class="p">:</span>
+                    <span class="n">conv_item</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">conv_item</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="c1">#                 pdebug(&#39;\nConverting:&#39;, item,type(item[1]), &#39;-&gt;&#39;,conv_item,type(conv_item))</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">test_if_jsonable</span> <span class="o">=</span> <span class="n">dumps</span><span class="p">(</span><span class="n">conv_item</span><span class="p">)</span>
+                    <span class="n">data_dict</span><span class="p">[</span><span class="s1">&#39;jsonable&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;figs&#39;</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">conv_item</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                        <span class="n">data_dict</span><span class="p">[</span><span class="s1">&#39;list_nparrays&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">data_dict</span><span class="p">[</span><span class="s1">&#39;other&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+        <span class="n">workflow_class_name</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">inventory</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">workflow_class_name</span> <span class="p">:</span> <span class="n">data_dict</span><span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">Streamlines</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Analyzing the structure of topographic drainage</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <br>
+  <p class="biglink"><a class="biglink" href="../py-modindex.html">
+         Module Index</a>
+  <br><br>
+  <h3><a href="../index.html">Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">core.py</span></code></a><ul>
+<li><a class="reference internal" href="#module-streamlines.core">Usage</a></li>
+<li><a class="reference internal" href="#code">Code</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related</h3>
+<ul>
+  <li><a href="../index.html"></a><ul>
+      <li><a href="parameters.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">parameters.py</span></code></a></li>
+      <li><a href="geodata.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">geodata.py</span></code></a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, CPS.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/modules/core.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

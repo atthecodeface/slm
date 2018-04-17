@@ -1,0 +1,5 @@
+Installation
+============
+
+:doc:`Streamlines <../index>` 
+

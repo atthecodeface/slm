@@ -1,0 +1,9 @@
+``initialize.py`` 
+=======================================
+.. automodule:: streamlines.initialize
+   :members:
+
+   
+Code
+-------
+.. literalinclude:: ../../streamlines/initialize.py

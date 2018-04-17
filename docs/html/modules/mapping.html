@@ -1,0 +1,467 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>mapping.py &#8212; Streamlines  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="plot.py" href="plot.html" />
+    <link rel="prev" title="analysis.py" href="analysis.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="mapping-py">
+<h1><code class="docutils literal notranslate"><span class="pre">mapping.py</span></code><a class="headerlink" href="#mapping-py" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>TBD</li>
+</ul>
+</div>
+<div class="section" id="module-streamlines.mapping">
+<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.mapping" title="Permalink to this headline">¶</a></h2>
+<p>TBD</p>
+<dl class="class">
+<dt id="streamlines.mapping.Mapping">
+<em class="property">class </em><code class="descclassname">streamlines.mapping.</code><code class="descname">Mapping</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>geodata</em>, <em>preprocess</em>, <em>trace</em>, <em>analysis</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.mapping.Mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD.</p>
+<dl class="method">
+<dt id="streamlines.mapping.Mapping.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>geodata</em>, <em>preprocess</em>, <em>trace</em>, <em>analysis</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.mapping.Mapping.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.mapping.Mapping.do">
+<code class="descname">do</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.mapping.Mapping.do" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="code">
+<h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">TBD</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="k">import</span> <span class="n">gaussian_filter</span>
+<span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="k">import</span> <span class="n">skeletonize</span><span class="p">,</span> <span class="n">thin</span><span class="p">,</span> <span class="n">medial_axis</span><span class="p">,</span> <span class="n">disk</span>
+<span class="kn">from</span> <span class="nn">skimage.filters.rank</span> <span class="k">import</span> <span class="n">mean</span><span class="p">,</span><span class="n">modal</span><span class="p">,</span><span class="n">median</span>
+<span class="kn">from</span> <span class="nn">skimage.filters</span> <span class="k">import</span> <span class="n">gaussian</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">environ</span>
+<span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYTHONUNBUFFERED&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;True&#39;</span>
+
+<span class="kn">from</span> <span class="nn">streamlines.core</span> <span class="k">import</span> <span class="n">Core</span>
+<span class="kn">from</span> <span class="nn">streamlines</span> <span class="k">import</span> <span class="n">connect</span><span class="p">,</span> <span class="n">countlink</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">lengths</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Mapping&#39;</span><span class="p">]</span>
+
+<span class="n">pdebug</span> <span class="o">=</span> <span class="nb">print</span>
+
+<span class="k">class</span> <span class="nc">Mapping</span><span class="p">(</span><span class="n">Core</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TBD.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span><span class="n">geodata</span><span class="p">,</span><span class="n">preprocess</span><span class="p">,</span><span class="n">trace</span><span class="p">,</span><span class="n">analysis</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TBD</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">)</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span> <span class="o">=</span> <span class="n">geodata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span> <span class="o">=</span> <span class="n">preprocess</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span> <span class="o">=</span> <span class="n">analysis</span>
+        
+    <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TBD.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">**Mapping begin**&#39;</span><span class="p">)</span>  
+
+        <span class="c1"># Use downstream slt,sla pdfs to designate pixels as channels</span>
+        <span class="c1">#    - no GPU invocation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_channels</span><span class="p">()</span>
+        
+        <span class="c1"># Join up disconnected channel pixels if they are not too widely spaced</span>
+        <span class="c1">#    - atomic_or</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_channel_pixels</span><span class="p">()</span>
+        
+        <span class="c1"># Skeletonize channel pixels into thin network</span>
+        <span class="c1">#    - no GPU invocation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thin_channels</span><span class="p">()</span>
+        
+        <span class="c1"># Locate upstream ends of thinned channel network &amp; designate as heads</span>
+        <span class="c1">#    - atomic_and, atomic_or</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_channel_heads</span><span class="p">()</span>
+        
+        <span class="c1"># Link downstream from channel heads</span>
+        <span class="c1">#    - atomic_or mapping_array[]</span>
+        <span class="c1">#    - atomic_xchg count_array[], link_array[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count_downchannels</span><span class="p">()</span>
+                
+        <span class="c1"># Count downstream from channel heads</span>
+        <span class="c1">#    - atomic_or mapping_array[]</span>
+        <span class="c1">#    - atomic_max count_array[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flag_downchannels</span><span class="p">()</span>
+        
+        <span class="c1"># Map locations of channel confluences &amp; designate types</span>
+        <span class="c1">#    - atomic_or</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_confluences</span><span class="p">()</span>
+        
+        <span class="c1"># Label channel segments with channel head idxs</span>
+        <span class="c1">#    - atomic_xchg label_array[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segment_downchannels</span><span class="p">()</span>
+        
+        <span class="c1"># Designate downstream linkages for all hillslope pixels</span>
+        <span class="c1">#    - atomic_xchg link_array[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">link_hillslopes</span><span class="p">()</span>
+        
+        <span class="c1"># Label correspondingly upstream hillslope pixels</span>
+        <span class="c1">#    - atomic_xchg label_array[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segment_hillslopes</span><span class="p">()</span>
+        
+        <span class="c1"># Designate as L or R of channel to subsegment hillslope flanks</span>
+        <span class="c1">#    - no atomics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subsegment_flanks</span><span class="p">()</span>
+
+        <span class="c1"># Use up and downstream sla to designate midslope pixels</span>
+        <span class="c1">#    - no GPU invocation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_midslope</span><span class="p">()</span>
+        
+        <span class="c1"># Measure mean streamline distances from midslope to channel pixels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_hillslope_lengths</span><span class="p">()</span>
+        <span class="c1">#    - no atomics</span>
+        
+        <span class="c1"># Measure mean streamline distances from midslope to channel pixels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_hillslope_lengths</span><span class="p">()</span>
+        <span class="c1">#    - no GPU</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;**Mapping end**</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>  
+      
+      
+    <span class="k">def</span> <span class="nf">map_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Channels...&#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>  
+        <span class="n">jpdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">jpdf_dsla_dslt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slt_array</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> 
+                                      <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">[</span><span class="n">jpdf</span><span class="o">.</span><span class="n">mode_cluster_ij_list</span><span class="p">[</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">0</span><span class="p">],</span>
+                           <span class="n">jpdf</span><span class="o">.</span><span class="n">mode_cluster_ij_list</span><span class="p">[</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">is_channel</span>
+<span class="c1">#         if self.mask_array is not None:</span>
+<span class="c1">#             self.mapping_array = self.mapping_array &amp; self.mask_array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;done&#39;</span><span class="p">)</span>  
+
+    <span class="k">def</span> <span class="nf">connect_channel_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">connect</span><span class="o">.</span><span class="n">connect_channel_pixels</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_device</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">build_info_struct</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span> 
+                <span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">thin_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Thinning channels...&#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>  
+        <span class="n">is_channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">is_channel</span>
+        <span class="n">is_interchannel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">is_interchannel</span>
+        <span class="n">channel_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> 
+                                 <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
+        <span class="n">channel_array</span><span class="p">[</span>  <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span> <span class="o">&amp;</span> <span class="n">is_channel</span><span class="p">)</span><span class="o">==</span><span class="n">is_channel</span><span class="p">)</span>
+                      <span class="o">|</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span> <span class="o">&amp;</span> <span class="n">is_interchannel</span><span class="p">)</span><span class="o">==</span><span class="n">is_interchannel</span><span class="p">)</span>
+                     <span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;skeletonizing...&#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>  
+        <span class="n">channel_array</span> <span class="o">=</span> <span class="n">skeletonize</span><span class="p">(</span><span class="n">channel_array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">[</span><span class="n">channel_array</span><span class="p">]</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">is_thinchannel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;done&#39;</span><span class="p">)</span>  
+
+    <span class="k">def</span> <span class="nf">map_channel_heads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">connect</span><span class="o">.</span><span class="n">map_channel_heads</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_device</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">build_info_struct</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span> 
+                <span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">count_downchannels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> 
+                                   <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">link_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> 
+                                   <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
+        <span class="n">countlink</span><span class="o">.</span><span class="n">count_downchannels</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_device</span><span class="p">,</span> 
+                            <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">build_info_struct</span><span class="p">(),</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_array</span><span class="p">,</span> 
+                            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span> 
+                            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">flag_downchannels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">countlink</span><span class="o">.</span><span class="n">flag_downchannels</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_device</span><span class="p">,</span> 
+                            <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">build_info_struct</span><span class="p">(),</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_array</span><span class="p">,</span> 
+                            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span> 
+                            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">label_confluences</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">label_confluences</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_device</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">build_info_struct</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slt_array</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_array</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span> 
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">segment_downchannels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> 
+                                    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_segments</span> \
+            <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">segment_channels</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_device</span><span class="p">,</span> 
+                    <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">build_info_struct</span><span class="p">(),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">count_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">link_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">label_array</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span> 
+                    <span class="p">)</span>
+        <span class="c1"># Save the channel-only segment labeling for now</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_label_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_array</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span> 
+                                                        <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
+        <span class="n">is_majorconfluence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">is_majorconfluence</span>
+<span class="c1">#         pdebug(&#39;Major confluences&#39;,self.label_array[(~self.geodata.basin_mask_array) </span>
+<span class="c1">#                  &amp; ((self.mapping_array &amp; is_majorconfluence)==is_majorconfluence)])</span>
+<span class="c1">#         pdebug(&#39;Unique labels:&#39;,np.unique(self.label_array))</span>
+        
+    <span class="k">def</span> <span class="nf">link_hillslopes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">countlink</span><span class="o">.</span><span class="n">link_hillslopes</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_device</span><span class="p">,</span> 
+                            <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">build_info_struct</span><span class="p">(),</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">count_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">link_array</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span> 
+                            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">segment_hillslopes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">segment_hillslopes</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_device</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">build_info_struct</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">count_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">link_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">label_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span> 
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">subsegment_flanks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">subsegment_flanks</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_device</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">build_info_struct</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">channel_label_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">link_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">label_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span> 
+                <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> 
+                                                   <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">label_array</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">]</span> \
+            <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">label_array</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">left_flank_addition</span><span class="p">)</span>
+        <span class="n">is_leftflank</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">is_leftflank</span>
+        
+    <span class="k">def</span> <span class="nf">map_midslope</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Midslopes...&#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>  
+        <span class="n">dsla</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">sla_array</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">usla</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">sla_array</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span>
+
+        <span class="n">midslope_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">dsla</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">midslope_array</span><span class="p">[</span> <span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span>
+            <span class="n">gaussian_filter</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">dsla</span><span class="p">,</span><span class="n">usla</span><span class="p">)</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">midslope_filter_sigma</span><span class="p">))</span>
+                             <span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">midslope_threshold</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">[</span><span class="n">midslope_array</span><span class="p">]</span> \
+            <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">[</span><span class="n">midslope_array</span><span class="p">]</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">is_midslope</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;done&#39;</span><span class="p">)</span>  
+
+    <span class="k">def</span> <span class="nf">measure_hillslope_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">traj_label_array</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_array</span><span class="p">[</span>
+                                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="o">&amp;</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">is_midslope</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span>
+                    <span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
+<span class="c1">#         pdebug(&#39;traj_label_array&#39;,traj_label_array.shape,traj_label_array)</span>
+        <span class="n">traj_length_array</span><span class="o">=</span> <span class="mf">0.0</span><span class="o">*</span><span class="n">traj_label_array</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+                                                        <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
+        
+        <span class="n">lengths</span><span class="o">.</span><span class="n">hillslope_lengths</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_device</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">build_info_struct</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">label_array</span><span class="p">,</span> <span class="n">traj_length_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span> 
+                <span class="p">)</span>
+        <span class="n">unique_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">traj_label_array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hillslope_labels</span> \
+            <span class="o">=</span> <span class="n">unique_labels</span><span class="p">[</span><span class="n">unique_labels</span><span class="o">!=</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+                                                     <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
+        <span class="n">df</span>  <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">traj_length_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],),</span> 
+                                    <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;length&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)]))</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="n">traj_label_array</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">traj_length_array</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">label</span><span class="o">!=</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hillslope_length_df</span> <span class="o">=</span> <span class="n">df</span>
+        
+        <span class="n">stats_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hillslope_labels</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">])</span>
+        <span class="n">stats_list</span> <span class="o">=</span> <span class="p">(</span> <span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span><span class="s1">&#39;count&#39;</span><span class="p">),(</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span><span class="s1">&#39;mean [m]&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;std&#39;</span><span class="p">,</span><span class="s1">&#39;stddev [m]&#39;</span><span class="p">)</span> <span class="p">)</span>
+        <span class="k">for</span> <span class="n">stat</span> <span class="ow">in</span> <span class="n">stats_list</span><span class="p">:</span>
+            <span class="n">stats_df</span> <span class="o">=</span> <span class="n">stats_df</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span><span class="n">stat</span><span class="p">[</span><span class="mi">0</span><span class="p">])()</span> <span class="p">,</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">)</span>
+            <span class="n">stats_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;length&#39;</span><span class="p">:</span><span class="n">stat</span><span class="p">[</span><span class="mi">1</span><span class="p">]},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">stats_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hillslope_stats_df</span> <span class="o">=</span> <span class="n">stats_df</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">hillslope_length_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_array</span><span class="p">,</span>
+                                    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">row</span> <span class="ow">in</span> <span class="n">stats_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>     
+            <span class="bp">self</span><span class="o">.</span><span class="n">hillslope_length_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">label_array</span><span class="o">==</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;mean [m]&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">map_hillslope_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Mapping hillslope lengths...&#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>  
+        <span class="n">hsl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hillslope_length_array</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">hsl_bool</span> <span class="o">=</span> <span class="n">hsl</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">hsl_clipped</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hsl</span><span class="p">,</span> <span class="n">mask</span><span class="o">=~</span><span class="n">hsl_bool</span><span class="p">)</span>
+        <span class="n">hsl_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">hsl_clipped</span><span class="p">)</span>
+        <span class="n">hsl_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">hsl_clipped</span><span class="p">)</span>
+        <span class="n">hsl_clipped</span> <span class="o">=</span> <span class="mi">65535</span><span class="o">*</span><span class="p">(</span><span class="n">hsl_clipped</span><span class="o">-</span><span class="n">hsl_min</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">hsl_max</span><span class="o">-</span><span class="n">hsl_min</span><span class="p">)</span>
+        <span class="n">hsl_masked</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hsl_clipped</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">),</span><span class="n">mask</span><span class="o">=~</span><span class="n">hsl_bool</span><span class="p">)</span>
+
+        <span class="n">median_disk</span><span class="o">=</span><span class="n">disk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hillslope_length_median_radius</span><span class="p">)</span>
+        <span class="n">mean_disk</span><span class="o">=</span><span class="n">disk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hillslope_length_mean_radius</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+            <span class="n">hsl_median</span> \
+               <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">median</span><span class="p">(</span><span class="n">hsl_masked</span><span class="p">,</span><span class="n">median_disk</span><span class="p">,</span><span class="n">mask</span><span class="o">=</span><span class="n">hsl_bool</span><span class="p">),</span><span class="n">mask</span><span class="o">=~</span><span class="n">hsl_bool</span><span class="p">)</span>
+            <span class="n">hsl_median_nm</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">hsl_median</span><span class="p">,</span><span class="n">mean_disk</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hillslope_length_smoothed_array</span> \
+            <span class="o">=</span> <span class="p">((</span><span class="n">hsl_median_nm</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">pad_width</span><span class="p">:</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">pad_width</span><span class="p">,</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">pad_width</span><span class="p">:</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">pad_width</span><span class="p">]</span>
+                                <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span><span class="o">/</span><span class="mi">65535</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">hsl_max</span><span class="o">-</span><span class="n">hsl_min</span><span class="p">)</span><span class="o">+</span><span class="n">hsl_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;done&#39;</span><span class="p">)</span>  
+        
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">Streamlines</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Analyzing the structure of topographic drainage</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <br>
+  <p class="biglink"><a class="biglink" href="../py-modindex.html">
+         Module Index</a>
+  <br><br>
+  <h3><a href="../index.html">Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mapping.py</span></code></a><ul>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+<li><a class="reference internal" href="#module-streamlines.mapping">Usage</a></li>
+<li><a class="reference internal" href="#code">Code</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related</h3>
+<ul>
+  <li><a href="../index.html"></a><ul>
+      <li><a href="analysis.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">analysis.py</span></code></a></li>
+      <li><a href="plot.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">plot.py</span></code></a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, CPS.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/modules/mapping.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

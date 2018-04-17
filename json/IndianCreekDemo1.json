@@ -1,0 +1,138 @@
+{
+	"state": {
+		"verbose" : true,
+		"debug" : true,
+		"noisy" : false,
+			
+		"do_reload_state" : false,	
+		
+		"do_geodata" : true,	
+		"do_preprocess" : true,	
+		"do_condition" : true,	
+		"do_trace" : true,	
+		"do_postprocess" : false,	
+		"do_analysis" : false,
+		"do_plot" : false,	
+		"do_save_state" : false,	
+		"do_export" : false,		
+		"do_rw_savez" : true,
+		"do_rw_hdf5" : false
+	},
+
+	"geodata": {
+		"title" : "Indian Creek, Ohio, USA, UTM Zone 17N",
+		"dtm_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg.tif",
+		"data_path" :["..","Data"],		
+		"no_data_values" : [-99999,0],
+		"TINYroi_x_bounds" : [690,695],
+		"TINYroi_y_bounds" : [240,244],
+		"roi_x_bounds" : [690,715],
+		"roi_y_bounds" : [240,261],
+				
+		"basins_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed30k.tif",
+		"basins" : [161,162,163,164,165,166],
+		"basins_file_comment" : "",
+		"basins_comment" : "",
+		
+		"do_basin_masking" : false
+	},
+
+	"preprocess": {
+		"divergence_threshold" : -2.9
+	},
+
+	"trace": {
+		"max_length" : 30.0,
+		"integration_halt_threshold" : 0.05,
+		"integrator_step_factor" : 0.5,
+		
+		"do_trace_downstream" : true,
+		"do_trace_upstream" : true
+	},
+
+	"analysis": {
+        "do_marginal_distbn_dsla":   true,
+        "do_marginal_distbn_usla":   true,
+        "do_marginal_distbn_dslt":   true,
+        "do_marginal_distbn_uslt":   false,
+        "do_marginal_distbn_dslc":   false,
+        "do_marginal_distbn_uslc":   false,
+        "do_joint_distribn_dsla_dslt": true,
+        "do_joint_distribn_usla_uslt": false,
+        "do_joint_distribn_uslt_dslt": false,
+		"do_joint_distribn_dsla_usla": false,
+        "do_joint_distribn_dsla_dslc": false,
+        "do_joint_distribn_usla_uslc": false,
+        "do_joint_distribn_uslc_dslc": false,
+		"search_cdf_min" : 0.80
+	},
+
+	"mapping": {
+		"midslope_filter_sigma" : 3.0,
+		"midslope_threshold" : 0.015,
+		"hillslope_length_median_radius" : 5,
+		"hillslope_length_mean_radius" : 5
+	},
+
+	"plot": {
+		"do_plot_dtm" : false,
+		"do_plot_roi" : false,
+		"do_plot_streamlines" : true,
+		"do_plot_flow_maps" : true,
+		"do_plot_segments" : false,
+		"do_plot_channels" : false,
+		"do_plot_hillslope_lengths" : false,
+		"do_plot_hillslope_lengths_contoured" : false,
+		"do_plot_hillslope_distributions" : false,
+		
+		"do_plot_seed_points" : false,
+		"do_plot_flow_vectors" : true,
+		"do_plot_blockages" : true,
+		"do_plot_loops" : true,
+
+		"plot_interpolation_method" : "none",
+		"plot_streamline_limit" : 1500,
+					
+		"do_plot_color_shaded_relief" : true,
+		"do_plot_curvature_roi" : false,
+		"do_plot_colorized_streamlines" : false,
+		"do_plot_merged_streamline_density_bands" : false,
+							
+		
+		"plot_window_size_factor" : 2.7,
+		"plot_window_pdf_size_factor" : 2.7,
+		"plot_window_width" :  3.0,
+		"plot_window_height" : 3.0,
+		"suptitle_y" : 0,
+		
+		"hillshade_azimuth" : 135,
+		"hillshade_angle" : 25,
+		
+		"downstreamline_color" : "blue",
+		"upstreamline_color" : "red",
+		"XXXupstreamline_color" : "olivedrab",
+		
+		"streamline_point_marker" : "-",
+		"streamline_point_size" : 1,
+		"streamline_point_alpha" : 1.0,
+		
+		"seed_point_marker" : "D",
+		"seed_point_marker_size" : 3,
+		"seed_point_marker_color" : "magenta",
+				
+		"gradient_vector_color" : "black",
+		"gradient_vector_alpha" : 0.5,
+		"gradient_vector_scale" : 50,
+
+		"do_plot_distributions": false		
+	},
+
+	"export": {
+		"export_path" : [".","IndianCreekDemo1"],
+		"format" : ["png"],
+		"options" : {
+			"dpi":80, 
+			"bbox_inches":"tight"
+			}
+	}
+}

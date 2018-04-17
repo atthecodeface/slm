@@ -1,0 +1,635 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>preprocess.py &#8212; Streamlines  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="trace.py" href="trace.html" />
+    <link rel="prev" title="geodata.py" href="geodata.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="preprocess-py">
+<h1><code class="docutils literal notranslate"><span class="pre">preprocess.py</span></code><a class="headerlink" href="#preprocess-py" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-streamlines.preprocess">
+<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.preprocess" title="Permalink to this headline">¶</a></h2>
+<p>DTM preprocessing steps.</p>
+<p>These include: computing the topographic gradient vector field, fixing loops
+and blockages, and computing a streamline ‘flow speed’ field.</p>
+<dl class="class">
+<dt id="streamlines.preprocess.Preprocess">
+<em class="property">class </em><code class="descclassname">streamlines.preprocess.</code><code class="descname">Preprocess</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>geodata</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.Preprocess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class providing set of methods to prepare raw DTM data for streamline tracing.</p>
+<p>Provides top-level methods to: (1) condition DTM grid for streamline computation
+by fixing blockages (single-diagonal-outflow pixels) and loops (divergence, curl
+and net vector magnitude exceeding trio of thresholds); (2) Compute topographic
+gradient vector field using either simple bilinear interpolation or using
+bivariate spline interpolator functions at each grid cell.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><em>object</em></a>) – TBD</li>
+<li><strong>imported_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – TBD</li>
+<li><strong>geodata</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><em>object</em></a>) – TBD</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt>
+<code class="descname">workflow parameters</code></dt>
+<dd><p><em>various</em> – TBD</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.preprocess.Preprocess.conditioned_gradient_vector_field">
+<code class="descname">conditioned_gradient_vector_field</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.Preprocess.conditioned_gradient_vector_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute topographic gradient vector field on a preconditioned DTM.</p>
+<p>The preconditioning steps are:</p>
+<ol class="arabic simple">
+<li>Find blockages in gradient vector field</li>
+<li>Calculate surface derivatives (gradient &amp; ‘curvature’)</li>
+<li>Set gradient vector field magnitudes (‘speeds’)</li>
+<li>Find and fix loops in gradient vector field</li>
+<li>Fix blockages in gradient vector field</li>
+<li>Set initial streamline points (‘seeds’)</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.preprocess.Preprocess.do">
+<code class="descname">do</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.Preprocess.do" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.preprocess.Preprocess.find_blockages">
+<code class="descname">find_blockages</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.Preprocess.find_blockages" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.preprocess.Preprocess.raw_gradient_vector_field">
+<code class="descname">raw_gradient_vector_field</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.Preprocess.raw_gradient_vector_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute topographic gradient vector field without preconditioning the DTM.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="code">
+<h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">DTM preprocessing steps. </span>
+
+<span class="sd">These include: computing the topographic gradient vector field, fixing loops </span>
+<span class="sd">and blockages, and computing a streamline &#39;flow speed&#39; field.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">numba.decorators</span> <span class="k">import</span> <span class="n">njit</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="k">import</span> <span class="n">eigvals</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="k">import</span> <span class="n">gaussian_filter</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage.filters</span> <span class="k">import</span> <span class="n">generic_filter</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">environ</span>
+<span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYTHONUNBUFFERED&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;True&#39;</span>
+
+<span class="kn">from</span> <span class="nn">streamlines.core</span> <span class="k">import</span> <span class="n">Core</span>
+
+<span class="n">pdebug</span><span class="o">=</span> <span class="nb">print</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Preprocess&#39;</span><span class="p">]</span>
+
+<span class="c1"># Not numbarizable</span>
+<span class="k">def</span> <span class="nf">compute_topo_gradient_field</span><span class="p">(</span><span class="n">roi_array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Differentiate ROI topo in x and y directions using simple numpy method.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        roi_array (numpy.array):</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.array,numpy.array: ROI topo x gradient, y gradient</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">roi_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">roi_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Not numbarizable</span>
+<span class="k">def</span> <span class="nf">pad_arrays</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">,</span><span class="n">pad_width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pad gradient vector arrays around grid edges, repeating edge values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">u_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span> 
+                            <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pad_width</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="n">pad_width</span><span class="p">)),</span> 
+                            <span class="s1">&#39;edge&#39;</span><span class="p">)</span>
+    <span class="n">v_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">v_array</span><span class="p">,</span> 
+                            <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pad_width</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="n">pad_width</span><span class="p">)),</span> 
+                            <span class="s1">&#39;edge&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span>
+    
+<span class="c1"># @njit(cache=False)</span>
+<span class="k">def</span> <span class="nf">set_velocity_field</span><span class="p">(</span><span class="n">roi_gradx_array</span><span class="p">,</span><span class="n">roi_grady_array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert topo gradient vector field into equivalent &#39;flow velocity&#39; field.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">roi_gradx_array</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span><span class="o">-</span><span class="n">roi_grady_array</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="c1"># @njit(cache=False)</span>
+<span class="k">def</span> <span class="nf">set_speed_field</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert &#39;flow velocity&#39; field into equivalent &#39;flow speed&#39; field.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">)</span>
+
+<span class="c1"># @njit(cache=False)</span>
+<span class="k">def</span> <span class="nf">normalize_velocity_field</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">,</span><span class="n">speed_array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Normalize &#39;flow velocity&#39; field into unit vector field.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">u_array</span><span class="o">/</span><span class="n">speed_array</span><span class="p">,</span> <span class="n">v_array</span><span class="o">/</span><span class="n">speed_array</span>
+
+<span class="c1"># @njit(cache=False)</span>
+<span class="k">def</span> <span class="nf">unnormalize_velocity_field</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">,</span><span class="n">speed_array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return &#39;flow velocity&#39; field to true vector magnitudes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">u_array</span><span class="o">*</span><span class="n">speed_array</span><span class="p">,</span> <span class="n">v_array</span><span class="o">*</span><span class="n">speed_array</span>
+
+<span class="c1"># @njit(cache=False)</span>
+<span class="k">def</span> <span class="nf">compute_gradient_velocity_field</span><span class="p">(</span><span class="n">roi_gradx_array</span><span class="p">,</span> <span class="n">roi_grady_array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute normalized gradient velocity vector field from ROI topo grid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span> <span class="o">=</span> <span class="n">set_velocity_field</span><span class="p">(</span><span class="n">roi_gradx_array</span><span class="p">,</span><span class="n">roi_grady_array</span><span class="p">)</span>
+    <span class="n">speed_array</span> <span class="o">=</span> <span class="n">set_speed_field</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">)</span>
+    <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span> <span class="o">=</span> <span class="n">normalize_velocity_field</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">,</span><span class="n">speed_array</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span>
+
+<span class="nd">@njit</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_flow_vector</span><span class="p">(</span><span class="n">nn</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TBD</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span>   <span class="n">nn</span> <span class="o">&amp;</span> <span class="mi">16</span><span class="p">:</span>   <span class="c1">#SW</span>
+        <span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">nn</span> <span class="o">&amp;</span> <span class="mi">32</span><span class="p">:</span>   <span class="c1">#SE</span>
+        <span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">nn</span> <span class="o">&amp;</span> <span class="mi">64</span><span class="p">:</span>   <span class="c1">#NW</span>
+        <span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">nn</span> <span class="o">&amp;</span> <span class="mi">128</span><span class="p">:</span>  <span class="c1">#NE</span>
+        <span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> 
+    <span class="k">elif</span> <span class="n">nn</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">:</span>   <span class="c1">#W</span>
+        <span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">nn</span> <span class="o">&amp;</span> <span class="mi">2</span><span class="p">:</span>   <span class="c1">#E</span>
+        <span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">nn</span> <span class="o">&amp;</span> <span class="mi">4</span><span class="p">:</span>   <span class="c1">#S</span>
+        <span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">nn</span> <span class="o">&amp;</span> <span class="mi">8</span><span class="p">:</span>   <span class="c1">#N</span>
+        <span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>  
+    <span class="k">return</span> <span class="n">dx</span><span class="p">,</span><span class="n">dy</span>
+
+<span class="nd">@njit</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">check_has_loop</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">):</span>
+    <span class="n">uv00</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">],</span><span class="n">v</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">uv10</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u</span><span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="p">],</span><span class="n">v</span><span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="p">]],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">uv11</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u</span><span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="n">v</span><span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">]],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">uv01</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="n">v</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">]],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">velocity</span> <span class="o">=</span> <span class="p">(</span><span class="n">uv00</span><span class="o">+</span><span class="n">uv10</span><span class="o">+</span><span class="n">uv11</span><span class="o">+</span><span class="n">uv01</span><span class="p">)</span><span class="o">/</span><span class="mf">4.0</span>
+    <span class="n">speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">velocity</span><span class="p">,</span><span class="n">velocity</span><span class="p">)))</span>
+    <span class="n">divergence</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">uv00</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span> <span class="o">+</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">uv10</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span> <span class="o">+</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">uv11</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span> <span class="o">+</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">uv01</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+                <span class="p">)</span>
+    <span class="n">curl</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">uv00</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span> <span class="o">+</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">uv10</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span> <span class="o">+</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">uv11</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span> <span class="o">+</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">uv01</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">speed</span><span class="p">,</span><span class="n">divergence</span><span class="p">,</span><span class="n">curl</span>
+
+<span class="nd">@njit</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">break_out_of_loop</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> 
+                      <span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">,</span>
+                      <span class="n">roi_array</span><span class="p">,</span>
+                      <span class="n">roi_nx</span><span class="p">,</span><span class="n">roi_ny</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TBD</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_within_bounds</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return True if point is a valid index of grid&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">xi</span><span class="o">&gt;=</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">xi</span><span class="o">&lt;=</span><span class="n">roi_nx</span><span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">yi</span><span class="o">&gt;=</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">yi</span><span class="o">&lt;=</span><span class="n">roi_ny</span><span class="o">-</span><span class="mi">1</span>
+    <span class="k">def</span> <span class="nf">_well_within_bounds</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return True if point is a valid index of grid&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">xi</span><span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">xi</span><span class="o">&lt;=</span><span class="n">roi_nx</span><span class="o">-</span><span class="mi">2</span> <span class="ow">and</span> <span class="n">yi</span><span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">yi</span><span class="o">&lt;=</span><span class="n">roi_ny</span><span class="o">-</span><span class="mi">2</span>
+
+    <span class="n">vec_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_flow_vector</span><span class="p">(</span><span class="n">nn</span><span class="p">)</span> <span class="k">for</span> <span class="n">nn</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">64</span><span class="p">,</span><span class="mi">128</span><span class="p">]]</span>
+    <span class="n">h_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span> <span class="c1"># set to flt_max</span>
+    <span class="n">lowest_h_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">vec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vec_list</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">_within_bounds</span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">y</span><span class="o">+</span><span class="n">vec</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">and</span> <span class="n">_well_within_bounds</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">h_min</span><span class="o">&gt;</span><span class="n">roi_array</span><span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="n">vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">y</span><span class="o">+</span><span class="n">vec</span><span class="p">[</span><span class="mi">1</span><span class="p">]]:</span>
+                <span class="n">h_min</span> <span class="o">=</span> <span class="n">roi_array</span><span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="n">vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">y</span><span class="o">+</span><span class="n">vec</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">lowest_h_idx</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="k">else</span><span class="p">:</span>
+             <span class="k">return</span>
+    <span class="n">vec</span> <span class="o">=</span> <span class="n">vec_list</span><span class="p">[</span> <span class="n">lowest_h_idx</span> <span class="p">]</span>
+    <span class="n">vec_len</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">vec</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">u_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">vec_len</span>
+    <span class="n">v_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">vec_len</span>
+
+<span class="nd">@njit</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">find_and_fix_loops</span><span class="p">(</span><span class="n">roi_array</span><span class="p">,</span>
+                       <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span>
+                       <span class="n">x_roi_n_pixel_centers</span><span class="p">,</span>
+                       <span class="n">y_roi_n_pixel_centers</span><span class="p">,</span>
+                       <span class="n">roi_nx</span><span class="p">,</span> <span class="n">roi_ny</span><span class="p">,</span>
+                       <span class="n">vecsum_threshold</span><span class="p">,</span>
+                       <span class="n">divergence_threshold</span><span class="p">,</span>
+                       <span class="n">curl_threshold</span><span class="p">,</span>
+                       <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TBD</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Finding and fixing loops...&#39;</span><span class="p">)</span>
+        
+    <span class="n">n_loops</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="c1"># HACK: this malloc needs to be reined in and controlled more precisely</span>
+    <span class="n">where_looped_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">roi_nx</span><span class="o">*</span><span class="n">roi_ny</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">xi</span><span class="p">,</span><span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_roi_n_pixel_centers</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">yi</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">y_roi_n_pixel_centers</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">vecsum</span><span class="p">,</span><span class="n">divergence</span><span class="p">,</span><span class="n">curl</span> <span class="o">=</span> <span class="n">check_has_loop</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">,</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">vecsum</span><span class="o">&lt;</span><span class="n">vecsum_threshold</span> 
+                    <span class="ow">and</span> <span class="n">divergence</span><span class="o">&lt;=</span><span class="n">divergence_threshold</span> 
+                        <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">curl</span><span class="p">)</span><span class="o">&gt;=</span><span class="n">curl_threshold</span><span class="p">):</span>
+                <span class="n">where_looped_array</span><span class="p">[</span><span class="n">n_loops</span><span class="o">+</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">]</span>
+                <span class="n">where_looped_array</span><span class="p">[</span><span class="n">n_loops</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">xi</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">yi</span><span class="p">]</span>
+                <span class="n">where_looped_array</span><span class="p">[</span><span class="n">n_loops</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">where_looped_array</span><span class="p">[</span><span class="n">n_loops</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">xi</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">yi</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">n_loops</span> <span class="o">+=</span> <span class="mi">4</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_loops</span><span class="p">):</span>
+        <span class="n">break_out_of_loop</span><span class="p">(</span><span class="n">where_looped_array</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+                          <span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">,</span>
+                          <span class="n">roi_array</span><span class="p">,</span>
+                          <span class="n">roi_nx</span><span class="p">,</span> <span class="n">roi_ny</span>
+                          <span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">where_looped_array</span><span class="p">[:</span><span class="n">n_loops</span><span class="p">],</span> <span class="n">n_loops</span>
+        
+<span class="nd">@njit</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">fix_blockages</span><span class="p">(</span><span class="n">where_blockages_array</span><span class="p">,</span>
+                  <span class="n">blockages_array</span><span class="p">,</span>
+                  <span class="n">where_blocked_neighbors_array</span><span class="p">,</span>
+                  <span class="n">blocked_neighbors_array</span><span class="p">,</span>
+                  <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span>
+                  <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TBD</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Fixing blockages...&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">where_blockages_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">where_blockages_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">where_blockages_array</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span> <span class="n">get_flow_vector</span><span class="p">(</span><span class="n">blockages_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">])</span>
+            <span class="n">u_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">dx</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+            <span class="n">v_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">where_blocked_neighbors_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">where_blocked_neighbors_array</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span> <span class="n">get_flow_vector</span><span class="p">(</span><span class="n">blocked_neighbors_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">])</span>
+            <span class="n">u_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">dx</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+            <span class="n">v_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;...none to fix&#39;</span><span class="p">)</span>
+        
+<span class="nd">@njit</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">has_one_diagonal_outflow</span><span class="p">(</span><span class="n">pixel_neighborhood</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Should actually say &quot;has at least one diagonal&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Fetch the current (central pixel) elevation</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">nn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># Scan neighboring pixels and flag if lower than central</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="n">h</span><span class="p">:</span>  <span class="c1"># SW</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">16</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">h</span><span class="p">:</span>  <span class="c1"># S</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">4</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">&lt;</span><span class="n">h</span><span class="p">:</span>  <span class="c1"># SE</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">32</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">&lt;</span><span class="n">h</span><span class="p">:</span>  <span class="c1"># W</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">&lt;</span><span class="n">h</span><span class="p">:</span>  <span class="c1"># E</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">&lt;</span><span class="n">h</span><span class="p">:</span>  <span class="c1"># NW</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">64</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="o">&lt;</span><span class="n">h</span><span class="p">:</span>  <span class="c1"># N</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">8</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="o">&lt;</span><span class="n">h</span><span class="p">:</span>  <span class="c1"># NE</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">128</span>
+        <span class="c1"># Check whether any of the outflows is cardinal</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">nn</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">16</span><span class="o">+</span><span class="mi">32</span><span class="o">+</span><span class="mi">64</span><span class="o">+</span><span class="mi">128</span><span class="p">))</span><span class="o">==</span><span class="n">nn</span><span class="p">:</span>
+        <span class="c1"># None of the outflows is cardinal</span>
+        <span class="k">return</span> <span class="n">nn</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+<span class="nd">@njit</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">upstream_of_diagonal_outflow</span><span class="p">(</span><span class="n">pixel_neighborhood</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TBD</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># Scan neighboring pixels</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="mi">16</span><span class="p">:</span>  <span class="c1"># SW =&gt; SW</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">16</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="mi">16</span><span class="p">:</span>  <span class="c1"># S =&gt; SW</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">4</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="mi">32</span><span class="p">:</span>  <span class="c1"># S =&gt; SE</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">4</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">==</span><span class="mi">32</span><span class="p">:</span>  <span class="c1"># SE =&gt; SE</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">32</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">==</span><span class="mi">16</span><span class="p">:</span>  <span class="c1"># W =&gt; SW</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">==</span><span class="mi">64</span><span class="p">:</span>  <span class="c1"># W =&gt; NW</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">==</span><span class="mi">128</span><span class="p">:</span> <span class="c1"># E =&gt; NE</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">==</span><span class="mi">32</span><span class="p">:</span>  <span class="c1"># E =&gt; SE</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">==</span><span class="mi">64</span><span class="p">:</span>  <span class="c1"># NW =&gt; NW</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">64</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="o">==</span><span class="mi">64</span><span class="p">:</span>  <span class="c1"># N =&gt; NW</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">8</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="o">==</span><span class="mi">128</span><span class="p">:</span> <span class="c1"># N =&gt; NE</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">8</span>
+    <span class="k">if</span> <span class="n">pixel_neighborhood</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="o">==</span><span class="mi">128</span><span class="p">:</span> <span class="c1"># NE =&gt; NE</span>
+        <span class="n">nn</span> <span class="o">+=</span> <span class="mi">128</span>
+    <span class="k">return</span> <span class="n">nn</span>
+
+<span class="k">class</span> <span class="nc">Preprocess</span><span class="p">(</span><span class="n">Core</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class providing set of methods to prepare raw DTM data for streamline tracing.</span>
+<span class="sd">    </span>
+<span class="sd">    Provides top-level methods to: (1) condition DTM grid for streamline computation</span>
+<span class="sd">    by fixing blockages (single-diagonal-outflow pixels) and loops (divergence, curl</span>
+<span class="sd">    and net vector magnitude exceeding trio of thresholds); (2) Compute topographic</span>
+<span class="sd">    gradient vector field using either simple bilinear interpolation or using</span>
+<span class="sd">    bivariate spline interpolator functions at each grid cell.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        state (object):  TBD</span>
+<span class="sd">        imported_parameters (dict):  TBD</span>
+<span class="sd">        geodata (object):  TBD</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        workflow parameters (various):  TBD</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span><span class="n">geodata</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">)</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span> <span class="o">=</span> <span class="n">geodata</span>
+
+    <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TBD</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">**Preprocess begin**&#39;</span><span class="p">)</span>  
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">do_condition</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conditioned_gradient_vector_field</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raw_gradient_vector_field</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_nan_uv</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;**Preprocess end**</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>  
+  
+    <span class="k">def</span> <span class="nf">conditioned_gradient_vector_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute topographic gradient vector field on a preconditioned DTM.</span>
+<span class="sd">        </span>
+<span class="sd">        The preconditioning steps are:</span>
+<span class="sd">        </span>
+<span class="sd">        1. Find blockages in gradient vector field </span>
+<span class="sd">        2. Calculate surface derivatives (gradient &amp; &#39;curvature&#39;)</span>
+<span class="sd">        3. Set gradient vector field magnitudes (&#39;speeds&#39;)</span>
+<span class="sd">        4. Find and fix loops in gradient vector field</span>
+<span class="sd">        5. Fix blockages in gradient vector field </span>
+<span class="sd">        6. Set initial streamline points (&#39;seeds&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Precondition gradient vector field by fixing loops &amp; blockages&#39;</span><span class="p">)</span>  
+            
+        <span class="n">do_fixes</span> <span class="o">=</span> <span class="kc">True</span>
+        
+        <span class="k">if</span> <span class="n">do_fixes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">find_blockages</span><span class="p">()</span>    
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_gradx_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">roi_grady_array</span> \
+            <span class="o">=</span> <span class="n">compute_topo_gradient_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_array</span> \
+            <span class="o">=</span> <span class="n">compute_gradient_velocity_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_gradx_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">roi_grady_array</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">do_fixes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">where_looped_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_loops</span> <span class="o">=</span> \
+                <span class="n">find_and_fix_loops</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_array</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">x_roi_n_pixel_centers</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">y_roi_n_pixel_centers</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_nx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_ny</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">vecsum_threshold</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">divergence_threshold</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">curl_threshold</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">do_fixes</span><span class="p">:</span>
+            <span class="n">fix_blockages</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">where_blockages_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">blockages_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">where_blocked_neighbors_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">blocked_neighbors_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+         
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_normalize_speed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">speed_array</span> <span class="o">=</span> <span class="n">set_speed_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">v_array</span><span class="p">)</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_array</span><span class="p">)</span> \
+                <span class="o">=</span> <span class="n">normalize_velocity_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">speed_array</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_array</span><span class="p">)</span> \
+                <span class="o">=</span> <span class="n">unnormalize_velocity_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">speed_array</span><span class="p">)</span>
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_array</span><span class="p">)</span> \
+            <span class="o">=</span> <span class="n">pad_arrays</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">pad_width</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">mask_nan_uv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Mask out bad uv pixels...&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_array</span><span class="p">)</span> 
+                                      <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v_array</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_fatmask_array</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_array</span><span class="p">)</span> 
+                                         <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v_array</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;done&#39;</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">raw_gradient_vector_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute topographic gradient vector field without preconditioning the DTM.</span>
+<span class="sd">        &quot;&quot;&quot;</span>     
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Compute raw gradient vector field&#39;</span><span class="p">)</span>  
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_gradx_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_grady_array</span><span class="p">)</span> <span class="o">=</span> <span class="n">derivatives</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speed_array</span> <span class="o">=</span> <span class="n">set_speed_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_array</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">find_blockages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TBD</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Finding blockages...&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="c1"># Create a blank array - will flag where blockages lie</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blockages_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_array</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blocked_neighbors_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_array</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                                                     <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="c1"># Use a fast filter technique to process whole DTM to find blockages</span>
+        <span class="c1">#   i.e., to find all pixels whose diagonal neighbor is the only outflow pixel</span>
+        <span class="n">generic_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_array</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> 
+                        <span class="n">has_one_diagonal_outflow</span><span class="p">,</span> 
+                        <span class="n">output</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">blockages_array</span><span class="p">,</span>
+                        <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">generic_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blockages_array</span><span class="p">,</span> 
+                        <span class="n">upstream_of_diagonal_outflow</span><span class="p">,</span> 
+                        <span class="n">output</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">blocked_neighbors_array</span><span class="p">,</span>
+                        <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blockages_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockages_array</span><span class="o">.</span><span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blocked_neighbors_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocked_neighbors_array</span><span class="o">.</span><span class="n">T</span>
+        <span class="c1"># Having mapped the blockages as a &#39;directions&#39; array,</span>
+        <span class="c1">#   generate a simple vector of their x,y locations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">where_blockages_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blockages_array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">where_blockages_array</span> \
+            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">where_blockages_array</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">where_blockages_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">where_blocked_neighbors_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blocked_neighbors_array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">where_blocked_neighbors_array</span> \
+            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">where_blocked_neighbors_array</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">where_blocked_neighbors_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;found </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">where_blockages_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">noisy</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">where_blockages_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Blockages at:&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">where_blockages_array</span><span class="p">:</span>
+                    <span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span> <span class="n">get_flow_vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blockages_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">%s</span><span class="s1"> @ </span><span class="si">%s</span><span class="s1"> =&gt; </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">([</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">]),</span><span class="nb">str</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]),</span><span class="nb">str</span><span class="p">([</span><span class="n">x</span><span class="o">+</span><span class="n">dx</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="n">dy</span><span class="p">])))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;none found...&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">Streamlines</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Analyzing the structure of topographic drainage</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <br>
+  <p class="biglink"><a class="biglink" href="../py-modindex.html">
+         Module Index</a>
+  <br><br>
+  <h3><a href="../index.html">Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">preprocess.py</span></code></a><ul>
+<li><a class="reference internal" href="#module-streamlines.preprocess">Usage</a></li>
+<li><a class="reference internal" href="#code">Code</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related</h3>
+<ul>
+  <li><a href="../index.html"></a><ul>
+      <li><a href="geodata.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">geodata.py</span></code></a></li>
+      <li><a href="trace.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">trace.py</span></code></a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, CPS.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/modules/preprocess.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

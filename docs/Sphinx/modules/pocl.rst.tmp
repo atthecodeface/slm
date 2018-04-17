@@ -1,0 +1,15 @@
+``pocl.py`` 
+=======================================
+
+
+Usage
+-------
+.. automodule:: ../opencl.pocl
+   :members: 
+   :private-members:
+
+   
+
+Code
+-------
+.. literalinclude:: ../../../opencl/pocl.py

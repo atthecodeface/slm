@@ -1,0 +1,94 @@
+{
+	"state": {
+		"verbose" : true,
+		"debug" : true,
+		"noisy" : false,
+
+		"do_reload_state" : false,	
+		
+		"do_geodata" : true,	
+		"do_preprocess" : true,	
+		"do_condition" : true,	
+		"do_trace" : true,	
+		"do_postprocess" : false,	
+		"do_analysis" : false,
+		"do_plot" : false,	
+		"do_save_state" : false,	
+		"do_export" : false,
+		
+		"export_path" : [".","GuadalupeDemo4"],	
+
+		"do_rw_savez" : true,
+		"do_rw_hdf5" : false
+	},
+
+	"geodata": {
+		"title" : "Guadalupe Mountains, NM, USA, UTM Zone 17N",
+		"dtm_file" : "Guadalupe_DTM0_res2m_fill_sinks1deg.tif",
+		"data_path" :["..","Data"],		
+		"no_data_values" : [-99999,0],
+        "MEDroi_x_bounds" : [500,2084],
+        "MEDroi_y_bounds" : [1000,2243],  
+        "SMALLroi_x_bounds" : [1000,1250],
+        "SMALLroi_y_bounds" : [2000,2243],  
+        "roi_x_bounds" : [0,2084],
+        "roi_y_bounds" : [0,2243],  
+
+		"basins_file" : "Guadalupe_DTM0_res2m_fill_sinks1deg_watershed3k.tif",
+        "basins" : [701,702],
+		"do_basin_masking" : false
+	},
+	
+	"preprocess": {
+	},
+
+	"trace": {
+	},
+
+	"analysis": {
+		"pdf_sla_min": 1,
+		"Xpdf_sla_max": 1000,
+		"pdf_slc_min": 1,
+		"Xpdf_slc_max": 60000
+	},
+
+	"plot": {
+		"plot_streamline_limit" : 1000,
+
+		"do_plot_streamlines" : true,
+		"do_plot_downstreamlines" : true,
+		"do_plot_upstreamlines" : true,
+
+		"plot_window_size_factor" : 2.7,
+		"plot_window_pdf_size_factor" : 2.7,
+		"plot_window_width" :  3.0,
+		"plot_window_height" : 3.0,
+		"suptitle_y" : 0,
+		
+		"plot_interpolation_method" : "none",
+		
+		"shaded_relief_hillshade_alpha" : 0.3,
+		"shaded_relief_color_alpha" : 0.55,
+		"streamline_shaded_relief_hillshade_alpha" : 1.0,
+		"streamline_shaded_relief_color_alpha" : 0.3,
+		
+		"gradient_vector_color" : "black",
+		"gradient_vector_alpha" : 0.5,
+		"gradient_vector_scale" : 50,
+
+		"streamline_point_marker" : ".",
+		"streamline_point_size" : 0.2,
+		"streamline_point_alpha" : 0.5,
+		
+		"do_plot_distributions": true
+	},
+	
+	"export": {
+		"export_path" : [".","GuadalupeDemo1"],
+		"format" : ["png"],
+		"options" : {
+			"dpi":80, 
+			"bbox_inches":"tight"
+			}
+	}
+}

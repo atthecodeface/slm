@@ -1,0 +1,226 @@
+{
+	"state": {
+		"verbose" : true,
+		"debug" : true,
+		"noisy" : false,
+		"cl_platform" : 0,
+		"cl_device" : 2,
+		"gpu_memory_limit_pc" : 60,
+		"array_order" : "C",
+		
+		"do_geodata" : true,	
+		"do_preprocess" : true,	
+		"do_condition" : true,	
+		"do_trace" : true,	
+		"do_postprocess" : false,	
+		"do_analysis" : false,
+		"do_mapping" : false,
+		"do_plot" : false,	
+		"do_save_state" : false,	
+		"do_export" : false,
+		"do_rw_savez" : false,
+		"do_rw_hdf5" : false,
+
+		"do_reload_state" : false
+	},
+
+	"geodata": {
+		"title" : "Title",
+		"dtm_file" : "GeoTIFF",
+		"data_path" :["..","Data"],		
+		"no_data_values" : [-99999,0],
+		"h_min" : "none",
+		"pad_width" : 1,
+
+		"basins_file" : "",
+		"basins" : [],
+		"do_basin_masking" : false
+	},
+
+	"preprocess": {	
+		"do_simple_gradient_vector_field" : true,
+		"do_normalize_speed" : true,
+		
+		"vecsum_threshold" : 0.95,
+		"divergence_threshold" : -0.5,
+		"Xdivergence_threshold" : -2.9,
+		"curl_threshold" : 0.0
+	},
+
+	"trace": {
+		"subpixel_seed_point_density" : 5,
+		"max_length" : 500.0,
+		"interchannel_max_n_steps" : 200,
+		"integration_halt_threshold" : 0.01,
+		"COARSEintegration_halt_threshold" : 0.05,
+		"IDEALintegration_halt_threshold" : 0.01,
+		"trajectory_resolution" : 128,
+		
+		"jitter_magnitude" : 2.9,
+		"integrator_step_factor" : 0.5,
+		
+		"Ujitter_magnitude" : 2.1,
+		"Uintegrator_step_factor" : 0.5,
+		
+		"Yjitter_magnitude" : 2.0,
+		"Yintegrator_step_factor" : 0.3,
+		"Xjitter_magnitude" : 2.2,
+		"Xintegrator_step_factor" : 0.4,
+		"max_integration_step_error" : 0.03,
+		
+		"do_trace_upstream" : true,
+		"do_trace_downstream" : true,
+		
+		"segmentation_threshold" : 50,
+		"left_flank_addition" : 2147483648
+	},
+
+	"analysis": {
+        "do_marginal_distbn_dsla":   true,
+        "do_marginal_distbn_usla":   true,
+        "do_marginal_distbn_dslt":   true,
+        "do_marginal_distbn_uslt":   false,
+        "do_marginal_distbn_dslc":   false,
+        "do_marginal_distbn_uslc":   false,
+		"marginal_distbn_kde_methods": ["sklearn"],
+		"marginal_distbn_kde_kernel": "gaussian",
+		"marginal_distbn_kde_bw_method" : "scott",
+		"marginal_distbn_kde_bandwidth" : 0.2,
+		"marginal_distbn_kde_nx_samples" : 200,
+		"search_cdf_min" : 0.95,
+		
+		"pdf_slt_min": 0.5,
+        "do_joint_distribn_dsla_dslt": true,
+        "do_joint_distribn_usla_uslt": false,
+        "do_joint_distribn_uslt_dslt": false,
+		"do_joint_distribn_dsla_usla": false,
+        "do_joint_distribn_dsla_dslc": false,
+        "do_joint_distribn_usla_uslc": false,
+        "do_joint_distribn_uslc_dslc": false,
+		"joint_distbn_kde_methods": ["sklearn"],
+		"joint_distbn_kde_kernel": "epanechnikov",
+		"joint_distbn_kde_bw_method" : "scott",
+		"joint_distbn_kde_bandwidth" : 0.4,
+		"joint_distbn_kde_nxy_samples" : 200,
+		"joint_distbn_y_shear_factor": 0.0,
+        "joint_distbn_mode_threshold_list" : [0.9, 0.00001],
+        "joint_distbn_mode2_tilt" : 3,
+		"joint_distbn_mode2_nearness_factor": 30
+	},
+
+	"mapping": {
+		"midslope_filter_sigma" : 3.0,
+		"midslope_threshold" : 0.015,
+		"hillslope_length_median_radius" : 40,
+		"hillslope_length_mean_radius" : 40
+	},
+
+	"plot": {
+		"do_plot_dtm" : false,
+		"do_plot_roi" : false,
+		"do_plot_streamlines" : false,
+		"do_plot_flow_maps" : true,
+		"do_plot_segments" : true,
+		"do_plot_channels" : true,
+		"do_plot_hillslope_lengths" : true,
+		"do_plot_hillslope_lengths_contoured" : true,
+		"do_plot_hillslope_distributions" : true,
+
+		"do_plot_downstreamlines" : true,
+		"do_plot_upstreamlines" : true,
+		"do_plot_seed_points" : false,
+		"do_plot_flow_vectors" : false,
+		"do_plot_blockages" : false,
+		"do_plot_loops" : false,
+		
+		"plot_interpolation_method" : "nearest",
+		"plot_streamline_limit" : 1500,
+		
+		"do_plot_color_shaded_relief" : true,
+		"do_plot_curvature_roi" : false,
+		"do_plot_colorized_streamlines" : false,
+		"do_plot_merged_streamline_density_bands" : false,
+							
+		
+		"plot_window_size_factor" : 2.7,
+		"plot_window_pdf_size_factor" : 2.7,
+		"plot_window_width" :  3.0,
+		"plot_window_height" : 3.0,
+		"suptitle_y" : 0,
+		
+		"hillshade_azimuth" : 135,
+		"hillshade_angle" : 25,
+		
+		"downstreamline_color" : "blue",
+		"upstreamline_color" : "red",
+		
+		"streamline_point_marker" : "-",
+		"streamline_point_size" : 0.5,
+		"streamline_point_alpha" : 0.7,
+
+		"shaded_relief_hillshade_alpha" : 0.3,
+		"shaded_relief_color_alpha" : 0.55,
+		"streamline_shaded_relief_hillshade_alpha" : 1.0,
+		"streamline_shaded_relief_color_alpha" : 0.3,
+		"streamline_density_alpha" : 0.5,
+		"streamline_density_cmap" : "YlGnBu",
+		
+		"grid_shaded_relief_hillshade_alpha" : 1.0,
+		"grid_shaded_relief_color_alpha" : 0.3,
+		
+		"seed_point_marker" : "H",
+		"seed_point_marker_size" : 5,
+		"seed_point_marker_color" : "indigo",
+		"seed_point_marker_alpha" : 0.7,
+		
+		"channel_head_marker" : ".",
+		"channel_head_marker_sizes" : [10,13],
+		"channel_head_marker_colors" : ["cyan","darkblue"],
+		"channel_head_marker_alpha" : 0.8,
+		"channel_shaded_relief_hillshade_alpha" : 0.5,
+		
+		"gradient_vector_color" : "black",
+		"gradient_vector_alpha" : 0.8,
+		"gradient_vector_scale" : "none",
+	
+		"blockage_marker_size" : 20,
+		"loops_marker_size" : 20,
+		
+		"classical_streamplot_density" : 1.0,
+
+		"terrain_cmap" : "terrain",
+		"shuffle_random_seed" : 1,
+		"random_cmap_seed" : 1,
+		
+		"do_plot_distributions": true,
+        "do_plot_marginal_pdf_dsla":   false,
+        "do_plot_marginal_pdf_usla":   false,
+        "do_plot_marginal_pdf_dslt":   true,
+        "do_plot_marginal_pdf_uslt":   false,
+        "do_plot_marginal_pdf_dslc":   false,
+        "do_plot_marginal_pdf_uslc":   false,
+		"do_plot_joint_pdf_dsla_usla": false,
+        "do_plot_joint_pdf_dsla_dslt": true,
+        "do_plot_joint_pdf_usla_uslt": false,
+        "do_plot_joint_pdf_uslt_dslt": false,
+        "do_plot_joint_pdf_dsla_dslc": false,
+        "do_plot_joint_pdf_usla_uslc": false,
+        "do_plot_joint_pdf_uslc_dslc": false,
+		"joint_distbn_n_contours" : 25,
+        "joint_distbn_markers" : [["+","crimson",19,4,"w+",17,2,"r.",2,1.0],
+        						  ["x","blue",   16,4,"wx",14,2,"k.",2,0.4]],
+        "marginal_distbn_viz_tilt":  0.5,
+        "marginal_distbn_viz_scale": 0.5,
+        "joint_distbn_viz_tilt":  0.0,
+        "joint_distbn_viz_scale": 0.25
+	},
+
+	"export": {
+		"export_path" : ["."],	
+		"format" : ["png"],
+		"options" : {
+			"dpi":75, 
+			"bbox_inches":"tight"
+			}
+	}
+}

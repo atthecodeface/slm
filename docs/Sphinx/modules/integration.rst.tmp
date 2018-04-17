@@ -1,0 +1,15 @@
+``integration.py`` 
+==================
+
+
+Usage
+-------
+.. automodule:: streamlines.integration
+   :members: 
+   :private-members:
+
+
+Code
+-------
+
+.. literalinclude:: ../../streamlines/integration.py

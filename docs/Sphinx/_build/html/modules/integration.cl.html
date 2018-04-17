@@ -1,0 +1,245 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>integration.cl &#8212; Streamlines  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="connect.cl" href="connect.cl.html" />
+    <link rel="prev" title="lengths.py" href="lengths.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="integration-cl">
+<h1><code class="docutils literal notranslate"><span class="pre">integration.cl</span></code><a class="headerlink" href="#integration-cl" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="c1">///</span>
+<span class="c1">/// @file integration.cl</span>
+<span class="c1">///</span>
+<span class="c1">/// Streamline trajectory integration kernel and related tracing functions.</span>
+<span class="c1">///</span>
+<span class="c1">/// @author CPS</span>
+<span class="c1">///</span>
+<span class="c1">/// @todo Fix big-DTM crash issue</span>
+<span class="c1">/// @todo Perhaps use compiler directive volatile where variables not const?</span>
+<span class="c1">/// @todo Update doc about trajectory integration to describe subpixel seeding &amp; jittering</span>
+<span class="c1">///</span>
+<span class="c1">/// @bug Crashes (reported as &#39;abort 6&#39; by PyOpenCL) occur for very large DTMs.</span>
+<span class="c1">///      The reason remains obscure: it may be because of GPU timeout, but more likely</span>
+<span class="c1">///      is because of a memory leakage.</span>
+<span class="c1">///</span>
+<span class="c1">///</span>
+
+<span class="c1">///</span>
+<span class="c1">/// @defgroup kernels OpenCL kernels</span>
+<span class="c1">/// Kernels built and executed from Python using PyOpenCL</span>
+<span class="c1">///</span>
+
+<span class="c1">///</span>
+<span class="c1">/// Byte reversal</span>
+<span class="c1">///</span>
+<span class="c1">/// Macro to perform byte reversal per GJS&#39;s suggestion.</span>
+<span class="c1">///</span>
+<span class="c1">/// @param[in,out] initial_rng_state: RNG state (thus initally the seed) and RNG variate</span>
+<span class="c1">///</span>
+<span class="cp">#define BYTE_REVERSAL(initial_rng_state) \</span>
+<span class="cp">    initial_rng_state =   (initial_rng_state&gt;&gt;24)&amp;0xff \</span>
+<span class="cp">                        | (initial_rng_state&gt;&gt; 8)&amp;0xff00 \</span>
+<span class="cp">                        | (initial_rng_state&lt;&lt; 8)&amp;0xff0000 \</span>
+<span class="cp">                        | (initial_rng_state&lt;&lt;24)&amp;0xff000000;</span>
+
+
+
+<span class="c1">///</span>
+<span class="c1">/// Initialize the Lehmer random number generator</span>
+<span class="c1">///</span>
+<span class="c1">/// Macro to scramble the initial RNG state to reduce correlation of</span>
+<span class="c1">///    neighboring streamline jitters</span>
+<span class="c1">///</span>
+<span class="c1">/// @param[in,out] initial_rng_state: RNG state (thus initally the seed) and RNG variate</span>
+<span class="c1">///</span>
+<span class="cp">#define INITIALIZE_RNG(initial_rng_state) \</span>
+<span class="cp">    initial_rng_state = i+(j+seed_idx); \</span>
+<span class="cp">    </span><span class="cm">/*initial_rng_state = i+(j+seed_idx*SUBPIXEL_SEED_POINT_DENSITY)\</span>
+<span class="cm">     * *SUBPIXEL_SEED_POINT_DENSITY;*/</span><span class="cp"> \</span>
+<span class="cp">    BYTE_REVERSAL(initial_rng_state); \</span>
+<span class="cp">    lehmer_rand_uint(&amp;initial_rng_state); \</span>
+<span class="cp">    BYTE_REVERSAL(initial_rng_state);</span>
+
+<span class="cp">#ifdef KERNEL_INTEGRATE_TRAJECTORY</span>
+<span class="c1">///</span>
+<span class="c1">/// GPU kernel that drives streamline integration from seed positions</span>
+<span class="c1">/// given in @p seed_point_array, controlled by the &#39;flow&#39; vector field</span>
+<span class="c1">/// given in @p uv_array, and either terminated at pixels masked in</span>
+<span class="c1">/// mask_array or because a streamline exceeds a threshold</span>
+<span class="c1">/// distance (length or number of integration points) given by parameters</span>
+<span class="c1">/// stored in info. Further integration parameters are provided in this struct.</span>
+<span class="c1">///</span>
+<span class="c1">/// The kernel acts on one seed point only. It chooses this seed point</span>
+<span class="c1">/// by computing a global id and using it to index the @p seed_point_array.</span>
+<span class="c1">/// UPDATE: now doing sub-pixel streamlines as a set per seed point... need to doc here</span>
+<span class="c1">///</span>
+<span class="c1">/// Each streamline trajectory is returned in the appropriate location</span>
+<span class="c1">/// in @p trajectories_array as a list of compressed-into-byte dx,dy values.</span>
+<span class="c1">///</span>
+<span class="c1">/// Compiled if KERNEL_INTEGRATE_TRAJECTORY is defined.</span>
+<span class="c1">///</span>
+<span class="c1">/// @param[in]  seed_point_array: list of initial streamline point vectors,</span>
+<span class="c1">///                               one allotted to each kernel instance</span>
+<span class="c1">/// @param[in]  mask_array: grid pixel mask (padded),</span>
+<span class="c1">///                         with @p true = masked, @p false = good</span>
+<span class="c1">/// @param[in]  uv_array: flow unit velocity vector grid (padded)</span>
+<span class="c1">/// @param[out] trajectories_array: lists of streamline trajectories, stored as</span>
+<span class="c1">///                                 compressed-into-byte dx,dy vector sequences;</span>
+<span class="c1">///                                 one list per @p seed_point_array vector</span>
+<span class="c1">/// @param[out] traj_nsteps_array: list of number of steps along each trajectory;</span>
+<span class="c1">///                                 one per @p seed_point_array vector</span>
+<span class="c1">/// @param[out] traj_length_array: list of lengths of each trajectory;</span>
+<span class="c1">///                                 one per @p seed_point_array vector</span>
+<span class="c1">/// @param[out] slc_array: grid recording accumulated count of streamline integration</span>
+<span class="c1">///                        steps across each pixel (padded)</span>
+<span class="c1">/// @param[out] slt_array: grid recording accumulated count of streamline segment lengths</span>
+<span class="c1">///                        crossing each pixel (padded)</span>
+<span class="c1">///</span>
+<span class="c1">/// @returns void</span>
+<span class="c1">///</span>
+<span class="c1">/// @ingroup kernels integrate</span>
+<span class="c1">///</span>
+<span class="n">__kernel</span> <span class="kt">void</span> <span class="nf">integrate_trajectory</span><span class="p">(</span> <span class="n">__global</span> <span class="k">const</span> <span class="n">float2</span> <span class="o">*</span><span class="n">seed_point_array</span><span class="p">,</span>
+                                    <span class="n">__global</span> <span class="k">const</span> <span class="kt">bool</span>   <span class="o">*</span><span class="n">mask_array</span><span class="p">,</span>
+                                    <span class="n">__global</span> <span class="k">const</span> <span class="n">float2</span> <span class="o">*</span><span class="n">uv_array</span><span class="p">,</span>
+                                    <span class="n">__global</span>       <span class="n">char2</span>  <span class="o">*</span><span class="n">trajectories_array</span><span class="p">,</span>
+                                    <span class="n">__global</span>       <span class="n">ushort</span> <span class="o">*</span><span class="n">traj_nsteps_array</span><span class="p">,</span>
+                                    <span class="n">__global</span>       <span class="kt">float</span>  <span class="o">*</span><span class="n">traj_length_array</span><span class="p">,</span>
+                                    <span class="n">__global</span>       <span class="n">uint</span>   <span class="o">*</span><span class="n">slc_array</span><span class="p">,</span>
+                                    <span class="n">__global</span>       <span class="n">uint</span>   <span class="o">*</span><span class="n">slt_array</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// global_id plus the chunk SEEDS_CHUNK_OFFSET is a seed point index</span>
+    <span class="k">const</span> <span class="n">uint</span> <span class="n">global_id</span> <span class="o">=</span> <span class="n">get_global_id</span><span class="p">(</span><span class="mi">0u</span><span class="p">)</span><span class="o">+</span><span class="n">get_global_id</span><span class="p">(</span><span class="mi">1u</span><span class="p">)</span><span class="o">*</span><span class="n">get_global_size</span><span class="p">(</span><span class="mi">0u</span><span class="p">),</span>
+               <span class="n">seed_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">SEEDS_CHUNK_OFFSET</span><span class="p">)</span><span class="o">+</span><span class="n">global_id</span><span class="p">,</span>
+               <span class="n">trajectory_index</span> <span class="o">=</span> <span class="n">global_id</span><span class="o">*</span><span class="p">(</span><span class="n">MAX_N_STEPS</span><span class="p">);</span>
+    <span class="k">const</span> <span class="n">float2</span> <span class="n">current_seed_point_vec</span> <span class="o">=</span> <span class="n">seed_point_array</span><span class="p">[</span><span class="n">seed_idx</span><span class="p">];</span>
+    <span class="n">__global</span> <span class="n">char2</span> <span class="o">*</span><span class="n">trajectory_vec</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">trajectories_array</span><span class="p">[</span><span class="n">trajectory_index</span><span class="p">];</span>
+    <span class="n">__private</span> <span class="n">uint</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span> <span class="n">initial_rng_state</span><span class="p">;</span>
+
+    <span class="c1">// Report how kernel instances are distributed</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">seed_idx</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;On GPU/OpenCL device: #workitems=%d  #workgroups=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+                <span class="n">get_local_size</span><span class="p">(</span><span class="mi">0u</span><span class="p">),</span> <span class="n">get_num_groups</span><span class="p">(</span><span class="mi">0u</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Trace a &quot;smooth&quot; streamline from the seed point coordinate</span>
+    <span class="n">trajectory_record</span><span class="p">(</span> <span class="n">uv_array</span><span class="p">,</span> <span class="n">mask_array</span><span class="p">,</span> <span class="n">traj_nsteps_array</span><span class="p">,</span> <span class="n">traj_length_array</span><span class="p">,</span>
+                       <span class="n">trajectory_vec</span><span class="p">,</span> <span class="n">global_id</span><span class="p">,</span> <span class="n">seed_idx</span><span class="p">,</span>
+                       <span class="n">seed_point_array</span><span class="p">[</span><span class="n">seed_idx</span><span class="p">]);</span>
+
+    <span class="c1">// Trace a set of streamlines from a grid of sub-pixel positions centered</span>
+    <span class="c1">//    on the seed point</span>
+    <span class="c1">// Generate an initial RNG state (aka &#39;seed the RNG&#39;)</span>
+    <span class="c1">//   [was: using the sum of the current pixel index and the sub-pixel index]</span>
+    <span class="c1">//   using the current pixel index (&quot;seed_idx&quot;)</span>
+    <span class="c1">//   byte-reversed per GJS suggestion</span>
+    <span class="n">INITIALIZE_RNG</span><span class="p">(</span><span class="n">initial_rng_state</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0u</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="n">SUBPIXEL_SEED_POINT_DENSITY</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0u</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">SUBPIXEL_SEED_POINT_DENSITY</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+            <span class="c1">// Trace a jittered streamline from a sub-pixel-offset first point</span>
+            <span class="n">trajectory_jittered</span><span class="p">(</span><span class="n">uv_array</span><span class="p">,</span> <span class="n">mask_array</span><span class="p">,</span> <span class="n">slc_array</span><span class="p">,</span> <span class="n">slt_array</span><span class="p">,</span>
+                               <span class="n">global_id</span><span class="p">,</span> <span class="n">seed_idx</span><span class="p">,</span>
+                               <span class="n">current_seed_point_vec</span> <span class="o">+</span> <span class="p">(</span><span class="n">float2</span><span class="p">)(</span>
+                                    <span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">i</span><span class="o">*</span><span class="n">SUBPIXEL_SEED_STEP</span><span class="o">-</span><span class="n">SUBPIXEL_SEED_HALFSPAN</span><span class="p">,</span>
+                                    <span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">j</span><span class="o">*</span><span class="n">SUBPIXEL_SEED_STEP</span><span class="o">-</span><span class="n">SUBPIXEL_SEED_HALFSPAN</span> <span class="p">),</span>
+                               <span class="n">initial_rng_state</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">Streamlines</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Analyzing the structure of topographic drainage</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
+<h3>Related</h3>
+<ul>
+  <li><a href="../index.html"></a><ul>
+      <li><a href="lengths.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">lengths.py</span></code></a></li>
+      <li><a href="connect.cl.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">connect.cl</span></code></a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, CPS.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/modules/integration.cl.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
