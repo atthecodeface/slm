@@ -1,0 +1,183 @@
+<toc label="slm" topic="index.html">
+  <topic label="README" href="index.html"/>
+  <topic label="Todo List" href="todo.html"/>
+  <topic label="Bug List" href="bug.html"/>
+  <topic label="Modules" href="modules.html">
+    <topic label="Connectivity structure" href="group__structure.html">
+      <topic label="connect_channels" href="group__structure.html#ga1b046b4a2dda78279da8dcccf61e5e15"/>
+      <topic label="count_downchannels" href="group__structure.html#ga1f6f108a1717610d2988046a3dc04315"/>
+      <topic label="label_confluences" href="group__structure.html#gaf8c61ddceb0b67180fc58ae155548e1a"/>
+      <topic label="link_hillslopes" href="group__structure.html#ga8d6b534817a135ff5ace45f3fc9f8beb"/>
+      <topic label="map_channel_heads" href="group__structure.html#gaaae698cca4f7472417e66fd0c0f62f35"/>
+      <topic label="prune_channel_heads" href="group__structure.html#ga035332b3153898e70fcac0e461e8f354"/>
+      <topic label="push_to_exit" href="group__structure.html#gab8409b87fdc1529c97cf54404bc90a6f"/>
+    </topic>
+    <topic label="Utility functions" href="group__utilities.html">
+      <topic label="approximate" href="group__utilities.html#ga7bf139c7ddaa6c4a74522b5e3b41159a"/>
+      <topic label="compress" href="group__utilities.html#gaaf9e48f0cabb7a5e6564668fcd185da2"/>
+      <topic label="dt_to_nearest_edge" href="group__utilities.html#ga3edad0b9e5ebd027d00605af5be31af3"/>
+      <topic label="get_array_idx" href="group__utilities.html#ga5700335edf5a80c9ff1e6fe885cacce0"/>
+      <topic label="lehmer_rand_uint" href="group__utilities.html#gad97320dc20e10075bac4c86d831eddcd"/>
+      <topic label="lehmer_rand_vec" href="group__utilities.html#ga77143f8c65ff2a95f8cc9b5a2a8c3cf2"/>
+      <topic label="speed_interpolator" href="group__utilities.html#gab8ffb74356cafeb7deb7abb0f08aebfe"/>
+      <topic label="uncompress" href="group__utilities.html#ga10a7f12af825614a5cc6e18cfd5661c3"/>
+    </topic>
+    <topic label="OpenCL kernels" href="group__kernels.html">
+    </topic>
+    <topic label="Streamline integration functions" href="group__integrationfns.html">
+      <topic label="channelheads_runge_kutta_step" href="group__integrationfns.html#gadcd00b67baaba288308ac539c0d1865a"/>
+      <topic label="connect_kutta_step_record" href="group__integrationfns.html#ga567201f04a71a75ac1a644be1aa0ea1b"/>
+      <topic label="countlink_runge_kutta_step" href="group__integrationfns.html#gafcc7c6e371b0d612fa53d225b3e817ce"/>
+      <topic label="euler_step_record" href="group__integrationfns.html#ga23f8c5971b9e151c30b9d317e12eb205"/>
+      <topic label="euler_step_write_sl_data" href="group__integrationfns.html#ga9f623412bdf71c1dbfbc96238410aaab"/>
+      <topic label="lengths_runge_kutta_step" href="group__integrationfns.html#ga035c6bc97c8433514e83b8c06cc8a8e5"/>
+      <topic label="runge_kutta_step_record" href="group__integrationfns.html#gaaecec4f2a2f408e1900d3fe1c74b5564"/>
+      <topic label="runge_kutta_step_write_sl_data" href="group__integrationfns.html#ga5c6e160622f8f2ae7e475ba6bbca93e2"/>
+      <topic label="segment_runge_kutta_step" href="group__integrationfns.html#gaa1adcee8c81cbc235795cc5b28d0b875"/>
+    </topic>
+    <topic label="Hillslope lengths" href="group__lengths.html">
+      <topic label="hillslope_lengths" href="group__lengths.html#gad80f7b1cb8991edcae8a4fff28d30dde"/>
+    </topic>
+    <topic label="Channel and hillslope segmentation" href="group__segmentation.html">
+      <topic label="segment_hillslopes" href="group__segmentation.html#gac33413c7a084e465caee330d2b1cbce6"/>
+      <topic label="subsegment_channel_edges" href="group__segmentation.html#gac719d4900dc8a990c7c6e450186b27d8"/>
+      <topic label="subsegment_flanks" href="group__segmentation.html#gaba0cfb6bc4bf29f287a4ed0e2ee52943"/>
+    </topic>
+    <topic label="Streamline integration" href="group__integrate.html">
+      <topic label="integrate_trajectory" href="group__integrate.html#gafc355ec83dd13819d9805df93459ae4f"/>
+      <topic label="trajectory_jittered" href="group__integrate.html#ga1cac4ae2a97e70dfd2ce199f47babdda"/>
+      <topic label="trajectory_record" href="group__integrate.html#gaa24b212d74a2d5d9807e4e035d80a779"/>
+    </topic>
+    <topic label="Trajectory stepping and recording functions" href="group__trajectoryfns.html">
+      <topic label="atomic_write_sl_data" href="group__trajectoryfns.html#ga2e50e8e36dfa1baa153c943dec5963d2"/>
+      <topic label="check_atomic_write_sl_data" href="group__trajectoryfns.html#gae3f9144f7c46193372392c735ffb97cb"/>
+      <topic label="compute_step_vec" href="group__trajectoryfns.html#ga0703283bcf8a1103a79cb05b588fd7f9"/>
+      <topic label="compute_step_vec_jittered" href="group__trajectoryfns.html#gab0553783468d443cb59eb5d5587996e2"/>
+      <topic label="finalize_trajectory" href="group__trajectoryfns.html#gaed3e81bb1dd1b28db6e78a7d268fabaf"/>
+      <topic label="update_record_private_trajectory" href="group__trajectoryfns.html#gada6c810d136f72e75ffe039ed8d79c7c"/>
+      <topic label="update_record_trajectory" href="group__trajectoryfns.html#ga5ceba65c0873dcd6ca096205bfd19b0f"/>
+      <topic label="update_record_trajectory_write_sl_data" href="group__trajectoryfns.html#gae763ca5237c9339f92efe53f06bf01a6"/>
+      <topic label="update_trajectory" href="group__trajectoryfns.html#gab40c6dfbb0a2de0a13131690a7deb847"/>
+      <topic label="update_trajectory_write_sl_data" href="group__trajectoryfns.html#ga29992d0b14449d4b91c82670826c7ef6"/>
+    </topic>
+  </topic>
+  <topic label="Files">
+    <topic label="File List" href="files.html">
+      <topic label="channelheads.cl" href="channelheads_8cl.html">
+        <topic label="CHECK_E" href="channelheads_8cl.html#a4fa3349984a7cbecf352598e113b7ea4"/>
+        <topic label="CHECK_IS_MASKED" href="channelheads_8cl.html#a3ea4900c44ac4fdaf7a0011e02686638"/>
+        <topic label="CHECK_IS_THINCHANNEL" href="channelheads_8cl.html#a6475d0a5478756335f4f564598db3b6e"/>
+        <topic label="CHECK_N" href="channelheads_8cl.html#a95f7a499f5625b4826a792f89f6a082d"/>
+        <topic label="CHECK_NE" href="channelheads_8cl.html#ac1bb906e35cb6af5d0f29c635ba93f8f"/>
+        <topic label="CHECK_NW" href="channelheads_8cl.html#a02ea108eda3160f9095f854ca149879b"/>
+        <topic label="CHECK_S" href="channelheads_8cl.html#ae4a8eb73619eaf7418b98f8a4d539a56"/>
+        <topic label="CHECK_SE" href="channelheads_8cl.html#ac89ca4774eb27eb5588409f07d4641f3"/>
+        <topic label="CHECK_SW" href="channelheads_8cl.html#a61c2947f18737d1f32567e3627bff928"/>
+        <topic label="CHECK_THINCHANNEL" href="channelheads_8cl.html#a8710f8231d521aba3dc8127305a735a9"/>
+        <topic label="CHECK_W" href="channelheads_8cl.html#a22071f7841e19e3caee68dc40a102a7b"/>
+        <topic label="map_channel_heads" href="group__structure.html#gaaae698cca4f7472417e66fd0c0f62f35"/>
+        <topic label="prune_channel_heads" href="group__structure.html#ga035332b3153898e70fcac0e461e8f354"/>
+      </topic>
+      <topic label="computestep.cl" href="computestep_8cl.html">
+        <topic label="compute_step_vec" href="group__trajectoryfns.html#ga0703283bcf8a1103a79cb05b588fd7f9"/>
+        <topic label="compute_step_vec_jittered" href="group__trajectoryfns.html#gab0553783468d443cb59eb5d5587996e2"/>
+      </topic>
+      <topic label="connect.cl" href="connect_8cl.html">
+        <topic label="CHECK_E_EXIT" href="connect_8cl.html#acda35a5fcc3dbfc5914a133aca55956f"/>
+        <topic label="CHECK_E_TAIL" href="connect_8cl.html#a7e67145b191ed3c417d4a9915e0c8110"/>
+        <topic label="CHECK_EXIT" href="connect_8cl.html#aee9c303a728ca0e147971fe7ffd146b6"/>
+        <topic label="CHECK_N_EXIT" href="connect_8cl.html#a8d1b449d8ab255890796a11b971feaaa"/>
+        <topic label="CHECK_N_TAIL" href="connect_8cl.html#a2e53806a0deed3bd815eedc20242725e"/>
+        <topic label="CHECK_NE_EXIT" href="connect_8cl.html#af9d7e06a07600ab344a4a20c0c2fd829"/>
+        <topic label="CHECK_NE_TAIL" href="connect_8cl.html#ad9bfd28a30222a6e0bd3b6a2f83ea1ea"/>
+        <topic label="CHECK_NW_EXIT" href="connect_8cl.html#a55b02f0f717d4c8494ccfafc6a9ffed9"/>
+        <topic label="CHECK_NW_TAIL" href="connect_8cl.html#a26af359af798c951dba920f77a6f87dc"/>
+        <topic label="CHECK_S_EXIT" href="connect_8cl.html#aa9de00389a53969e770762c60bc24782"/>
+        <topic label="CHECK_S_TAIL" href="connect_8cl.html#ac128f4fabf1d197b3b6d1d7853d77710"/>
+        <topic label="CHECK_SE_EXIT" href="connect_8cl.html#afad53898fea998ecbadd85f75dfe3337"/>
+        <topic label="CHECK_SE_TAIL" href="connect_8cl.html#ab67ed39c395f5e4fd8a003b267456a8d"/>
+        <topic label="CHECK_SW_EXIT" href="connect_8cl.html#afa37012219f0e443e85eb9d8c75f8382"/>
+        <topic label="CHECK_SW_TAIL" href="connect_8cl.html#a6a065147dd2f550996bc51ae682280db"/>
+        <topic label="CHECK_TAIL" href="connect_8cl.html#a1acf187ee5d872c0773ae0f18cca2f3c"/>
+        <topic label="CHECK_W_EXIT" href="connect_8cl.html#a670f01b2e25d052ac466dea068082810"/>
+        <topic label="CHECK_W_TAIL" href="connect_8cl.html#a97d7785f6a333df7ca5fa90223747292"/>
+        <topic label="connect_channels" href="group__structure.html#ga1b046b4a2dda78279da8dcccf61e5e15"/>
+        <topic label="push_to_exit" href="group__structure.html#gab8409b87fdc1529c97cf54404bc90a6f"/>
+      </topic>
+      <topic label="countlink.cl" href="countlink_8cl.html">
+        <topic label="count_downchannels" href="group__structure.html#ga1f6f108a1717610d2988046a3dc04315"/>
+        <topic label="link_hillslopes" href="group__structure.html#ga8d6b534817a135ff5ace45f3fc9f8beb"/>
+      </topic>
+      <topic label="essentials.cl" href="essentials_8cl.html">
+        <topic label="approximate" href="group__utilities.html#ga7bf139c7ddaa6c4a74522b5e3b41159a"/>
+        <topic label="compress" href="group__utilities.html#gaaf9e48f0cabb7a5e6564668fcd185da2"/>
+        <topic label="dt_to_nearest_edge" href="group__utilities.html#ga3edad0b9e5ebd027d00605af5be31af3"/>
+        <topic label="get_array_idx" href="group__utilities.html#ga5700335edf5a80c9ff1e6fe885cacce0"/>
+        <topic label="speed_interpolator" href="group__utilities.html#gab8ffb74356cafeb7deb7abb0f08aebfe"/>
+        <topic label="uncompress" href="group__utilities.html#ga10a7f12af825614a5cc6e18cfd5661c3"/>
+      </topic>
+      <topic label="integration.cl" href="integration_8cl.html">
+        <topic label="BYTE_REVERSAL" href="integration_8cl.html#affea0134fda21156861844681ddf1dab"/>
+        <topic label="INITIALIZE_RNG" href="integration_8cl.html#a218a217b80b23b0e2e864733ac5d1c65"/>
+        <topic label="integrate_trajectory" href="group__integrate.html#gafc355ec83dd13819d9805df93459ae4f"/>
+      </topic>
+      <topic label="integrationfns.cl" href="integrationfns_8cl.html">
+        <topic label="channelheads_runge_kutta_step" href="group__integrationfns.html#gadcd00b67baaba288308ac539c0d1865a"/>
+        <topic label="connect_kutta_step_record" href="group__integrationfns.html#ga567201f04a71a75ac1a644be1aa0ea1b"/>
+        <topic label="countlink_runge_kutta_step" href="group__integrationfns.html#gafcc7c6e371b0d612fa53d225b3e817ce"/>
+        <topic label="euler_step_record" href="group__integrationfns.html#ga23f8c5971b9e151c30b9d317e12eb205"/>
+        <topic label="euler_step_write_sl_data" href="group__integrationfns.html#ga9f623412bdf71c1dbfbc96238410aaab"/>
+        <topic label="lengths_runge_kutta_step" href="group__integrationfns.html#ga035c6bc97c8433514e83b8c06cc8a8e5"/>
+        <topic label="runge_kutta_step_record" href="group__integrationfns.html#gaaecec4f2a2f408e1900d3fe1c74b5564"/>
+        <topic label="runge_kutta_step_write_sl_data" href="group__integrationfns.html#ga5c6e160622f8f2ae7e475ba6bbca93e2"/>
+        <topic label="segment_runge_kutta_step" href="group__integrationfns.html#gaa1adcee8c81cbc235795cc5b28d0b875"/>
+      </topic>
+      <topic label="label.cl" href="label_8cl.html">
+        <topic label="CHECK_E_INFLOWS" href="label_8cl.html#aa685fe188a88f0a370cf36adb08ccdc2"/>
+        <topic label="CHECK_INFLOWS" href="label_8cl.html#a3ba68d86fe4ca9e640aff442467bb9fd"/>
+        <topic label="CHECK_N_INFLOWS" href="label_8cl.html#a5ee58e0bc7a974685aed3fb9ede4be6b"/>
+        <topic label="CHECK_NE_INFLOWS" href="label_8cl.html#a6b1d422218cb96e79a75bfef2d90d01f"/>
+        <topic label="CHECK_NW_INFLOWS" href="label_8cl.html#a915fbdccce907b92e1e3ea22ea66cc0d"/>
+        <topic label="CHECK_S_INFLOWS" href="label_8cl.html#ae83aaa6435a4ba1d5ac6933c04e3bf3f"/>
+        <topic label="CHECK_SE_INFLOWS" href="label_8cl.html#a85cc87dd35392bf42030f943324b5b20"/>
+        <topic label="CHECK_SW_INFLOWS" href="label_8cl.html#abe6dd514e5bf45accd1f5b26de1b051f"/>
+        <topic label="CHECK_W_INFLOWS" href="label_8cl.html#a1b5143b419ab9021a4ecb7bb222ba268"/>
+        <topic label="label_confluences" href="group__structure.html#gaf8c61ddceb0b67180fc58ae155548e1a"/>
+      </topic>
+      <topic label="lengths.cl" href="lengths_8cl.html">
+        <topic label="hillslope_lengths" href="group__lengths.html#gad80f7b1cb8991edcae8a4fff28d30dde"/>
+      </topic>
+      <topic label="rng.cl" href="rng_8cl.html">
+        <topic label="IS_RNG_AVAILABLE" href="rng_8cl.html#ab9831667ba29fbfc9b35bd1da4b30f09"/>
+        <topic label="lehmer_rand_uint" href="group__utilities.html#gad97320dc20e10075bac4c86d831eddcd"/>
+        <topic label="lehmer_rand_vec" href="group__utilities.html#ga77143f8c65ff2a95f8cc9b5a2a8c3cf2"/>
+      </topic>
+      <topic label="segment.cl" href="segment_8cl.html">
+        <topic label="segment_hillslopes" href="group__segmentation.html#gac33413c7a084e465caee330d2b1cbce6"/>
+        <topic label="subsegment_channel_edges" href="group__segmentation.html#gac719d4900dc8a990c7c6e450186b27d8"/>
+        <topic label="subsegment_flanks" href="group__segmentation.html#gaba0cfb6bc4bf29f287a4ed0e2ee52943"/>
+      </topic>
+      <topic label="trajectory.cl" href="trajectory_8cl.html">
+        <topic label="trajectory_jittered" href="group__integrate.html#ga1cac4ae2a97e70dfd2ce199f47babdda"/>
+        <topic label="trajectory_record" href="group__integrate.html#gaa24b212d74a2d5d9807e4e035d80a779"/>
+      </topic>
+      <topic label="trajectoryfns.cl" href="trajectoryfns_8cl.html">
+        <topic label="finalize_trajectory" href="group__trajectoryfns.html#gaed3e81bb1dd1b28db6e78a7d268fabaf"/>
+        <topic label="update_record_private_trajectory" href="group__trajectoryfns.html#gada6c810d136f72e75ffe039ed8d79c7c"/>
+        <topic label="update_record_trajectory" href="group__trajectoryfns.html#ga5ceba65c0873dcd6ca096205bfd19b0f"/>
+        <topic label="update_record_trajectory_write_sl_data" href="group__trajectoryfns.html#gae763ca5237c9339f92efe53f06bf01a6"/>
+        <topic label="update_trajectory" href="group__trajectoryfns.html#gab40c6dfbb0a2de0a13131690a7deb847"/>
+        <topic label="update_trajectory_write_sl_data" href="group__trajectoryfns.html#ga29992d0b14449d4b91c82670826c7ef6"/>
+      </topic>
+      <topic label="writearray.cl" href="writearray_8cl.html">
+        <topic label="atomic_write_sl_data" href="group__trajectoryfns.html#ga2e50e8e36dfa1baa153c943dec5963d2"/>
+        <topic label="check_atomic_write_sl_data" href="group__trajectoryfns.html#gae3f9144f7c46193372392c735ffb97cb"/>
+      </topic>
+    </topic>
+    <topic label="Globals" href="globals.html">
+      <topic label="All" href="globals.html"/>
+      <topic label="Functions" href="globals_func.html"/>
+      <topic label="Macros" href="globals_defs.html"/>
+    </topic>
+  </topic>
+</toc>

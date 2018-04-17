@@ -1,0 +1,598 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pocl.py &#8212; Streamlines  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="useful.py" href="useful.html" />
+    <link rel="prev" title="state.py" href="state.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pocl-py">
+<h1><code class="docutils literal notranslate"><span class="pre">pocl.py</span></code><a class="headerlink" href="#pocl-py" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-streamlines.pocl">
+<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.pocl" title="Permalink to this headline">¶</a></h2>
+<p>Prep PyOpenCL kernel</p>
+<dl class="function">
+<dt id="streamlines.pocl.prepare_cl">
+<code class="descclassname">streamlines.pocl.</code><code class="descname">prepare_cl</code><span class="sig-paren">(</span><em>cl_platform=0</em>, <em>cl_device=2</em>, <em>cl_kernel_source=None</em>, <em>compile_options=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.prepare_cl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare PyOpenCL stuff.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
+<li><strong>cl_kernel_source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – OpenCL kernel code string</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">PyOpenCL platform, PyOpenCL device, PyOpenCL context, PyOpenCL program,             PyOpenCL command queue</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Platform" title="(in PyOpenCL v2018.1.1)">pyopencl.Platform</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)">pyopencl.Device</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)">pyopencl.Context</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Program" title="(in PyOpenCL v2018.1.1)">pyopencl.Program</a>,         <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_queue.html#pyopencl.CommandQueue" title="(in PyOpenCL v2018.1.1)">pyopencl.CommandQueue</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.pocl.choose_platform_and_device">
+<code class="descclassname">streamlines.pocl.</code><code class="descname">choose_platform_and_device</code><span class="sig-paren">(</span><em>cl_platform='env'</em>, <em>cl_device='env'</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.choose_platform_and_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get OpenCL platform &amp; device from environment variables if they are set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cl_platform</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
+<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">CL platform, CL device</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)">int</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.pocl.prepare_cl_context">
+<code class="descclassname">streamlines.pocl.</code><code class="descname">prepare_cl_context</code><span class="sig-paren">(</span><em>cl_platform=0</em>, <em>cl_device=2</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.prepare_cl_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare PyOpenCL platform, device and context.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cl_platform</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
+<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">PyOpenCL platform, PyOpenCL device, PyOpenCL context</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Platform" title="(in PyOpenCL v2018.1.1)">pyopencl.Platform</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)">pyopencl.Device</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)">pyopencl.Context</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.pocl.prepare_cl_queue">
+<code class="descclassname">streamlines.pocl.</code><code class="descname">prepare_cl_queue</code><span class="sig-paren">(</span><em>context=None</em>, <em>cl_kernel_source=None</em>, <em>compile_options=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.prepare_cl_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build PyOpenCL program and prepare command queue.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>context</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Context</em></a>) – GPU/OpenCL device context</li>
+<li><strong>cl_kernel_source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – OpenCL kernel code string</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">PyOpenCL program, PyOpenCL command queue</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Program" title="(in PyOpenCL v2018.1.1)">pyopencl.Program</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_queue.html#pyopencl.CommandQueue" title="(in PyOpenCL v2018.1.1)">pyopencl.CommandQueue</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.pocl.make_cl_dtype">
+<code class="descclassname">streamlines.pocl.</code><code class="descname">make_cl_dtype</code><span class="sig-paren">(</span><em>device</em>, <em>name</em>, <em>dtype</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.make_cl_dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an OpenCL structure typedef codelet from a numpy structured
+array dtype.</p>
+<p>Currently unused.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – </li>
+<li><strong>dtype</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.14)"><em>numpy.dtype</em></a>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">processed dtype, cl dtype, CL typedef codelet</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.14)">numpy.dtype</a>, pyopencl.dtype, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.pocl.set_compile_options">
+<code class="descclassname">streamlines.pocl.</code><code class="descname">set_compile_options</code><span class="sig-paren">(</span><em>info_struct</em>, <em>kernel_def</em>, <em>downup_sign=1</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.set_compile_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the info struct into a list of ‘-D’ compiler macros.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>info_struct</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – container for myriad parameters controlling
+trace() and mapping() workflow and corresponding GPU/OpenCL device operation</li>
+<li><strong>kernel_def</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – name of the kernel in the program source string;
+is used by #ifdef kernel-wrapper commands in the OpenCL codes</li>
+<li><strong>downup_sign</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – flag used to indicate desired sense of streamline integration,
+with +1 for downstream and -1 for upstream</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">compile options</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)">list</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.pocl.report_kernel_info">
+<code class="descclassname">streamlines.pocl.</code><code class="descname">report_kernel_info</code><span class="sig-paren">(</span><em>device</em>, <em>kernel</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.report_kernel_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch and print GPU/OpenCL kernel info.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>device</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Device</em></a>) – </li>
+<li><strong>kernel</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Kernel" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Kernel</em></a>) – </li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.pocl.report_device_info">
+<code class="descclassname">streamlines.pocl.</code><code class="descname">report_device_info</code><span class="sig-paren">(</span><em>cl_platform</em>, <em>cl_device</em>, <em>platform</em>, <em>device</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.report_device_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch and print GPU/OpenCL device info.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cl_platform</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
+<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
+<li><strong>platform</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Platform" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Platform</em></a>) – </li>
+<li><strong>device</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Device</em></a>) – </li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.pocl.report_build_log">
+<code class="descclassname">streamlines.pocl.</code><code class="descname">report_build_log</code><span class="sig-paren">(</span><em>program</em>, <em>device</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.report_build_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch and print GPU/OpenCL program build log.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>program</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Program" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Program</em></a>) – </li>
+<li><strong>device</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Device</em></a>) – </li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="code">
+<h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Prep PyOpenCL kernel</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pyopencl</span> <span class="k">as</span> <span class="nn">cl</span>
+<span class="kn">import</span> <span class="nn">pyopencl.tools</span> <span class="k">as</span> <span class="nn">cltools</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">environ</span>
+<span class="kn">from</span> <span class="nn">streamlines</span> <span class="k">import</span> <span class="n">state</span>
+<span class="kn">from</span> <span class="nn">streamlines.useful</span> <span class="k">import</span> <span class="n">vprint</span>
+
+<span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYOPENCL_COMPILER_OUTPUT&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;0&#39;</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;prepare_cl&#39;</span><span class="p">,</span><span class="s1">&#39;choose_platform_and_device&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;prepare_cl_context&#39;</span><span class="p">,</span><span class="s1">&#39;prepare_cl_queue&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;make_cl_dtype&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;set_compile_options&#39;</span><span class="p">,</span> <span class="s1">&#39;report_kernel_info&#39;</span><span class="p">,</span> <span class="s1">&#39;report_device_info&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;report_build_log&#39;</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">prepare_cl_context</span><span class="p">(</span><span class="n">cl_platform</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cl_device</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare PyOpenCL platform, device and context.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        cl_platform (int):</span>
+<span class="sd">        cl_device (int):</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        pyopencl.Platform, pyopencl.Device, pyopencl.Context:</span>
+<span class="sd">            PyOpenCL platform, PyOpenCL device, PyOpenCL context</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cl_platform</span><span class="p">,</span> <span class="n">cl_device</span> <span class="o">=</span> <span class="n">choose_platform_and_device</span><span class="p">(</span><span class="n">cl_platform</span><span class="p">,</span><span class="n">cl_device</span><span class="p">)</span>
+    <span class="n">platform</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">get_platforms</span><span class="p">()[</span><span class="n">cl_platform</span><span class="p">]</span>
+    <span class="n">devices</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">get_devices</span><span class="p">()</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="n">cl_device</span><span class="p">]</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Context</span><span class="p">([</span><span class="n">device</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">platform</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">context</span>
+
+<span class="k">def</span> <span class="nf">choose_platform_and_device</span><span class="p">(</span><span class="n">cl_platform</span><span class="o">=</span><span class="s1">&#39;env&#39;</span><span class="p">,</span><span class="n">cl_device</span><span class="o">=</span><span class="s1">&#39;env&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get OpenCL platform &amp; device from environment variables if they are set.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        cl_platform (int):</span>
+<span class="sd">        cl_device (int):</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        int, int:</span>
+<span class="sd">            CL platform, CL device</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">cl_platform</span><span class="o">==</span><span class="s1">&#39;env&#39;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cl_platform</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYOPENCL_CTX&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">cl_platform</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">cl_device</span><span class="o">==</span><span class="s1">&#39;env&#39;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cl_device</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYOPENCL_CTX&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">cl_device</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">cl_platform</span><span class="p">,</span> <span class="n">cl_device</span>
+
+<span class="k">def</span> <span class="nf">prepare_cl_queue</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compile_options</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build PyOpenCL program and prepare command queue.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        context (pyopencl.Context): GPU/OpenCL device context</span>
+<span class="sd">        cl_kernel_source (str): OpenCL kernel code string</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        pyopencl.Program, pyopencl.CommandQueue: </span>
+<span class="sd">            PyOpenCL program, PyOpenCL command queue</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="c1">#     compile_options = [&#39;-cl-fast-relaxed-math&#39;,</span>
+<span class="c1">#                        &#39;-cl-single-precision-constant&#39;,</span>
+<span class="c1">#                        &#39;-cl-unsafe-math-optimizations&#39;,</span>
+<span class="c1">#                        &#39;-cl-no-signed-zeros&#39;,</span>
+<span class="c1">#                        &#39;-cl-finite-math-only&#39;]</span>
+    <span class="n">program</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">cache_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                          <span class="n">options</span><span class="o">=</span><span class="n">compile_options</span><span class="p">)</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">CommandQueue</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">program</span><span class="p">,</span> <span class="n">queue</span>
+
+<span class="k">def</span> <span class="nf">prepare_cl</span><span class="p">(</span><span class="n">cl_platform</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cl_device</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compile_options</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare PyOpenCL stuff.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        cl_device (int):</span>
+<span class="sd">        cl_kernel_source (str): OpenCL kernel code string</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        pyopencl.Platform, pyopencl.Device, pyopencl.Context, pyopencl.Program, \</span>
+<span class="sd">        pyopencl.CommandQueue:</span>
+<span class="sd">            PyOpenCL platform, PyOpenCL device, PyOpenCL context, PyOpenCL program, \</span>
+<span class="sd">            PyOpenCL command queue</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">platform</span><span class="p">,</span><span class="n">device</span><span class="p">,</span><span class="n">context</span> <span class="o">=</span> <span class="n">prepare_cl_context</span><span class="p">(</span><span class="n">cl_platform</span><span class="p">,</span><span class="n">cl_device</span><span class="p">)</span>
+    <span class="n">program</span><span class="p">,</span><span class="n">queue</span> <span class="o">=</span> <span class="n">prepare_cl_queue</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="n">cl_kernel_source</span><span class="p">,</span><span class="n">compile_options</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">platform</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">program</span><span class="p">,</span> <span class="n">queue</span>
+
+<span class="k">def</span> <span class="nf">make_cl_dtype</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">dtype</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate an OpenCL structure typedef codelet from a numpy structured </span>
+<span class="sd">    array dtype.</span>
+<span class="sd">    </span>
+<span class="sd">    Currently unused.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        cl_device (int):</span>
+<span class="sd">        name (str):</span>
+<span class="sd">        dtype (numpy.dtype):</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.dtype, pyopencl.dtype, str: </span>
+<span class="sd">            processed dtype, cl dtype, CL typedef codelet</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">processed_dtype</span><span class="p">,</span> <span class="n">c_decl</span> <span class="o">=</span> <span class="n">cltools</span><span class="o">.</span><span class="n">match_dtype_to_c_struct</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">processed_dtype</span><span class="p">,</span> <span class="n">cltools</span><span class="o">.</span><span class="n">get_or_register_dtype</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">processed_dtype</span><span class="p">),</span> <span class="n">c_decl</span>
+
+<span class="k">def</span> <span class="nf">set_compile_options</span><span class="p">(</span><span class="n">info_struct</span><span class="p">,</span> <span class="n">kernel_def</span><span class="p">,</span> <span class="n">downup_sign</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert the info struct into a list of &#39;-D&#39; compiler macros.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        info_struct (numpy.ndarray): container for myriad parameters controlling</span>
+<span class="sd">            trace() and mapping() workflow and corresponding GPU/OpenCL device operation</span>
+<span class="sd">        kernel_def (str): name of the kernel in the program source string; </span>
+<span class="sd">            is used by #ifdef kernel-wrapper commands in the OpenCL codes</span>
+<span class="sd">        downup_sign (bool): flag used to indicate desired sense of streamline integration,</span>
+<span class="sd">               with +1 for downstream and -1 for upstream</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        list:</span>
+<span class="sd">            compile options</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;KERNEL_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kernel_def</span><span class="o">.</span><span class="n">upper</span><span class="p">()),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_ORDER&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;array_order&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;DOWNUP_SIGN=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">downup_sign</span><span class="p">),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;INTEGRATOR_STEP_FACTOR=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;integrator_step_factor&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;MAX_INTEGRATION_STEP_ERROR=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;max_integration_step_error&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;ADJUSTED_MAX_ERROR=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;adjusted_max_error&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;MAX_LENGTH=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;max_length&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;PIXEL_SIZE=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;INTEGRATION_HALT_THRESHOLD=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;integration_halt_threshold&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;PAD_WIDTH=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;pad_width&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;PAD_WIDTH_PP5=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;pad_width_pp5&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;NX=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;NY=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;ny&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;NXF=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;nxf&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;NYF=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;nyf&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;NX_PADDED=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;nx_padded&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;NY_PADDED=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;ny_padded&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;X_MAX=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;x_max&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;Y_MAX=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;y_max&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;GRID_SCALE=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;grid_scale&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;COMBO_FACTOR=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;combo_factor&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">downup_sign</span><span class="p">),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;DT_MAX=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;dt_max&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;MAX_N_STEPS=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;max_n_steps&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;TRAJECTORY_RESOLUTION=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;trajectory_resolution&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;SEEDS_CHUNK_OFFSET=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;seeds_chunk_offset&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;SUBPIXEL_SEED_POINT_DENSITY=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                        <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;subpixel_seed_point_density&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;SUBPIXEL_SEED_HALFSPAN=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;subpixel_seed_halfspan&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;SUBPIXEL_SEED_STEP=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;subpixel_seed_step&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;JITTER_MAGNITUDE=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;jitter_magnitude&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;INTERCHANNEL_MAX_N_STEPS=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                            <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;interchannel_max_n_steps&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;SEGMENTATION_THRESHOLD=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;segmentation_threshold&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;LEFT_FLANK_ADDITION=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;left_flank_addition&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_CHANNEL=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_channel&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_THINCHANNEL=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_thinchannel&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_INTERCHANNEL=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_interchannel&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_CHANNELHEAD=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_channelhead&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_CHANNELTAIL=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_channeltail&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_MAJORCONFLUENCE=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_majorconfluence&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_MINORCONFLUENCE=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_minorconfluence&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_MAJORINFLOW=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_majorinflow&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_MINORINFLOW=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_minorinflow&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_LEFTFLANK=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_leftflank&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_RIGHTFLANK=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_rightflank&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_MIDSLOPE=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_midslope&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_RIDGE=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_ridge&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_STUCK=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_stuck&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_LOOP=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_loop&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_BLOCKAGE=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_blockage&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">report_kernel_info</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="n">kernel</span><span class="p">,</span><span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetch and print GPU/OpenCL kernel info.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        device (pyopencl.Device):</span>
+<span class="sd">        kernel (pyopencl.Kernel):</span>
+<span class="sd">        verbose (bool):</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="c1"># Report some GPU info</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Kernel reference count:&#39;</span><span class="p">,</span>
+              <span class="n">kernel</span><span class="o">.</span><span class="n">get_info</span><span class="p">(</span>
+                  <span class="n">cl</span><span class="o">.</span><span class="n">kernel_info</span><span class="o">.</span><span class="n">REFERENCE_COUNT</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Kernel number of args:&#39;</span><span class="p">,</span>
+              <span class="n">kernel</span><span class="o">.</span><span class="n">get_info</span><span class="p">(</span>
+                  <span class="n">cl</span><span class="o">.</span><span class="n">kernel_info</span><span class="o">.</span><span class="n">NUM_ARGS</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Kernel function name:&#39;</span><span class="p">,</span>
+              <span class="n">kernel</span><span class="o">.</span><span class="n">get_info</span><span class="p">(</span>
+                  <span class="n">cl</span><span class="o">.</span><span class="n">kernel_info</span><span class="o">.</span><span class="n">FUNCTION_NAME</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Maximum work group size:&#39;</span><span class="p">,</span>
+              <span class="n">kernel</span><span class="o">.</span><span class="n">get_work_group_info</span><span class="p">(</span>
+                  <span class="n">cl</span><span class="o">.</span><span class="n">kernel_work_group_info</span><span class="o">.</span><span class="n">WORK_GROUP_SIZE</span><span class="p">,</span> <span class="n">device</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Recommended work group size:&#39;</span><span class="p">,</span>
+              <span class="n">kernel</span><span class="o">.</span><span class="n">get_work_group_info</span><span class="p">(</span>
+                  <span class="n">cl</span><span class="o">.</span><span class="n">kernel_work_group_info</span><span class="o">.</span><span class="n">PREFERRED_WORK_GROUP_SIZE_MULTIPLE</span><span class="p">,</span> <span class="n">device</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Local memory size:&#39;</span><span class="p">,</span>
+              <span class="n">kernel</span><span class="o">.</span><span class="n">get_work_group_info</span><span class="p">(</span>
+                  <span class="n">cl</span><span class="o">.</span><span class="n">kernel_work_group_info</span><span class="o">.</span><span class="n">LOCAL_MEM_SIZE</span><span class="p">,</span> <span class="n">device</span><span class="p">),</span> <span class="s1">&#39;bytes&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Private memory size:&#39;</span><span class="p">,</span>
+              <span class="n">kernel</span><span class="o">.</span><span class="n">get_work_group_info</span><span class="p">(</span>
+                  <span class="n">cl</span><span class="o">.</span><span class="n">kernel_work_group_info</span><span class="o">.</span><span class="n">PRIVATE_MEM_SIZE</span><span class="p">,</span> <span class="n">device</span><span class="p">),</span> <span class="s1">&#39;bytes&#39;</span><span class="p">)</span>    
+
+<span class="k">def</span> <span class="nf">report_device_info</span><span class="p">(</span><span class="n">cl_platform</span><span class="p">,</span> <span class="n">cl_device</span><span class="p">,</span> <span class="n">platform</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetch and print GPU/OpenCL device info.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        cl_platform (int):</span>
+<span class="sd">        cl_device (int):</span>
+<span class="sd">        platform (pyopencl.Platform):</span>
+<span class="sd">        device (pyopencl.Device):</span>
+<span class="sd">        verbose (bool):</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;OpenCL platform #</span><span class="si">{0}</span><span class="s1"> = </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cl_platform</span><span class="p">,</span><span class="n">platform</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;OpenCL device #</span><span class="si">{0}</span><span class="s1"> = </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cl_device</span><span class="p">,</span><span class="n">device</span><span class="p">))</span>
+        <span class="n">n_bytes</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">get_info</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">device_info</span><span class="o">.</span><span class="n">GLOBAL_MEM_SIZE</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Global memory size: </span><span class="si">{}</span><span class="s1"> bytes = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">,</span><span class="n">state</span><span class="o">.</span><span class="n">neatly</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">)))</span>
+        <span class="n">n_bytes</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">get_info</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">device_info</span><span class="o">.</span><span class="n">MAX_MEM_ALLOC_SIZE</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Max memory alloc size: </span><span class="si">{}</span><span class="s1"> bytes = </span><span class="si">{}</span><span class="s1">&#39;</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">,</span><span class="n">state</span><span class="o">.</span><span class="n">neatly</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">)))</span>
+        
+        <span class="n">device_info_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">device_info</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">device_info_list</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> = </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">device</span><span class="o">.</span><span class="n">get_info</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">device_info</span><span class="p">,</span><span class="n">s</span><span class="p">))))</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">report_build_log</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetch and print GPU/OpenCL program build log.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        program (pyopencl.Program):</span>
+<span class="sd">        device (pyopencl.Device):</span>
+<span class="sd">        verbose (bool):</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">build_log</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">get_build_info</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="n">cl</span><span class="o">.</span><span class="n">program_build_info</span><span class="o">.</span><span class="n">LOG</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">build_log</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">))</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">OpenCL build log: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">build_log</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">Streamlines</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Topographic streamline mapping of landscape structure</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <br>
+  <p class="biglink"><a class="biglink" href="../py-modindex.html">
+         Module Index</a>
+  <br><br>
+  <h3><a href="../index.html">Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">pocl.py</span></code></a><ul>
+<li><a class="reference internal" href="#module-streamlines.pocl">Usage</a></li>
+<li><a class="reference internal" href="#code">Code</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related</h3>
+<ul>
+  <li><a href="../index.html"></a><ul>
+      <li><a href="state.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">state.py</span></code></a></li>
+      <li><a href="useful.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">useful.py</span></code></a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, CPS.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/modules/pocl.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

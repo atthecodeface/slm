@@ -1,0 +1,211 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>computestep.cl &#8212; Streamlines  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="integrationfns.cl" href="integrationfns.cl.html" />
+    <link rel="prev" title="trajectoryfns.cl" href="trajectoryfns.cl.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="computestep-cl">
+<h1><code class="docutils literal notranslate"><span class="pre">computestep.cl</span></code><a class="headerlink" href="#computestep-cl" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="c1">///</span>
+<span class="c1">/// @file computestep.cl</span>
+<span class="c1">///</span>
+<span class="c1">/// Compute single streamline integration step.</span>
+<span class="c1">///</span>
+<span class="c1">/// @author CPS</span>
+<span class="c1">///</span>
+
+<span class="cp">#if defined(KERNEL_INTEGRATE_TRAJECTORY) || defined(KERNEL_CONNECT_CHANNELS) \</span>
+<span class="cp">    || defined(KERNEL_MAP_CHANNEL_HEADS) || defined(KERNEL_COUNT_DOWNCHANNELS) \</span>
+<span class="cp">    || defined(KERNEL_LINK_HILLSLOPES)   || defined(KERNEL_SEGMENT_HILLSLOPES) \</span>
+<span class="cp">    || defined(KERNEL_SUBSEGMENT_FLANKS) || defined(KERNEL_HILLSLOPE_LENGTHS)</span>
+<span class="c1">///</span>
+<span class="c1">/// Compute a 2nd-order Runge-Kutta integration step along a streamline.</span>
+<span class="c1">///</span>
+<span class="c1">/// Compiled if any of the following are defined:</span>
+<span class="c1">///    - KERNEL_INTEGRATE_TRAJECTORY</span>
+<span class="c1">///    - KERNEL_CONNECT_CHANNELS</span>
+<span class="c1">///    - KERNEL_MAP_CHANNEL_HEADS</span>
+<span class="c1">///    - KERNEL_COUNT_DOWNCHANNELS</span>
+<span class="c1">///    - KERNEL_LINK_HILLSLOPES</span>
+<span class="c1">///    - KERNEL_SEGMENT_HILLSLOPES</span>
+<span class="c1">///    - KERNEL_SUBSEGMENT_FLANKS</span>
+<span class="c1">///    - KERNEL_HILLSLOPE_LENGTHS</span>
+<span class="c1">///</span>
+<span class="c1">/// @param[in]      dt: delta time step</span>
+<span class="c1">/// @param[in]      uv_array  (float *,  RO): gridded velocity vector components (u,v)</span>
+<span class="c1">/// @param[in,out]  dxy1_vec: R-K first order delta step vector</span>
+<span class="c1">/// @param[in,out]  dxy2_vec: R-K second order delta step vector</span>
+<span class="c1">/// @param[in,out]  uv1_vec: flow velocity vector at current coordinate (at @p vec)</span>
+<span class="c1">/// @param[in,out]  uv2_vec: flow velocity vector at RK1 stepped coordinate</span>
+<span class="c1">///                           (at @p vec + @p dxy1_vec)</span>
+<span class="c1">/// @param[in]      vec: current (x,y) coordinate vector at tip of streamline trajectory</span>
+<span class="c1">/// @param[in,out]  next_vec: next (x,y) coordinate vector on streamline trajectory</span>
+<span class="c1">/// @param[in,out]  idx: array index of pixel at current (x,y) position</span>
+<span class="c1">///</span>
+<span class="c1">/// @returns void</span>
+<span class="c1">///</span>
+<span class="c1">/// @ingroup trajectoryfns</span>
+<span class="c1">///</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">compute_step_vec</span><span class="p">(</span><span class="k">const</span> <span class="kt">float</span> <span class="n">dt</span><span class="p">,</span>
+                                    <span class="k">const</span> <span class="n">__global</span> <span class="n">float2</span> <span class="o">*</span><span class="n">uv_array</span><span class="p">,</span>
+                                    <span class="n">float2</span> <span class="o">*</span><span class="n">dxy1_vec</span><span class="p">,</span> <span class="n">float2</span> <span class="o">*</span><span class="n">dxy2_vec</span><span class="p">,</span>
+                                    <span class="n">float2</span> <span class="o">*</span><span class="n">uv1_vec</span><span class="p">,</span> <span class="n">float2</span> <span class="o">*</span><span class="n">uv2_vec</span><span class="p">,</span>
+                                    <span class="k">const</span> <span class="n">float2</span> <span class="n">vec</span><span class="p">,</span>
+                                    <span class="n">float2</span> <span class="o">*</span><span class="n">next_vec</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">idx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Calculate RK2 next pt vector and approx into a fixed-point-res vector.</span>
+    <span class="c1">// Do this using randomly biased =jittered flow vector field.</span>
+    <span class="c1">// Then get the next pixel&#39;s data array index.</span>
+    <span class="o">*</span><span class="n">uv1_vec</span> <span class="o">=</span> <span class="n">speed_interpolator</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span><span class="n">uv_array</span><span class="p">);</span>
+    <span class="o">*</span><span class="n">dxy1_vec</span> <span class="o">=</span> <span class="n">approximate</span><span class="p">(</span><span class="o">*</span><span class="n">uv1_vec</span><span class="o">*</span><span class="n">COMBO_FACTOR</span><span class="o">*</span><span class="n">dt</span><span class="p">);</span>
+    <span class="o">*</span><span class="n">uv2_vec</span> <span class="o">=</span> <span class="n">speed_interpolator</span><span class="p">(</span><span class="n">vec</span><span class="o">+*</span><span class="n">dxy1_vec</span><span class="p">,</span><span class="n">uv_array</span><span class="p">);</span>
+    <span class="o">*</span><span class="n">dxy2_vec</span> <span class="o">=</span> <span class="n">approximate</span><span class="p">(</span><span class="mf">0.5f</span><span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">dxy1_vec</span><span class="o">+*</span><span class="n">uv2_vec</span><span class="o">*</span><span class="n">COMBO_FACTOR</span><span class="o">*</span><span class="n">dt</span><span class="p">));</span>
+    <span class="o">*</span><span class="n">next_vec</span> <span class="o">=</span> <span class="n">vec</span><span class="o">+*</span><span class="n">dxy2_vec</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">idx</span> <span class="o">=</span> <span class="n">get_array_idx</span><span class="p">(</span><span class="o">*</span><span class="n">next_vec</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#if defined(KERNEL_INTEGRATE_TRAJECTORY) &amp;&amp; defined(IS_RNG_AVAILABLE)</span>
+<span class="c1">///</span>
+<span class="c1">/// Compute a jittered 2nd-order Runge-Kutta integration step along a streamline.</span>
+<span class="c1">/// Jittering is achieved by adding a uniform random vector to of the RK2 flow velocity</span>
+<span class="c1">///   vectors, then normalizing to provide two RK2 unit step vectors.</span>
+<span class="c1">/// The [0,1) uniform variates are scaled by JITTER_MAGNITUDE before addition</span>
+<span class="c1">///   to the unit flow vectors.</span>
+<span class="c1">///</span>
+<span class="c1">/// Compiled if KERNEL_INTEGRATE_TRAJECTORY and IS_RNG_AVAILABLE is defined.</span>
+<span class="c1">///</span>
+<span class="c1">/// @param[in]      dt: delta time step</span>
+<span class="c1">/// @param[in]      uv_array  (float *,  RO): gridded velocity vector components (u,v)</span>
+<span class="c1">/// @param[in,out]  rng_state: RNG state (thus initally the seed) and RNG variate</span>
+<span class="c1">/// @param[in,out]  dxy1_vec: R-K first order delta step vector</span>
+<span class="c1">/// @param[in,out]  dxy2_vec: R-K second order delta step vector</span>
+<span class="c1">/// @param[in,out]  uv1_vec: flow velocity vector at current coordinate (at @p vec)</span>
+<span class="c1">/// @param[in,out]  uv2_vec: flow velocity vector at RK1 stepped coordinate</span>
+<span class="c1">///                           (at @p vec + @p dxy1_vec)</span>
+<span class="c1">/// @param[in]      vec: current (x,y) coordinate vector at tip of streamline trajectory</span>
+<span class="c1">/// @param[in,out]  next_vec: next (x,y) coordinate vector on streamline trajectory</span>
+<span class="c1">/// @param[in,out]  idx: array index of pixel at current (x,y) position</span>
+<span class="c1">///</span>
+<span class="c1">/// @returns void</span>
+<span class="c1">///</span>
+<span class="c1">/// @ingroup trajectoryfns</span>
+<span class="c1">///</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">compute_step_vec_jittered</span><span class="p">(</span><span class="k">const</span> <span class="kt">float</span> <span class="n">dt</span><span class="p">,</span>
+                                             <span class="k">const</span> <span class="n">__global</span> <span class="n">float2</span> <span class="o">*</span><span class="n">uv_array</span><span class="p">,</span>
+                                             <span class="n">uint</span> <span class="o">*</span><span class="n">rng_state</span><span class="p">,</span>
+                                             <span class="n">float2</span> <span class="o">*</span><span class="n">dxy1_vec</span><span class="p">,</span> <span class="n">float2</span> <span class="o">*</span><span class="n">dxy2_vec</span><span class="p">,</span>
+                                             <span class="n">float2</span> <span class="o">*</span><span class="n">uv1_vec</span><span class="p">,</span> <span class="n">float2</span> <span class="o">*</span><span class="n">uv2_vec</span><span class="p">,</span>
+                                             <span class="k">const</span> <span class="n">float2</span> <span class="n">vec</span><span class="p">,</span> <span class="n">float2</span> <span class="o">*</span><span class="n">next_vec</span><span class="p">,</span>
+                                             <span class="n">uint</span> <span class="o">*</span><span class="n">idx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Calculate RK2 next pt vector and approx into a fixed-point-res vector.</span>
+    <span class="c1">// Do this using randomly biased aka jittered flow vector field.</span>
+    <span class="c1">// Then get the next pixel&#39;s data array index.</span>
+    <span class="o">*</span><span class="n">uv1_vec</span> <span class="o">=</span> <span class="n">speed_interpolator</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span><span class="n">uv_array</span><span class="p">);</span>
+    <span class="o">*</span><span class="n">uv1_vec</span> <span class="o">+=</span> <span class="n">lehmer_rand_vec</span><span class="p">(</span><span class="n">rng_state</span><span class="p">)</span><span class="o">*</span><span class="n">JITTER_MAGNITUDE</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">uv1_vec</span> <span class="o">/=</span> <span class="n">fast_length</span><span class="p">(</span><span class="o">*</span><span class="n">uv1_vec</span><span class="p">);</span>
+    <span class="o">*</span><span class="n">dxy1_vec</span> <span class="o">=</span> <span class="n">approximate</span><span class="p">(</span><span class="o">*</span><span class="n">uv1_vec</span><span class="o">*</span><span class="n">COMBO_FACTOR</span><span class="o">*</span><span class="n">dt</span><span class="p">);</span>
+    <span class="o">*</span><span class="n">uv2_vec</span> <span class="o">=</span> <span class="n">speed_interpolator</span><span class="p">(</span><span class="n">vec</span><span class="o">+*</span><span class="n">dxy1_vec</span><span class="p">,</span><span class="n">uv_array</span><span class="p">);</span>
+    <span class="o">*</span><span class="n">uv2_vec</span> <span class="o">+=</span> <span class="n">lehmer_rand_vec</span><span class="p">(</span><span class="n">rng_state</span><span class="p">)</span><span class="o">*</span><span class="n">JITTER_MAGNITUDE</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">uv2_vec</span> <span class="o">/=</span> <span class="n">fast_length</span><span class="p">(</span><span class="o">*</span><span class="n">uv2_vec</span><span class="p">);</span>
+    <span class="o">*</span><span class="n">dxy2_vec</span> <span class="o">=</span> <span class="n">approximate</span><span class="p">(</span><span class="mf">0.5f</span><span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">dxy1_vec</span><span class="o">+*</span><span class="n">uv2_vec</span><span class="o">*</span><span class="n">COMBO_FACTOR</span><span class="o">*</span><span class="n">dt</span><span class="p">));</span>
+    <span class="o">*</span><span class="n">next_vec</span> <span class="o">=</span> <span class="n">vec</span><span class="o">+*</span><span class="n">dxy2_vec</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">idx</span> <span class="o">=</span> <span class="n">get_array_idx</span><span class="p">(</span><span class="o">*</span><span class="n">next_vec</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">Streamlines</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Topographic streamline mapping of landscape structure</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
+<h3>Related</h3>
+<ul>
+  <li><a href="../index.html"></a><ul>
+      <li><a href="trajectoryfns.cl.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">trajectoryfns.cl</span></code></a></li>
+      <li><a href="integrationfns.cl.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">integrationfns.cl</span></code></a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, CPS.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/modules/computestep.cl.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

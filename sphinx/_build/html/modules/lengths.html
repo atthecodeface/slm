@@ -1,0 +1,389 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>lengths.py &#8212; Streamlines  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="integration.cl" href="integration.cl.html" />
+    <link rel="prev" title="segment.py" href="segment.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="lengths-py">
+<h1><code class="docutils literal notranslate"><span class="pre">lengths.py</span></code><a class="headerlink" href="#lengths-py" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-streamlines.lengths">
+<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.lengths" title="Permalink to this headline">¶</a></h2>
+<p>Segment downstream.</p>
+<dl class="function">
+<dt id="streamlines.lengths.hillslope_lengths">
+<code class="descclassname">streamlines.lengths.</code><code class="descname">hillslope_lengths</code><span class="sig-paren">(</span><em>module_path</em>, <em>which_cl_platform</em>, <em>which_cl_device</em>, <em>info_struct</em>, <em>mask_array</em>, <em>u_array</em>, <em>v_array</em>, <em>mapping_array</em>, <em>label_array</em>, <em>traj_length_array</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.lengths.hillslope_lengths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Measure mean (half) hillslope lengths.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>module_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – </li>
+<li><strong>which_cl_platform</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
+<li><strong>which_cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
+<li><strong>info_struct</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>mask_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>u_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>v_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>mapping_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>label_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>traj_length_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.lengths.gpu_compute">
+<code class="descclassname">streamlines.lengths.</code><code class="descname">gpu_compute</code><span class="sig-paren">(</span><em>device</em>, <em>context</em>, <em>queue</em>, <em>cl_kernel_source</em>, <em>cl_kernel_fn</em>, <em>info_struct</em>, <em>seed_point_array</em>, <em>mask_array</em>, <em>u_array</em>, <em>v_array</em>, <em>mapping_array</em>, <em>label_array</em>, <em>traj_length_array</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.lengths.gpu_compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Carry out GPU computation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>device</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Device</em></a>) – </li>
+<li><strong>context</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Context</em></a>) – </li>
+<li><strong>queue</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_queue.html#pyopencl.CommandQueue" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.CommandQueue</em></a>) – </li>
+<li><strong>cl_kernel_source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – </li>
+<li><strong>cl_kernel_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – </li>
+<li><strong>info_struct</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>seed_point_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>mask_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>u_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>v_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>mapping_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>label_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>traj_length_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.lengths.prepare_memory">
+<code class="descclassname">streamlines.lengths.</code><code class="descname">prepare_memory</code><span class="sig-paren">(</span><em>context</em>, <em>queue</em>, <em>order</em>, <em>seed_point_array</em>, <em>mask_array</em>, <em>u_array</em>, <em>v_array</em>, <em>mapping_array</em>, <em>label_array</em>, <em>traj_length_array</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.lengths.prepare_memory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>context</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Context</em></a>) – </li>
+<li><strong>queue</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_queue.html#pyopencl.CommandQueue" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.CommandQueue</em></a>) – </li>
+<li><strong>seed_point_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>mask_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>u_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>v_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>mapping_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>label_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>traj_length_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">seed_point_buffer, uv_buffer, mask_buffer,             mapping_buffer, label_buffer, traj_length_buffer</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_memory.html#pyopencl.Buffer" title="(in PyOpenCL v2018.1.1)">pyopencl.Buffer</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_memory.html#pyopencl.Buffer" title="(in PyOpenCL v2018.1.1)">pyopencl.Buffer</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_memory.html#pyopencl.Buffer" title="(in PyOpenCL v2018.1.1)">pyopencl.Buffer</a>,         <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_memory.html#pyopencl.Buffer" title="(in PyOpenCL v2018.1.1)">pyopencl.Buffer</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_memory.html#pyopencl.Buffer" title="(in PyOpenCL v2018.1.1)">pyopencl.Buffer</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_memory.html#pyopencl.Buffer" title="(in PyOpenCL v2018.1.1)">pyopencl.Buffer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="code">
+<h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Segment downstream.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pyopencl</span> <span class="k">as</span> <span class="nn">cl</span>
+<span class="kn">import</span> <span class="nn">pyopencl.array</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYTHONUNBUFFERED&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;True&#39;</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">from</span> <span class="nn">streamlines</span> <span class="k">import</span> <span class="n">pocl</span>
+<span class="kn">from</span> <span class="nn">streamlines.useful</span> <span class="k">import</span> <span class="n">vprint</span><span class="p">,</span> <span class="n">pick_seeds</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;hillslope_lengths&#39;</span><span class="p">,</span><span class="s1">&#39;gpu_compute&#39;</span><span class="p">,</span><span class="s1">&#39;prepare_memory&#39;</span><span class="p">]</span>
+
+<span class="n">pdebug</span> <span class="o">=</span> <span class="nb">print</span>
+
+<span class="k">def</span> <span class="nf">hillslope_lengths</span><span class="p">(</span> <span class="n">module_path</span><span class="p">,</span> <span class="n">which_cl_platform</span><span class="p">,</span> <span class="n">which_cl_device</span><span class="p">,</span> <span class="n">info_struct</span><span class="p">,</span> 
+                       <span class="n">mask_array</span><span class="p">,</span> <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span>
+                       <span class="n">mapping_array</span><span class="p">,</span> <span class="n">label_array</span><span class="p">,</span> <span class="n">traj_length_array</span><span class="p">,</span> <span class="n">verbose</span> <span class="p">):</span>
+        
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Measure mean (half) hillslope lengths.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        module_path (str):</span>
+<span class="sd">        which_cl_platform (int):</span>
+<span class="sd">        which_cl_device   (int):</span>
+<span class="sd">        info_struct (numpy.ndarray):</span>
+<span class="sd">        mask_array  (numpy.ndarray):</span>
+<span class="sd">        u_array (numpy.ndarray):</span>
+<span class="sd">        v_array (numpy.ndarray):</span>
+<span class="sd">        mapping_array (numpy.ndarray):</span>
+<span class="sd">        label_array   (numpy.ndarray):</span>
+<span class="sd">        traj_length_array (numpy.ndarray):</span>
+<span class="sd">        verbose (bool):</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;Measuring hillslope lengths...&#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Prepare CL essentials</span>
+    <span class="n">platform</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span> <span class="n">pocl</span><span class="o">.</span><span class="n">prepare_cl_context</span><span class="p">(</span><span class="n">which_cl_platform</span><span class="p">,</span><span class="n">which_cl_device</span><span class="p">)</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">CommandQueue</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">cl_files</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;essentials.cl&#39;</span><span class="p">,</span><span class="s1">&#39;trajectoryfns.cl&#39;</span><span class="p">,</span><span class="s1">&#39;computestep.cl&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;integrationfns.cl&#39;</span><span class="p">,</span><span class="s1">&#39;lengths.cl&#39;</span><span class="p">]</span>
+    <span class="n">cl_kernel_source</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">cl_file</span> <span class="ow">in</span> <span class="n">cl_files</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">module_path</span><span class="p">,</span><span class="n">cl_file</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">cl_kernel_source</span> <span class="o">+=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            
+    <span class="c1"># Trace downstream from midslope pixels to thin channel pixels, </span>
+    <span class="c1">#   measuring streamline distance; double and scale by pixel width </span>
+    <span class="c1">#   to estimate hillslope length for that midslope pixel</span>
+    <span class="n">pad</span> <span class="o">=</span> <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;pad_width&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">is_midslope</span> <span class="o">=</span> <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_midslope&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pixel_size</span> <span class="o">=</span> <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;array_order&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">flag</span> <span class="o">=</span> <span class="n">is_midslope</span>
+    <span class="n">seed_point_array</span> \
+        <span class="o">=</span> <span class="n">pick_seeds</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="n">mask_array</span><span class="p">,</span> <span class="nb">map</span><span class="o">=</span><span class="n">mapping_array</span><span class="p">,</span> <span class="n">flag</span><span class="o">=</span><span class="n">flag</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">pad</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>   <span class="p">((</span><span class="n">order</span><span class="o">==</span><span class="s1">&#39;F&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">seed_point_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">!=</span><span class="n">traj_length_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="ow">or</span> <span class="p">((</span><span class="n">order</span><span class="o">==</span><span class="s1">&#39;C&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">seed_point_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="n">traj_length_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Mismatched midslope point arrays: &#39;</span><span class="p">,</span>
+              <span class="n">seed_point_array</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">traj_length_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="c1"># Do integrations on the GPU</span>
+    <span class="n">cl_kernel_fn</span> <span class="o">=</span> <span class="s1">&#39;hillslope_lengths&#39;</span>
+    <span class="n">gpu_compute</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="p">,</span><span class="n">cl_kernel_fn</span><span class="p">,</span> <span class="n">info_struct</span><span class="p">,</span> 
+                <span class="n">seed_point_array</span><span class="p">,</span> <span class="n">mask_array</span><span class="p">,</span> <span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">,</span> 
+                <span class="n">mapping_array</span><span class="p">,</span> <span class="n">label_array</span><span class="p">,</span> <span class="n">traj_length_array</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    
+    <span class="c1"># Scale by pixel size and by two because we measured only half lengths</span>
+    <span class="n">traj_length_array</span> <span class="o">*=</span> <span class="n">pixel_size</span><span class="o">*</span><span class="mi">2</span>
+    <span class="c1"># Done</span>
+    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;done&#39;</span><span class="p">)</span>  
+    
+    
+<span class="k">def</span> <span class="nf">gpu_compute</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="p">,</span><span class="n">cl_kernel_fn</span><span class="p">,</span> <span class="n">info_struct</span><span class="p">,</span> 
+                <span class="n">seed_point_array</span><span class="p">,</span> <span class="n">mask_array</span><span class="p">,</span> <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span> 
+                <span class="n">mapping_array</span><span class="p">,</span> <span class="n">label_array</span><span class="p">,</span> <span class="n">traj_length_array</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Carry out GPU computation.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        device (pyopencl.Device):</span>
+<span class="sd">        context (pyopencl.Context):</span>
+<span class="sd">        queue (pyopencl.CommandQueue):</span>
+<span class="sd">        cl_kernel_source (str):</span>
+<span class="sd">        cl_kernel_fn (str):</span>
+<span class="sd">        info_struct (numpy.ndarray):</span>
+<span class="sd">        seed_point_array (numpy.ndarray):</span>
+<span class="sd">        mask_array (numpy.ndarray):</span>
+<span class="sd">        u_array (numpy.ndarray):</span>
+<span class="sd">        v_array (numpy.ndarray):</span>
+<span class="sd">        mapping_array (numpy.ndarray):</span>
+<span class="sd">        label_array (numpy.ndarray):</span>
+<span class="sd">        traj_length_array (numpy.ndarray):</span>
+<span class="sd">        verbose (bool):  </span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+        
+    <span class="c1"># Prepare memory, buffers </span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;array_order&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">(</span><span class="n">seed_point_buffer</span><span class="p">,</span> <span class="n">uv_buffer</span><span class="p">,</span> <span class="n">mask_buffer</span><span class="p">,</span> 
+     <span class="n">mapping_buffer</span><span class="p">,</span> <span class="n">label_buffer</span><span class="p">,</span> <span class="n">traj_length_buffer</span><span class="p">)</span> \
+        <span class="o">=</span> <span class="n">prepare_memory</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> 
+                         <span class="n">seed_point_array</span><span class="p">,</span> <span class="n">mask_array</span><span class="p">,</span> <span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">,</span> 
+                         <span class="n">mapping_array</span><span class="p">,</span> <span class="n">label_array</span><span class="p">,</span> <span class="n">traj_length_array</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>    
+    <span class="c1"># Specify this integration job&#39;s parameters</span>
+    <span class="k">if</span> <span class="n">order</span><span class="o">==</span><span class="s1">&#39;F&#39;</span><span class="p">:</span>
+        <span class="n">global_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">seed_point_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">global_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">seed_point_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">local_size</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># Compile the CL code</span>
+    <span class="n">compile_options</span> <span class="o">=</span> <span class="n">pocl</span><span class="o">.</span><span class="n">set_compile_options</span><span class="p">(</span><span class="n">info_struct</span><span class="p">,</span> <span class="n">cl_kernel_fn</span><span class="p">,</span> <span class="n">downup_sign</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="n">program</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">compile_options</span><span class="p">)</span>
+    <span class="n">pocl</span><span class="o">.</span><span class="n">report_build_log</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="c1"># Set the GPU kernel</span>
+    <span class="n">kernel</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">program</span><span class="p">,</span><span class="n">cl_kernel_fn</span><span class="p">)</span>
+    <span class="c1"># Designate buffered arrays</span>
+    <span class="n">buffer_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">seed_point_buffer</span><span class="p">,</span> <span class="n">mask_buffer</span><span class="p">,</span> <span class="n">uv_buffer</span><span class="p">,</span> 
+                   <span class="n">mapping_buffer</span><span class="p">,</span> <span class="n">label_buffer</span><span class="p">,</span> <span class="n">traj_length_buffer</span><span class="p">]</span>
+    <span class="n">kernel</span><span class="o">.</span><span class="n">set_args</span><span class="p">(</span><span class="o">*</span><span class="n">buffer_list</span><span class="p">)</span>
+    <span class="n">kernel</span><span class="o">.</span><span class="n">set_scalar_arg_dtypes</span><span class="p">(</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">buffer_list</span><span class="p">)</span> <span class="p">)</span>
+    <span class="c1"># Do the GPU compute</span>
+    <span class="n">event</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">enqueue_nd_range_kernel</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">global_size</span><span class="p">,</span> <span class="n">local_size</span><span class="p">)</span>
+    <span class="c1"># Fetch the data back from the GPU and finish</span>
+    <span class="n">cl</span><span class="o">.</span><span class="n">enqueue_copy</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">traj_length_array</span><span class="p">,</span> <span class="n">traj_length_buffer</span><span class="p">)</span>
+    
+    <span class="n">queue</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+    
+<span class="k">def</span> <span class="nf">prepare_memory</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">seed_point_array</span><span class="p">,</span> <span class="n">mask_array</span><span class="p">,</span> <span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">,</span> 
+                   <span class="n">mapping_array</span><span class="p">,</span> <span class="n">label_array</span><span class="p">,</span> <span class="n">traj_length_array</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        context (pyopencl.Context):</span>
+<span class="sd">        queue (pyopencl.CommandQueue):</span>
+<span class="sd">        seed_point_array (numpy.ndarray):</span>
+<span class="sd">        mask_array (numpy.ndarray):</span>
+<span class="sd">        u_array (numpy.ndarray):</span>
+<span class="sd">        v_array (numpy.ndarray):</span>
+<span class="sd">        mapping_array (numpy.ndarray):</span>
+<span class="sd">        label_array (numpy.ndarray):</span>
+<span class="sd">        traj_length_array (numpy.ndarray):</span>
+<span class="sd">        verbose (bool):</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, \</span>
+<span class="sd">        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer:</span>
+<span class="sd">            seed_point_buffer, uv_buffer, mask_buffer, \</span>
+<span class="sd">            mapping_buffer, label_buffer, traj_length_buffer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Buffer for mask, (u,v) velocity array and more </span>
+    <span class="k">if</span> <span class="n">order</span><span class="o">==</span><span class="s1">&#39;F&#39;</span><span class="p">:</span>
+        <span class="n">uv_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">))</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+                                                             <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">uv_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+                                                                    <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+     <span class="c1"># Buffers to GPU memory</span>
+    <span class="n">COPY_READ_ONLY</span>  <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">mem_flags</span><span class="o">.</span><span class="n">READ_ONLY</span>  <span class="o">|</span> <span class="n">cl</span><span class="o">.</span><span class="n">mem_flags</span><span class="o">.</span><span class="n">COPY_HOST_PTR</span>
+    <span class="n">COPY_READ_WRITE</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">mem_flags</span><span class="o">.</span><span class="n">READ_WRITE</span> <span class="o">|</span> <span class="n">cl</span><span class="o">.</span><span class="n">mem_flags</span><span class="o">.</span><span class="n">COPY_HOST_PTR</span>
+    <span class="n">seed_point_buffer</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">COPY_READ_ONLY</span><span class="p">,</span>  <span class="n">hostbuf</span><span class="o">=</span><span class="n">seed_point_array</span><span class="p">)</span>
+    <span class="n">uv_buffer</span>         <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">COPY_READ_ONLY</span><span class="p">,</span>  <span class="n">hostbuf</span><span class="o">=</span><span class="n">uv_array</span><span class="p">)</span>
+    <span class="n">mask_buffer</span>       <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">COPY_READ_ONLY</span><span class="p">,</span>  <span class="n">hostbuf</span><span class="o">=</span><span class="n">mask_array</span><span class="p">)</span>
+    <span class="n">mapping_buffer</span>    <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">COPY_READ_ONLY</span><span class="p">,</span>  <span class="n">hostbuf</span><span class="o">=</span><span class="n">mapping_array</span><span class="p">)</span>
+    <span class="n">label_buffer</span>      <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">COPY_READ_ONLY</span><span class="p">,</span>  <span class="n">hostbuf</span><span class="o">=</span><span class="n">label_array</span><span class="p">)</span>
+    <span class="n">traj_length_buffer</span><span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">COPY_READ_WRITE</span><span class="p">,</span> <span class="n">hostbuf</span><span class="o">=</span><span class="n">traj_length_array</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">seed_point_buffer</span><span class="p">,</span> <span class="n">uv_buffer</span><span class="p">,</span> <span class="n">mask_buffer</span><span class="p">,</span> 
+            <span class="n">mapping_buffer</span><span class="p">,</span> <span class="n">label_buffer</span><span class="p">,</span> <span class="n">traj_length_buffer</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">Streamlines</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Topographic streamline mapping of landscape structure</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <br>
+  <p class="biglink"><a class="biglink" href="../py-modindex.html">
+         Module Index</a>
+  <br><br>
+  <h3><a href="../index.html">Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">lengths.py</span></code></a><ul>
+<li><a class="reference internal" href="#module-streamlines.lengths">Usage</a></li>
+<li><a class="reference internal" href="#code">Code</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related</h3>
+<ul>
+  <li><a href="../index.html"></a><ul>
+      <li><a href="segment.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">segment.py</span></code></a></li>
+      <li><a href="integration.cl.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">integration.cl</span></code></a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, CPS.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/modules/lengths.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
