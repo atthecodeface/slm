@@ -1,3 +1,6 @@
-# README #
+# slm: Streamline Mapping of Landscape Structure  #
 
-Using 2d flow field streamlines to find channel heads and measure hillslope length distributions on lidar DTMs
+Tools to map landscape structure founded on the use of topographic streamline tracing.
+
+   - [Python documentation](https://cstarknyc.github.io/slm)
+   - [OpenCL documentation](https://github.com/cstarknyc/slm/base)
