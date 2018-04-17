@@ -1,8 +1,11 @@
 # Streamline Mapping of Landscape Structure: slm  #
 
-The **slm** package provides a set of tools to map landscape structure using topographic streamline tracing. These tools are implemented in Python, OpenCL and OCaml.
+The **slm** package provides a set of tools to map landscape structure using topographic streamline tracing. These tools are implemented in Python, OpenCL and OCaml. The main documentation can be found [here](https://cstarknyc.github.io/slm).
 
 ***proviso:*** *this is a work in progress *
+
+This is the main **slm** code base repository. Companion repos house [Jupyter notebooks](https://github.com/cstarknyc/slmnb) and [DTM  data](https://github.com/cstarknyc/slmdata) (lidar digital terrain model).
+
 
 ## What **slm** can do
 
@@ -21,19 +24,6 @@ Capabilities available now or anticipated soon include:
       - will be able to resolve hillslope-channel transitions and approximate channel flow geometry
       - speed will be a challenge
 
-## Documentation
-
-   - [**slm** hub](https://cstarknyc.github.io/slm)
-      - core documentation of **slm** idea, implementation and example results
-      - links to Jupyter notebook demos
-      - documents the **Python** portion of the code
-   - [OpenCL docs](https://cstarknyc.github.io/slm/base)
-      - documents the OpenCL kernels and related functions used in **slm** 
-      - generated with Doxygen 
-   - [OCaml docs](https://cstarknyc.github.io/slm/ocaml)
-      - not yet implemented
-      - will document the OCaml portion of **slm**
-
 ## Code base
 
 **slm** has a code base founded on:
@@ -48,5 +38,19 @@ Capabilities available now or anticipated soon include:
        - porting currently underway
        - will work with common OpenCL code base
    
-The main repository is located here. Companion repos house [Jupyter notebooks](https://github.com/cstarknyc/slmnb) and [DTM  data](https://github.com/cstarknyc/slmdata) (lidar digital terrain model).
+
+## Documentation
+
+   - [**slm** hub](https://cstarknyc.github.io/slm)
+      - core documentation of **slm** idea, implementation and example results
+      - links to Jupyter notebook demos
+      - documents the **Python** portion of the code
+   - [OpenCL docs](https://cstarknyc.github.io/slm/base)
+      - documents the OpenCL kernels and related functions used in **slm** 
+      - generated with Doxygen 
+   - [OCaml docs](https://cstarknyc.github.io/slm/ocaml)
+      - not yet implemented
+      - will document the OCaml portion of **slm**
+
+
 
