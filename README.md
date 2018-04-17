@@ -15,8 +15,11 @@ Capabilities available now or anticipated soon include:
  
  Longer-term applications include:
    - kinematic mapping of surface water flow depth
-      - with the goal of estimating channel inundation, in contrast to typical GIS methods of DTM flow routing which have no sense of channel width or flow geometry
+      - the main goal is to estimate channel inundation and flow geometry in lidar DTMs
+      - contrasts with typical GIS methods of DTM flow routing which have no sense of channel flow geometry
    - deployment of these methods in a landscape evolution model
+      - will be able to resolve hillslope-channel transitions and approximate channel flow geometry
+      - speed will be a challenge
 
 ## Documentation
 
