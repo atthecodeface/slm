@@ -4,7 +4,7 @@ The **slm** package provides a set of tools to map landscape structure using top
 
 ***proviso:*** *this is a work in progress *
 
-This is the main **slm** code base repository. Companion repos house [Jupyter notebooks](https://github.com/cstarknyc/slmnb) and [DTM  data](https://github.com/cstarknyc/slmdata) (lidar digital terrain model).
+The git repo here is the main **slm** code base repository. Companion repos house [Jupyter notebooks](https://github.com/cstarknyc/slmnb) and [DTM  data](https://github.com/cstarknyc/slmdata) (lidar digital terrain model).
 
 
 ## What **slm** can do
