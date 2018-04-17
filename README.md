@@ -5,11 +5,11 @@ The main repository is located here; companion repos house [Jupyter notebooks](h
 
 *proviso:* this is a work in progress
 
-   - [**slm** home](https://cstarknyc.github.io/slm)
+   - [**slm** hub](https://cstarknyc.github.io/slm)
       - explains how **slm** works, linking to Jupyter notebook examples
       - provides documentation of the **Python** portion of the code
-   - [OpenCL hub](https://cstarknyc.github.io/slm/base)
-      - documents the OpenCL kernels and related CL code used by **slm** 
+   - [OpenCL docs](https://cstarknyc.github.io/slm/base)
+      - documents the OpenCL kernels and related functions used in **slm** 
       - generated with Doxygen 
 
 
