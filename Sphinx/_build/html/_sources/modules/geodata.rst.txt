@@ -19,4 +19,4 @@ Usage
 
 Code
 -------
-.. literalinclude:: ../../../python/streamlines/geodata.py
+.. literalinclude:: ../../python/streamlines/geodata.py

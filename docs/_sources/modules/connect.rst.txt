@@ -12,4 +12,4 @@ Usage
 Code
 -------
 
-.. literalinclude:: ../../../python/streamlines/connect.py
+.. literalinclude:: ../../python/streamlines/connect.py

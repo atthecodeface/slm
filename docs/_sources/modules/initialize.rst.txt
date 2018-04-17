@@ -6,4 +6,4 @@
    
 Code
 -------
-.. literalinclude:: ../../../python/streamlines/initialize.py
+.. literalinclude:: ../../python/streamlines/initialize.py

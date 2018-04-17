@@ -11,4 +11,4 @@ Usage
 
 Code
 -------
-.. literalinclude:: ../../../python/streamlines/core.py
+.. literalinclude:: ../../python/streamlines/core.py

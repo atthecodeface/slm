@@ -2,4 +2,4 @@
 ========================
 
 
-.. literalinclude:: ../../../opencl/lengths.cl
+.. literalinclude:: ../../opencl/lengths.cl

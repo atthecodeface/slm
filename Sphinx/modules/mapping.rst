@@ -18,4 +18,4 @@ Usage
 
 Code
 -------
-.. literalinclude:: ../../../python/streamlines/mapping.py
+.. literalinclude:: ../../python/streamlines/mapping.py

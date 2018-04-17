@@ -14,4 +14,4 @@ Usage
 Code
 -------
 
-.. literalinclude:: ../../../python/streamlines/run.py
+.. literalinclude:: ../../python/streamlines/run.py

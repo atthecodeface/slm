@@ -227,10 +227,10 @@ Indexes and search
 * :ref:`genindex`
 * :ref:`search`
 
-.. _Several example notebooks: https://github.com/cstarknyc/Streamlines/blob/master/Tests
-.. _Streamlines repo: https://github.com/cstarknyc/Streamlines
-.. _Streamlines: https://github.com/cstarknyc/Streamlines
-.. _streamlines package directory: https://github.com/cstarknyc/Streamlines/tree/master/streamlines
+.. _Several example notebooks: https://github.com/cstarknyc/slmnb/blob/master/Tests
+.. _Streamlines repo: https://github.com/cstarknyc/slm
+.. _Streamlines: https://github.com/cstarknyc/slm
+.. _streamlines package directory: https://github.com/cstarknyc/slm/python/streamlines
 .. _fluid dynamics sense: https://en.wikipedia.org/wiki/Streamlines,_streaklines,_and_pathlines
 .. _IndianCreekDemo1.ipynb: https://github.com/cstarknyc/Streamlines/blob/master/Tests/IndianCreekDemo1.ipynb
 .. _IndianCreekDemo2.ipynb: https://github.com/cstarknyc/Streamlines/blob/master/Tests/IndianCreekDemo2.ipynb
@@ -242,7 +242,7 @@ Indexes and search
 .. _PyOpenCL: https://documen.tician.de/pyopencl/index.html
 .. _OpenCL: https://www.khronos.org/opencl
 .. _@jit: http://numba.pydata.org/numba-doc/dev/user/jit.html
-.. _Doxygen documentation: https://cstarknyc.github.io/Streamlines/doxygen/index.html
+.. _Doxygen documentation: https://cstarknyc.github.io/slm/base/index.html
 
 References
 **********

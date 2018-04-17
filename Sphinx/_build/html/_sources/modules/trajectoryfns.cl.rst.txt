@@ -2,4 +2,4 @@
 ========================
 
 
-.. literalinclude:: ../../../opencl/trajectoryfns.cl
+.. literalinclude:: ../../opencl/trajectoryfns.cl

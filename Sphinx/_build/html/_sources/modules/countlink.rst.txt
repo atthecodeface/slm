@@ -12,4 +12,4 @@ Usage
 Code
 -------
 
-.. literalinclude:: ../../../python/streamlines/countlink.py
+.. literalinclude:: ../../python/streamlines/countlink.py

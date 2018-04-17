@@ -34,10 +34,10 @@
 <h1>Topographic streamline analysis<a class="headerlink" href="#topographic-streamline-analysis" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>The <a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines</a> project provides a suite of Python tools to study the structure of surface-water flow on large
+<p>The <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> project provides a suite of Python tools to study the structure of surface-water flow on large
 digital terrain models (DTMs). It takes the form of a Python 3 package, some demo Jupyter/IPython notebooks,
 and a custom set of open-source lidar DTM data files for the notebooks to work on.</p>
-<p>The novelty of the <a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines</a> method lies in how it computes the convergence and divergence of terrain driven flow.
+<p>The novelty of the <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> method lies in how it computes the convergence and divergence of terrain driven flow.
 Instead of taking the usual, flow-routing approach at the pixel-scale, it traces topographic streamlines at a sub-pixel resolution
 and then processes them to compute useful properties such as drainage density and hillslope length distributions.</p>
 <p>The streamlines are derived in the <a class="reference external" href="https://en.wikipedia.org/wiki/Streamlines,_streaklines,_and_pathlines">fluid dynamics sense</a> by treating the gradient vector
@@ -48,9 +48,9 @@ It turns out that important geometric and topological properties of the landscap
 these properties. In particular, they help reveal: (1) channel heads and terminations (e.g., on alluvial fans),
 (2) channel density, and (3) hillslope length.</p>
 <img alt="_images/Guadalupe_example1.png" src="_images/Guadalupe_example1.png" />
-<p>A key innovation in <a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines</a> is a tool to overcome non-zero-divergence artefacts that arise
+<p>A key innovation in <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> is a tool to overcome non-zero-divergence artefacts that arise
 when a DTM is preconditioned by having its sinks and pits filled. Pit filling is required of any
-DTM that is to be loaded into and processed by <a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines</a> – much as any flow routing software requires.
+DTM that is to be loaded into and processed by <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> – much as any flow routing software requires.
 The problem is that if the gradient vector field of a ‘corrected’ DTM is computed at the grid resolution,
 there will inevitably be places (particularly at single-diagonal-outflow pixels adjacent to filled pits)
 where gradient vectors <em>appear</em> to converge. If the DTM could be corrected at a sub-pixel resolution (such as
@@ -103,7 +103,7 @@ is that it is excellent preparation for the next step…</p>
 and to adapt the Runge-Kutta integration code into a GPU-compute form.
 This effort was not as tough as expected, since migration to <a class="reference external" href="http://numba.pydata.org/numba-doc/dev/index.html">Numba</a>
 entailed conversion to a form of Python rendered it easy to translate
-into <a class="reference external" href="https://www.khronos.org/opencl">OpenCL</a>. Currently, this GPU-accelerated version of <a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines</a>
+into <a class="reference external" href="https://www.khronos.org/opencl">OpenCL</a>. Currently, this GPU-accelerated version of <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a>
 is <strong>about 1500x faster</strong> than the raw, Pythonic, original Python code.
 Further optimizations are expected to boost the speed further.</p>
 </div>
@@ -122,7 +122,7 @@ Further optimizations are expected to boost the speed further.</p>
 </div>
 <div class="section" id="running-the-code">
 <h3>Running the code<a class="headerlink" href="#running-the-code" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines</a> workflow can be carried out in several ways:</p>
+<p><a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> workflow can be carried out in several ways:</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="documentation/howtorun.html">How to run in a Jupyter notebook,  Jupyter console, QtConsole, or shell.</a></li>
@@ -131,12 +131,12 @@ Further optimizations are expected to boost the speed further.</p>
 </div>
 <div class="section" id="controlling-the-workflow">
 <h3>Controlling the workflow<a class="headerlink" href="#controlling-the-workflow" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines</a> computation and analysis is controlled by supplying workflow parameters and (optionally) command line arguments.
+<p><a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> computation and analysis is controlled by supplying workflow parameters and (optionally) command line arguments.
 The parameters are contained in JSON files that are loaded at the beginning of operations.</p>
 <p>First, default parameter values are assigned by parsing the <a class="reference internal" href="modules/defaults_json.html"><span class="doc">defaults.json</span></a>
-file located in the <a class="reference external" href="https://github.com/cstarknyc/Streamlines/tree/master/streamlines">streamlines package directory</a>.
+file located in the <a class="reference external" href="https://github.com/cstarknyc/slm/python/streamlines">streamlines package directory</a>.
 Second, a ‘job’ parameters file is parsed that overrides the default values where needed.
-Third, key workflow parameters may be assigned when invoking <a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines</a> computation from the command line or
+Third, key workflow parameters may be assigned when invoking <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> computation from the command line or
 with an explicit Python call from a script or notebook. Such options override the JSON-parsed values.</p>
 <p>Here is an example sequence of files in which parameters are assigned and streamline computation,
 postprocessing and plotting are carried out:</p>
@@ -153,7 +153,7 @@ postprocessing and plotting are carried out:</p>
 </div>
 <div class="section" id="explanation-of-python-modules-and-opencl-programs">
 <h3>Explanation of Python modules and OpenCL programs<a class="headerlink" href="#explanation-of-python-modules-and-opencl-programs" title="Permalink to this headline">¶</a></h3>
-<p>The <a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines</a> Python package is built around the following:</p>
+<p>The <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> Python package is built around the following:</p>
 <ul class="simple">
 <li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
 </ul>
@@ -202,7 +202,7 @@ consists of the following:</p>
 <li class="toctree-l1"><a class="reference internal" href="modules/integrationfns.cl.html"><code class="docutils literal notranslate"><span class="pre">integrationfns.cl</span></code></a></li>
 </ul>
 </div>
-<p>The OpenCL code is best explored in the <a class="reference external" href="https://cstarknyc.github.io/Streamlines/doxygen/index.html">Doxygen documentation</a>.</p>
+<p>The OpenCL code is best explored in the <a class="reference external" href="https://cstarknyc.github.io/slm/base/index.html">Doxygen documentation</a>.</p>
 </div>
 </div>
 <div class="section" id="indexes-and-search">
@@ -252,7 +252,7 @@ consists of the following:</p>
 
 
 
-<p class="blurb">Analyzing the structure of topographic drainage</p>
+<p class="blurb">Topographic streamline mapping of landscape structure</p>
 
 
 

@@ -2,4 +2,4 @@
 ========================
 
 
-.. literalinclude:: ../../../opencl/countlink.cl
+.. literalinclude:: ../../opencl/countlink.cl

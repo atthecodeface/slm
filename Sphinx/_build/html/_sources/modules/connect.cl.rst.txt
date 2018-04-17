@@ -2,4 +2,4 @@
 ========================
 
 
-.. literalinclude:: ../../../opencl/connect.cl
+.. literalinclude:: ../../opencl/connect.cl

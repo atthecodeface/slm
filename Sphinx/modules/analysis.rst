@@ -18,4 +18,4 @@ Usage
 
 Code
 -------
-.. literalinclude:: ../../../python/streamlines/analysis.py
+.. literalinclude:: ../../python/streamlines/analysis.py

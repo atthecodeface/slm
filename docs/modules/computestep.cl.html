@@ -103,6 +103,7 @@
 <span class="c1">///</span>
 <span class="c1">/// @param[in]      dt: delta time step</span>
 <span class="c1">/// @param[in]      uv_array  (float *,  RO): gridded velocity vector components (u,v)</span>
+<span class="c1">/// @param[in,out]  rng_state: RNG state (thus initally the seed) and RNG variate</span>
 <span class="c1">/// @param[in,out]  dxy1_vec: R-K first order delta step vector</span>
 <span class="c1">/// @param[in,out]  dxy2_vec: R-K second order delta step vector</span>
 <span class="c1">/// @param[in,out]  uv1_vec: flow velocity vector at current coordinate (at @p vec)</span>
@@ -159,7 +160,7 @@
 
 
 
-<p class="blurb">Analyzing the structure of topographic drainage</p>
+<p class="blurb">Topographic streamline mapping of landscape structure</p>
 
 
 

@@ -46,7 +46,7 @@ Plotting of results can be fine-tuned::
 
 which yields:
 
-.. image:: ../../images/IndianCreekDemo1_streamlines.png
+.. image:: ../images/IndianCreekDemo1_streamlines.png
 	
 Currently the set of class instances and public methods provided by :obj:`sl <streamlines.streamlining.Streamlining>` are::
 
@@ -61,5 +61,5 @@ GitHub render
 
 See: `IndianCreekDemo1.ipynb`_
 
-.. _IndianCreekDemo1.ipynb: https://github.com/cstarknyc/Streamlines/blob/master/Tests/IndianCreekDemo1.ipynb
-.. _Streamlines: https://github.com/cstarknyc/Streamlines
+.. _IndianCreekDemo1.ipynb: https://github.com/cstarknyc/slmnb/blob/master/SmallTests/IndianCreekDemo1.ipynb
+.. _Streamlines: https://github.com/cstarknyc/slm

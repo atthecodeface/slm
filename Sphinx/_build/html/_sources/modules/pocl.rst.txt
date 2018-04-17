@@ -12,4 +12,4 @@ Usage
 
 Code
 -------
-.. literalinclude:: ../../../python/streamlines/pocl.py
+.. literalinclude:: ../../python/streamlines/pocl.py

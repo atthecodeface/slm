@@ -111,7 +111,7 @@ html_theme_options = {
 #     'logo' : '../_images/icon1.png',
     'logo' : '../_images/icon2.png',
     'logo_name' : 'true',
-    'description' : 'Analyzing the structure of topographic drainage',
+    'description' : 'Topographic streamline mapping of landscape structure',
     'description_font_style' : 'italic',
     'show_related' : 'true',
     'code_font_size' : '0.7em',

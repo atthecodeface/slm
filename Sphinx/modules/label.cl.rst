@@ -2,4 +2,4 @@
 ========================
 
 
-.. literalinclude:: ../../../opencl/label.cl
+.. literalinclude:: ../../opencl/label.cl

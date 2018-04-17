@@ -13,4 +13,4 @@ Usage
 
 Code
 -------
-.. literalinclude:: ../../../python/streamlines/preprocess.py
+.. literalinclude:: ../../python/streamlines/preprocess.py

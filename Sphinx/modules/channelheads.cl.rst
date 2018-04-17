@@ -2,4 +2,4 @@
 ========================
 
 
-.. literalinclude:: ../../../opencl/channelheads.cl
+.. literalinclude:: ../../opencl/channelheads.cl

@@ -12,4 +12,4 @@ Usage
 
 Code
 -------
-.. literalinclude:: ../../../python/streamlines/streamlining.py
+.. literalinclude:: ../../python/streamlines/streamlining.py

@@ -12,4 +12,4 @@ Usage
 Code
 -------
 
-.. literalinclude:: ../../../python/streamlines/lengths.py
+.. literalinclude:: ../../python/streamlines/lengths.py

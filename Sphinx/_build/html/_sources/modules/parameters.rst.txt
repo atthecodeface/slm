@@ -11,4 +11,4 @@ Usage
 
 Code
 -------
-.. literalinclude:: ../../../python/streamlines/parameters.py
+.. literalinclude:: ../../python/streamlines/parameters.py

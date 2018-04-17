@@ -11,4 +11,4 @@ TBD
 Source
 -------
 
-.. literalinclude:: ../../../python/streamlines/defaults.json
+.. literalinclude:: ../../python/streamlines/defaults.json

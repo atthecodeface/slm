@@ -2,4 +2,4 @@
 ========================
 
 
-.. literalinclude:: ../../../opencl/integrationfns.cl
+.. literalinclude:: ../../opencl/integrationfns.cl

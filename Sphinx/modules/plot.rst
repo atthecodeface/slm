@@ -18,4 +18,4 @@ Usage
 
 Code
 -------
-.. literalinclude:: ../../../python/streamlines/plot.py
+.. literalinclude:: ../../python/streamlines/plot.py
