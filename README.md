@@ -1,7 +1,7 @@
 # Streamline Mapping of Landscape Structure: slm  #
 
 The **slm** package provides a set of tools to map landscape structure using topographic streamline tracing.
-The main repository is located here; companion repos house [Jupyter notebooks](https:://github.com/cstarknyc/slmnb) and [DTM  data](https:://github.com/cstarknyc/slmdata) (lidar digital terrain model).
+The main repository is located here; companion repos house [Jupyter notebooks](https://github.com/cstarknyc/slmnb) and [DTM  data](https://github.com/cstarknyc/slmdata) (lidar digital terrain model).
 
 ***proviso:*** *this is a work in progress *
 
