@@ -13,9 +13,9 @@ Capabilities available now or anticipated soon include:
    - flow routing over pit-prone and divergent topography such as alluvial fans
    - GPU accelerated processing of large DTM data sets
  
- Longer-term applications include:
+ Longer-term goals include:
    - kinematic mapping of surface water flow depth
-      - the main goal is to estimate channel inundation and flow geometry in lidar DTMs
+      - the main aim is to estimate channel inundation and flow geometry in lidar DTMs
       - contrasts with typical GIS methods of DTM flow routing which have no sense of channel flow geometry
    - deployment of these methods in a landscape evolution model
       - will be able to resolve hillslope-channel transitions and approximate channel flow geometry
