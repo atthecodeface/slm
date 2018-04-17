@@ -3,4 +3,4 @@
 Tools to map landscape structure founded on the use of topographic streamline tracing.
 
    - [Python documentation](https://cstarknyc.github.io/slm)
-   - [OpenCL documentation](https://github.com/cstarknyc/slm/base)
+   - [OpenCL documentation](https://cstarknyc.github.io/slm/base)
