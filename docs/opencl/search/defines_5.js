@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['initialize_5frng',['INITIALIZE_RNG',['../integration_8cl.html#a218a217b80b23b0e2e864733ac5d1c65',1,'integration.cl']]],
+  ['integration_5fhalt_5fthreshold',['INTEGRATION_HALT_THRESHOLD',['../info_8h.html#a7029b187d4fcd092671e19a5e4e91468',1,'info.h']]],
+  ['integrator_5fstep_5ffactor',['INTEGRATOR_STEP_FACTOR',['../info_8h.html#a5b63c75c23aa6ed071c7261102b9c211',1,'info.h']]],
+  ['interchannel_5fmax_5fn_5fsteps',['INTERCHANNEL_MAX_N_STEPS',['../info_8h.html#addf1a1e2da1ce771163794de2d55bb88',1,'info.h']]],
+  ['is_5fblockage',['IS_BLOCKAGE',['../info_8h.html#a5e2a3b150bc86ea0e82c7c94d3300ca3',1,'info.h']]],
+  ['is_5fchannel',['IS_CHANNEL',['../info_8h.html#afe24611b1e8d7484d4c9cd3cdefc2284',1,'info.h']]],
+  ['is_5fchannelhead',['IS_CHANNELHEAD',['../info_8h.html#a65c38f1fef8997f0fee7a0c213fe0d48',1,'info.h']]],
+  ['is_5fchanneltail',['IS_CHANNELTAIL',['../info_8h.html#a6b0b8037032293b572ab88ef7cd8004e',1,'info.h']]],
+  ['is_5finterchannel',['IS_INTERCHANNEL',['../info_8h.html#abec780b35f86d1fec1d5457d6b48acdd',1,'info.h']]],
+  ['is_5fleftflank',['IS_LEFTFLANK',['../info_8h.html#adff45cac13bd04a939f9b9a0e64f3933',1,'info.h']]],
+  ['is_5floop',['IS_LOOP',['../info_8h.html#af31f6c0dd74f37c47e73e052632dcaba',1,'info.h']]],
+  ['is_5fmajorconfluence',['IS_MAJORCONFLUENCE',['../info_8h.html#a9d6337f181f3200521cc3d979e21b422',1,'info.h']]],
+  ['is_5fmajorinflow',['IS_MAJORINFLOW',['../info_8h.html#a2324da1c8c8dedb873868c82e16dadf9',1,'info.h']]],
+  ['is_5fmidslope',['IS_MIDSLOPE',['../info_8h.html#a59eae2bf8d74045f378ac3c3eb3c29e1',1,'info.h']]],
+  ['is_5fminorconfluence',['IS_MINORCONFLUENCE',['../info_8h.html#a22111a764ae41b5947329be44ce7e422',1,'info.h']]],
+  ['is_5fminorinflow',['IS_MINORINFLOW',['../info_8h.html#a66bcf9e569791f8a33204a6b0f1b476c',1,'info.h']]],
+  ['is_5fridge',['IS_RIDGE',['../info_8h.html#ab04a06d3c7d9d427908ff62095aec6c8',1,'info.h']]],
+  ['is_5frightflank',['IS_RIGHTFLANK',['../info_8h.html#a55a70c53ce1274cac460779a26815a6f',1,'info.h']]],
+  ['is_5frng_5favailable',['IS_RNG_AVAILABLE',['../rng_8cl.html#ab9831667ba29fbfc9b35bd1da4b30f09',1,'rng.cl']]],
+  ['is_5fstuck',['IS_STUCK',['../info_8h.html#af96b8cdb0a2032867694f921def13634',1,'info.h']]],
+  ['is_5fthinchannel',['IS_THINCHANNEL',['../info_8h.html#a60e10ad08d83b65cdb946e668379ea68',1,'info.h']]]
+];

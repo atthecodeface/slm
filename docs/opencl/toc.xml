@@ -114,6 +114,56 @@
         <topic label="speed_interpolator" href="group__utilities.html#gab8ffb74356cafeb7deb7abb0f08aebfe"/>
         <topic label="uncompress" href="group__utilities.html#ga10a7f12af825614a5cc6e18cfd5661c3"/>
       </topic>
+      <topic label="info.h" href="info_8h.html">
+        <topic label="ADJUSTED_MAX_ERROR" href="info_8h.html#afa5c18b6216038ca6eca567b7c996c7e"/>
+        <topic label="C_ORDER" href="info_8h.html#ab1aa8c5005d248ec090e2106a1534443"/>
+        <topic label="COMBO_FACTOR" href="info_8h.html#ae892c769a1d92df02fba4e4e71ef4215"/>
+        <topic label="DOWNUP_SIGN" href="info_8h.html#a1ed385c34bb836ce02ce96cbc54c2d13"/>
+        <topic label="DT_MAX" href="info_8h.html#a5816b7cc63b81f2d154265d218ba5306"/>
+        <topic label="GRID_SCALE" href="info_8h.html#ad7682259ff3e2c7f0c1608f8319bf0b4"/>
+        <topic label="INTEGRATION_HALT_THRESHOLD" href="info_8h.html#a7029b187d4fcd092671e19a5e4e91468"/>
+        <topic label="INTEGRATOR_STEP_FACTOR" href="info_8h.html#a5b63c75c23aa6ed071c7261102b9c211"/>
+        <topic label="INTERCHANNEL_MAX_N_STEPS" href="info_8h.html#addf1a1e2da1ce771163794de2d55bb88"/>
+        <topic label="IS_BLOCKAGE" href="info_8h.html#a5e2a3b150bc86ea0e82c7c94d3300ca3"/>
+        <topic label="IS_CHANNEL" href="info_8h.html#afe24611b1e8d7484d4c9cd3cdefc2284"/>
+        <topic label="IS_CHANNELHEAD" href="info_8h.html#a65c38f1fef8997f0fee7a0c213fe0d48"/>
+        <topic label="IS_CHANNELTAIL" href="info_8h.html#a6b0b8037032293b572ab88ef7cd8004e"/>
+        <topic label="IS_INTERCHANNEL" href="info_8h.html#abec780b35f86d1fec1d5457d6b48acdd"/>
+        <topic label="IS_LEFTFLANK" href="info_8h.html#adff45cac13bd04a939f9b9a0e64f3933"/>
+        <topic label="IS_LOOP" href="info_8h.html#af31f6c0dd74f37c47e73e052632dcaba"/>
+        <topic label="IS_MAJORCONFLUENCE" href="info_8h.html#a9d6337f181f3200521cc3d979e21b422"/>
+        <topic label="IS_MAJORINFLOW" href="info_8h.html#a2324da1c8c8dedb873868c82e16dadf9"/>
+        <topic label="IS_MIDSLOPE" href="info_8h.html#a59eae2bf8d74045f378ac3c3eb3c29e1"/>
+        <topic label="IS_MINORCONFLUENCE" href="info_8h.html#a22111a764ae41b5947329be44ce7e422"/>
+        <topic label="IS_MINORINFLOW" href="info_8h.html#a66bcf9e569791f8a33204a6b0f1b476c"/>
+        <topic label="IS_RIDGE" href="info_8h.html#ab04a06d3c7d9d427908ff62095aec6c8"/>
+        <topic label="IS_RIGHTFLANK" href="info_8h.html#a55a70c53ce1274cac460779a26815a6f"/>
+        <topic label="IS_STUCK" href="info_8h.html#af96b8cdb0a2032867694f921def13634"/>
+        <topic label="IS_THINCHANNEL" href="info_8h.html#a60e10ad08d83b65cdb946e668379ea68"/>
+        <topic label="JITTER_MAGNITUDE" href="info_8h.html#af86ec458e29ef8ba246ab5222fb59950"/>
+        <topic label="KERNEL_INTEGRATE_TRAJECTORY" href="info_8h.html#aa37d319c49bdb627cfa7217072fa8d79"/>
+        <topic label="LEFT_FLANK_ADDITION" href="info_8h.html#a3ba1afb626461abdad96b3e5377b2217"/>
+        <topic label="MAX_INTEGRATION_STEP_ERROR" href="info_8h.html#a199fbea8bad0e8f483901c5f99f9c236"/>
+        <topic label="MAX_LENGTH" href="info_8h.html#a7a9a231e30b47bc0345749c8bd1e5077"/>
+        <topic label="MAX_N_STEPS" href="info_8h.html#aa520e7d2bbd52cb5a59f0a37d763ac61"/>
+        <topic label="NX" href="info_8h.html#a4a9d32ff035c82119003134767948ebf"/>
+        <topic label="NX_PADDED" href="info_8h.html#a097d2f764569967cb7f4163c71753fe9"/>
+        <topic label="NXF" href="info_8h.html#ae7d277bb544d97b74031c74848b52937"/>
+        <topic label="NY" href="info_8h.html#a652e87ecc9140879666ae9d6bf4ca893"/>
+        <topic label="NY_PADDED" href="info_8h.html#a5d56a5e01e48676ac7171c0128423848"/>
+        <topic label="NYF" href="info_8h.html#adbbaca9b1a432aa1dfc7814c195084ee"/>
+        <topic label="PAD_WIDTH" href="info_8h.html#a1ce80098bab64d1fd48831d9df573db2"/>
+        <topic label="PAD_WIDTH_PP5" href="info_8h.html#a2f3110d62f1233a99875b2dc34e88985"/>
+        <topic label="PIXEL_SIZE" href="info_8h.html#a139400013c795fbea5304c0bdbe51591"/>
+        <topic label="SEEDS_CHUNK_OFFSET" href="info_8h.html#a724882f19d14e11c6b46e16adae24f87"/>
+        <topic label="SEGMENTATION_THRESHOLD" href="info_8h.html#ae70cf79fe9565b0344abfa6cb9820849"/>
+        <topic label="SUBPIXEL_SEED_HALFSPAN" href="info_8h.html#ac3e81dfbcd3a35a3bc01e5dd907938b1"/>
+        <topic label="SUBPIXEL_SEED_POINT_DENSITY" href="info_8h.html#ad4ea05325ef61e5f3607512c915feaf5"/>
+        <topic label="SUBPIXEL_SEED_STEP" href="info_8h.html#abd9ec42ac83cf266c5409f9283d0d5e4"/>
+        <topic label="TRAJECTORY_RESOLUTION" href="info_8h.html#ab23da5d42af6ad6b7e51241d55697f24"/>
+        <topic label="X_MAX" href="info_8h.html#a4fcc42e3f93581eb0459cb359adebc54"/>
+        <topic label="Y_MAX" href="info_8h.html#a7296ba9091427ae54bab4bcbb1dc87e1"/>
+      </topic>
       <topic label="integration.cl" href="integration_8cl.html">
         <topic label="BYTE_REVERSAL" href="integration_8cl.html#affea0134fda21156861844681ddf1dab"/>
         <topic label="INITIALIZE_RNG" href="integration_8cl.html#a218a217b80b23b0e2e864733ac5d1c65"/>

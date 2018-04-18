@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['readme',['README',['../index.html',1,'']]],
-  ['readme_2emd',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
-  ['rng_2ecl',['rng.cl',['../rng_8cl.html',1,'']]],
-  ['runge_5fkutta_5fstep_5frecord',['runge_kutta_step_record',['../group__integrationfns.html#gaaecec4f2a2f408e1900d3fe1c74b5564',1,'integrationfns.cl']]],
-  ['runge_5fkutta_5fstep_5fwrite_5fsl_5fdata',['runge_kutta_step_write_sl_data',['../group__integrationfns.html#ga5c6e160622f8f2ae7e475ba6bbca93e2',1,'integrationfns.cl']]]
+  ['map_5fchannel_5fheads',['map_channel_heads',['../group__structure.html#gaaae698cca4f7472417e66fd0c0f62f35',1,'channelheads.cl']]],
+  ['max_5fintegration_5fstep_5ferror',['MAX_INTEGRATION_STEP_ERROR',['../info_8h.html#a199fbea8bad0e8f483901c5f99f9c236',1,'info.h']]],
+  ['max_5flength',['MAX_LENGTH',['../info_8h.html#a7a9a231e30b47bc0345749c8bd1e5077',1,'info.h']]],
+  ['max_5fn_5fsteps',['MAX_N_STEPS',['../info_8h.html#aa520e7d2bbd52cb5a59f0a37d763ac61',1,'info.h']]]
 ];

@@ -1,9 +1,8 @@
 var searchData=
 [
-  ['todo_20list',['Todo List',['../todo.html',1,'']]],
-  ['trajectory_2ecl',['trajectory.cl',['../trajectory_8cl.html',1,'']]],
-  ['trajectory_5fjittered',['trajectory_jittered',['../group__integrate.html#ga1cac4ae2a97e70dfd2ce199f47babdda',1,'trajectory.cl']]],
-  ['trajectory_5frecord',['trajectory_record',['../group__integrate.html#gaa24b212d74a2d5d9807e4e035d80a779',1,'trajectory.cl']]],
-  ['trajectory_20stepping_20and_20recording_20functions',['Trajectory stepping and recording functions',['../group__trajectoryfns.html',1,'']]],
-  ['trajectoryfns_2ecl',['trajectoryfns.cl',['../trajectoryfns_8cl.html',1,'']]]
+  ['pad_5fwidth',['PAD_WIDTH',['../info_8h.html#a1ce80098bab64d1fd48831d9df573db2',1,'info.h']]],
+  ['pad_5fwidth_5fpp5',['PAD_WIDTH_PP5',['../info_8h.html#a2f3110d62f1233a99875b2dc34e88985',1,'info.h']]],
+  ['pixel_5fsize',['PIXEL_SIZE',['../info_8h.html#a139400013c795fbea5304c0bdbe51591',1,'info.h']]],
+  ['prune_5fchannel_5fheads',['prune_channel_heads',['../group__structure.html#ga035332b3153898e70fcac0e461e8f354',1,'channelheads.cl']]],
+  ['push_5fto_5fexit',['push_to_exit',['../group__structure.html#gab8409b87fdc1529c97cf54404bc90a6f',1,'connect.cl']]]
 ];

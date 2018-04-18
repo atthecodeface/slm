@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['c_5forder',['C_ORDER',['../info_8h.html#ab1aa8c5005d248ec090e2106a1534443',1,'info.h']]],
   ['channelheads_2ecl',['channelheads.cl',['../channelheads_8cl.html',1,'']]],
   ['channelheads_5frunge_5fkutta_5fstep',['channelheads_runge_kutta_step',['../group__integrationfns.html#gadcd00b67baaba288308ac539c0d1865a',1,'integrationfns.cl']]],
   ['check_5fatomic_5fwrite_5fsl_5fdata',['check_atomic_write_sl_data',['../group__trajectoryfns.html#gae3f9144f7c46193372392c735ffb97cb',1,'writearray.cl']]],
@@ -41,6 +42,7 @@ var searchData=
   ['check_5fw_5fexit',['CHECK_W_EXIT',['../connect_8cl.html#a670f01b2e25d052ac466dea068082810',1,'connect.cl']]],
   ['check_5fw_5finflows',['CHECK_W_INFLOWS',['../label_8cl.html#a1b5143b419ab9021a4ecb7bb222ba268',1,'label.cl']]],
   ['check_5fw_5ftail',['CHECK_W_TAIL',['../connect_8cl.html#a97d7785f6a333df7ca5fa90223747292',1,'connect.cl']]],
+  ['combo_5ffactor',['COMBO_FACTOR',['../info_8h.html#ae892c769a1d92df02fba4e4e71ef4215',1,'info.h']]],
   ['compress',['compress',['../group__utilities.html#gaaf9e48f0cabb7a5e6564668fcd185da2',1,'essentials.cl']]],
   ['compute_5fstep_5fvec',['compute_step_vec',['../group__trajectoryfns.html#ga0703283bcf8a1103a79cb05b588fd7f9',1,'computestep.cl']]],
   ['compute_5fstep_5fvec_5fjittered',['compute_step_vec_jittered',['../group__trajectoryfns.html#gab0553783468d443cb59eb5d5587996e2',1,'computestep.cl']]],
