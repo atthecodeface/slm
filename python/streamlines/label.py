@@ -38,7 +38,10 @@ def label_confluences( cl_src_path, which_cl_platform, which_cl_device, info_str
         verbose (bool):
         
     """
-    vprint(verbose,'Labeling confluences...',end='')
+    vprint(verbose,'Labeling confluences...',end='',flush=True)
+    # Try to really force this line to print before the GPU prints debug info
+    import sys
+    sys.stdout.flush()
     
     # Prepare CL essentials
     platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)

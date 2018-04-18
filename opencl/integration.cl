@@ -16,11 +16,6 @@
 ///
 
 ///
-/// @defgroup kernels OpenCL kernels
-/// Kernels built and executed from Python using PyOpenCL
-///
-
-///
 /// Byte reversal
 ///
 /// Macro to perform byte reversal per GJS's suggestion.
@@ -88,7 +83,7 @@
 ///
 /// @returns void
 ///
-/// @ingroup kernels integrate
+/// @ingroup integrate
 ///
 __kernel void integrate_trajectory( __global const float2 *seed_point_array,
                                     __global const bool   *mask_array,

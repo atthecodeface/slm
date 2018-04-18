@@ -29,7 +29,7 @@
 ///
 /// @returns void
 ///
-/// @ingroup kernels structure
+/// @ingroup structure
 ///
 __kernel void count_downchannels(
         __global const float2 *seed_point_array,
@@ -80,7 +80,7 @@ __kernel void count_downchannels(
             prev_idx = idx;
         }
     }
-    atomic_xchg(&link_array[prev_idx],idx);
+    if (!mask_array[prev_idx]) atomic_xchg(&link_array[prev_idx],idx);
     return;
 }
 #endif
@@ -100,7 +100,7 @@ __kernel void count_downchannels(
 ///
 /// @returns void
 ///
-/// @ingroup kernels structure
+/// @ingroup structure
 ///
 __kernel void flag_downchannels(
         __global const float2 *seed_point_array,
@@ -127,12 +127,17 @@ __kernel void flag_downchannels(
     while (!mask_array[idx] && prev_idx!=idx) {
         prev_idx = idx;
         idx = link_array[idx];
-        atomic_or(&mapping_array[idx],IS_THINCHANNEL);
-        atomic_max(&count_array[idx],counter++);
+        // Assume this idx is on the grid?
+        if (!mask_array[idx]) {
+            atomic_or(&mapping_array[idx],IS_THINCHANNEL);
+            atomic_max(&count_array[idx],counter++);
+        } else {
+            break;
+        }
     }
     // We have just stepped onto a masked pixel, so let's tag the previous pixel
     //    as a channel tail
-    atomic_or(&mapping_array[prev_idx],IS_CHANNELTAIL);
+    if (!mask_array[prev_idx]) atomic_or(&mapping_array[prev_idx],IS_CHANNELTAIL);
     return;
 }
 #endif
@@ -156,7 +161,7 @@ __kernel void flag_downchannels(
 ///
 /// @returns void
 ///
-/// @ingroup kernels structure
+/// @ingroup structure
 ///
 __kernel void link_hillslopes(
         __global const float2 *seed_point_array,
@@ -192,7 +197,7 @@ __kernel void link_hillslopes(
         n_steps++;
     }
     // If we're on a new pixel, link previous pixel to here
-    if (prev_idx!=idx) {
+    if (prev_idx!=idx && !mask_array[idx]) {
         atomic_xchg(&link_array[prev_idx],idx);
     }
     return;

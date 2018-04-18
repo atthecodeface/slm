@@ -192,7 +192,7 @@ static inline void update_trajectory(
 #ifdef KERNEL_INTEGRATE_TRAJECTORY
 ///
 /// Record the (final) trajectory length and count of integration steps
-///    to global arrays traj_length_array and traj_nsteps_array respectively.
+///    to global arrays @p traj_length_array and @p traj_nsteps_array respectively.
 /// This action takes place at the end of streamline tracing in each integration
 ///    kernel instance.
 ///

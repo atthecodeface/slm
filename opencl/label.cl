@@ -44,7 +44,7 @@
 ///
 /// @returns void
 ///
-/// @ingroup kernels structure
+/// @ingroup structure
 ///
 __kernel void label_confluences(
         __global const float2 *seed_point_array,
@@ -59,9 +59,9 @@ __kernel void label_confluences(
     // For every (redesignated) thin channel pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
-    __private uchar n_inflows=0, n_equal_dominant_inflows=0;
-    __private uint i, idx, nbr_idx, inflows_list[7], equal_dominant_inflows_list[7],
-                   dominant_slt_index=0;
+    __private uchar n_inflows=0u, n_equal_dominant_inflows=0u;
+    __private uint i, idx, nbr_idx, inflows_list[8], equal_dominant_inflows_list[8],
+                   dominant_slt_index=0u;
     __private float dominant_slt=-MAXFLOAT;
     __private float2 vec=seed_point_array[global_id];
 
@@ -91,13 +91,18 @@ __kernel void label_confluences(
             }
         }
         if (n_equal_dominant_inflows==0) {
-            printf("n_equal_dominant_inflows=0 @ %g,%g\n",vec[0]*2,vec[1]*2);
+            printf(
+          "n_equal_dominant_inflows=0 @ %g,%g  idx=%d  mapping=%d & %d= is_thin=%d mask=%d \n",
+                    vec[0],vec[1],
+                    idx,
+                    mapping_array[idx],IS_THINCHANNEL,(mapping_array[idx]&IS_THINCHANNEL),
+                    mask_array[idx],);
             for (i=0;i<n_inflows;i++) {
-                printf("%d=>  %d : %d\n",inflows_list[i],
-                        count_array[inflows_list[i]]+1, count_array[idx]);
+                printf("ifidx=%d   count=%d => %d @ idx=%d\n",inflows_list[i],
+                        count_array[inflows_list[i]], count_array[idx],idx);
             }
             for (i=0;i<n_inflows;i++) {
-                printf("%g : %g\n",slt_array[inflows_list[i]]+1, dominant_slt);
+                printf("slt=%g : domslt=%g\n",slt_array[inflows_list[i]]+1, dominant_slt);
             }
         }
         for (i=0;i<n_equal_dominant_inflows;i++) {

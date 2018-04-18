@@ -1,8 +1,11 @@
 var searchData=
 [
-  ['readme',['README',['../index.html',1,'']]],
-  ['readme_2emd',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
-  ['rng_2ecl',['rng.cl',['../rng_8cl.html',1,'']]],
-  ['runge_5fkutta_5fstep_5frecord',['runge_kutta_step_record',['../group__integrationfns.html#gaaecec4f2a2f408e1900d3fe1c74b5564',1,'integrationfns.cl']]],
-  ['runge_5fkutta_5fstep_5fwrite_5fsl_5fdata',['runge_kutta_step_write_sl_data',['../group__integrationfns.html#ga5c6e160622f8f2ae7e475ba6bbca93e2',1,'integrationfns.cl']]]
+  ['streamline_20integration',['Streamline integration',['../group__integrate.html',1,'']]],
+  ['streamline_20integration_20functions',['Streamline integration functions',['../group__integrationfns.html',1,'']]],
+  ['segment_2ecl',['segment.cl',['../segment_8cl.html',1,'']]],
+  ['segment_5fhillslopes',['segment_hillslopes',['../group__segmentation.html#gac33413c7a084e465caee330d2b1cbce6',1,'segment.cl']]],
+  ['segment_5frunge_5fkutta_5fstep',['segment_runge_kutta_step',['../group__integrationfns.html#gaa1adcee8c81cbc235795cc5b28d0b875',1,'integrationfns.cl']]],
+  ['speed_5finterpolator',['speed_interpolator',['../group__utilities.html#gab8ffb74356cafeb7deb7abb0f08aebfe',1,'essentials.cl']]],
+  ['subsegment_5fchannel_5fedges',['subsegment_channel_edges',['../group__segmentation.html#gac719d4900dc8a990c7c6e450186b27d8',1,'segment.cl']]],
+  ['subsegment_5fflanks',['subsegment_flanks',['../group__segmentation.html#gaba0cfb6bc4bf29f287a4ed0e2ee52943',1,'segment.cl']]]
 ];

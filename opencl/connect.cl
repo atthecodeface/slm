@@ -21,7 +21,7 @@
 ///
 /// @returns void
 ///
-/// @ingroup kernels structure
+/// @ingroup structure
 ///
 __kernel void connect_channels(
         __global const float2 *seed_point_array,
@@ -137,7 +137,7 @@ __kernel void connect_channels(
 ///
 /// @returns void
 ///
-/// @ingroup kernels structure
+/// @ingroup structure
 ///
 __kernel void push_to_exit(
         __global const float2 *seed_point_array,

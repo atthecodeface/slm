@@ -32,7 +32,7 @@
 ///
 /// @returns void
 ///
-/// @ingroup kernels lengths
+/// @ingroup lengths
 ///
 __kernel void hillslope_lengths(
         __global const float2 *seed_point_array,

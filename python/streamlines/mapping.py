@@ -152,7 +152,8 @@ class Mapping(Core):
         self.link_array = np.zeros(self.mapping_array.shape, 
                                    dtype=np.uint32, order=self.state.array_order)
         countlink.count_downchannels(
-                            self.state.cl_src_path,self.state.cl_platform,self.state.cl_device, 
+                            self.state.cl_src_path, self.state.cl_platform,
+                            self.state.cl_device, 
                             self.trace.build_info_struct(),
                             self.geodata.basin_mask_array,
                             self.preprocess.u_array, self.preprocess.v_array,
@@ -162,7 +163,8 @@ class Mapping(Core):
 
     def flag_downchannels(self):
         countlink.flag_downchannels(
-                            self.state.cl_src_path,self.state.cl_platform,self.state.cl_device, 
+                            self.state.cl_src_path, self.state.cl_platform,
+                            self.state.cl_device, 
                             self.trace.build_info_struct(),
                             self.geodata.basin_mask_array,
                             self.preprocess.u_array, self.preprocess.v_array,
@@ -203,7 +205,8 @@ class Mapping(Core):
         
     def link_hillslopes(self):
         countlink.link_hillslopes(
-                            self.state.cl_src_path,self.state.cl_platform,self.state.cl_device, 
+                            self.state.cl_src_path,self.state.cl_platform,
+                            self.state.cl_device, 
                             self.trace.build_info_struct(),
                             self.geodata.basin_mask_array,
                             self.preprocess.u_array, self.preprocess.v_array,

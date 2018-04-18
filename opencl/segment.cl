@@ -33,7 +33,7 @@
 ///
 /// @returns void
 ///
-/// @ingroup kernels segmentation
+/// @ingroup segmentation
 ///
 __kernel void segment_downchannels(
         __global const float2 *seed_point_array,
@@ -103,7 +103,7 @@ __kernel void segment_downchannels(
 ///
 /// @returns void
 ///
-/// @ingroup kernels segmentation
+/// @ingroup segmentation
 ///
 __kernel void segment_hillslopes(
         __global const float2 *seed_point_array,
@@ -164,7 +164,7 @@ __kernel void segment_hillslopes(
 ///
 /// @returns void
 ///
-/// @ingroup kernels segmentation
+/// @ingroup segmentation
 ///
 __kernel void subsegment_channel_edges(
         __global const float2 *seed_point_array,
@@ -267,7 +267,7 @@ __kernel void subsegment_channel_edges(
 ///
 /// @returns void
 ///
-/// @ingroup kernels segmentation
+/// @ingroup segmentation
 ///
 __kernel void subsegment_flanks(
         __global const float2 *seed_point_array,

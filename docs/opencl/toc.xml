@@ -22,8 +22,6 @@
       <topic label="speed_interpolator" href="group__utilities.html#gab8ffb74356cafeb7deb7abb0f08aebfe"/>
       <topic label="uncompress" href="group__utilities.html#ga10a7f12af825614a5cc6e18cfd5661c3"/>
     </topic>
-    <topic label="OpenCL kernels" href="group__kernels.html">
-    </topic>
     <topic label="Streamline integration functions" href="group__integrationfns.html">
       <topic label="channelheads_runge_kutta_step" href="group__integrationfns.html#gadcd00b67baaba288308ac539c0d1865a"/>
       <topic label="connect_kutta_step_record" href="group__integrationfns.html#ga567201f04a71a75ac1a644be1aa0ea1b"/>

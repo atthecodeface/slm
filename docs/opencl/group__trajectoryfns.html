@@ -99,7 +99,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:gab40c6dfbb0a2de0a13131690a7deb847"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update variables tracking trajectory length and integration step counter.  <a href="#gab40c6dfbb0a2de0a13131690a7deb847">More...</a><br /></td></tr>
 <tr class="separator:gab40c6dfbb0a2de0a13131690a7deb847"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaed3e81bb1dd1b28db6e78a7d268fabaf"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__trajectoryfns.html#gaed3e81bb1dd1b28db6e78a7d268fabaf">finalize_trajectory</a> (const uint global_id, uint n_steps, float l_trajectory, __global ushort *traj_nsteps_array, __global float *traj_length_array)</td></tr>
-<tr class="memdesc:gaed3e81bb1dd1b28db6e78a7d268fabaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record the (final) trajectory length and count of integration steps to global arrays traj_length_array and traj_nsteps_array respectively.  <a href="#gaed3e81bb1dd1b28db6e78a7d268fabaf">More...</a><br /></td></tr>
+<tr class="memdesc:gaed3e81bb1dd1b28db6e78a7d268fabaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record the (final) trajectory length and count of integration steps to global arrays <code>traj_length_array</code> and <code>traj_nsteps_array</code> respectively.  <a href="#gaed3e81bb1dd1b28db6e78a7d268fabaf">More...</a><br /></td></tr>
 <tr class="separator:gaed3e81bb1dd1b28db6e78a7d268fabaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2e50e8e36dfa1baa153c943dec5963d2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__trajectoryfns.html#ga2e50e8e36dfa1baa153c943dec5963d2">atomic_write_sl_data</a> (__global uint *slt, __global uint *slc, const float l_trajectory)</td></tr>
 <tr class="memdesc:ga2e50e8e36dfa1baa153c943dec5963d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add the current streamline length (<code>l_trajectory</code>) to the current pixel of the <code>slt</code> accumulation array.  <a href="#ga2e50e8e36dfa1baa153c943dec5963d2">More...</a><br /></td></tr>
@@ -511,7 +511,7 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Record the (final) trajectory length and count of integration steps to global arrays traj_length_array and traj_nsteps_array respectively. </p>
+<p>Record the (final) trajectory length and count of integration steps to global arrays <code>traj_length_array</code> and <code>traj_nsteps_array</code> respectively. </p>
 <p>This action takes place at the end of streamline tracing in each integration kernel instance.</p>
 <p>Compiled if KERNEL_INTEGRATE_TRAJECTORY is defined.</p>
 <dl class="params"><dt>Parameters</dt><dd>

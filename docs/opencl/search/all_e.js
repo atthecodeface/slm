@@ -1,11 +1,9 @@
 var searchData=
 [
-  ['streamline_20integration',['Streamline integration',['../group__integrate.html',1,'']]],
-  ['streamline_20integration_20functions',['Streamline integration functions',['../group__integrationfns.html',1,'']]],
-  ['segment_2ecl',['segment.cl',['../segment_8cl.html',1,'']]],
-  ['segment_5fhillslopes',['segment_hillslopes',['../group__segmentation.html#gac33413c7a084e465caee330d2b1cbce6',1,'segment.cl']]],
-  ['segment_5frunge_5fkutta_5fstep',['segment_runge_kutta_step',['../group__integrationfns.html#gaa1adcee8c81cbc235795cc5b28d0b875',1,'integrationfns.cl']]],
-  ['speed_5finterpolator',['speed_interpolator',['../group__utilities.html#gab8ffb74356cafeb7deb7abb0f08aebfe',1,'essentials.cl']]],
-  ['subsegment_5fchannel_5fedges',['subsegment_channel_edges',['../group__segmentation.html#gac719d4900dc8a990c7c6e450186b27d8',1,'segment.cl']]],
-  ['subsegment_5fflanks',['subsegment_flanks',['../group__segmentation.html#gaba0cfb6bc4bf29f287a4ed0e2ee52943',1,'segment.cl']]]
+  ['todo_20list',['Todo List',['../todo.html',1,'']]],
+  ['trajectory_2ecl',['trajectory.cl',['../trajectory_8cl.html',1,'']]],
+  ['trajectory_5fjittered',['trajectory_jittered',['../group__integrate.html#ga1cac4ae2a97e70dfd2ce199f47babdda',1,'trajectory.cl']]],
+  ['trajectory_5frecord',['trajectory_record',['../group__integrate.html#gaa24b212d74a2d5d9807e4e035d80a779',1,'trajectory.cl']]],
+  ['trajectory_20stepping_20and_20recording_20functions',['Trajectory stepping and recording functions',['../group__trajectoryfns.html',1,'']]],
+  ['trajectoryfns_2ecl',['trajectoryfns.cl',['../trajectoryfns_8cl.html',1,'']]]
 ];

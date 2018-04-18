@@ -28,7 +28,7 @@
 ///
 /// @returns void
 ///
-/// @ingroup kernels structure
+/// @ingroup structure
 ///
 __kernel void map_channel_heads(
         __global const float2 *seed_point_array,
@@ -125,7 +125,7 @@ __kernel void map_channel_heads(
 ///
 /// @returns void
 ///
-/// @ingroup kernels structure
+/// @ingroup structure
 ///
 __kernel void prune_channel_heads(
         __global const float2 *seed_point_array,
