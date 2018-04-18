@@ -19,7 +19,7 @@ __all__ = ['count_downchannels','flag_downchannels','link_hillslopes',
 
 pdebug = print
 
-def count_downchannels( module_path, which_cl_platform, which_cl_device, info_struct, 
+def count_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_struct, 
                         mask_array, u_array, v_array, 
                         mapping_array, count_array, link_array, verbose ):
         
@@ -27,7 +27,7 @@ def count_downchannels( module_path, which_cl_platform, which_cl_device, info_st
     Integrate and count downstream designating downstream links & thin channel status.
     
     Args:
-        module_path (str):
+        cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
         info_struct (numpy.ndarray):
@@ -49,7 +49,7 @@ def count_downchannels( module_path, which_cl_platform, which_cl_device, info_st
                 'integrationfns.cl','countlink.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
-        with open(os.path.join(module_path,cl_file), 'r') as fp:
+        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
             
     # Generate a list (array) of seed points from the set of channel heads
@@ -71,7 +71,7 @@ def count_downchannels( module_path, which_cl_platform, which_cl_device, info_st
     # Done
     vprint(verbose,'done')  
 
-def flag_downchannels( module_path, which_cl_platform, which_cl_device, info_struct, 
+def flag_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_struct, 
                        mask_array, u_array, v_array, 
                        mapping_array, count_array, link_array, verbose ):
         
@@ -79,7 +79,7 @@ def flag_downchannels( module_path, which_cl_platform, which_cl_device, info_str
     Integrate downstream along channels & count pixel steps as we go.
     
     Args:
-        module_path (str):
+        cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
         info_struct (numpy.ndarray):
@@ -101,7 +101,7 @@ def flag_downchannels( module_path, which_cl_platform, which_cl_device, info_str
                 'integrationfns.cl','countlink.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
-        with open(os.path.join(module_path,cl_file), 'r') as fp:
+        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
             
     # Generate a list (array) of seed points from the set of channel heads
@@ -124,7 +124,7 @@ def flag_downchannels( module_path, which_cl_platform, which_cl_device, info_str
     # Done
     vprint(verbose,'done')  
 
-def link_hillslopes( module_path, which_cl_platform, which_cl_device, info_struct, 
+def link_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_struct, 
                      mask_array, u_array, v_array, 
                      mapping_array, count_array, link_array, verbose ):
         
@@ -132,7 +132,7 @@ def link_hillslopes( module_path, which_cl_platform, which_cl_device, info_struc
     Link hillslope pixels downstream.
     
     Args:
-        module_path (str):
+        cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
         info_struct (numpy.ndarray):
@@ -154,7 +154,7 @@ def link_hillslopes( module_path, which_cl_platform, which_cl_device, info_struc
                 'integrationfns.cl','countlink.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
-        with open(os.path.join(module_path,cl_file), 'r') as fp:
+        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
             
     # Generate a list (array) of seed points from all non-thin-channel pixels

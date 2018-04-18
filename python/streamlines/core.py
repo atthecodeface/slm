@@ -51,6 +51,7 @@ class Core():
         """
         # Fetch path to the ``streamlines`` module so we can later find the CL code
         self.path = streamlines.__path__[0]
+        self.cl_src_path = os.path.join(streamlines.__path__[0],'..','..','opencl')
         if state is not None:
             self.state = state
             try:

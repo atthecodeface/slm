@@ -16,7 +16,7 @@ __all__ = ['hillslope_lengths','gpu_compute','prepare_memory']
 
 pdebug = print
 
-def hillslope_lengths( module_path, which_cl_platform, which_cl_device, info_struct, 
+def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_struct, 
                        mask_array, u_array, v_array,
                        mapping_array, label_array, traj_length_array, verbose ):
         
@@ -24,7 +24,7 @@ def hillslope_lengths( module_path, which_cl_platform, which_cl_device, info_str
     Measure mean (half) hillslope lengths.
     
     Args:
-        module_path (str):
+        cl_src_path (str):
         which_cl_platform (int):
         which_cl_device   (int):
         info_struct (numpy.ndarray):
@@ -46,7 +46,7 @@ def hillslope_lengths( module_path, which_cl_platform, which_cl_device, info_str
                 'integrationfns.cl','lengths.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
-        with open(os.path.join(module_path,cl_file), 'r') as fp:
+        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
             
     # Trace downstream from midslope pixels to thin channel pixels, 

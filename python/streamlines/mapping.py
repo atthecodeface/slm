@@ -114,7 +114,7 @@ class Mapping(Core):
 
     def connect_channel_pixels(self):
         connect.connect_channel_pixels(
-                self.state.path, self.state.cl_platform, self.state.cl_device, 
+                self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.trace.build_info_struct(),
                 self.geodata.basin_mask_array,
                 self.preprocess.u_array, self.preprocess.v_array,
@@ -138,7 +138,7 @@ class Mapping(Core):
 
     def map_channel_heads(self):
         connect.map_channel_heads(
-                self.state.path, self.state.cl_platform, self.state.cl_device, 
+                self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.trace.build_info_struct(),
                 self.geodata.basin_mask_array,
                 self.preprocess.u_array, self.preprocess.v_array,
@@ -152,7 +152,7 @@ class Mapping(Core):
         self.link_array = np.zeros(self.mapping_array.shape, 
                                    dtype=np.uint32, order=self.state.array_order)
         countlink.count_downchannels(
-                            self.state.path,self.state.cl_platform,self.state.cl_device, 
+                            self.state.cl_src_path,self.state.cl_platform,self.state.cl_device, 
                             self.trace.build_info_struct(),
                             self.geodata.basin_mask_array,
                             self.preprocess.u_array, self.preprocess.v_array,
@@ -162,7 +162,7 @@ class Mapping(Core):
 
     def flag_downchannels(self):
         countlink.flag_downchannels(
-                            self.state.path,self.state.cl_platform,self.state.cl_device, 
+                            self.state.cl_src_path,self.state.cl_platform,self.state.cl_device, 
                             self.trace.build_info_struct(),
                             self.geodata.basin_mask_array,
                             self.preprocess.u_array, self.preprocess.v_array,
@@ -172,7 +172,7 @@ class Mapping(Core):
 
     def label_confluences(self):
         label.label_confluences(
-                self.state.path, self.state.cl_platform, self.state.cl_device, 
+                self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.trace.build_info_struct(),
                 self.geodata.basin_mask_array,
                 self.preprocess.u_array, self.preprocess.v_array,
@@ -186,7 +186,7 @@ class Mapping(Core):
                                     dtype=np.uint32, order=self.state.array_order)
         self.n_segments \
             = segment.segment_channels(
-                    self.state.path, self.state.cl_platform, self.state.cl_device, 
+                    self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                     self.trace.build_info_struct(),
                     self.geodata.basin_mask_array,
                     self.preprocess.u_array, self.preprocess.v_array,
@@ -203,7 +203,7 @@ class Mapping(Core):
         
     def link_hillslopes(self):
         countlink.link_hillslopes(
-                            self.state.path,self.state.cl_platform,self.state.cl_device, 
+                            self.state.cl_src_path,self.state.cl_platform,self.state.cl_device, 
                             self.trace.build_info_struct(),
                             self.geodata.basin_mask_array,
                             self.preprocess.u_array, self.preprocess.v_array,
@@ -213,7 +213,7 @@ class Mapping(Core):
 
     def segment_hillslopes(self):
         segment.segment_hillslopes(
-                self.state.path, self.state.cl_platform, self.state.cl_device, 
+                self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.trace.build_info_struct(),
                 self.geodata.basin_mask_array,
                 self.preprocess.u_array, self.preprocess.v_array,
@@ -223,7 +223,7 @@ class Mapping(Core):
 
     def subsegment_flanks(self):
         segment.subsegment_flanks(
-                self.state.path, self.state.cl_platform, self.state.cl_device, 
+                self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.trace.build_info_struct(),
                 self.geodata.basin_mask_array,
                 self.preprocess.u_array, self.preprocess.v_array,
@@ -260,7 +260,7 @@ class Mapping(Core):
                                                         order=self.state.array_order)
         
         lengths.hillslope_lengths(
-                self.state.path, self.state.cl_platform, self.state.cl_device, 
+                self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.trace.build_info_struct(),
                 self.geodata.basin_mask_array,
                 self.preprocess.u_array, self.preprocess.v_array,

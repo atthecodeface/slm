@@ -257,7 +257,7 @@ class Trace(Core):
          self.traj_nsteps_array, self.traj_length_array, self.traj_stats_df,
          self.slc_array, self.slt_array, self.sla_array) \
             = integrate_trajectories(
-                self.state.path, self.state.cl_platform, self.state.cl_device, 
+                self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.build_info_struct(),
                 self.seed_point_array, 
                 self.geodata.basin_mask_array,

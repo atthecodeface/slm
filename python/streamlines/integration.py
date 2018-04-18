@@ -27,7 +27,7 @@ import warnings
 pdebug = print
 
 def integrate_trajectories( 
-        module_path, which_cl_platform, which_cl_device, info_struct, 
+        cl_src_path, which_cl_platform, which_cl_device, info_struct, 
         seed_point_array, mask_array, u_array, v_array,  
         do_trace_downstream, do_trace_upstream, verbose
      ):
@@ -51,7 +51,7 @@ def integrate_trajectories(
           and compute streamline trajectories statistics
     
     Args:
-        module_path (str):
+        cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
         info_struct (numpy.ndarray):
@@ -80,7 +80,7 @@ def integrate_trajectories(
                 'integrationfns.cl','trajectory.cl','integration.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
-        with open(os.path.join(module_path,cl_file), 'r') as fp:
+        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
     order = info_struct['array_order'][0]
     if order=='F':

@@ -20,13 +20,13 @@ __all__ = ['connect_channel_pixels','map_channel_heads',
 pdebug = print
 
 def connect_channel_pixels( 
-        module_path, which_cl_platform, which_cl_device, info_struct, 
+        cl_src_path, which_cl_platform, which_cl_device, info_struct, 
         mask_array, u_array, v_array, mapping_array, verbose ):
     """
     Connect missing links between channel pixels.
     
     Args:
-        module_path (str):
+        cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
         info_struct (numpy.ndarray):
@@ -44,7 +44,7 @@ def connect_channel_pixels(
                 'integrationfns.cl','connect.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
-        with open(os.path.join(module_path,cl_file), 'r') as fp:
+        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
             
     # Generate a list (array) of seed points from the set of channel pixels
@@ -68,13 +68,13 @@ def connect_channel_pixels(
     vprint(verbose,'done')  
 
 def map_channel_heads( 
-        module_path, which_cl_platform, which_cl_device, info_struct, 
+        cl_src_path, which_cl_platform, which_cl_device, info_struct, 
         mask_array, u_array, v_array, mapping_array, verbose ):
     """
     Find channel head pixels.
     
     Args:
-        module_path (str):
+        cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
         info_struct (numpy.ndarray):
@@ -93,7 +93,7 @@ def map_channel_heads(
                 'integrationfns.cl','channelheads.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
-        with open(os.path.join(module_path,cl_file), 'r') as fp:
+        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
 
     pad = info_struct['pad_width'][0]

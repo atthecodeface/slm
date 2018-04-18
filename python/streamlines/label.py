@@ -16,7 +16,7 @@ __all__ = ['label_confluences','gpu_compute','prepare_memory']
 
 pdebug = print
 
-def label_confluences( module_path, which_cl_platform, which_cl_device, info_struct, 
+def label_confluences( cl_src_path, which_cl_platform, which_cl_device, info_struct, 
                        mask_array, u_array, v_array, slt_array,
                        mapping_array, count_array, link_array, verbose ):
         
@@ -24,7 +24,7 @@ def label_confluences( module_path, which_cl_platform, which_cl_device, info_str
     Label channel confluences.
     
     Args:
-        module_path (str):
+        cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
         info_struct (numpy.ndarray):
@@ -46,7 +46,7 @@ def label_confluences( module_path, which_cl_platform, which_cl_device, info_str
     cl_files = ['essentials.cl','trajectoryfns.cl','label.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
-        with open(os.path.join(module_path,cl_file), 'r') as fp:
+        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
             
     # Check all thin channel pixels

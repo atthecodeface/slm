@@ -17,7 +17,7 @@ __all__ = ['segment_channels','segment_hillslopes','subsegment_flanks',
 
 pdebug = print
 
-def segment_channels( module_path, which_cl_platform, which_cl_device, info_struct, 
+def segment_channels( cl_src_path, which_cl_platform, which_cl_device, info_struct, 
                           mask_array, u_array, v_array,
                           mapping_array, count_array, link_array, label_array, verbose ):
         
@@ -25,7 +25,7 @@ def segment_channels( module_path, which_cl_platform, which_cl_device, info_stru
     Label channel confluences.
     
     Args:
-        module_path (str):
+        cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
         info_struct (numpy.ndarray):
@@ -48,7 +48,7 @@ def segment_channels( module_path, which_cl_platform, which_cl_device, info_stru
                 'integrationfns.cl','segment.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
-        with open(os.path.join(module_path,cl_file), 'r') as fp:
+        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
             
     # Trace downstream from all channel heads until masked boundary is reachedd
@@ -78,7 +78,7 @@ def segment_channels( module_path, which_cl_platform, which_cl_device, info_stru
     vprint(verbose,'done')  
     return n_segments
 
-def segment_hillslopes( module_path, which_cl_platform, which_cl_device, info_struct, 
+def segment_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_struct, 
                         mask_array, u_array, v_array,
                         mapping_array, count_array, link_array, label_array, verbose ):
         
@@ -86,7 +86,7 @@ def segment_hillslopes( module_path, which_cl_platform, which_cl_device, info_st
     Label hillslope pixels.
     
     Args:
-        module_path (str):
+        cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
         info_struct (numpy.ndarray):
@@ -109,7 +109,7 @@ def segment_hillslopes( module_path, which_cl_platform, which_cl_device, info_st
                 'integrationfns.cl','segment.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
-        with open(os.path.join(module_path,cl_file), 'r') as fp:
+        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
             
     # Trace downstream from all channel heads until masked boundary is reachedd
@@ -129,7 +129,7 @@ def segment_hillslopes( module_path, which_cl_platform, which_cl_device, info_st
     # Done
     vprint(verbose,'done')  
 
-def subsegment_flanks( module_path, which_cl_platform, which_cl_device, info_struct, 
+def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_struct, 
                        mask_array, u_array, v_array,
                        mapping_array, channel_label_array, link_array, label_array, 
                        verbose ):
@@ -138,7 +138,7 @@ def subsegment_flanks( module_path, which_cl_platform, which_cl_device, info_str
     Subsegment left (and implicitly right) flanks.
     
     Args:
-        module_path (str):
+        cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
         info_struct (numpy.ndarray):
@@ -161,7 +161,7 @@ def subsegment_flanks( module_path, which_cl_platform, which_cl_device, info_str
                 'integrationfns.cl','segment.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
-        with open(os.path.join(module_path,cl_file), 'r') as fp:
+        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
             
     # Trace downstream from all major confluences /or/ channel heads
