@@ -605,8 +605,18 @@ class Plot(Core):
             = np.meshgrid(self.geodata.x_roi_n_pixel_centers,
                           self.geodata.y_roi_n_pixel_centers)
         Z = np.ma.array(Z,mask=mask.T)
-        contours = axes.contour(x_pixel_centers_array,y_pixel_centers_array,Z,n_contours,
-                                colors='k')
+        if n_contours is None:
+            c_interval = 5
+            while c_interval<50:
+                c_min = np.floor(np.min(Z)/c_interval)*c_interval
+                c_max = np.ceil(np.max(Z)/c_interval)*c_interval
+                c_count = (c_max-c_min)/c_interval
+                if c_count<=15:
+                    break
+                c_interval *= 2
+            n_contours = np.arange(c_min,c_max+c_interval,c_interval)
+        contours = axes.contour(x_pixel_centers_array,y_pixel_centers_array,Z,
+                                n_contours, colors='k')
         axes.clabel(contours, fmt='%.0f'+contour_label_suffix, 
                     fontsize=contour_label_fontsize);
 
