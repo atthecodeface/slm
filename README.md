@@ -45,7 +45,7 @@ Capabilities available now or anticipated soon include:
       - core documentation of **slm** idea, implementation and example results
       - links to Jupyter notebook demos
       - documents the **Python** portion of the code
-   - [OpenCL docs](https://cstarknyc.github.io/slm/base)
+   - [OpenCL docs](https://cstarknyc.github.io/slm/opencl)
       - documents the OpenCL kernels and related functions used in **slm** 
       - generated with Doxygen 
    - [OCaml docs](https://cstarknyc.github.io/slm/ocaml)
