@@ -92,11 +92,11 @@ __kernel void label_confluences(
         }
         if (n_equal_dominant_inflows==0) {
             printf(
-          "n_equal_dominant_inflows=0 @ %g,%g  idx=%d  mapping=%d & %d= is_thin=%d mask=%d \n",
+         "\nn_equal_dominant_inflows=0 @ %g,%g  idx=%d  mapping=%d & %d= is_thin=%d mask=%d \n",
                     vec[0],vec[1],
                     idx,
                     mapping_array[idx],IS_THINCHANNEL,(mapping_array[idx]&IS_THINCHANNEL),
-                    mask_array[idx],);
+                    mask_array[idx]);
             for (i=0;i<n_inflows;i++) {
                 printf("ifidx=%d   count=%d => %d @ idx=%d\n",inflows_list[i],
                         count_array[inflows_list[i]], count_array[idx],idx);

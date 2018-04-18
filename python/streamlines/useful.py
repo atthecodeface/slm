@@ -3,6 +3,7 @@ Miscellaneous useful functions for PyOpenCL code
 """
 
 import numpy as np
+import os
 os.environ['PYTHONUNBUFFERED']='True'
 
 __all__ = ['vprint','pick_seeds']
