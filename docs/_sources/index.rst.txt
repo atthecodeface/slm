@@ -227,7 +227,7 @@ Indexes and search
 * :ref:`genindex`
 * :ref:`search`
 
-.. _Several example notebooks: https://github.com/cstarknyc/slmnb/blob/master/Tests
+.. _Several example notebooks: https://github.com/cstarknyc/slmn
 .. _Streamlines repo: https://github.com/cstarknyc/slm
 .. _Streamlines: https://github.com/cstarknyc/slm
 .. _streamlines package directory: https://github.com/cstarknyc/slm/python/streamlines
@@ -242,7 +242,7 @@ Indexes and search
 .. _PyOpenCL: https://documen.tician.de/pyopencl/index.html
 .. _OpenCL: https://www.khronos.org/opencl
 .. _@jit: http://numba.pydata.org/numba-doc/dev/user/jit.html
-.. _Doxygen documentation: https://cstarknyc.github.io/slm/base/index.html
+.. _Doxygen documentation: https://cstarknyc.github.io/slm/opencl/index.html
 
 References
 **********
