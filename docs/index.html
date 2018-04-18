@@ -37,6 +37,11 @@
 <p>The <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> project provides a suite of Python tools to study the structure of surface-water flow on large
 digital terrain models (DTMs). It takes the form of a Python 3 package, some demo Jupyter/IPython notebooks,
 and a custom set of open-source lidar DTM data files for the notebooks to work on.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This documentation is a work in progress. Recent deployments of OpenCL acceleration
+and splitting of the git repo have not yet been incorporated.</p>
+</div>
 <p>The novelty of the <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> method lies in how it computes the convergence and divergence of terrain driven flow.
 Instead of taking the usual, flow-routing approach at the pixel-scale, it traces topographic streamlines at a sub-pixel resolution
 and then processes them to compute useful properties such as drainage density and hillslope length distributions.</p>
@@ -59,10 +64,6 @@ trickery prior to calculating the gradient vector field at an oversampled resolu
 algorithms (see the <a class="reference internal" href="modules/preprocess.html#module-streamlines.preprocess" title="streamlines.preprocess"><code class="xref py py-mod docutils literal notranslate"><span class="pre">preprocess</span></code></a> module) that overcome the artefacts
 are applied directly the gradient field at the DTM grid resolution.
 These algorithms require some tuning to overcome all such errors.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">This documentation is a work in progress.</p>
-</div>
 </div>
 <div class="section" id="how-it-works">
 <h2>How it works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>
@@ -115,17 +116,13 @@ Further optimizations are expected to boost the speed further.</p>
 <li class="toctree-l1"><a class="reference internal" href="documentation/install.html">Setting paths</a></li>
 </ul>
 </div>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">The GitHub repo is currently private.</p>
-</div>
 </div>
 <div class="section" id="running-the-code">
 <h3>Running the code<a class="headerlink" href="#running-the-code" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> workflow can be carried out in several ways:</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="documentation/howtorun.html">How to run in a Jupyter notebook,  Jupyter console, QtConsole, or shell.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation/howtorun.html">How to run in a Jupyter notebook,  Jupyter console, QtConsole, or shell</a></li>
 </ul>
 </div>
 </div>
@@ -147,9 +144,9 @@ postprocessing and plotting are carried out:</p>
 <li class="toctree-l1"><a class="reference internal" href="Tests/IndianCreekDemo1_nb.html"><code class="docutils literal notranslate"><span class="pre">IndianCreekDemo1.ipynb</span></code></a></li>
 </ul>
 </div>
-<p>More substantial demo analyses can be found in <a class="reference external" href="https://github.com/cstarknyc/Streamlines/blob/master/Tests/IndianCreekDemo2.ipynb">IndianCreekDemo2.ipynb</a> and
-<a class="reference external" href="https://github.com/cstarknyc/Streamlines/blob/master/Tests/GuadalupeDemo1.ipynb">GuadalupeDemo1.ipynb</a>. Rather bigger DTM analyses are illustrated in
-<a class="reference external" href="https://github.com/cstarknyc/Streamlines/blob/master/Tests/GuadalupeDemo2.ipynb">GuadalupeDemo2.ipynb</a>, <a class="reference external" href="https://github.com/cstarknyc/Streamlines/blob/master/Tests/GuadalupeDemo3.ipynb">GuadalupeDemo3.ipynb</a> and <a class="reference external" href="https://github.com/cstarknyc/Streamlines/blob/master/Tests/IndianCreekDemo3.ipynb">IndianCreekDemo3.ipynb</a>.</p>
+<p>More substantial demo analyses can be found in <a class="reference external" href="https://github.com/cstarknyc/slmnb/SmallTests/IndianCreekDemo2.ipynb">IndianCreekDemo2.ipynb</a> and
+<a class="reference external" href="https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeDemo1.ipynb">GuadalupeDemo1.ipynb</a>. Rather bigger DTM analyses are illustrated in
+<a class="reference external" href="https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeDemo2.ipynb">GuadalupeDemo2.ipynb</a>, <a class="reference external" href="https://github.com/cstarknyc/slmnb/BigTests/GuadalupeDemo3.ipynb">GuadalupeDemo3.ipynb</a> and <a class="reference external" href="https://github.com/cstarknyc/slmnb/BigTests/IndianCreekDemo3.ipynb">IndianCreekDemo3.ipynb</a>.</p>
 </div>
 <div class="section" id="explanation-of-python-modules-and-opencl-programs">
 <h3>Explanation of Python modules and OpenCL programs<a class="headerlink" href="#explanation-of-python-modules-and-opencl-programs" title="Permalink to this headline">¶</a></h3>
@@ -202,7 +199,7 @@ consists of the following:</p>
 <li class="toctree-l1"><a class="reference internal" href="modules/integrationfns.cl.html"><code class="docutils literal notranslate"><span class="pre">integrationfns.cl</span></code></a></li>
 </ul>
 </div>
-<p>The OpenCL code is best explored in the <a class="reference external" href="https://cstarknyc.github.io/slm/opencl/index.html">Doxygen documentation</a>.</p>
+<p>The OpenCL code is best explored in the <a class="reference external" href="https://cstarknyc.github.io/slm/opencl/">Doxygen documentation</a>.</p>
 </div>
 </div>
 <div class="section" id="indexes-and-search">

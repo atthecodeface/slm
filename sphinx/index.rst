@@ -10,6 +10,11 @@ digital terrain models (DTMs). It takes the form of a Python 3 package, some dem
 and a custom set of open-source lidar DTM data files for the notebooks to work on.
 
 
+.. warning::
+	This documentation is a work in progress. Recent deployments of OpenCL acceleration 
+	and splitting of the git repo have not yet been incorporated.
+
+
 
 The novelty of the `Streamlines`_ method lies in how it computes the convergence and divergence of terrain driven flow. 
 Instead of taking the usual, flow-routing approach at the pixel-scale, it traces topographic streamlines at a sub-pixel resolution
@@ -37,10 +42,6 @@ algorithms (see the :mod:`preprocess <streamlines.preprocess>` module) that over
 are applied directly the gradient field at the DTM grid resolution. 
 These algorithms require some tuning to overcome all such errors.
 
-
-
-.. warning::
-	This documentation is a work in progress. 
 
 
 
@@ -108,9 +109,6 @@ Getting started
    Prerequisites <documentation/prerequisites>
    Setting paths <documentation/install>
 
-.. warning::
-	The GitHub repo is currently private.
-
 
 -----------------------------------------------------------
 Running the code
@@ -123,7 +121,7 @@ Running the code
    :glob:
    :maxdepth: 1
    
-   How to run in a Jupyter notebook,  Jupyter console, QtConsole, or shell. <documentation/howtorun>
+   How to run in a Jupyter notebook,  Jupyter console, QtConsole, or shell <documentation/howtorun>
 
 
 -----------------------------------------------------------
@@ -227,22 +225,22 @@ Indexes and search
 * :ref:`genindex`
 * :ref:`search`
 
-.. _Several example notebooks: https://github.com/cstarknyc/slmn
+.. _Several example notebooks: https://github.com/cstarknyc/slmnb
 .. _Streamlines repo: https://github.com/cstarknyc/slm
 .. _Streamlines: https://github.com/cstarknyc/slm
 .. _streamlines package directory: https://github.com/cstarknyc/slm/python/streamlines
 .. _fluid dynamics sense: https://en.wikipedia.org/wiki/Streamlines,_streaklines,_and_pathlines
-.. _IndianCreekDemo1.ipynb: https://github.com/cstarknyc/Streamlines/blob/master/Tests/IndianCreekDemo1.ipynb
-.. _IndianCreekDemo2.ipynb: https://github.com/cstarknyc/Streamlines/blob/master/Tests/IndianCreekDemo2.ipynb
-.. _IndianCreekDemo3.ipynb: https://github.com/cstarknyc/Streamlines/blob/master/Tests/IndianCreekDemo3.ipynb
-.. _GuadalupeDemo1.ipynb: https://github.com/cstarknyc/Streamlines/blob/master/Tests/GuadalupeDemo1.ipynb
-.. _GuadalupeDemo2.ipynb: https://github.com/cstarknyc/Streamlines/blob/master/Tests/GuadalupeDemo2.ipynb
-.. _GuadalupeDemo3.ipynb: https://github.com/cstarknyc/Streamlines/blob/master/Tests/GuadalupeDemo3.ipynb
+.. _IndianCreekDemo1.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/IndianCreekDemo1.ipynb
+.. _IndianCreekDemo2.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/IndianCreekDemo2.ipynb
+.. _IndianCreekDemo3.ipynb: https://github.com/cstarknyc/slmnb/BigTests/IndianCreekDemo3.ipynb
+.. _GuadalupeDemo1.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeDemo1.ipynb
+.. _GuadalupeDemo2.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeDemo2.ipynb
+.. _GuadalupeDemo3.ipynb: https://github.com/cstarknyc/slmnb/BigTests/GuadalupeDemo3.ipynb
 .. _Numba: http://numba.pydata.org/numba-doc/dev/index.html
 .. _PyOpenCL: https://documen.tician.de/pyopencl/index.html
 .. _OpenCL: https://www.khronos.org/opencl
 .. _@jit: http://numba.pydata.org/numba-doc/dev/user/jit.html
-.. _Doxygen documentation: https://cstarknyc.github.io/slm/opencl/index.html
+.. _Doxygen documentation: https://cstarknyc.github.io/slm/opencl/
 
 References
 **********
