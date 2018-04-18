@@ -8,7 +8,7 @@
 ///
 
 ///
-/// @defgroup integrationfns Streamline integration functions
+/// @defgroup integrationfns Runge-Kutta integration step functions
 /// Functions used to compute Runge-Kutta integration down and up streamlines
 ///
 

@@ -1,7 +1,6 @@
 var searchData=
 [
   ['streamline_20integration',['Streamline integration',['../group__integrate.html',1,'']]],
-  ['streamline_20integration_20functions',['Streamline integration functions',['../group__integrationfns.html',1,'']]],
   ['streamline_20integration_20parameters',['Streamline integration parameters',['../group__intflags.html',1,'']]],
   ['seeds_5fchunk_5foffset',['SEEDS_CHUNK_OFFSET',['../group__kernelflags.html#ga724882f19d14e11c6b46e16adae24f87',1,'info.h']]],
   ['segment_2ecl',['segment.cl',['../segment_8cl.html',1,'']]],

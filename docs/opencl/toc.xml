@@ -92,7 +92,7 @@
       <topic label="LEFT_FLANK_ADDITION" href="group__mapflags.html#ga3ba1afb626461abdad96b3e5377b2217"/>
       <topic label="SEGMENTATION_THRESHOLD" href="group__mapflags.html#gae70cf79fe9565b0344abfa6cb9820849"/>
     </topic>
-    <topic label="Streamline integration functions" href="group__integrationfns.html">
+    <topic label="Runge-Kutta integration step functions" href="group__integrationfns.html">
       <topic label="channelheads_runge_kutta_step" href="group__integrationfns.html#gadcd00b67baaba288308ac539c0d1865a"/>
       <topic label="connect_kutta_step_record" href="group__integrationfns.html#ga567201f04a71a75ac1a644be1aa0ea1b"/>
       <topic label="countlink_runge_kutta_step" href="group__integrationfns.html#gafcc7c6e371b0d612fa53d225b3e817ce"/>
