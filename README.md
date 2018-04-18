@@ -28,7 +28,7 @@ Capabilities available now or anticipated soon include:
 
 **slm** has a code base founded on:
    - [Python 3](https://docs.python.org/3/)
-      - development is with [version 3.6.x](https://docs.python.org/3/)
+      - development is with [version 3.6.x](https://docs.python.org/3/) on MacOSX
       - several packages are required, notably [Numba](http://numba.pydata.org/), which is used to accelerate preprocessing steps
    - [OpenCL](https://www.khronos.org/opencl/) 
       - accessed from Python using [PyOpenCL](https://documen.tician.de/pyopencl/index.html)
