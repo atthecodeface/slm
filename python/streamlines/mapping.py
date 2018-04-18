@@ -9,6 +9,7 @@ from skimage.morphology import skeletonize, thin, medial_axis, disk
 from skimage.filters.rank import mean,modal,median
 from skimage.filters import gaussian
 import warnings
+import sys
 
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
@@ -296,7 +297,8 @@ class Mapping(Core):
             self.hillslope_length_array[self.label_array==idx] = row['mean [m]']
 
     def map_hillslope_lengths(self):
-        self.print('Mapping hillslope lengths...',end='')  
+        self.print('Mapping hillslope lengths...',end='',flush=True)
+        sys.stdout.flush()
         hsl = np.flipud(self.hillslope_length_array.T)
         hsl_bool = hsl.astype(np.bool)
         hsl_clipped = np.ma.array(hsl, mask=~hsl_bool)

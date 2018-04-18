@@ -5,6 +5,7 @@ Miscellaneous useful functions for PyOpenCL code
 import numpy as np
 import os
 os.environ['PYTHONUNBUFFERED']='True'
+import sys
 
 __all__ = ['vprint','pick_seeds']
 
@@ -18,7 +19,10 @@ def vprint(verbose, *args, **kwargs):
         **kwargs (str): print() function keyword args
     """
     if verbose:
-        print(*args, **kwargs)
+        print(*args, **kwargs, flush=True)
+        # Try to really force this line to print before the GPU prints anything
+        sys.stdout.flush()
+
 
 def pick_seeds(mask=None, map=None, order=None, flag=None, pad=None):
     """
