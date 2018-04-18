@@ -7,15 +7,59 @@
 /// This example reflects the set of -D macro flags passed when building
 /// the kernel integrate_trajectory() in integration.cl.
 
+///
+/// @defgroup kernelflags Kernel instance control options
+/// Basic kernel compilation and seed point offset information.
+/// Communicated to CL kernels via compiler -D macro options.
+///
+
+/// @{
+#define SEEDS_CHUNK_OFFSET  0u
 #define KERNEL_INTEGRATE_TRAJECTORY
-#define C_ORDER
+#define KERNEL_MAP_CHANNEL_HEADS
+#define KERNEL_PRUNE_CHANNEL_HEADS
+#define KERNEL_CONNECT_CHANNELS
+#define KERNEL_PUSH_TO_EXIT
+#define KERNEL_COUNT_DOWNCHANNELS
+#define KERNEL_FLAG_DOWNCHANNELS
+#define KERNEL_LINK_HILLSLOPES
+#define KERNEL_SEGMENT_DOWNCHANNELS
+#define KERNEL_SEGMENT_HILLSLOPES
+#define KERNEL_SUBSEGMENT_CHANNEL_EDGES
+#define KERNEL_SUBSEGMENT_FLANKS
+#define KERNEL_HILLSLOPE_LENGTHS
+/// @}
+
+///
+/// @defgroup intflags Streamline integration parameters
+/// Parameters used to control R-K streamline integration behavior.
+/// Communicated to CL kernels via compiler -D macro options.
+///
+
+/// @{
 #define DOWNUP_SIGN  1
 #define INTEGRATOR_STEP_FACTOR  0.5f
 #define MAX_INTEGRATION_STEP_ERROR  0.029999999329447746f
 #define ADJUSTED_MAX_ERROR  0.1472243219614029f
 #define MAX_LENGTH  300.0f
-#define PIXEL_SIZE  1.0f
 #define INTEGRATION_HALT_THRESHOLD  0.009999999776482582f
+#define GRID_SCALE  200.0f
+#define COMBO_FACTOR  100.0f
+#define DT_MAX  0.004999999888241291f
+#define MAX_N_STEPS  600u
+#define TRAJECTORY_RESOLUTION  128u
+#define INTERCHANNEL_MAX_N_STEPS  200u
+/// @}
+
+///
+/// @defgroup arrayflags Parameters describing grid array geometry, size, ordering
+/// Parameters describing DTM grid array geometry, size, ordering, padding, etc.
+/// Communicated to CL kernels via compiler -D macro options.
+///
+
+/// @{
+#define C_ORDER
+#define PIXEL_SIZE  1.0f
 #define PAD_WIDTH  1u
 #define PAD_WIDTH_PP5  1.5f
 #define NX  200u
@@ -26,19 +70,29 @@
 #define NY_PADDED  202u
 #define X_MAX    199.5f
 #define Y_MAX  199.5f
-#define GRID_SCALE  200.0f
-#define COMBO_FACTOR  100.0f
-#define DT_MAX  0.004999999888241291f
-#define MAX_N_STEPS  600u
-#define TRAJECTORY_RESOLUTION  128u
-#define SEEDS_CHUNK_OFFSET  0u
+/// @}
+
+///
+/// @defgroup trajflags Jittered trajectory integration control parameters
+/// Parameters used to control sub-pixel, jittered streamline integration.
+/// Communicated to CL kernels via compiler -D macro options.
+///
+
+/// @{
 #define SUBPIXEL_SEED_POINT_DENSITY  5u
 #define SUBPIXEL_SEED_HALFSPAN  0.4000000059604645f
 #define SUBPIXEL_SEED_STEP  0.20000000298023224f
 #define JITTER_MAGNITUDE  2.9000000953674316f
-#define INTERCHANNEL_MAX_N_STEPS  200u
-#define SEGMENTATION_THRESHOLD  50u
-#define LEFT_FLANK_ADDITION  2147483648u
+/// @}
+
+
+///
+/// @defgroup mapflags Mapping flags and control parameters
+/// Mapping grid-pixel flags provided by @p mapping_array; mapping control parameters.
+/// Communicated to CL kernels via compiler -D macro options.
+///
+
+/// @{
 #define IS_CHANNEL  1u
 #define IS_THINCHANNEL  2u
 #define IS_INTERCHANNEL  4u
@@ -55,3 +109,6 @@
 #define IS_STUCK  8192u
 #define IS_LOOP  16384u
 #define IS_BLOCKAGE  32768u
+#define LEFT_FLANK_ADDITION  2147483648u
+#define SEGMENTATION_THRESHOLD  50u
+/// @}

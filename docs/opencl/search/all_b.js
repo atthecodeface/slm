@@ -2,7 +2,7 @@ var searchData=
 [
   ['label_2ecl',['label.cl',['../label_8cl.html',1,'']]],
   ['label_5fconfluences',['label_confluences',['../group__structure.html#gaf8c61ddceb0b67180fc58ae155548e1a',1,'label.cl']]],
-  ['left_5fflank_5faddition',['LEFT_FLANK_ADDITION',['../info_8h.html#a3ba1afb626461abdad96b3e5377b2217',1,'info.h']]],
+  ['left_5fflank_5faddition',['LEFT_FLANK_ADDITION',['../group__mapflags.html#ga3ba1afb626461abdad96b3e5377b2217',1,'info.h']]],
   ['lehmer_5frand_5fuint',['lehmer_rand_uint',['../group__utilities.html#gad97320dc20e10075bac4c86d831eddcd',1,'rng.cl']]],
   ['lehmer_5frand_5fvec',['lehmer_rand_vec',['../group__utilities.html#ga77143f8c65ff2a95f8cc9b5a2a8c3cf2',1,'rng.cl']]],
   ['lengths_2ecl',['lengths.cl',['../lengths_8cl.html',1,'']]],

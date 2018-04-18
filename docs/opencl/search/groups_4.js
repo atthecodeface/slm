@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['utility_20functions',['Utility functions',['../group__utilities.html',1,'']]]
+  ['mapping_20flags_20and_20control_20parameters',['Mapping flags and control parameters',['../group__mapflags.html',1,'']]]
 ];

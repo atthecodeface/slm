@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['trajectory_20stepping_20and_20recording_20functions',['Trajectory stepping and recording functions',['../group__trajectoryfns.html',1,'']]]
+  ['kernel_20instance_20control_20options',['Kernel instance control options',['../group__kernelflags.html',1,'']]]
 ];
