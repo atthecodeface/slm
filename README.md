@@ -2,7 +2,7 @@
 
 The **slm** package provides a set of tools to map landscape structure using topographic streamline tracing. These tools are implemented in Python, OpenCL and OCaml. The main documentation can be found [here](https://cstarknyc.github.io/slm).
 
-***proviso:*** *this is a work in progress *
+***proviso:*** *this is a work in progress*
 
 The git repo here is the main **slm** code base repository. Companion repos house [Jupyter notebooks](https://github.com/cstarknyc/slmnb) and [DTM  data](https://github.com/cstarknyc/slmdata) (lidar digital terrain models).
 
