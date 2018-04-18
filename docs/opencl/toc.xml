@@ -94,7 +94,7 @@
     </topic>
     <topic label="Runge-Kutta integration step functions" href="group__integrationfns.html">
       <topic label="channelheads_runge_kutta_step" href="group__integrationfns.html#gadcd00b67baaba288308ac539c0d1865a"/>
-      <topic label="connect_kutta_step_record" href="group__integrationfns.html#ga567201f04a71a75ac1a644be1aa0ea1b"/>
+      <topic label="connect_runge_kutta_step_record" href="group__integrationfns.html#gacb62c6af38295a6d6f2f08dd191f2ef7"/>
       <topic label="countlink_runge_kutta_step" href="group__integrationfns.html#gafcc7c6e371b0d612fa53d225b3e817ce"/>
       <topic label="euler_step_record" href="group__integrationfns.html#ga23f8c5971b9e151c30b9d317e12eb205"/>
       <topic label="euler_step_write_sl_data" href="group__integrationfns.html#ga9f623412bdf71c1dbfbc96238410aaab"/>
@@ -253,7 +253,7 @@
       </topic>
       <topic label="integrationfns.cl" href="integrationfns_8cl.html">
         <topic label="channelheads_runge_kutta_step" href="group__integrationfns.html#gadcd00b67baaba288308ac539c0d1865a"/>
-        <topic label="connect_kutta_step_record" href="group__integrationfns.html#ga567201f04a71a75ac1a644be1aa0ea1b"/>
+        <topic label="connect_runge_kutta_step_record" href="group__integrationfns.html#gacb62c6af38295a6d6f2f08dd191f2ef7"/>
         <topic label="countlink_runge_kutta_step" href="group__integrationfns.html#gafcc7c6e371b0d612fa53d225b3e817ce"/>
         <topic label="euler_step_record" href="group__integrationfns.html#ga23f8c5971b9e151c30b9d317e12eb205"/>
         <topic label="euler_step_write_sl_data" href="group__integrationfns.html#ga9f623412bdf71c1dbfbc96238410aaab"/>

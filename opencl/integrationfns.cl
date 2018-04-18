@@ -277,12 +277,14 @@ static inline void euler_step_write_sl_data(float *dt, float *dl,
 ///
 /// @ingroup integrationfns
 ///
-static inline bool connect_kutta_step_record(float *dt, float  *dl, float *l_trajectory,
-                                             float2 *dxy1_vec, float2 *dxy2_vec,
-                                             float2 *vec, float2 *prev_vec,
-                                             float2 *next_vec,
-                                             uint *n_steps, uint *idx, uint *prev_idx,
-                                             __private char2 *trajectory_vec)
+static inline bool connect_runge_kutta_step_record(float *dt, float  *dl,
+                                                   float *l_trajectory,
+                                                   float2 *dxy1_vec, float2 *dxy2_vec,
+                                                   float2 *vec, float2 *prev_vec,
+                                                   float2 *next_vec,
+                                                   uint *n_steps,
+                                                   uint *idx, uint *prev_idx,
+                                                   __private char2 *trajectory_vec)
 {
     const float step_error = fast_length((*dxy2_vec-*dxy1_vec)/GRID_SCALE);
 

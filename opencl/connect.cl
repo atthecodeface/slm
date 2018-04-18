@@ -49,9 +49,10 @@ __kernel void connect_channels(
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);
         if (!mask_array[idx]) {
-            if (connect_kutta_step_record(&dt, &dl, &l_trajectory, &dxy1_vec, &dxy2_vec,
-                       &vec, &prev_vec,  &next_vec, &n_steps, &idx, &prev_idx,
-                       trajectory_vec))
+            if (connect_runge_kutta_step_record(&dt, &dl, &l_trajectory,
+                                                &dxy1_vec, &dxy2_vec, &vec, &prev_vec,
+                                                &next_vec, &n_steps, &idx, &prev_idx,
+                                                trajectory_vec))
                 continue;
         }
     }
@@ -61,9 +62,10 @@ __kernel void connect_channels(
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);
         if (!mask_array[idx]) {
-            if (connect_kutta_step_record(&dt, &dl, &l_trajectory, &dxy1_vec, &dxy2_vec,
-                       &vec, &prev_vec,  &next_vec, &n_steps, &idx, &prev_idx,
-                       trajectory_vec))
+            if (connect_runge_kutta_step_record(&dt, &dl, &l_trajectory,
+                                                &dxy1_vec, &dxy2_vec, &vec, &prev_vec,
+                                                &next_vec, &n_steps, &idx, &prev_idx,
+                                                trajectory_vec))
                 continue;
         }
     }

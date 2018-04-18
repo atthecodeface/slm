@@ -89,9 +89,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga9f623412bdf71c1dbfbc96238410aaab"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__integrationfns.html#ga9f623412bdf71c1dbfbc96238410aaab">euler_step_write_sl_data</a> (float *dt, float *dl, float *l_trajectory, const float2 uv_vec, float2 *vec, const float2 prev_vec, uint *n_steps, uint *idx, uint *prev_idx, __global const bool *mask_array, __global uint *slt_array, __global uint *slc_array)</td></tr>
 <tr class="memdesc:ga9f623412bdf71c1dbfbc96238410aaab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute a single Euler integration step of of a streamline.  <a href="#ga9f623412bdf71c1dbfbc96238410aaab">More...</a><br /></td></tr>
 <tr class="separator:ga9f623412bdf71c1dbfbc96238410aaab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga567201f04a71a75ac1a644be1aa0ea1b"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__integrationfns.html#ga567201f04a71a75ac1a644be1aa0ea1b">connect_kutta_step_record</a> (float *dt, float *dl, float *l_trajectory, float2 *dxy1_vec, float2 *dxy2_vec, float2 *vec, float2 *prev_vec, float2 *next_vec, uint *n_steps, uint *idx, uint *prev_idx, __private char2 *trajectory_vec)</td></tr>
-<tr class="memdesc:ga567201f04a71a75ac1a644be1aa0ea1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute a single step of 2nd-order Runge-Kutta numerical integration of a streamline given precomputed 1st and 2nd order step vectors.  <a href="#ga567201f04a71a75ac1a644be1aa0ea1b">More...</a><br /></td></tr>
-<tr class="separator:ga567201f04a71a75ac1a644be1aa0ea1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gacb62c6af38295a6d6f2f08dd191f2ef7"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__integrationfns.html#gacb62c6af38295a6d6f2f08dd191f2ef7">connect_runge_kutta_step_record</a> (float *dt, float *dl, float *l_trajectory, float2 *dxy1_vec, float2 *dxy2_vec, float2 *vec, float2 *prev_vec, float2 *next_vec, uint *n_steps, uint *idx, uint *prev_idx, __private char2 *trajectory_vec)</td></tr>
+<tr class="memdesc:gacb62c6af38295a6d6f2f08dd191f2ef7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute a single step of 2nd-order Runge-Kutta numerical integration of a streamline given precomputed 1st and 2nd order step vectors.  <a href="#gacb62c6af38295a6d6f2f08dd191f2ef7">More...</a><br /></td></tr>
+<tr class="separator:gacb62c6af38295a6d6f2f08dd191f2ef7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadcd00b67baaba288308ac539c0d1865a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__integrationfns.html#gadcd00b67baaba288308ac539c0d1865a">channelheads_runge_kutta_step</a> (float *dt, float *dl, float2 *dxy1_vec, float2 *dxy2_vec, float2 *vec, float2 *next_vec, uint *n_steps, uint *idx)</td></tr>
 <tr class="memdesc:gadcd00b67baaba288308ac539c0d1865a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute a single step of 2nd-order Runge-Kutta numerical integration of a streamline given precomputed 1st and 2nd order step vectors.  <a href="#gadcd00b67baaba288308ac539c0d1865a">More...</a><br /></td></tr>
 <tr class="separator:gadcd00b67baaba288308ac539c0d1865a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -201,12 +201,12 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="integrationfns_8cl_source.html#l00333">333</a> of file <a class="el" href="integrationfns_8cl_source.html">integrationfns.cl</a>.</p>
+<p class="definition">Definition at line <a class="el" href="integrationfns_8cl_source.html#l00335">335</a> of file <a class="el" href="integrationfns_8cl_source.html">integrationfns.cl</a>.</p>
 
 </div>
 </div>
-<a id="ga567201f04a71a75ac1a644be1aa0ea1b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga567201f04a71a75ac1a644be1aa0ea1b">&#9670;&nbsp;</a></span>connect_kutta_step_record()</h2>
+<a id="gacb62c6af38295a6d6f2f08dd191f2ef7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gacb62c6af38295a6d6f2f08dd191f2ef7">&#9670;&nbsp;</a></span>connect_runge_kutta_step_record()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -215,7 +215,7 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static bool connect_kutta_step_record </td>
+          <td class="memname">static bool connect_runge_kutta_step_record </td>
           <td>(</td>
           <td class="paramtype">float *&#160;</td>
           <td class="paramname"><em>dt</em>, </td>
@@ -423,7 +423,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="integrationfns_8cl_source.html#l00380">380</a> of file <a class="el" href="integrationfns_8cl_source.html">integrationfns.cl</a>.</p>
+<p class="definition">Definition at line <a class="el" href="integrationfns_8cl_source.html#l00382">382</a> of file <a class="el" href="integrationfns_8cl_source.html">integrationfns.cl</a>.</p>
 
 </div>
 </div>
@@ -756,7 +756,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="integrationfns_8cl_source.html#l00485">485</a> of file <a class="el" href="integrationfns_8cl_source.html">integrationfns.cl</a>.</p>
+<p class="definition">Definition at line <a class="el" href="integrationfns_8cl_source.html#l00487">487</a> of file <a class="el" href="integrationfns_8cl_source.html">integrationfns.cl</a>.</p>
 
 </div>
 </div>
@@ -1117,7 +1117,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="integrationfns_8cl_source.html#l00430">430</a> of file <a class="el" href="integrationfns_8cl_source.html">integrationfns.cl</a>.</p>
+<p class="definition">Definition at line <a class="el" href="integrationfns_8cl_source.html#l00432">432</a> of file <a class="el" href="integrationfns_8cl_source.html">integrationfns.cl</a>.</p>
 
 </div>
 </div>
