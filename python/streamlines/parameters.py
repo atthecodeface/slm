@@ -73,6 +73,6 @@ def import_parameters(parameters_path,parameters_file): #,do_reload_state=False
     """        
     # Parse default and assigned JSON parameters files
     parameters_files_list \
-        = [os.path.join(streamlines.__path__[0],'defaults'),
+        = [os.path.join(streamlines.__path__[0],'..','..','json','defaults'),
            os.path.realpath(os.path.join(parameters_path,parameters_file))]
     return read_json_file(parameters_files_list)
