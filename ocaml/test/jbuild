@@ -1,0 +1,16 @@
+(jbuild_version 1)
+
+(executable (
+  (name test)
+  (libraries (
+    streamlines
+    batteries
+    alcotest
+  ))
+))
+
+(alias (
+  (name    run_test)
+  (deps    (test.exe))
+  (action  (run ${<}))
+))

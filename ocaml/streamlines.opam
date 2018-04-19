@@ -1,0 +1,25 @@
+opam-version: "1.2"
+name: "streamlines"
+maintainer: "atthecodeface@gmail.com"
+author: "atthecodeface@gmail.com"
+homepage: ""
+bug-reports: ""
+license: ""
+dev-repo: ""
+
+version: "dev"
+
+build: [
+  ["jbuilder" "subst" "-n" name] {pinned}
+  ["jbuilder" "build" "-p" name "-j" jobs]
+]
+build-test: [["jbuilder" "runtest" "-p" name "-j" jobs]]
+
+depends: [
+  "jbuilder" {build}
+  "re"
+  "unix"
+  "bigarray"
+  "yojson"
+]
+available: [ ocaml-version >= "4.04.0" ]

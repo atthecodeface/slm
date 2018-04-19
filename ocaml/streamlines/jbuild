@@ -1,0 +1,14 @@
+(jbuild_version 1)
+
+(library (
+  (public_name streamlines)
+  (name streamlines)
+  (libraries (
+    owl
+    owl_opencl
+    gdal
+    yojson
+    batteries
+  ))
+))
+

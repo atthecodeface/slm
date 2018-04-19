@@ -1,0 +1,13 @@
+(jbuild_version 1)
+(executable (
+  (name run_me)
+  (libraries (
+    streamlines
+  ))
+))
+
+(alias (
+  (name    run_me)
+  (deps    (run_me.exe))
+  (action  (run ${<}))
+))
