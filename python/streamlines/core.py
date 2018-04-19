@@ -35,19 +35,20 @@ class Core():
 
         Args:
              state (object): The :class:`State <.state.State>` class instance.
-             imported_parameters (dict): The parameters dictionary loaded from a :py:mod:`JSON <json>` file.
+             imported_parameters (dict): The parameters dictionary loaded from 
+             a :py:mod:`JSON <json>` file.
 
         Attributes:
-            Class instance variables (various types): Set according to the parameters sub-dict \
-            corresponding to the class name. 
+            Class instance variables (various types): Set according to the parameters 
+            sub-dict corresponding to the class name. 
         
         Example:
-            When instantiating the :class:`Geodata <.geodata.Geodata>` class, \
-            the ``geodata`` sub-dictionary \
-            is extracted from the imported parameters dictionary, and its parameters are parsed \
-            out and set as attributes of the  :class:`Geodata <.geodata.Geodata>`: \
-            e.g., ``[title: "Indian Creek"]`` becomes the variable ``Geodata.title`` with the value \
-             ``"Indian Creek"``.
+            When instantiating the :class:`Geodata <.geodata.Geodata>` class, 
+            the ``geodata`` sub-dictionary is extracted from the imported parameters 
+            dictionary, and its parameters are parsed out and set as attributes of the  
+            :class:`Geodata <.geodata.Geodata>`: 
+            e.g., ``[title: "Indian Creek"]`` becomes the variable ``Geodata.title`` 
+            with the value ``"Indian Creek"``.
         """
         # Fetch path to the ``streamlines`` module so we can later find the CL code
         self.path = streamlines.__path__[0]
@@ -61,7 +62,19 @@ class Core():
             
         workflow_class_name = self.__module__.split('.')[1]
         for item in imported_parameters[workflow_class_name].items():
-            setattr(self, item[0],item[1])
+            if '_path' in item[0]:
+                # Replace env var in DTM data path (list) if need be
+                try:
+                    moditem =  [os.environ[seg.replace('$','')] if '$' in seg else seg
+                                for seg in item[1] ]
+                except:
+                    error = '  Error trying to parse environment variable ' \
+                             + [seg for seg in item[1] if '$' in seg][0] \
+                             + ' - please set this variable in your shell rc'
+                    raise ValueError(error)
+            else:
+                moditem = item[1]
+            setattr(self, item[0], moditem)
 
     def inventorize(self,state):
         """

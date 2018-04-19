@@ -16,8 +16,6 @@
 		"do_save_state" : false,	
 		"do_export" : false,
 		
-		"export_path" : [".","GuadalupeDemo1"],	
-
 		"do_rw_savez" : true,
 		"do_rw_hdf5" : false
 	},
@@ -25,7 +23,7 @@
 	"geodata": {
 		"title" : "Guadalupe Mountains, NM, USA, UTM Zone 17N",
 		"dtm_file" : "Guadalupe_DTM0_res2m_fill_sinks1deg.tif",
-		"data_path" :["..","..","slmdata","GuadalupeMtns"],		
+		"data_path" :["$SLMDATA","GuadalupeMtns"],		
 		"no_data_values" : [-99999,0],
         "roi_x_bounds" : [1400,1542],
         "roi_y_bounds" : [1400,1640],  
@@ -89,7 +87,7 @@
 	},
 	
 	"export": {
-		"export_path" : [".","GuadalupeDemo2"],
+		"export_path" : ["$SLMXPT","GuadalupeDemo1"],
 		"format" : ["png"],
 		"options" : {
 			"dpi":80, 

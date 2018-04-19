@@ -16,8 +16,6 @@
 		"do_save_state" : false,	
 		"do_export" : false,
 		
-		"export_path" : [".","IndianCreekDemo4"],	
-
 		"do_rw_savez" : true,
 		"do_rw_hdf5" : false
 	},
@@ -25,7 +23,7 @@
 	"geodata": {
 		"title" : "Indian Creek, Ohio, USA, UTM Zone 17N",
 		"dtm_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg.tif",
-		"data_path" :["..","..","slmdata","IndianCreek"],		
+		"data_path" :["$SLMDATA","IndianCreek"],		
 		"no_data_values" : [-99999,0],
 		"SMALLroi_x_bounds" : [1030,1270],
 		"SMALLroi_y_bounds" : [400,750],
@@ -96,7 +94,7 @@
 	},
 	
 	"export": {
-		"export_path" : [".","IndianCreekDemo3"],
+		"export_path" : ["$SLMXPT","IndianCreekDemo4"],
 		"format" : ["png"],
 		"options" : {
 			"dpi":80, 
