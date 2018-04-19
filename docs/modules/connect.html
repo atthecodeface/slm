@@ -41,14 +41,14 @@
 </ol>
 <dl class="function">
 <dt id="streamlines.connect.connect_channel_pixels">
-<code class="descclassname">streamlines.connect.</code><code class="descname">connect_channel_pixels</code><span class="sig-paren">(</span><em>module_path</em>, <em>which_cl_platform</em>, <em>which_cl_device</em>, <em>info_struct</em>, <em>mask_array</em>, <em>u_array</em>, <em>v_array</em>, <em>mapping_array</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.connect.connect_channel_pixels" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">streamlines.connect.</code><code class="descname">connect_channel_pixels</code><span class="sig-paren">(</span><em>cl_src_path</em>, <em>which_cl_platform</em>, <em>which_cl_device</em>, <em>info_struct</em>, <em>mask_array</em>, <em>u_array</em>, <em>v_array</em>, <em>mapping_array</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.connect.connect_channel_pixels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connect missing links between channel pixels.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>module_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – </li>
+<li><strong>cl_src_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – </li>
 <li><strong>which_cl_platform</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
 <li><strong>which_cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
 <li><strong>info_struct</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
@@ -66,14 +66,14 @@
 
 <dl class="function">
 <dt id="streamlines.connect.map_channel_heads">
-<code class="descclassname">streamlines.connect.</code><code class="descname">map_channel_heads</code><span class="sig-paren">(</span><em>module_path</em>, <em>which_cl_platform</em>, <em>which_cl_device</em>, <em>info_struct</em>, <em>mask_array</em>, <em>u_array</em>, <em>v_array</em>, <em>mapping_array</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.connect.map_channel_heads" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">streamlines.connect.</code><code class="descname">map_channel_heads</code><span class="sig-paren">(</span><em>cl_src_path</em>, <em>which_cl_platform</em>, <em>which_cl_device</em>, <em>info_struct</em>, <em>mask_array</em>, <em>u_array</em>, <em>v_array</em>, <em>mapping_array</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.connect.map_channel_heads" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find channel head pixels.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>module_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – </li>
+<li><strong>cl_src_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – </li>
 <li><strong>which_cl_platform</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
 <li><strong>which_cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
 <li><strong>info_struct</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
@@ -173,13 +173,13 @@
 <span class="n">pdebug</span> <span class="o">=</span> <span class="nb">print</span>
 
 <span class="k">def</span> <span class="nf">connect_channel_pixels</span><span class="p">(</span> 
-        <span class="n">module_path</span><span class="p">,</span> <span class="n">which_cl_platform</span><span class="p">,</span> <span class="n">which_cl_device</span><span class="p">,</span> <span class="n">info_struct</span><span class="p">,</span> 
+        <span class="n">cl_src_path</span><span class="p">,</span> <span class="n">which_cl_platform</span><span class="p">,</span> <span class="n">which_cl_device</span><span class="p">,</span> <span class="n">info_struct</span><span class="p">,</span> 
         <span class="n">mask_array</span><span class="p">,</span> <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span> <span class="n">mapping_array</span><span class="p">,</span> <span class="n">verbose</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Connect missing links between channel pixels.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
-<span class="sd">        module_path (str):</span>
+<span class="sd">        cl_src_path (str):</span>
 <span class="sd">        which_cl_platform (int):</span>
 <span class="sd">        which_cl_device (int):</span>
 <span class="sd">        info_struct (numpy.ndarray):</span>
@@ -197,7 +197,7 @@
                 <span class="s1">&#39;integrationfns.cl&#39;</span><span class="p">,</span><span class="s1">&#39;connect.cl&#39;</span><span class="p">]</span>
     <span class="n">cl_kernel_source</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="k">for</span> <span class="n">cl_file</span> <span class="ow">in</span> <span class="n">cl_files</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">module_path</span><span class="p">,</span><span class="n">cl_file</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cl_src_path</span><span class="p">,</span><span class="n">cl_file</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">cl_kernel_source</span> <span class="o">+=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             
     <span class="c1"># Generate a list (array) of seed points from the set of channel pixels</span>
@@ -221,13 +221,13 @@
     <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;done&#39;</span><span class="p">)</span>  
 
 <span class="k">def</span> <span class="nf">map_channel_heads</span><span class="p">(</span> 
-        <span class="n">module_path</span><span class="p">,</span> <span class="n">which_cl_platform</span><span class="p">,</span> <span class="n">which_cl_device</span><span class="p">,</span> <span class="n">info_struct</span><span class="p">,</span> 
+        <span class="n">cl_src_path</span><span class="p">,</span> <span class="n">which_cl_platform</span><span class="p">,</span> <span class="n">which_cl_device</span><span class="p">,</span> <span class="n">info_struct</span><span class="p">,</span> 
         <span class="n">mask_array</span><span class="p">,</span> <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span> <span class="n">mapping_array</span><span class="p">,</span> <span class="n">verbose</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find channel head pixels.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
-<span class="sd">        module_path (str):</span>
+<span class="sd">        cl_src_path (str):</span>
 <span class="sd">        which_cl_platform (int):</span>
 <span class="sd">        which_cl_device (int):</span>
 <span class="sd">        info_struct (numpy.ndarray):</span>
@@ -246,7 +246,7 @@
                 <span class="s1">&#39;integrationfns.cl&#39;</span><span class="p">,</span><span class="s1">&#39;channelheads.cl&#39;</span><span class="p">]</span>
     <span class="n">cl_kernel_source</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="k">for</span> <span class="n">cl_file</span> <span class="ow">in</span> <span class="n">cl_files</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">module_path</span><span class="p">,</span><span class="n">cl_file</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cl_src_path</span><span class="p">,</span><span class="n">cl_file</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">cl_kernel_source</span> <span class="o">+=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
     <span class="n">pad</span> <span class="o">=</span> <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;pad_width&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>

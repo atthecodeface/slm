@@ -1,8 +1,8 @@
 """
 This :mod:`core <streamlines.core>` module provides a base initialization class 
 that is inherited by each workflow class.
-On instantiation of each such class, the base initialization parses the parameter dictionary loaded
-from the 'job' :py:mod:`JSON <json>` file specified at the command line,
+On instantiation of each such class, the base initialization parses the parameter 
+dictionary loaded from the 'job' :py:mod:`JSON <json>` file specified at the command line,
 extracts the set of parameters pertaining to the workflow class,
 and assigns the values to the workflow class instance accordingly. 
 
@@ -34,13 +34,13 @@ class Core():
         Initialize the class instance by loading up parameters as attributes.
 
         Args:
-             state (object): The :class:`State <.state.State>` class instance.
-             imported_parameters (dict): The parameters dictionary loaded from 
-             a :py:mod:`JSON <json>` file.
+            state (object): The :class:`State <.state.State>` class instance.
+            imported_parameters (dict): The parameters dictionary loaded from 
+                                         a :py:mod:`JSON <json>` file.
 
         Attributes:
-            Class instance variables (various types): Set according to the parameters 
-            sub-dict corresponding to the class name. 
+            Class instance variables (various types): 
+                Set according to the parameters sub-dict corresponding to the class name. 
         
         Example:
             When instantiating the :class:`Geodata <.geodata.Geodata>` class, 
@@ -52,7 +52,7 @@ class Core():
         """
         # Fetch path to the ``streamlines`` module so we can later find the CL code
         self.path = streamlines.__path__[0]
-        self.cl_src_path = os.path.join(streamlines.__path__[0],'..','..','opencl')
+        self.cl_src_path = os.path.join(self.path,'..','..','opencl')
         if state is not None:
             self.state = state
             try:
@@ -82,16 +82,17 @@ class Core():
              state (object): The :class:`State <.state.State>` class instance.
 
         Attributes:
-            Workflow state inventory (dict): The state inventory is updated with a sub-dict\
-            added (replacing if necessary) corresponding to the class instance calling this method. \
-            The sub-dict items are lists entitled\
-            *jsonable*, *nparray*, *list_nparrays*, *object* and *other*: each list\
-            is populated with class attributes whose type matches these items.
+            Workflow state inventory (dict): 
+                The state inventory is updated with 
+                a sub-dict added (replacing if necessary) corresponding to the class 
+                instance calling this method. The sub-dict items are lists entitled
+                *jsonable*, *nparray*, *list_nparrays*, *object* and *other*: each list
+                is populated with class attributes whose type matches these items.
             
         Example: 
-            If the :class:`Trace <.trace.Trace>` instance calls\
-            this method, the :class:`Trace <.state.State>` inventory dict\
-            will be assigned a sub-dict entitled *trace* with list items as above\
+            If the :class:`Trace <.trace.Trace>` instance calls
+            this method, the :class:`Trace <.state.State>` inventory dict
+            will be assigned a sub-dict entitled *trace* with list items as above
             to record the state of the :class:`Trace <streamlines.trace.Trace>` object.
             
         """

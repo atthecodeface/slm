@@ -42,7 +42,7 @@
 <span class="o">///</span>
 
 <span class="o">///</span>
-<span class="o">///</span> <span class="nd">@defgroup</span> <span class="n">integrationfns</span> <span class="n">Streamline</span> <span class="n">integration</span> <span class="n">functions</span>
+<span class="o">///</span> <span class="nd">@defgroup</span> <span class="n">integrationfns</span> <span class="n">Runge</span><span class="o">-</span><span class="n">Kutta</span> <span class="n">integration</span> <span class="n">step</span> <span class="n">functions</span>
 <span class="o">///</span> <span class="n">Functions</span> <span class="n">used</span> <span class="n">to</span> <span class="n">compute</span> <span class="n">Runge</span><span class="o">-</span><span class="n">Kutta</span> <span class="n">integration</span> <span class="n">down</span> <span class="ow">and</span> <span class="n">up</span> <span class="n">streamlines</span>
 <span class="o">///</span>
 
@@ -311,12 +311,14 @@
 <span class="o">///</span>
 <span class="o">///</span> <span class="nd">@ingroup</span> <span class="n">integrationfns</span>
 <span class="o">///</span>
-<span class="n">static</span> <span class="n">inline</span> <span class="nb">bool</span> <span class="n">connect_kutta_step_record</span><span class="p">(</span><span class="nb">float</span> <span class="o">*</span><span class="n">dt</span><span class="p">,</span> <span class="nb">float</span>  <span class="o">*</span><span class="n">dl</span><span class="p">,</span> <span class="nb">float</span> <span class="o">*</span><span class="n">l_trajectory</span><span class="p">,</span>
-                                             <span class="n">float2</span> <span class="o">*</span><span class="n">dxy1_vec</span><span class="p">,</span> <span class="n">float2</span> <span class="o">*</span><span class="n">dxy2_vec</span><span class="p">,</span>
-                                             <span class="n">float2</span> <span class="o">*</span><span class="n">vec</span><span class="p">,</span> <span class="n">float2</span> <span class="o">*</span><span class="n">prev_vec</span><span class="p">,</span>
-                                             <span class="n">float2</span> <span class="o">*</span><span class="n">next_vec</span><span class="p">,</span>
-                                             <span class="n">uint</span> <span class="o">*</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">idx</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">prev_idx</span><span class="p">,</span>
-                                             <span class="n">__private</span> <span class="n">char2</span> <span class="o">*</span><span class="n">trajectory_vec</span><span class="p">)</span>
+<span class="n">static</span> <span class="n">inline</span> <span class="nb">bool</span> <span class="n">connect_runge_kutta_step_record</span><span class="p">(</span><span class="nb">float</span> <span class="o">*</span><span class="n">dt</span><span class="p">,</span> <span class="nb">float</span>  <span class="o">*</span><span class="n">dl</span><span class="p">,</span>
+                                                   <span class="nb">float</span> <span class="o">*</span><span class="n">l_trajectory</span><span class="p">,</span>
+                                                   <span class="n">float2</span> <span class="o">*</span><span class="n">dxy1_vec</span><span class="p">,</span> <span class="n">float2</span> <span class="o">*</span><span class="n">dxy2_vec</span><span class="p">,</span>
+                                                   <span class="n">float2</span> <span class="o">*</span><span class="n">vec</span><span class="p">,</span> <span class="n">float2</span> <span class="o">*</span><span class="n">prev_vec</span><span class="p">,</span>
+                                                   <span class="n">float2</span> <span class="o">*</span><span class="n">next_vec</span><span class="p">,</span>
+                                                   <span class="n">uint</span> <span class="o">*</span><span class="n">n_steps</span><span class="p">,</span>
+                                                   <span class="n">uint</span> <span class="o">*</span><span class="n">idx</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">prev_idx</span><span class="p">,</span>
+                                                   <span class="n">__private</span> <span class="n">char2</span> <span class="o">*</span><span class="n">trajectory_vec</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">const</span> <span class="nb">float</span> <span class="n">step_error</span> <span class="o">=</span> <span class="n">fast_length</span><span class="p">((</span><span class="o">*</span><span class="n">dxy2_vec</span><span class="o">-*</span><span class="n">dxy1_vec</span><span class="p">)</span><span class="o">/</span><span class="n">GRID_SCALE</span><span class="p">);</span>
 

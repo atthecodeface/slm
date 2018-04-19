@@ -41,7 +41,7 @@
 Basins of interest can be delimited by masking.</p>
 <dl class="function">
 <dt id="streamlines.integration.integrate_trajectories">
-<code class="descclassname">streamlines.integration.</code><code class="descname">integrate_trajectories</code><span class="sig-paren">(</span><em>module_path</em>, <em>which_cl_platform</em>, <em>which_cl_device</em>, <em>info_struct</em>, <em>seed_point_array</em>, <em>mask_array</em>, <em>u_array</em>, <em>v_array</em>, <em>do_trace_downstream</em>, <em>do_trace_upstream</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.integration.integrate_trajectories" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">streamlines.integration.</code><code class="descname">integrate_trajectories</code><span class="sig-paren">(</span><em>cl_src_path</em>, <em>which_cl_platform</em>, <em>which_cl_device</em>, <em>info_struct</em>, <em>seed_point_array</em>, <em>mask_array</em>, <em>u_array</em>, <em>v_array</em>, <em>do_trace_downstream</em>, <em>do_trace_upstream</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.integration.integrate_trajectories" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trace each streamline from its corresponding seed point using 2nd-order Runge-Kutta
 integration of the topographic gradient vector field.</p>
 <p>This function is a master wrapper connecting the streamlines object and its trace()
@@ -66,7 +66,7 @@ and compute streamline trajectories statistics</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>module_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – </li>
+<li><strong>cl_src_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – </li>
 <li><strong>which_cl_platform</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
 <li><strong>which_cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
 <li><strong>info_struct</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
@@ -243,7 +243,7 @@ Return them as a small Pandas dataframe table.</p>
 <span class="n">pdebug</span> <span class="o">=</span> <span class="nb">print</span>
 
 <span class="k">def</span> <span class="nf">integrate_trajectories</span><span class="p">(</span> 
-        <span class="n">module_path</span><span class="p">,</span> <span class="n">which_cl_platform</span><span class="p">,</span> <span class="n">which_cl_device</span><span class="p">,</span> <span class="n">info_struct</span><span class="p">,</span> 
+        <span class="n">cl_src_path</span><span class="p">,</span> <span class="n">which_cl_platform</span><span class="p">,</span> <span class="n">which_cl_device</span><span class="p">,</span> <span class="n">info_struct</span><span class="p">,</span> 
         <span class="n">seed_point_array</span><span class="p">,</span> <span class="n">mask_array</span><span class="p">,</span> <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span>  
         <span class="n">do_trace_downstream</span><span class="p">,</span> <span class="n">do_trace_upstream</span><span class="p">,</span> <span class="n">verbose</span>
      <span class="p">):</span>
@@ -267,7 +267,7 @@ Return them as a small Pandas dataframe table.</p>
 <span class="sd">          and compute streamline trajectories statistics</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
-<span class="sd">        module_path (str):</span>
+<span class="sd">        cl_src_path (str):</span>
 <span class="sd">        which_cl_platform (int):</span>
 <span class="sd">        which_cl_device (int):</span>
 <span class="sd">        info_struct (numpy.ndarray):</span>
@@ -296,7 +296,7 @@ Return them as a small Pandas dataframe table.</p>
                 <span class="s1">&#39;integrationfns.cl&#39;</span><span class="p">,</span><span class="s1">&#39;trajectory.cl&#39;</span><span class="p">,</span><span class="s1">&#39;integration.cl&#39;</span><span class="p">]</span>
     <span class="n">cl_kernel_source</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="k">for</span> <span class="n">cl_file</span> <span class="ow">in</span> <span class="n">cl_files</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">module_path</span><span class="p">,</span><span class="n">cl_file</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cl_src_path</span><span class="p">,</span><span class="n">cl_file</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">cl_kernel_source</span> <span class="o">+=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">order</span> <span class="o">=</span> <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;array_order&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">order</span><span class="o">==</span><span class="s1">&#39;F&#39;</span><span class="p">:</span>

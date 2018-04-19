@@ -37,8 +37,8 @@
 <span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.core" title="Permalink to this headline">¶</a></h2>
 <p>This <a class="reference internal" href="#module-streamlines.core" title="streamlines.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code></a> module provides a base initialization class
 that is inherited by each workflow class.
-On instantiation of each such class, the base initialization parses the parameter dictionary loaded
-from the ‘job’ <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.6)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">JSON</span></code></a> file specified at the command line,
+On instantiation of each such class, the base initialization parses the parameter
+dictionary loaded from the ‘job’ <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.6)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">JSON</span></code></a> file specified at the command line,
 extracts the set of parameters pertaining to the workflow class,
 and assigns the values to the workflow class instance accordingly.</p>
 <p>The following workflow classes inherit
@@ -65,7 +65,8 @@ initialization that loads up their parameter sets as class instance attributes.<
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><em>object</em></a>) – The <a class="reference internal" href="state.html#streamlines.state.State" title="streamlines.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> class instance.</li>
-<li><strong>imported_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – The parameters dictionary loaded from a <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.6)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">JSON</span></code></a> file.</li>
+<li><strong>imported_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – The parameters dictionary loaded from
+a <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.6)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">JSON</span></code></a> file.</li>
 </ul>
 </td>
 </tr>
@@ -74,11 +75,16 @@ initialization that loads up their parameter sets as class instance attributes.<
 <dl class="attribute">
 <dt>
 <code class="descname">Class instance variables</code></dt>
-<dd><p><em>various types</em> – Set according to the parameters sub-dict             corresponding to the class name.</p>
+<dd><p><em>various types</em> – Set according to the parameters sub-dict corresponding to the class name.</p>
 </dd></dl>
 
 <p class="rubric">Example</p>
-<p>When instantiating the <a class="reference internal" href="geodata.html#streamlines.geodata.Geodata" title="streamlines.geodata.Geodata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geodata</span></code></a> class,             the <code class="docutils literal notranslate"><span class="pre">geodata</span></code> sub-dictionary             is extracted from the imported parameters dictionary, and its parameters are parsed             out and set as attributes of the  <a class="reference internal" href="geodata.html#streamlines.geodata.Geodata" title="streamlines.geodata.Geodata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geodata</span></code></a>:             e.g., <code class="docutils literal notranslate"><span class="pre">[title:</span> <span class="pre">&quot;Indian</span> <span class="pre">Creek&quot;]</span></code> becomes the variable <code class="docutils literal notranslate"><span class="pre">Geodata.title</span></code> with the value              <code class="docutils literal notranslate"><span class="pre">&quot;Indian</span> <span class="pre">Creek&quot;</span></code>.</p>
+<p>When instantiating the <a class="reference internal" href="geodata.html#streamlines.geodata.Geodata" title="streamlines.geodata.Geodata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geodata</span></code></a> class,
+the <code class="docutils literal notranslate"><span class="pre">geodata</span></code> sub-dictionary is extracted from the imported parameters
+dictionary, and its parameters are parsed out and set as attributes of the
+<a class="reference internal" href="geodata.html#streamlines.geodata.Geodata" title="streamlines.geodata.Geodata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geodata</span></code></a>:
+e.g., <code class="docutils literal notranslate"><span class="pre">[title:</span> <span class="pre">&quot;Indian</span> <span class="pre">Creek&quot;]</span></code> becomes the variable <code class="docutils literal notranslate"><span class="pre">Geodata.title</span></code>
+with the value <code class="docutils literal notranslate"><span class="pre">&quot;Indian</span> <span class="pre">Creek&quot;</span></code>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -95,11 +101,18 @@ initialization that loads up their parameter sets as class instance attributes.<
 <dl class="attribute">
 <dt>
 <code class="descname">Workflow state inventory</code></dt>
-<dd><p><em>dict</em> – The state inventory is updated with a sub-dict            added (replacing if necessary) corresponding to the class instance calling this method.             The sub-dict items are lists entitled            <em>jsonable</em>, <em>nparray</em>, <em>list_nparrays</em>, <em>object</em> and <em>other</em>: each list            is populated with class attributes whose type matches these items.</p>
+<dd><p><em>dict</em> – The state inventory is updated with
+a sub-dict added (replacing if necessary) corresponding to the class
+instance calling this method. The sub-dict items are lists entitled
+<em>jsonable</em>, <em>nparray</em>, <em>list_nparrays</em>, <em>object</em> and <em>other</em>: each list
+is populated with class attributes whose type matches these items.</p>
 </dd></dl>
 
 <p class="rubric">Example</p>
-<p>If the <a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> instance calls            this method, the <a class="reference internal" href="state.html#streamlines.state.State" title="streamlines.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> inventory dict            will be assigned a sub-dict entitled <em>trace</em> with list items as above            to record the state of the <a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> object.</p>
+<p>If the <a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> instance calls
+this method, the <a class="reference internal" href="state.html#streamlines.state.State" title="streamlines.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> inventory dict
+will be assigned a sub-dict entitled <em>trace</em> with list items as above
+to record the state of the <a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> object.</p>
 </dd></dl>
 
 </dd></dl>
@@ -110,8 +123,8 @@ initialization that loads up their parameter sets as class instance attributes.<
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This :mod:`core &lt;streamlines.core&gt;` module provides a base initialization class </span>
 <span class="sd">that is inherited by each workflow class.</span>
-<span class="sd">On instantiation of each such class, the base initialization parses the parameter dictionary loaded</span>
-<span class="sd">from the &#39;job&#39; :py:mod:`JSON &lt;json&gt;` file specified at the command line,</span>
+<span class="sd">On instantiation of each such class, the base initialization parses the parameter </span>
+<span class="sd">dictionary loaded from the &#39;job&#39; :py:mod:`JSON &lt;json&gt;` file specified at the command line,</span>
 <span class="sd">extracts the set of parameters pertaining to the workflow class,</span>
 <span class="sd">and assigns the values to the workflow class instance accordingly. </span>
 
@@ -143,23 +156,25 @@ initialization that loads up their parameter sets as class instance attributes.<
 <span class="sd">        Initialize the class instance by loading up parameters as attributes.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">             state (object): The :class:`State &lt;.state.State&gt;` class instance.</span>
-<span class="sd">             imported_parameters (dict): The parameters dictionary loaded from a :py:mod:`JSON &lt;json&gt;` file.</span>
+<span class="sd">            state (object): The :class:`State &lt;.state.State&gt;` class instance.</span>
+<span class="sd">            imported_parameters (dict): The parameters dictionary loaded from </span>
+<span class="sd">                                         a :py:mod:`JSON &lt;json&gt;` file.</span>
 
 <span class="sd">        Attributes:</span>
-<span class="sd">            Class instance variables (various types): Set according to the parameters sub-dict \</span>
-<span class="sd">            corresponding to the class name. </span>
+<span class="sd">            Class instance variables (various types): </span>
+<span class="sd">                Set according to the parameters sub-dict corresponding to the class name. </span>
 <span class="sd">        </span>
 <span class="sd">        Example:</span>
-<span class="sd">            When instantiating the :class:`Geodata &lt;.geodata.Geodata&gt;` class, \</span>
-<span class="sd">            the ``geodata`` sub-dictionary \</span>
-<span class="sd">            is extracted from the imported parameters dictionary, and its parameters are parsed \</span>
-<span class="sd">            out and set as attributes of the  :class:`Geodata &lt;.geodata.Geodata&gt;`: \</span>
-<span class="sd">            e.g., ``[title: &quot;Indian Creek&quot;]`` becomes the variable ``Geodata.title`` with the value \</span>
-<span class="sd">             ``&quot;Indian Creek&quot;``.</span>
+<span class="sd">            When instantiating the :class:`Geodata &lt;.geodata.Geodata&gt;` class, </span>
+<span class="sd">            the ``geodata`` sub-dictionary is extracted from the imported parameters </span>
+<span class="sd">            dictionary, and its parameters are parsed out and set as attributes of the  </span>
+<span class="sd">            :class:`Geodata &lt;.geodata.Geodata&gt;`: </span>
+<span class="sd">            e.g., ``[title: &quot;Indian Creek&quot;]`` becomes the variable ``Geodata.title`` </span>
+<span class="sd">            with the value ``&quot;Indian Creek&quot;``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Fetch path to the ``streamlines`` module so we can later find the CL code</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">streamlines</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cl_src_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;opencl&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
             <span class="k">try</span><span class="p">:</span>
@@ -169,7 +184,19 @@ initialization that loads up their parameter sets as class instance attributes.<
             
         <span class="n">workflow_class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">imported_parameters</span><span class="p">[</span><span class="n">workflow_class_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s1">&#39;_path&#39;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="c1"># Replace env var in DTM data path (list) if need be</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">moditem</span> <span class="o">=</span>  <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">seg</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;$&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)]</span> <span class="k">if</span> <span class="s1">&#39;$&#39;</span> <span class="ow">in</span> <span class="n">seg</span> <span class="k">else</span> <span class="n">seg</span>
+                                <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">]</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;  Error trying to parse environment variable &#39;</span> \
+                             <span class="o">+</span> <span class="p">[</span><span class="n">seg</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;$&#39;</span> <span class="ow">in</span> <span class="n">seg</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> \
+                             <span class="o">+</span> <span class="s1">&#39; - please set this variable in your shell rc&#39;</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">moditem</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">moditem</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">inventorize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -177,16 +204,17 @@ initialization that loads up their parameter sets as class instance attributes.<
 <span class="sd">             state (object): The :class:`State &lt;.state.State&gt;` class instance.</span>
 
 <span class="sd">        Attributes:</span>
-<span class="sd">            Workflow state inventory (dict): The state inventory is updated with a sub-dict\</span>
-<span class="sd">            added (replacing if necessary) corresponding to the class instance calling this method. \</span>
-<span class="sd">            The sub-dict items are lists entitled\</span>
-<span class="sd">            *jsonable*, *nparray*, *list_nparrays*, *object* and *other*: each list\</span>
-<span class="sd">            is populated with class attributes whose type matches these items.</span>
+<span class="sd">            Workflow state inventory (dict): </span>
+<span class="sd">                The state inventory is updated with </span>
+<span class="sd">                a sub-dict added (replacing if necessary) corresponding to the class </span>
+<span class="sd">                instance calling this method. The sub-dict items are lists entitled</span>
+<span class="sd">                *jsonable*, *nparray*, *list_nparrays*, *object* and *other*: each list</span>
+<span class="sd">                is populated with class attributes whose type matches these items.</span>
 <span class="sd">            </span>
 <span class="sd">        Example: </span>
-<span class="sd">            If the :class:`Trace &lt;.trace.Trace&gt;` instance calls\</span>
-<span class="sd">            this method, the :class:`Trace &lt;.state.State&gt;` inventory dict\</span>
-<span class="sd">            will be assigned a sub-dict entitled *trace* with list items as above\</span>
+<span class="sd">            If the :class:`Trace &lt;.trace.Trace&gt;` instance calls</span>
+<span class="sd">            this method, the :class:`Trace &lt;.state.State&gt;` inventory dict</span>
+<span class="sd">            will be assigned a sub-dict entitled *trace* with list items as above</span>
 <span class="sd">            to record the state of the :class:`Trace &lt;streamlines.trace.Trace&gt;` object.</span>
 <span class="sd">            </span>
 <span class="sd">        &quot;&quot;&quot;</span>

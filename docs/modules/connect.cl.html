@@ -56,7 +56,7 @@
 ///
 /// @returns void
 ///
-/// @ingroup kernels structure
+/// @ingroup structure
 ///
 __kernel void connect_channels(
         __global const float2 *seed_point_array,
@@ -84,9 +84,10 @@ __kernel void connect_channels(
         compute_step_vec(dt, uv_array, &amp;dxy1_vec, &amp;dxy2_vec, &amp;uv1_vec, &amp;uv2_vec,
                          vec, &amp;next_vec, &amp;idx);
         if (!mask_array[idx]) {
-            if (connect_kutta_step_record(&amp;dt, &amp;dl, &amp;l_trajectory, &amp;dxy1_vec, &amp;dxy2_vec,
-                       &amp;vec, &amp;prev_vec,  &amp;next_vec, &amp;n_steps, &amp;idx, &amp;prev_idx,
-                       trajectory_vec))
+            if (connect_runge_kutta_step_record(&amp;dt, &amp;dl, &amp;l_trajectory,
+                                                &amp;dxy1_vec, &amp;dxy2_vec, &amp;vec, &amp;prev_vec,
+                                                &amp;next_vec, &amp;n_steps, &amp;idx, &amp;prev_idx,
+                                                trajectory_vec))
                 continue;
         }
     }
@@ -96,9 +97,10 @@ __kernel void connect_channels(
         compute_step_vec(dt, uv_array, &amp;dxy1_vec, &amp;dxy2_vec, &amp;uv1_vec, &amp;uv2_vec,
                          vec, &amp;next_vec, &amp;idx);
         if (!mask_array[idx]) {
-            if (connect_kutta_step_record(&amp;dt, &amp;dl, &amp;l_trajectory, &amp;dxy1_vec, &amp;dxy2_vec,
-                       &amp;vec, &amp;prev_vec,  &amp;next_vec, &amp;n_steps, &amp;idx, &amp;prev_idx,
-                       trajectory_vec))
+            if (connect_runge_kutta_step_record(&amp;dt, &amp;dl, &amp;l_trajectory,
+                                                &amp;dxy1_vec, &amp;dxy2_vec, &amp;vec, &amp;prev_vec,
+                                                &amp;next_vec, &amp;n_steps, &amp;idx, &amp;prev_idx,
+                                                trajectory_vec))
                 continue;
         }
     }
@@ -172,7 +174,7 @@ __kernel void connect_channels(
 ///
 /// @returns void
 ///
-/// @ingroup kernels structure
+/// @ingroup structure
 ///
 __kernel void push_to_exit(
         __global const float2 *seed_point_array,
