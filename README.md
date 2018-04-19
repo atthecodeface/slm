@@ -9,12 +9,12 @@ The git repo here is the main **slm** code base repository. Companion repos hous
 
 ## What **slm** can do
 
-Capabilities available now or anticipated soon include:
-   - mapping channels and identifying the locations of channel heads
-   - visualization of patterns of topographic surface flow
-   - measuring hillslope lengths across a DTM landscape
-   - flow routing over pit-prone and divergent topography such as alluvial fans
-   - GPU accelerated processing of large DTM data sets
+Capabilities available now or anticipated soon include the ability to:
+   - map channels and identify the locations of channel heads
+   - visualize patterns of topographic surface flow
+   - measure hillslope lengths across a DTM landscape
+   - route flow over pit-prone and divergent topography such as alluvial fans
+   - carry out GPU-accelerated processing of large DTM data sets
  
  Longer-term goals include:
    - kinematic mapping of surface water flow depth
