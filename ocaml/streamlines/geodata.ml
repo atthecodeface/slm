@@ -157,7 +157,7 @@ struct
   let check_supported t =
     if (t.num_bands!=1) then
       raise (Geotiff (sfmt "Only a single band in GeoTiff is supoprted in '%s'" t.gtf_filename));
-    if ((t.pixsz_x +. t.pixsz_y)<>0.) then
+    if (abs_float (t.pixsz_x +. t.pixsz_y))>1E-3 then
       raise (Geotiff (sfmt "Pixel x=%g and y=%g dimensions not equal in '%s': cannot handle non-square pixels" t.pixsz_x t.pixsz_y t.gtf_filename));
     ()
 

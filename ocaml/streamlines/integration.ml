@@ -13,6 +13,7 @@ let pv_verbose (props:t_props_trace) = pv_verbose props.verbosity
 let cl_files = ["rng.cl";"essentials.cl";
                 "writearray.cl";"trajectoryfns.cl";"computestep.cl";
                 "integrationfns.cl";"trajectory.cl";"integration.cl"]
+let cl_src_path = ["opencl"]
 
 (*a Types *)
 (*t t_memory *)
@@ -218,7 +219,7 @@ let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
   let memory = memory_create_buffers pocl data seeds chunk_size in
   let streamline_lists = [| []; []; |] in
   let results = results_create data seeds in
-  let cl_kernel_source = Pocl.read_source ["opencl"] cl_files in
+  let cl_kernel_source = Pocl.read_source cl_src_path cl_files in
 
   (*f gpu_integrate_chunk Downstream and upstream passes aka streamline integrations from
      chunks of seed points aka subsets of the total set *)

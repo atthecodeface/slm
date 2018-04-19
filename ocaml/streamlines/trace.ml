@@ -39,8 +39,8 @@ let create_seeds t data =
     let n = ref 0 in
     let add_seed y x bm =
       if bm='\000' then (
-        seeds'.{!n,0} <- float (y-pad);
-        seeds'.{!n,1} <- float (x-pad);
+        seeds'.{!n,0} <- float (x-pad);
+        seeds'.{!n,1} <- float (y-pad);
         n := !n +1
       )
     in

@@ -326,14 +326,15 @@ let plot_updownstreamlines_overlay ?do_down:(do_down=true) t data results =
           (t.props.upstreamline_color, results.streamline_arrays.(1), "up")
       )
     in
- (* seed(t.props.shuffle_random_seed) *)
+    Owl_stats_prng.self_init ();
+    Owl_stats_prng.sfmt_seed t.props.shuffle_random_seed;
     let max_streamlines = Array.length streamline_array in
     let streamline_limit = t.props.plot_streamline_limit in
     let (idx_array, verbose_string) = (
         if (streamline_limit>0) && (streamline_limit<max_streamlines) then (
           let shuffle = Array.init max_streamlines (fun i->i) in
-          let shuffle = Owl_stats.shuffle shuffle in
-          (Array.init streamline_limit (fun i->shuffle.(i)),
+          let sample = Owl_stats.sample shuffle streamline_limit in
+          (sample,
             sfmt "%d %s streamlines randomly sampled from a set of %d" streamline_limit up_or_down_str max_streamlines)
         ) else (
           (Array.init max_streamlines (fun i->i),
