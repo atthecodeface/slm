@@ -5,7 +5,7 @@
 		"noisy" : false,
 		"cl_platform" : 0,
 		"cl_device" : 2,
-		"gpu_memory_limit_pc" : 60,
+		"gpu_memory_limit_pc" : 90,
 		"array_order" : "C",
 		
 		"do_geodata" : true,	

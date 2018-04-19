@@ -1,20 +1,22 @@
 """
-Read/write/assign the data contained in the :class:`.Streamlining` object, which includes all the 
-parameters used to control streamline computation and all the data arrays used to 
-hold their results.
+Read/write/assign the data contained in the :class:`.Streamlining` object, 
+which includes all the parameters used to control streamline computation 
+and all the data arrays used to hold their results.
 
 """
 
 import os
 from json import load
+import streamlines
 
 __all__ = ['read_json_file','import_parameters']
 
 def read_json_file(parameter_file_list):
     """
-    Load and parse a list of JSON parameters files into a parameters dict
+    Load and parse a list of JSON parameters files into a parameters dict.
 
-    Step through a list of JSON parameters files (usu "defaults.json" and the job JSON file).
+    Step through a list of JSON parameters files (usually "defaults.json" 
+    and the job JSON file).
     Parse each into a parameters dict, ensuring that subsequent JSON parameters
     override any set by previous JSON files.
     
@@ -70,6 +72,7 @@ def import_parameters(parameters_path,parameters_file): #,do_reload_state=False
         dict:  workflow parameter dictionary
     """        
     # Parse default and assigned JSON parameters files
-    parameters_files_list = [os.path.join(os.path.dirname(os.path.realpath(__file__)),'defaults'),
-                             os.path.realpath(os.path.join(parameters_path,parameters_file))]
+    parameters_files_list \
+        = [os.path.join(streamlines.__path__[0],'defaults'),
+           os.path.realpath(os.path.join(parameters_path,parameters_file))]
     return read_json_file(parameters_files_list)

@@ -432,7 +432,7 @@ class Preprocess(Core):
         self.where_blocked_neighbors_array \
             = np.stack((self.where_blocked_neighbors_array[0],
                         self.where_blocked_neighbors_array[1])).T
-        self.print('found %d' % self.where_blockages_array.shape[1], end='')
+        self.print('found {}'.format(self.where_blockages_array.shape[0]), end='')
         if self.state.noisy:
             if self.where_blockages_array.shape[1]!=0:
                 self.print('\nBlockages at:')

@@ -244,6 +244,12 @@ class Plot(Core):
         if interp_method is None:
             interp_method = self.plot_interpolation_method
             
+#         rounded_pixel_sf = (self.geodata.roi_pixel_size
+#                             /np.round(self.geodata.roi_pixel_size))
+#         rounded_bounds = [*self.geodata.roi_x_bounds/rounded_pixel_sf,
+#                           *self.geodata.roi_y_bounds/rounded_pixel_sf]
+#         pdebug('rounded_bounds',rounded_bounds)
+        
         if do_plot_color_relief is None:
             do_plot_color_relief = self.do_plot_color_shaded_relief
         if do_plot_color_relief:
@@ -350,14 +356,14 @@ class Plot(Core):
         mask_array = basin_mask_array | ~(grid_array)
         self.plot_simple_grid(grid_array, mask_array, axes, cmap='Reds', alpha=0.8)
         
-        self.plot_compound_markers(axes, is_majorconfluence, ['blue','black'])
-        self.plot_compound_markers(axes, is_minorinflow,     ['yellow','black'])
-        self.plot_compound_markers(axes, is_majorinflow,     ['lightgreen','black'])
-        self.plot_compound_markers(axes, is_channeltail,     ['red','black'])
-        self.plot_compound_markers(axes, is_channelhead,     ['orange','black'])
-#         self.plot_compound_markers(axes, is_leftflank,       ['green','black'])
+#         self.plot_compound_markers(axes, is_majorconfluence, ['blue','black'])
+#         self.plot_compound_markers(axes, is_minorinflow,     ['yellow','black'])
+#         self.plot_compound_markers(axes, is_majorinflow,     ['green','black'])
+        self.plot_compound_markers(axes, is_channeltail,     ['lightgreen','black'])
+#         self.plot_compound_markers(axes, is_channelhead,     ['orange','black'])
+#         self.plot_compound_markers(axes, is_leftflank,       ['red','black'])
 #         self.plot_compound_markers(axes, is_midslope,        ['purple','black'])
-        self.plot_compound_markers(axes, is_ridge,        ['purple','black'])
+#         self.plot_compound_markers(axes, is_ridge,        ['purple','black'])
         
         self._record_fig(fig_name,fig)
 
@@ -1165,32 +1171,33 @@ class Plot(Core):
             (mx,mxc,msx,mewx,mi,msi,mewi,mc,msc,ma) = self.joint_distbn_markers[mode_idx]
             if near_mode_vec is not None:
                 axes.plot(near_mode_vec[:,0],near_mode_vec[:,1],mc,ms=msc,alpha=ma)
+            break
 
 
-        # Mode-mode linking line
-        legend += ['_no_legend_']
-        mode_to_mode_expt = ( np.log(mode_xy_list[1][1]/mode_xy_list[0][1])
-                   /np.log(mode_xy_list[1][0]/mode_xy_list[0][0]) )
-        x = x_vec[(x_vec>mode_xy_list[0][0]) & (x_vec<mode_xy_list[1][0])]
-        y_hsl = bivariate_distribution.channel_threshold
-        x_hsl = mode_xy_list[0][0]*np.power(bivariate_distribution.channel_threshold
-                                            /mode_xy_list[0][1], 1/mode_to_mode_expt)
-        axes.plot(x,np.power(x/mode_xy_list[0][0],mode_to_mode_expt)*mode_xy_list[0][1],
-                  linestyle='solid', color='indigo', linewidth=1.5, alpha=0.5)
+#         # Mode-mode linking line
+#         legend += ['_no_legend_']
+#         mode_to_mode_expt = ( np.log(mode_xy_list[1][1]/mode_xy_list[0][1])
+#                    /np.log(mode_xy_list[1][0]/mode_xy_list[0][0]) )
+#         x = x_vec[(x_vec>mode_xy_list[0][0]) & (x_vec<mode_xy_list[1][0])]
+#         y_hsl = bivariate_distribution.channel_threshold
+#         x_hsl = mode_xy_list[0][0]*np.power(bivariate_distribution.channel_threshold
+#                                             /mode_xy_list[0][1], 1/mode_to_mode_expt)
+#         axes.plot(x,np.power(x/mode_xy_list[0][0],mode_to_mode_expt)*mode_xy_list[0][1],
+#                   linestyle='solid', color='indigo', linewidth=1.5, alpha=0.5)
 
-        # Plot cross @ channel mode
-        mode_idx = 1
-        mode_xy = mode_xy_list[mode_idx]
-        if do_plot_mode[mode_idx]:
-            (mx,mxc,msx,mewx,mi,msi,mewi,mc,msc,ma) = self.joint_distbn_markers[mode_idx]
-            if mode_xy is not None:
-                legend += ['_no_legend_']
-                axes.plot(mode_xy[0],mode_xy[1],mi,ms=msx,mew=mewx)
-                legend += ['channel mode']
-                axes.plot(mode_xy[0],mode_xy[1],mx,color=mxc,ms=msi,mew=mewi)
-        
-        # Extras
-        axes.grid(color='gray', linestyle='dotted', linewidth=0.5, which='both')
+#         # Plot cross @ channel mode
+#         mode_idx = 1
+#         mode_xy = mode_xy_list[mode_idx]
+#         if do_plot_mode[mode_idx]:
+#             (mx,mxc,msx,mewx,mi,msi,mewi,mc,msc,ma) = self.joint_distbn_markers[mode_idx]
+#             if mode_xy is not None:
+#                 legend += ['_no_legend_']
+#                 axes.plot(mode_xy[0],mode_xy[1],mi,ms=msx,mew=mewx)
+#                 legend += ['channel mode']
+#                 axes.plot(mode_xy[0],mode_xy[1],mx,color=mxc,ms=msi,mew=mewi)
+#         
+#         # Extras
+#         axes.grid(color='gray', linestyle='dotted', linewidth=0.5, which='both')
 
 
         # Plot channel threshold line for sqrt(A_e)
@@ -1203,19 +1210,19 @@ class Plot(Core):
         except:
             pass
         
-        # Intercept
-        legend += [r'intercept $\,L_m=$'+'{:0.0f}m'.format(np.round(x_hsl,0))]
-#         legend += ['_no_legend_']
-        axes.plot(x_hsl,y_hsl,'.', color='indigo', ms=20, alpha=0.9)
+#         # Intercept
+#         legend += [r'intercept $\,L_m=$'+'{:0.0f}m'.format(np.round(x_hsl,0))]
+# #         legend += ['_no_legend_']
+#         axes.plot(x_hsl,y_hsl,'.', color='indigo', ms=20, alpha=0.9)
 
-        # Plot channel threshold line for L_m
-        try:
-            legend += [r'transition $L_m^*=$'+'{:.0f}m'.format(np.round(x_hsl*2,0))]
-            line,_ = axes.plot(y_vec*0+x_hsl*2,y_vec, 
-                               '-.', color='indigo',linewidth=3,alpha=1.0)
-            line.set_dashes([3, 1, 1, 1])
-        except:
-            pass
+#         # Plot channel threshold line for L_m
+#         try:
+#             legend += [r'transition $L_m^*=$'+'{:.0f}m'.format(np.round(x_hsl*2,0))]
+#             line,_ = axes.plot(y_vec*0+x_hsl*2,y_vec, 
+#                                '-.', color='indigo',linewidth=3,alpha=1.0)
+#             line.set_dashes([3, 1, 1, 1])
+#         except:
+#             pass
 
         # Plot cross @ hillslope mode
         cross_alpha=0.6

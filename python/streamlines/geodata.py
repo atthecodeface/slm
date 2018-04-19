@@ -99,11 +99,13 @@ class Geodata(Core):
             
         # Handle empty ROI bounds which imply full DTM
         try:
-            self.roi_x_bounds
+            if self.roi_x_bounds==[]:
+                raise
         except:
             self.roi_x_bounds = [0,self.dtm_array.shape[1]]
         try:
-            self.roi_y_bounds
+            if self.roi_y_bounds==[]:
+                raise
         except:
             self.roi_y_bounds = [0,self.dtm_array.shape[0]]
         # Trap ROI bounds error
@@ -268,7 +270,7 @@ class Geodata(Core):
         y_northing_bottomleft = geotransform[3]+geotransform[5]
         pixel_size = geotransform[1]
         self.print('DTM GeoTIFF coordinate "geotransform":',geotransform)
-        if pixel_size!=geotransform[5]*(-1):
+        if not np.isclose(pixel_size,geotransform[5]*(-1),rtol=1e-3):
             raise ValueError(
                 'Pixel x=%g and y=%g dimensions not equal in "%s": cannot handle non-square pixels'
                              % (pixel_size,(-1)*geotransform[5],fullpath_filename) )

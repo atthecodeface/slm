@@ -13,7 +13,9 @@ the :mod:`core <streamlines.core>` class:
 - :class:`streamlines.preprocess.Preprocess`
 - :class:`streamlines.trace.Trace`
 - :class:`streamlines.analysis.Analysis`
+- :class:`streamlines.analysis.Mapping`
 - :class:`streamlines.plot.Plot`
+- :class:`streamlines.plot.Export`
 """
 
 from json import dumps
