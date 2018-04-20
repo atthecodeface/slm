@@ -1163,15 +1163,15 @@ class Plot(Core):
         axes.contour(x_vec,y_vec, kde_pdf.T, self.joint_distbn_n_contours,
                      colors='k',linewidths=1,alpha=0.5, antialiased=True)
         
-        # Plot cluster of points around each hillslope mode
-        for mode_idx,near_mode_vec in enumerate(near_mode_vec_list):
-            if not do_plot_near_mode[mode_idx]:
-                continue
-            legend += ['_no_legend_']
-            (mx,mxc,msx,mewx,mi,msi,mewi,mc,msc,ma) = self.joint_distbn_markers[mode_idx]
-            if near_mode_vec is not None:
-                axes.plot(near_mode_vec[:,0],near_mode_vec[:,1],mc,ms=msc,alpha=ma)
-            break
+#         # Plot cluster of points around each hillslope mode
+#         for mode_idx,near_mode_vec in enumerate(near_mode_vec_list):
+#             if not do_plot_near_mode[mode_idx]:
+#                 continue
+#             legend += ['_no_legend_']
+#             (mx,mxc,msx,mewx,mi,msi,mewi,mc,msc,ma) = self.joint_distbn_markers[mode_idx]
+#             if near_mode_vec is not None:
+#                 axes.plot(near_mode_vec[:,0],near_mode_vec[:,1],mc,ms=msc,alpha=ma)
+#             break
 
 
 #         # Mode-mode linking line
@@ -1235,7 +1235,7 @@ class Plot(Core):
                 axes.plot(mode_xy[0],mode_xy[1],mi,ms=msx,mew=mewx)
                 legend += ['hillslope mode']
                 axes.plot(mode_xy[0],mode_xy[1],mx,color=mxc,ms=msi,mew=mewi)
-                
+                 
         # Linear trend x=y
         legend += [r'hillslope $\sqrt{A_e} = L_m$']
         x = x_vec[x_vec<bivariate_distribution.channel_threshold]

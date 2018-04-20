@@ -417,7 +417,7 @@ class Analysis(Core):
         logx_array[x_array[:,:,up_down_idx_x]<=0.0] = np.finfo(np.float32).min
         logy_array[y_array[:,:,up_down_idx_y]<=0.0] = np.finfo(np.float32).min   
         if method is None:
-            method = 'sklearn'
+            method = self.marginal_distbn_kde_method
         if n_samples is None:
             n_samples = self.marginal_distbn_kde_nx_samples
         if kernel is None:
@@ -583,7 +583,7 @@ class Analysis(Core):
         logx_array[x_array[:,:,up_down_idx_x]<=0.0] = np.finfo(np.float32).min
         logy_array[y_array[:,:,up_down_idx_y]<=0.0] = np.finfo(np.float32).min   
         if method is None:
-            method = 'sklearn'
+            method = self.joint_distbn_kde_method
         if n_samples is None:
             n_samples = np.complex(self.joint_distbn_kde_nxy_samples)
         else:
