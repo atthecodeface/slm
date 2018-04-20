@@ -153,28 +153,39 @@ class Univariate_distribution():
         # by forcing the Epanechnikov bandwidth to be double the Gaussian.
         if kernel=='epanechnikov':
             self.bandwidth *= 2.0
+        dx = self.logx_vec[1]-self.logx_vec[0]
         info_dtype = np.dtype([
                 ('array_order', 'U1'),
                 ('bandwidth', np.float32),
+                ('n_data', np.uint32),
                 ('n_bins_x', np.uint32),
                 ('n_bins_y', np.uint32),
                 ('x_min', np.float32),
                 ('x_max', np.float32),
                 ('x_range', np.float32),
+                ('dx', np.float32),
                 ('y_min', np.float32),
-                ('y_max', np.float32)
+                ('y_max', np.float32),
+                ('y_range', np.float32),
+                ('dy', np.float32)
             ])          
         info_struct = np.array([(   np.string_(self.array_order),
                                     np.float32(self.bandwidth),
+                                    np.uint32(self.logx_data.shape[0]),
                                     np.uint32(self.n_samples),
                                     np.uint32(1),
                                     np.float32(self.logx_vec[0]),
                                     np.float32(self.logx_vec[-1]),
                                     np.float32(self.logx_vec[-1]-self.logx_vec[0]),
+                                    np.float32(dx),
                                     np.float32(0.0), # dummy value
-                                    np.float32(1.0)  # dummy value
+                                    np.float32(1.0), # dummy value
+                                    np.float32(1.0), # dummy value
+                                    np.float32(1.0/200)  # dummy value
 #                                     np.float32(self.logy_vec[0]),
-#                                     np.float32(self.logy_vec[-1])
+#                                     np.float32(self.logy_vec[-1]),
+#                                     np.float32(self.logy_vec[-1]-self.logy_vec[0]),
+#                                     np.float32(dy)
                             )], dtype = info_dtype)
         self.kde['pdf'] = kde.histogram_univariate_pdf(self.cl_src_path, 
                                                        self.cl_platform, 
@@ -182,8 +193,11 @@ class Univariate_distribution():
                                                        info_struct,
                                                        self.logx_data, 
                                                        self.verbose)
-        dx = self.logx_vec[1]-self.logx_vec[0]
         self.kde['cdf'] = np.cumsum(self.kde['pdf'])*dx
+        if not np.isclose(self.kde['cdf'][-1], 1.0, rtol=5e-3):
+            self.print(
+                'Error/imprecision when computing cumulative probability distribution:',
+                       'pdf integrates to {:3f} not to 1.0'.format(self.kde['cdf'][-1]))
 
     def statistics(self):
         x = self.logx_vec

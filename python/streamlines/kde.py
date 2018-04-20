@@ -45,14 +45,18 @@ def histogram_univariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
             
+    n_data = info_struct['n_data'][0]
     n_bins_x = info_struct['n_bins_x'][0]
     x_range = info_struct['x_range'][0]
+    dx = info_struct['dx'][0]
     # Do integrations on the GPU
     cl_kernel_fn = 'histogram_univariate'
-    histogram_array \
+    uint_histogram_array \
         = gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_struct, 
                       sl_array, verbose)
-    histogram_array /= x_range 
+    histogram_array \
+        = uint_histogram_array.astype(np.float32)/n_data/dx
+#     pdebug(uint_histogram_array.T,histogram_array.T)
     # Done
     vprint(verbose,'done')
     return histogram_array
@@ -77,11 +81,12 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_stru
     # Prepare memory, buffers 
     order = info_struct['array_order'][0]
     n_bins_x = info_struct['n_bins_x'][0]
+    n_data = info_struct['n_data'][0]
+    pdebug(n_bins_x)
     (histogram_array, sl_buffer, histogram_buffer) \
         = prepare_memory(context, queue, order, n_bins_x, sl_array, verbose)    
     # Specify this integration job's parameters
-    global_size = [sl_array.shape[0],1]
-    pdebug(global_size)
+    global_size = [n_data,1]
     local_size = None
     # Compile the CL code
     compile_options = pocl.set_compile_options(info_struct, cl_kernel_fn, 
@@ -103,7 +108,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_stru
     queue.finish()   
     return histogram_array
     
-def prepare_memory(context, queue, order, n_bins, sl_array, verbose):
+def prepare_memory(context, queue, order, n_bins_x, sl_array, verbose):
     """
     Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
     
@@ -119,7 +124,7 @@ def prepare_memory(context, queue, order, n_bins, sl_array, verbose):
         numpy.ndarray, pyopencl.Buffer, pyopencl.Buffer: 
         histogram_array, sl_buffer, histogram_buffer
     """
-    histogram_array = np.array((n_bins,1), dtype=np.float32,order=order)
+    histogram_array = np.zeros((n_bins_x,1), dtype=np.uint32,order=order)
      # Buffers to GPU memory
     COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
     COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR

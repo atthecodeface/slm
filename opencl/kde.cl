@@ -27,8 +27,8 @@
 /// @ingroup kde
 ///
 __kernel void histogram_univariate(
-        __global const float  *sl_array,
-        __global       float  *histogram_array
+        __global const    float  *sl_array,
+        __global          uint   *histogram_array
    )
 {
     // For every ROI pixel...
