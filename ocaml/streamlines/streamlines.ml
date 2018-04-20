@@ -16,6 +16,9 @@ LD_LIBRARY_PATH=/Users/gavinprivate/Git/brew/lib ocaml
 
 To do
 
+Use h_min in geodata
+Create masked ROI array with correct padding on mask
+
 
 analysis.py
 connect.py
@@ -77,7 +80,7 @@ module ODN = Owl.Dense.Ndarray.Generic
 let go root_dir json_dir =
   (* Create workflow objects and fill out properties *)
   set_root root_dir;
-  let props = Properties.read_properties [ (["python";"streamlines"], "defaults.json");
+  let props = Properties.read_properties [ ([json_dir], "defaults.json");
                                            ([json_dir], "GuadalupeDemo1.json");
                 ] in
   let data        = Core.create props in

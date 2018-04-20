@@ -56,7 +56,7 @@ let matrix_for_plot_byte ~region ba =
   let z = ODM.flip z in
   z
 
-(*f [generate_hillshade ba azimuth_degrees angle_altitude_degrees]
+(** [generate_hillshade ba azimuth_degrees angle_altitude_degrees]
 
         Hillshade render DTM topo with light from direction azimuth_degrees and tilt
         angle_attitude_degrees
@@ -79,14 +79,18 @@ let generate_hillshade ba azimuth_degrees altitude_degrees =
     let shade sl asp = ((alt_sin*.(sin sl) +. alt_cos *. (cos sl) *. (cos (azimuth -. asp)))+. 1.) /. 2. in
     ODM.map2 shade slope aspect
 
-(*f [generate_masked_roi ba mask]
+(** [generate_masked_roi ba mask]
 
     Generate a [0,0.99] matrix with each pixel being a height, with masked out as 1.0
  *)
 let generate_masked_roi ba mask =
   let mask' = ODN.flatten mask |> Bigarray.array1_of_genarray in
-  let a_height = ba_foldi (fun i acc v -> if mask'.{i}='\000' then v else acc) nan ba in
-  let mask_as_nan i v = if mask'.{i}='\000' then v else a_height in
+  let (_,padded_width) = ODM.shape mask in
+  let (_,width) = ODM.shape ba in
+  let pad = (padded_width - width)/2 in
+  let unmasked i = (let row = i / width in mask'.{i+(2*row+1+padded_width)*pad}='\000') in
+  let a_height = ba_foldi (fun i acc v -> if (unmasked i) then v else acc) nan ba in
+  let mask_as_nan i v = if (unmasked i) then v else a_height in
   let masked_array  = ODN.mapi mask_as_nan ba in
   let min = ODN.(get (min masked_array) [|0|]) in
   let max = ODN.(get (max masked_array) [|0|]) in
@@ -256,7 +260,7 @@ let plot_basin_mask ?region:(region=all) data plot =
 
 
 
-(*f plot_roi_shaded_relief
+(** [plot_roi_shaded_relief ?title ?window_title ?region ?x_pixel_scale ?y_pixel_scale t]
 
   Hillshade view of ROI of DTM
 
@@ -311,7 +315,7 @@ let new_figure ?title ?window_title ?region ?x_pixel_scale ?y_pixel_scale t =
   in
   Owl_plot.add_plplot ~h:plot f
 
-(*f plot_updownstreamlines_overlay
+(** [plot_updownstreamlines_overlay ?do_down t data results]
         Up or downstreamlines 
  *)
 let plot_updownstreamlines_overlay ?do_down:(do_down=true) t data results =
@@ -368,10 +372,8 @@ let plot_updownstreamlines_overlay ?do_down:(do_down=true) t data results =
     let plot_trajectory i sidx =
       let trajectory = streamline_array.(sidx) in (* bytes *)
       let l = (Bytes.length trajectory)/2+1 in
-      let x_origin = (ba_owl1d data.x_roi_n_pixel_centers).{0} +. (ba_owl2d data.seeds).{sidx,0} in
-      let y_origin = (ba_owl1d data.y_roi_n_pixel_centers).{0} +. (ba_owl2d data.seeds).{sidx,1} in
-      let x_origin = (ba_owl2d data.seeds).{sidx,0} in
-      let y_origin = (ba_owl2d data.seeds).{sidx,1} in
+      let y_origin = 0.5 +. (ba_owl2d data.seeds).{sidx,1} in
+      let x_origin = 0.5 +. (ba_owl2d data.seeds).{sidx,0} in
       let x_vec = Array.create_float l in
       let y_vec = Array.create_float l in
       x_vec.(0) <- x_origin;
@@ -380,14 +382,16 @@ let plot_updownstreamlines_overlay ?do_down:(do_down=true) t data results =
       let float_of_byte b = float ((255 land (128+(int_of_char b)))-128) in
       let blah i _ =
        if i>0 then (
-        x_vec.(i) <- x_vec.(i-1) +. (float_of_byte (Bytes.get trajectory (i*2-2))) /. resolution;
-        y_vec.(i) <- y_vec.(i-1) +. (float_of_byte (Bytes.get trajectory (i*2-1))) /. resolution;
+        let dx = (float_of_byte (Bytes.get trajectory (i*2-2))) /. resolution in
+        let dy = (float_of_byte (Bytes.get trajectory (i*2-1))) /. resolution in
+        x_vec.(i) <- x_vec.(i-1) +. dx;
+        y_vec.(i) <- y_vec.(i-1) +. dy;
        )
       in
       Array.iteri blah x_vec;
       Plplot.plcol0 3;
       Plplot.plline x_vec y_vec;
-      Plplot.plsym x_vec y_vec marker;
+      (*Plplot.plsym x_vec y_vec marker;*)
       (* using  marker color (from string) marker_size=size line_width=size alpha=alpha *)
      pv_verbose t (fun _ -> show_progress i)
     in
@@ -395,7 +399,7 @@ let plot_updownstreamlines_overlay ?do_down:(do_down=true) t data results =
     pv_verbose t (fun _ -> Printf.printf "done\n%!");
     ()
 
-(*f [plot_dtm_shaded_relief t data geodata] - plot shaded relief of DTM
+(** [plot_dtm_shaded_relief t data geodata] - plot shaded relief of DTM
  *)
 let plot_dtm_shaded_relief t ?subsample:(subsample=5) data (geodata:Geodata.t_data) =
     let open Geodata in
@@ -408,7 +412,7 @@ let plot_dtm_shaded_relief t ?subsample:(subsample=5) data (geodata:Geodata.t_da
     let z = matrix_for_plot_float32 ~region:region shaded in
     Owl_plot.(gjs_image ~h:t.plot ~plot_options:[set_cmap ~num_col:256 cmap_grey] z)
 
-(*f [plot_roi_shaded_relief_overlay t data] - plot shaded relief of ROI with alphas that let other plots also happen
+(** [plot_roi_shaded_relief_overlay t data] - plot shaded relief of ROI with alphas that let other plots also happen
  *)
 let plot_roi_shaded_relief_overlay ?do_plot_color_relief ?color_alpha ?hillshade_alpha t data =
     let color_alpha     = Option.default 1.  color_alpha in
@@ -423,7 +427,7 @@ let plot_roi_shaded_relief_overlay ?do_plot_color_relief ?color_alpha ?hillshade
     let z = matrix_for_plot_float32 ~region:t.region shaded in
     Owl_plot.(gjs_image ~h:t.plot ~plot_options:[set_cmap ~num_col:256 ~alpha:hillshade_alpha cmap_grey] z)
 
-(*f [plot_roi_shaded_relief t data] - plot shaded relief of ROI as figure
+(** [plot_roi_shaded_relief t data] - plot shaded relief of ROI as figure
  *)
 let plot_roi_shaded_relief t data =
     let region_array = data.roi_region in
@@ -433,30 +437,77 @@ let plot_roi_shaded_relief t data =
       ~color_alpha:t.props.shaded_relief_color_alpha
       t data
 
-(*f [plot_streamlines t data results]
+(** [plot_streamlines t data results]
         Streamlines, points on semi-transparent shaded relief
  *)
 let plot_streamlines t data results = 
-    let region_array = data.roi_region in
-    new_figure ~title:data.properties.geodata.title ~x_pixel_scale:data.roi_pixel_size ~y_pixel_scale:data.roi_pixel_size ~region:region_array t;
-    plot_roi_shaded_relief_overlay
-      ~hillshade_alpha:t.props.streamline_shaded_relief_hillshade_alpha
-      ~color_alpha:t.props.streamline_shaded_relief_color_alpha
-      t data;
-    let f _ =
-      (*    if t.props.do_plot_flow_vectors then plot_gradient_vector_field_overlay(axes);*)
-      if t.props.do_plot_downstreamlines then plot_updownstreamlines_overlay ~do_down:true  t data results ;
-      if t.props.do_plot_upstreamlines   then plot_updownstreamlines_overlay ~do_down:false t data results ;
-      (*    if t.props.do_plot_seed_points then plot_seed_points_overlay(axes);
+  let region_array = data.roi_region in
+  new_figure ~title:data.properties.geodata.title ~x_pixel_scale:data.roi_pixel_size ~y_pixel_scale:data.roi_pixel_size ~region:region_array t;
+  plot_roi_shaded_relief_overlay
+    ~hillshade_alpha:t.props.streamline_shaded_relief_hillshade_alpha
+    ~color_alpha:t.props.streamline_shaded_relief_color_alpha
+    t data;
+  let f _ =
+    (*    if t.props.do_plot_flow_vectors then plot_gradient_vector_field_overlay(axes);*)
+    if t.props.do_plot_downstreamlines then plot_updownstreamlines_overlay ~do_down:true  t data results ;
+    if t.props.do_plot_upstreamlines   then plot_updownstreamlines_overlay ~do_down:false t data results ;
+    (*    if t.props.do_plot_seed_points then plot_seed_points_overlay(axes);
     if t.props.do_plot_blockages then plot_blockages_overlay(axes);
     if t.props.do_plot_loops then plot_loops_overlay(axes);
-       *)
+     *)
     ()
-    in
-    Owl_plot.add_plplot ~h:t.plot f;
-    ()
+  in
+  Owl_plot.add_plplot ~h:t.plot f;
+  ()
 
-(*f [plot_maps t data]
+(** [plot_classical_streamlines_overlay t data results]
+        Classic streamlines (overlay method)
+**)
+let plot_classical_streamlines_overlay ?region:(region=all) t (data:t_core_data) results =
+  let pad = data.pad_width in
+  let (ny,nx) = ODM.shape data.u_array in
+  let dx, dy = 1.0, 1.0 in
+  let cgrid_xg = Array.init nx (fun i -> 0.5 +. (float (i-pad))) in
+  let cgrid_yg = Array.init ny (fun i -> 0.5 +. (float (i-pad))) in
+  let cgrid2_xg = Array.make_matrix ny nx 0.0 in
+  let cgrid2_yg = Array.make_matrix ny nx 0.0 in
+  for i = 0 to nx - 1 do
+    let x = cgrid_xg.(i) in
+    for j = 0 to ny - 1 do
+      let y = cgrid_yg.(j) in
+      cgrid2_xg.(j).(i) <- y;
+      cgrid2_yg.(j).(i) <- x
+    done
+  done;
+  let u = ODM.(cast_s2d (get_slice region data.u_array) |> to_arrays) in
+  let v = ODM.(cast_s2d (get_slice region data.v_array) |> to_arrays) in
+    let open Plplot in
+    plcol0 2;
+(*    plset_pltr (pltr1 cgrid_yg cgrid_xg);*)
+    plset_pltr (pltr2 cgrid2_yg cgrid2_xg);
+    plvect u v 0. (* last is scale *);
+    plunset_pltr ();
+    plcol0 1;
+()
+
+(** [plot_classical_streamlines t data results]
+        Classic streamlines on color shaded relief
+ *)
+let plot_classical_streamlines t data results = 
+  let region_array = data.roi_region in
+  new_figure ~title:data.properties.geodata.title ~x_pixel_scale:data.roi_pixel_size ~y_pixel_scale:data.roi_pixel_size ~region:region_array t;
+  plot_roi_shaded_relief_overlay
+    ~hillshade_alpha:t.props.streamline_shaded_relief_hillshade_alpha
+    ~color_alpha:t.props.streamline_shaded_relief_color_alpha
+    t data;
+  let f _ = 
+    plot_classical_streamlines_overlay t data results;
+    ()
+  in
+  Owl_plot.add_plplot ~h:t.plot f;
+  ()
+
+(** [plot_maps t data]
 
  Plot maps of DTM ROI streamlines and processed grids
 
@@ -466,6 +517,7 @@ let plot_maps t data geodata results =
   if t.props.do_plot_dtm then plot_dtm_shaded_relief t data geodata;
   if t.props.do_plot_roi then plot_roi_shaded_relief t data;
   if t.props.do_plot_streamlines then plot_streamlines t data results;
+(*plot_classical_streamlines t data results;*)
 (*  if t.props.do_plot_flow_maps then plot_flow_maps t data;
   if t.props.do_plot_segments then plot_segments t data;
   if t.props.do_plot_channels then plot_channels t data;
@@ -476,11 +528,11 @@ let plot_maps t data geodata results =
   workflow_end w;
   ()
 
-(*f [plot_distributions t data] blah *)
+(** [plot_distributions t data] blah *)
 let plot_distributions t data =
     ()
 
-(*f [create props] - initialize the library *)
+(** [create props] - initialize the library *)
 let create (props:t_props) =
   let region = [[0;-1]; [0;-1]] in
   let filename = "plot_%n.png" in
@@ -496,7 +548,7 @@ let create (props:t_props) =
     props = props.plot;
   }
 
-(*f [process t data] - do all the plots *)
+(** [process t data] - do all the plots *)
 let process t data geodata results = 
     let w = workflow_start "plot" t.props.verbosity in
     if t.props.do_plot_maps then plot_maps t data geodata results;

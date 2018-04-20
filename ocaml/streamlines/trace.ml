@@ -34,7 +34,7 @@ let create_seeds t data =
     let pad = data.properties.geodata.pad_width in
     let num_seeds = ba_fold (fun acc bm->if bm='\000' then (acc+1) else acc) 0 data.basin_mask_array in
     pv_debug t (fun _ -> Printf.printf "%d unmasked data points, one seed for each\n%!" num_seeds);
-    let seeds = ba_float2d num_seeds 2 in
+    let seeds  = ba_float2d num_seeds 2 in
     let seeds' = ba_owl2d seeds in
     let n = ref 0 in
     let add_seed y x bm =
