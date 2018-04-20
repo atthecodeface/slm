@@ -11,6 +11,8 @@ import streamlines
 
 __all__ = ['read_json_file','import_parameters']
 
+pdebug = print
+
 def read_json_file(parameter_file_list):
     """
     Load and parse a list of JSON parameters files into a parameters dict.
@@ -72,7 +74,11 @@ def import_parameters(parameters_path,parameters_file): #,do_reload_state=False
         dict:  workflow parameter dictionary
     """        
     # Parse default and assigned JSON parameters files
+    pdebug(os.path.realpath(
+        os.path.join(streamlines.__path__[0],'..','..','json','defaults')))
+    pdebug(os.path.realpath(os.path.join(parameters_path,parameters_file)))
     parameters_files_list \
-        = [os.path.join(streamlines.__path__[0],'..','..','json','defaults'),
+        = [os.path.realpath(
+            os.path.join(streamlines.__path__[0],'..','..','json','defaults')),
            os.path.realpath(os.path.join(parameters_path,parameters_file))]
     return read_json_file(parameters_files_list)

@@ -38,8 +38,9 @@
 ///
 /// @param[in,out] initial_rng_state: RNG state (thus initally the seed) and RNG variate
 ///
-#define INITIALIZE_RNG(initial_rng_state) \
-    initial_rng_state = i+(j+seed_idx); \
+#define INITIALIZE_RNG(initial_rng_state,seed_idx) \
+    initial_rng_state = seed_idx; \
+    /*initial_rng_state = i+(j+seed_idx);*/ \
     /*initial_rng_state = i+(j+seed_idx*SUBPIXEL_SEED_POINT_DENSITY)\
      * *SUBPIXEL_SEED_POINT_DENSITY;*/ \
     BYTE_REVERSAL(initial_rng_state); \
@@ -100,7 +101,7 @@ __kernel void integrate_trajectory( __global const float2 *seed_point_array,
                trajectory_index = global_id*(MAX_N_STEPS);
     const float2 current_seed_point_vec = seed_point_array[seed_idx];
     __global char2 *trajectory_vec = &trajectories_array[trajectory_index];
-    __private uint i,j, initial_rng_state;
+    __private uint i=0,j=0, initial_rng_state;
 
     // Report how kernel instances are distributed
     if (seed_idx==0) {
@@ -119,7 +120,7 @@ __kernel void integrate_trajectory( __global const float2 *seed_point_array,
     //   [was: using the sum of the current pixel index and the sub-pixel index]
     //   using the current pixel index ("seed_idx")
     //   byte-reversed per GJS suggestion
-    INITIALIZE_RNG(initial_rng_state);
+    INITIALIZE_RNG(initial_rng_state, seed_idx);
     for (j=0u;j<SUBPIXEL_SEED_POINT_DENSITY;j++) {
         for (i=0u;i<SUBPIXEL_SEED_POINT_DENSITY;i++){
             // Trace a jittered streamline from a sub-pixel-offset first point
