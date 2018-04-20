@@ -16,13 +16,20 @@ try:
 except:
     pass
  
-# try:
-#     get_ipython().magic('load_ext wurlitzer')
-# except:
-#     pass
+try:
+    get_ipython().magic('load_ext wurlitzer')
+except:
+#     print('Possibly benign error loading Python "wurlitzer" package,'
+#           +' used to pipe stdout from GPU back to Jupyter notebook')
+#     import traceback
+#     print(traceback.format_exc())
+    pass
  
 try:
     get_ipython().magic("config InlineBackend.figure_format = 'retina'")
     get_ipython().magic('matplotlib inline')
 except:
+#     print('Possibly benign error trying to config Matplotlib backend')
+#     import traceback
+#     print(traceback.format_exc())
     pass

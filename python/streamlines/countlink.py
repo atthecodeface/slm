@@ -239,6 +239,7 @@ def prepare_memory(context, queue, order,
     Args:
         context (pyopencl.Context):
         queue (pyopencl.CommandQueue):
+        order (str):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
