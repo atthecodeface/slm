@@ -19,10 +19,13 @@ except:
 try:
     get_ipython().magic('load_ext wurlitzer')
 except:
+    print('Error loading Python "wurlitzer" package, used to pipe stdout'
+          +' from GPU back to Jupyter notebook')
     pass
  
 try:
     get_ipython().magic("config InlineBackend.figure_format = 'retina'")
     get_ipython().magic('matplotlib inline')
 except:
+    print('Error trying to config Matplotlib backend')
     pass
