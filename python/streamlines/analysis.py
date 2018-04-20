@@ -94,6 +94,8 @@ class Univariate_distribution():
         self.kde['pdf'] \
             = self.kde['model'].pdf(self.x_vec.reshape((self.x_vec.shape[0],)))
         self.kde['pdf'] = self.kde['pdf'].reshape((self.x_vec.shape[0],1))
+        dx = self.logx_vec[1]-self.logx_vec[0]
+        self.kde['cdf'] = np.cumsum(self.kde['pdf'])*dx
                                
     def compute_kde_sklearn(self, kernel='epanechnikov', bandwidth=0.15):
         self.kernel = kernel
