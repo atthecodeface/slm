@@ -17,6 +17,10 @@ help:
 .PHONY:clean
 clean:
 
+.PHONY: test_python
+test_python:
+	SLMXPT= SLMDATA=`pwd`/../slmdata PYTHONPATH=`pwd`:python ./python/streamlines/slm.py -f json/GuadalupeDemo1.json -a 1 -m 1
+
 include ${OCAML_ROOT}/Makefile
 
 
