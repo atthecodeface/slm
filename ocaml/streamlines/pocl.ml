@@ -71,7 +71,7 @@ let make_program t source compile_options =
     );
     let status = program__get_build_status program d in
     pv_verbose t (fun _ -> Printf.printf "Opencl build okay %d\n%!" status);
-    (*pv_debug   t (fun _ -> debug_build program d);*)
+    pv_debug   t (fun _ -> debug_build program d);
     program
 
 let get_kernel pocl program name =
@@ -174,7 +174,7 @@ let compile_options t data info_struct kernel_name =
     let option = sfmt "%s " (Info.define_str nv) in
     acc ^ option
   in
-  let base_options = sfmt "-D KERNEL_%s -D%s_ORDER'" kernel_name array_order in
+  let base_options = sfmt "-D KERNEL_%s -D%s_ORDER " kernel_name array_order in
   Info.fold_left add_option base_options info_struct
 
 (*f append_in_file *)
@@ -224,7 +224,7 @@ let rebuild_info_struct pocl (data:t_core_data) info_struct =
   let subpixel_seed_span = 1.0 -. ( 1.0 /. sspd_f) in
   let subpixel_seed_step = subpixel_seed_span /. (sspd_f -. 1.0) in
 
-  Info.add_str     info_struct "array_order"                   t_props.array_order;
+  Info.add_str     info_struct "array_order"                   s_props.array_order;
   Info.add_float32 info_struct "max_integration_step_error"    t_props.max_integration_step_error;
   Info.add_float32 info_struct "integration_halt_threshold"    t_props.integration_halt_threshold;
   Info.add_uint    info_struct "trajectory_resolution"         t_props.trajectory_resolution;

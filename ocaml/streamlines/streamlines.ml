@@ -16,6 +16,9 @@ LD_LIBRARY_PATH=/Users/gavinprivate/Git/brew/lib ocaml
 
 To do
 
+Use h_min in geodata
+Create masked ROI array with correct padding on mask
+
 
 analysis.py
 connect.py

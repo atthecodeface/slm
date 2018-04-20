@@ -292,7 +292,7 @@ let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
   in
   let sla = ODN.mapi_nd map_slc_slt results.slt_array in
 
-  results.streamline_arrays <- [| Array.of_list (streamline_lists.(0)); Array.of_list (streamline_lists.(1)); |];
+  results.streamline_arrays <- [| Array.of_list (List.rev streamline_lists.(0)); Array.of_list (List.rev streamline_lists.(1)); |];
 
   let total_steps = Array.fold_left (fun acc t -> acc+(Bytes.length t)) 0           results.streamline_arrays.(0) in
   let total_steps = Array.fold_left (fun acc t -> acc+(Bytes.length t)) total_steps results.streamline_arrays.(1) in

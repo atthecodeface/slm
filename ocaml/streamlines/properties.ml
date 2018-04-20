@@ -204,6 +204,7 @@ type t_props_state = {
     cl_platform :        int;
     cl_device :          int;
     gpu_memory_limit_pc: float;
+    array_order                  : string;
     do_geodata :         bool;
     do_preprocess :      bool;
     do_condition :       bool;
@@ -260,7 +261,6 @@ type t_props_trace = {
     do_trace_upstream            : bool;
     do_trace_downstream          : bool;
 
-    array_order                  : string;
     max_integration_step_error   : float; (* info_struct *)
     max_length                   : float; (* info_struct *)
     integration_halt_threshold   : float; (* info_struct *)
@@ -482,6 +482,7 @@ let read_state properties =
   let cl_platform =         Workflow.int_of  properties ~default:0 "cl_platform" in
   let cl_device =           Workflow.int_of  properties ~default:0 "cl_device" in
   let gpu_memory_limit_pc = Workflow.float_of  properties ~default:50. "gpu_memory_limit_pc" in
+  let array_order                  = Workflow.str_of      properties ~default:"C"  "array_order" in
   let do_geodata =          Workflow.bool_of  properties ~default:true "do_geodata" in
   let do_preprocess =       Workflow.bool_of  properties ~default:true "do_preprocess" in
   let do_condition =        Workflow.bool_of  properties ~default:true "do_condition" in
@@ -504,6 +505,7 @@ let read_state properties =
       cl_platform;
       cl_device;
       gpu_memory_limit_pc;
+      array_order;
       do_geodata;
       do_preprocess;
       do_condition;
@@ -600,7 +602,6 @@ let read_trace verbosity properties =
   let do_trace_downstream          = Workflow.bool_of     properties ~default:true "do_trace_downstream" in
   let do_trace_upstream            = Workflow.bool_of     properties ~default:true "do_trace_upstream" in
   let integrator_step_factor       = Workflow.float_of    properties ~default:0.5  "integrator_step_factor" in
-  let array_order                  = Workflow.str_of      properties ~default:"C"  "array_order" in
   let max_integration_step_error   = Workflow.float_of    properties ~default:0.03 "max_integration_step_error" in
   let max_length                   = Workflow.float_of    properties ~default:500. "max_length" in
   let integration_halt_threshold   = Workflow.float_of    properties ~default:0.01 "integration_halt_threshold" in
@@ -619,7 +620,6 @@ let read_trace verbosity properties =
       verbosity;
       do_trace_upstream;
       do_trace_downstream;
-      array_order;
       integrator_step_factor;
       max_integration_step_error;
       max_length;
