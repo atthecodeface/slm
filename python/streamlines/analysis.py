@@ -12,6 +12,7 @@ from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
 from streamlines.core import Core
+from streamlines import kde
 
 __all__ = ['Analysis','Univariate_distribution','Bivariate_distribution']
 
@@ -24,10 +25,13 @@ class Univariate_distribution():
     probability distribution f(x) data and metadata. 
     Provides a method to find the modal average: x | max{f(x}.
     """
-    def __init__(self, logx_array=None,logy_array=None, pixel_size=None,
-                 method='sklearn', n_samples=100,shear_factor=0.0,
+    def __init__(self, logx_array=None, logy_array=None, pixel_size=None,
+                 method='sklearn', n_samples=100, shear_factor=0.0,
                  search_cdf_min=0.95,
-                 logx_min=None,logy_min=None,logx_max=None,logy_max=None,verbose=False):
+                 logx_min=None, logy_min=None, logx_max=None, logy_max=None,
+                 order='C',
+                 cl_src_path=None, cl_platform=None, cl_device=None,
+                 verbose=False):
         if logx_min is None:
             logx_min = logx_array[logx_array>np.finfo(np.float32).min].min()
         if logx_max is None:
@@ -46,10 +50,16 @@ class Univariate_distribution():
         self.logx_data = logx_array[  (logx_array>=logx_min) & (logx_array<=logx_max)
                                     & (logy_array>=logy_min) & (logy_array<=logy_max)  ]
         self.logx_data = self.logx_data.reshape((self.logx_data.shape[0],1))
+        # Re-estimate min,max since some array values may have just been eliminated
+        logx_min = np.min(self.logx_data)
+        logx_max = np.max(self.logx_data)
+        # BUG: need to do this for bivariate pdf as well
         self.n_samples = n_samples
         self.logx_vec \
             = np.linspace(logx_min,logx_max,self.n_samples).reshape((self.n_samples,1))
         self.x_vec = np.exp(self.logx_vec)
+#         pdebug('logx_array min',np.min(logx_array),logx_min,
+#                np.min(self.logx_data),self.logx_vec[0])
         
         raw_keys = [
             'raw_mean',
@@ -80,6 +90,10 @@ class Univariate_distribution():
         self.search_cdf_min = search_cdf_min
         
         self.pixel_size = pixel_size
+        self.array_order = order
+        self.cl_src_path = cl_src_path
+        self.cl_platform = cl_platform
+        self.cl_device = cl_device
         self.verbose = verbose
 
     def print(self, *args, **kwargs):
@@ -96,15 +110,78 @@ class Univariate_distribution():
         self.kde['pdf'] = self.kde['pdf'].reshape((self.x_vec.shape[0],1))
         dx = self.logx_vec[1]-self.logx_vec[0]
         self.kde['cdf'] = np.cumsum(self.kde['pdf'])*dx
+        if not np.isclose(self.kde['cdf'][-1], 1.0, rtol=5e-3):
+            self.print(
+                'Error/imprecision when computing cumulative probability distribution:',
+                       'pdf integrates to {:3f} not to 1.0'.format(self.kde['cdf'][-1]))
                                
-    def compute_kde_sklearn(self, kernel='epanechnikov', bandwidth=0.15):
+    def compute_kde_sklearn(self, kernel='gaussian', bandwidth=0.15):
         self.kernel = kernel
         self.bandwidth = bandwidth
+        # defaults.json specifies a Gaussian, but in practice, when deducing a 
+        # channel threshold from the multi-modal pdf of dslt, an Epanechnikov kernel
+        # gives a noisy pdf for the same bandwidth. So this is a hack
+        # to ensure consistency of channel threshold estimation with either kernel,
+        # by forcing the Epanechnikov bandwidth to be double the Gaussian.
+        if kernel=='epanechnikov':
+            self.bandwidth *= 2.0
 #         pdebug(self.logx_data.shape,self.x_vec.shape)
         self.kde['model'] = KernelDensity(kernel=self.kernel, 
                                  bandwidth=self.bandwidth).fit(self.logx_data)
+        # Exponentiation needed here because of the (odd) way sklearn generates
+        # log pdf values in its score_samples() method
         self.kde['pdf'] = np.exp(self.kde['model'].score_samples(self.logx_vec)).reshape(
                                                                     (self.n_samples,1))
+        dx = self.logx_vec[1]-self.logx_vec[0]
+        self.kde['cdf'] = np.cumsum(self.kde['pdf'])*dx
+        if not np.isclose(self.kde['cdf'][-1], 1.0, rtol=5e-3):
+            self.print(
+                'Error/imprecision when computing cumulative probability distribution:',
+                       'pdf integrates to {:3f} not to 1.0'.format(self.kde['cdf'][-1]))
+#         pdebug('kde array:', self.logx_vec.shape, 
+#                'logx min max:', np.min(self.logx_data),np.max(self.logx_data),
+#                'logxvec:', self.logx_vec[0],self.logx_vec[-1],
+#                self.logx_data.shape, self.kde['pdf'].shape)
+
+    def compute_kde_opencl(self, kernel='epanechnikov', bandwidth=0.15):
+        self.kernel = kernel
+        self.bandwidth = bandwidth
+        # defaults.json specifies a Gaussian, but in practice, when deducing a 
+        # channel threshold from the multi-modal pdf of dslt, an Epanechnikov kernel
+        # gives a noisy pdf for the same bandwidth. So this is a hack
+        # to ensure consistency of channel threshold estimation with either kernel,
+        # by forcing the Epanechnikov bandwidth to be double the Gaussian.
+        if kernel=='epanechnikov':
+            self.bandwidth *= 2.0
+        info_dtype = np.dtype([
+                ('array_order', 'U1'),
+                ('bandwidth', np.float32),
+                ('n_bins_x', np.uint32),
+                ('n_bins_y', np.uint32),
+                ('x_min', np.float32),
+                ('x_max', np.float32),
+                ('x_range', np.float32),
+                ('y_min', np.float32),
+                ('y_max', np.float32)
+            ])          
+        info_struct = np.array([(   np.string_(self.array_order),
+                                    np.float32(self.bandwidth),
+                                    np.uint32(self.n_samples),
+                                    np.uint32(1),
+                                    np.float32(self.logx_vec[0]),
+                                    np.float32(self.logx_vec[-1]),
+                                    np.float32(self.logx_vec[-1]-self.logx_vec[0]),
+                                    np.float32(0.0), # dummy value
+                                    np.float32(1.0)  # dummy value
+#                                     np.float32(self.logy_vec[0]),
+#                                     np.float32(self.logy_vec[-1])
+                            )], dtype = info_dtype)
+        self.kde['pdf'] = kde.histogram_univariate_pdf(self.cl_src_path, 
+                                                       self.cl_platform, 
+                                                       self.cl_device, 
+                                                       info_struct,
+                                                       self.logx_data, 
+                                                       self.verbose)
         dx = self.logx_vec[1]-self.logx_vec[0]
         self.kde['cdf'] = np.cumsum(self.kde['pdf'])*dx
 
@@ -352,7 +429,8 @@ class Analysis(Core):
         """
         TBD
         """
-        super().__init__(state,imported_parameters)  
+        super().__init__(state,imported_parameters) 
+        self.state = state
         self.geodata = geodata
         self.trace = trace
         self.area_correction_factor = 1.0
@@ -403,7 +481,6 @@ class Analysis(Core):
 
         self.print('**Analysis end**\n')  
       
-
     def compute_marginal_distribn(self, x_array,y_array,mask_array=None,shear_factor=0.0,
                                   up_down_idx_x=0, up_down_idx_y=0, n_samples=None, 
                                   kernel=None, bandwidth=None, method=None,
@@ -426,7 +503,6 @@ class Analysis(Core):
             kernel = self.marginal_distbn_kde_kernel
         if bandwidth is None:
             bandwidth = self.marginal_distbn_kde_bandwidth  
-            
         uv_distbn = Univariate_distribution(logx_array=logx_array, logy_array=logy_array,
                                             method=method, n_samples=n_samples,
                                             shear_factor=shear_factor, 
@@ -434,9 +510,15 @@ class Analysis(Core):
                                             logx_max=logx_max, logy_max=logy_max,
                                             pixel_size = self.geodata.roi_pixel_size,
                                             search_cdf_min = self.search_cdf_min,
+                                            order=self.state.array_order,
+                                            cl_src_path=self.state.cl_src_path, 
+                                            cl_platform=self.state.cl_platform, 
+                                            cl_device=self.state.cl_device,
                                             verbose=self.state.verbose)
         if method=='sklearn':
             uv_distbn.compute_kde_sklearn(kernel=kernel, bandwidth=bandwidth)
+        elif method=='opencl':
+            uv_distbn.compute_kde_opencl(kernel=kernel, bandwidth=bandwidth)
         elif method=='scipy':
             uv_distbn.compute_kde_scipy(bw_method=self.marginal_distbn_kde_bw_method)
         else:
