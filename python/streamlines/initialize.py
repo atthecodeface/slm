@@ -16,10 +16,10 @@ try:
 except:
     pass
  
-# try:
-#     get_ipython().magic('load_ext wurlitzer')
-# except:
-#     pass
+try:
+    get_ipython().magic('load_ext wurlitzer')
+except:
+    pass
  
 try:
     get_ipython().magic("config InlineBackend.figure_format = 'retina'")
