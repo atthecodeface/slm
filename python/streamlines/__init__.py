@@ -1,2 +1,2 @@
 from . import initialize
-from .run import run
+from .slm import run
