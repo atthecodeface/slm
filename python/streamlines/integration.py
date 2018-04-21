@@ -14,7 +14,7 @@ import pandas as pd
 import os
 os.environ['PYTHONUNBUFFERED']='True'
 os.environ['PYOPENCL_NO_CACHE']='True'
-os.environ['PYOPENCL_COMPILER_OUTPUT']='1'
+os.environ['PYOPENCL_COMPILER_OUTPUT']='0'
 
 from streamlines import pocl
 from streamlines import state

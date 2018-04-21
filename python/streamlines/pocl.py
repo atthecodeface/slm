@@ -142,18 +142,20 @@ def set_compile_options(info_struct, kernel_def, downup_sign=1,
             '-D','{}_ORDER'.format(info_struct['array_order'][0]),
             '-D','BANDWIDTH={}f'.format(info_struct['bandwidth'][0]),
             '-D','N_DATA={}u'.format(info_struct['n_data'][0]),
-            '-D','N_BINS_X={}u'.format(info_struct['n_bins_x'][0]),
-            '-D','N_BINS_Y={}u'.format(info_struct['n_bins_y'][0]),
+            '-D','N_HIST_BINS={}u'.format(info_struct['n_hist_bins'][0]),
+            '-D','N_PDF_POINTS={}u'.format(info_struct['n_pdf_points'][0]),
             '-D','X_MIN={}f'.format(info_struct['x_min'][0]),
             '-D','X_MAX={}f'.format(info_struct['x_max'][0]),
             '-D','X_RANGE={}f'.format(info_struct['x_range'][0]),
-            '-D','DX={}f'.format(info_struct['dx'][0]),
+            '-D','BIN_DX={}f'.format(info_struct['bin_dx'][0]),
+            '-D','PDF_DX={}f'.format(info_struct['bin_dx'][0]),
             '-D','Y_MIN={}f'.format(info_struct['y_min'][0]),
             '-D','Y_MAX={}f'.format(info_struct['y_max'][0]),
             '-D','Y_RANGE={}f'.format(
                                     info_struct['y_max'][0]-info_struct['y_min'][0]
                                     ),
-            '-D','DY={}f'.format(info_struct['dy'][0])
+            '-D','BIN_DY={}f'.format(info_struct['bin_dy'][0]),
+            '-D','PDF_DY={}f'.format(info_struct['pdf_dy'][0])
         ]
     else:
         return [

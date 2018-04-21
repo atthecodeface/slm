@@ -26,8 +26,9 @@ class Univariate_distribution():
     Provides a method to find the modal average: x | max{f(x}.
     """
     def __init__(self, logx_array=None, logy_array=None, pixel_size=None,
-                 method='sklearn', n_samples=100, shear_factor=0.0,
-                 search_cdf_min=0.95,
+                 method='sklearn', 
+                 n_hist_bins=2000, n_pdf_points=200, 
+                 shear_factor=0.0, search_cdf_min=0.95,
                  logx_min=None, logy_min=None, logx_max=None, logy_max=None,
                  order='C',
                  cl_src_path=None, cl_platform=None, cl_device=None,
@@ -51,15 +52,16 @@ class Univariate_distribution():
                                     & (logy_array>=logy_min) & (logy_array<=logy_max)  ]
         self.logx_data = self.logx_data.reshape((self.logx_data.shape[0],1))
         # Re-estimate min,max since some array values may have just been eliminated
-        logx_min = np.min(self.logx_data)
-        logx_max = np.max(self.logx_data)
-        # BUG: need to do this for bivariate pdf as well
-        self.n_samples = n_samples
+        self.logx_min = np.min(self.logx_data)
+        self.logx_max = np.max(self.logx_data)
+        self.n_data_x = self.logx_data.shape[0]
+        self.n_hist_bins = n_hist_bins
+        self.n_pdf_points = n_pdf_points
         self.logx_vec \
-            = np.linspace(logx_min,logx_max,self.n_samples).reshape((self.n_samples,1))
+            = np.linspace(self.logx_min,self.logx_max,self.n_pdf_points) \
+                        .reshape((self.n_pdf_points,1))
         self.x_vec = np.exp(self.logx_vec)
-#         pdebug('logx_array min',np.min(logx_array),logx_min,
-#                np.min(self.logx_data),self.logx_vec[0])
+        self.dlogx = self.logx_vec[1]-self.logx_vec[0]
         
         raw_keys = [
             'raw_mean',
@@ -103,13 +105,12 @@ class Univariate_distribution():
     def compute_kde_scipy(self, bw_method='scott'):
         self.kde['bw_method'] = bw_method
         self.kde['model'] \
-            = gaussian_kde(self.logx_data.reshape((self.logx_data.shape[0],)), 
+            = gaussian_kde(self.logx_data.reshape((self.n_data_x,)), 
                            bw_method=self.kde['bw_method'])
         self.kde['pdf'] \
             = self.kde['model'].pdf(self.x_vec.reshape((self.x_vec.shape[0],)))
         self.kde['pdf'] = self.kde['pdf'].reshape((self.x_vec.shape[0],1))
-        dx = self.logx_vec[1]-self.logx_vec[0]
-        self.kde['cdf'] = np.cumsum(self.kde['pdf'])*dx
+        self.kde['cdf'] = np.cumsum(self.kde['pdf'])*self.dlogx
         if not np.isclose(self.kde['cdf'][-1], 1.0, rtol=5e-3):
             self.print(
                 'Error/imprecision when computing cumulative probability distribution:',
@@ -130,10 +131,10 @@ class Univariate_distribution():
                                  bandwidth=self.bandwidth).fit(self.logx_data)
         # Exponentiation needed here because of the (odd) way sklearn generates
         # log pdf values in its score_samples() method
-        self.kde['pdf'] = np.exp(self.kde['model'].score_samples(self.logx_vec)).reshape(
-                                                                    (self.n_samples,1))
-        dx = self.logx_vec[1]-self.logx_vec[0]
-        self.kde['cdf'] = np.cumsum(self.kde['pdf'])*dx
+        self.kde['pdf'] \
+            = np.exp(self.kde['model'].score_samples(self.logx_vec)) \
+                                         .reshape((self.n_pdf_points,1))
+        self.kde['cdf'] = np.cumsum(self.kde['pdf'])*self.dlogx
         if not np.isclose(self.kde['cdf'][-1], 1.0, rtol=5e-3):
             self.print(
                 'Error/imprecision when computing cumulative probability distribution:',
@@ -153,47 +154,53 @@ class Univariate_distribution():
         # by forcing the Epanechnikov bandwidth to be double the Gaussian.
         if kernel=='epanechnikov':
             self.bandwidth *= 2.0
-        dx = self.logx_vec[1]-self.logx_vec[0]
+        x_range = self.logx_max-self.logx_min;
+        bin_dx = x_range/self.n_hist_bins
+        pdf_dx = x_range/self.n_pdf_points
         info_dtype = np.dtype([
                 ('array_order', 'U1'),
                 ('bandwidth', np.float32),
                 ('n_data', np.uint32),
-                ('n_bins_x', np.uint32),
-                ('n_bins_y', np.uint32),
+                ('n_hist_bins', np.uint32),
+                ('n_pdf_points', np.uint32),
                 ('x_min', np.float32),
                 ('x_max', np.float32),
                 ('x_range', np.float32),
-                ('dx', np.float32),
+                ('bin_dx', np.float32),
+                ('pdf_dx', np.float32),
                 ('y_min', np.float32),
                 ('y_max', np.float32),
                 ('y_range', np.float32),
-                ('dy', np.float32)
+                ('bin_dy', np.float32),
+                ('pdf_dy', np.float32)
             ])          
         info_struct = np.array([(   np.string_(self.array_order),
                                     np.float32(self.bandwidth),
-                                    np.uint32(self.logx_data.shape[0]),
-                                    np.uint32(self.n_samples),
-                                    np.uint32(1),
-                                    np.float32(self.logx_vec[0]),
-                                    np.float32(self.logx_vec[-1]),
-                                    np.float32(self.logx_vec[-1]-self.logx_vec[0]),
-                                    np.float32(dx),
-                                    np.float32(0.0), # dummy value
-                                    np.float32(1.0), # dummy value
-                                    np.float32(1.0), # dummy value
-                                    np.float32(1.0/200)  # dummy value
+                                    np.uint32(self.logx_data.shape[0]), # n_data
+                                    np.uint32(self.n_hist_bins),        # n_hist_bins
+                                    np.uint32(self.n_pdf_points),       # n_pdf_points
+                                    np.float32(self.logx_min),          # x_min
+                                    np.float32(self.logx_max),          # x_max
+                                    np.float32(x_range),                # x_range
+                                    np.float32(bin_dx),                 # bin_dx
+                                    np.float32(pdf_dx),                 # pdf_dx
+                                    np.float32(0.0),                    # y_min
+                                    np.float32(1.0),                    # y_max
+                                    np.float32(1.0),                    # y_range
+                                    np.float32(1.0/2000),               # bin_dy
+                                    np.float32(1.0/200)                 # pdf_dy
 #                                     np.float32(self.logy_vec[0]),
 #                                     np.float32(self.logy_vec[-1]),
 #                                     np.float32(self.logy_vec[-1]-self.logy_vec[0]),
 #                                     np.float32(dy)
                             )], dtype = info_dtype)
-        self.kde['pdf'] = kde.histogram_univariate_pdf(self.cl_src_path, 
+        self.kde['pdf'],pdf = kde.estimate_univariate_pdf(self.cl_src_path, 
                                                        self.cl_platform, 
                                                        self.cl_device, 
                                                        info_struct,
                                                        self.logx_data, 
                                                        self.verbose)
-        self.kde['cdf'] = np.cumsum(self.kde['pdf'])*dx
+        self.kde['cdf'] = np.cumsum(self.kde['pdf'])*bin_dx
         if not np.isclose(self.kde['cdf'][-1], 1.0, rtol=5e-3):
             self.print(
                 'Error/imprecision when computing cumulative probability distribution:',
@@ -275,8 +282,8 @@ class Bivariate_distribution():
     and bounding criteria.
     """
     def __init__(self, logx_array=None,logy_array=None, mask_array=None,
-                 method='sklearn', n_samples=100, shear_factor=0.0, 
-                 logx_min=None,logy_min=None,logx_max=None,logy_max=None,
+                 method='sklearn', n_hist_bins=2000, n_pdf_points=200, shear_factor=0.0, 
+                 logx_min=None, logy_min=None, logx_max=None, logy_max=None,
                  pixel_size=None, verbose=False):
         self.logx_array = logx_array
         self.logy_array = logy_array
@@ -311,8 +318,8 @@ class Bivariate_distribution():
                 ]).T
             
         # x,y meshgrid for sampling the bivariate pdf f(x,y)
-        self.logx_mesh,self.logy_mesh = np.mgrid[logx_min:logx_max:n_samples,
-                                                 logy_min:logy_max:n_samples]
+        self.logx_mesh,self.logy_mesh = np.mgrid[logx_min:logx_max:n_pdf_points,
+                                                 logy_min:logy_max:n_pdf_points]
         self.logxy_data_indexes = np.vstack([self.logx_mesh.ravel(), 
                                              self.logy_mesh.ravel()]).T
         self.x_mesh = np.exp(self.logx_mesh)
@@ -352,7 +359,7 @@ class Bivariate_distribution():
         self.kernel = kernel
         self.bandwidth = bandwidth
         self.kde['model'] = KernelDensity(kernel=self.kernel, 
-                                 bandwidth=self.bandwidth).fit(self.logxy_data)
+                                          bandwidth=self.bandwidth).fit(self.logxy_data)
         self.kde['pdf'] = np.reshape( 
             np.exp(self.kde['model'].score_samples(self.logxy_data_indexes)
                                                         ),self.logx_mesh.shape)  
@@ -496,7 +503,8 @@ class Analysis(Core):
         self.print('**Analysis end**\n')  
       
     def compute_marginal_distribn(self, x_array,y_array,mask_array=None,shear_factor=0.0,
-                                  up_down_idx_x=0, up_down_idx_y=0, n_samples=None, 
+                                  up_down_idx_x=0, up_down_idx_y=0, 
+                                  n_hist_bins=None, n_pdf_points=None, 
                                   kernel=None, bandwidth=None, method=None,
                                   logx_min=None, logy_min=None, 
                                   logx_max=None, logy_max=None):
@@ -511,14 +519,18 @@ class Analysis(Core):
         logy_array[y_array[:,:,up_down_idx_y]<=0.0] = np.finfo(np.float32).min   
         if method is None:
             method = self.marginal_distbn_kde_method
-        if n_samples is None:
-            n_samples = self.marginal_distbn_kde_nx_samples
+        if n_hist_bins is None:
+            n_hist_bins = self.n_hist_bins
+        if n_pdf_points is None:
+            n_pdf_points = self.n_pdf_points
         if kernel is None:
             kernel = self.marginal_distbn_kde_kernel
         if bandwidth is None:
             bandwidth = self.marginal_distbn_kde_bandwidth  
         uv_distbn = Univariate_distribution(logx_array=logx_array, logy_array=logy_array,
-                                            method=method, n_samples=n_samples,
+                                            method=method, 
+                                            n_hist_bins=n_hist_bins,
+                                            n_pdf_points=n_pdf_points,
                                             shear_factor=shear_factor, 
                                             logx_min=logx_min, logy_min=logy_min, 
                                             logx_max=logx_max, logy_max=logy_max,
@@ -664,7 +676,8 @@ class Analysis(Core):
 
 
     def compute_joint_distribn(self, x_array,y_array, mask_array=None, shear_factor=0.0,
-                               up_down_idx_x=0, up_down_idx_y=0, n_samples=None, 
+                               up_down_idx_x=0, up_down_idx_y=0, 
+                               n_hist_bins=None, n_pdf_points=None, 
                                thresholding_marginal_distbn=None,
                                kernel=None, bandwidth=None, method=None,
                                logx_min=None, logy_min=None, 
@@ -682,16 +695,22 @@ class Analysis(Core):
         logy_array[y_array[:,:,up_down_idx_y]<=0.0] = np.finfo(np.float32).min   
         if method is None:
             method = self.joint_distbn_kde_method
-        if n_samples is None:
-            n_samples = np.complex(self.joint_distbn_kde_nxy_samples)
+        if n_hist_bins is None:
+            n_hist_bins = self.n_hist_bins
         else:
-            n_samples = np.complex(n_samples)
+            n_hist_bins = n_hist_bins
+        if n_pdf_points is None:
+            n_pdf_points = np.complex(self.n_pdf_points)
+        else:
+            n_pdf_points = np.complex(n_pdf_points)
         if kernel is None:
             kernel = self.joint_distbn_kde_kernel
         if bandwidth is None:
             bandwidth = self.joint_distbn_kde_bandwidth  
         bv_distbn = Bivariate_distribution(logx_array=logx_array, logy_array=logy_array,
-                                            method=method, n_samples=n_samples,
+                                            method=method, 
+                                            n_hist_bins=n_hist_bins,
+                                            n_pdf_points=n_pdf_points,
                                             shear_factor=shear_factor, 
                                             logx_min=logx_min, logy_min=logy_min, 
                                             logx_max=logx_max, logy_max=logy_max,
