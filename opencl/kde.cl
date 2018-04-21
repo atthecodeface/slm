@@ -48,7 +48,8 @@ __kernel void histogram_univariate(
 /// Compiled if KERNEL_PDF_UNIVARIATE is defined.
 ///
 /// @param[in]     histogram_array (uint *,  RO):
-/// @param[in,out] pdf_array       (uint *,  RW):
+/// @param[in]     kdfilter_array  (float *, RO):
+/// @param[in,out] pdf_array       (float *, RW):
 ///
 /// @returns void
 ///
@@ -56,7 +57,8 @@ __kernel void histogram_univariate(
 ///
 __kernel void pdf_univariate(
         __global const  uint    *histogram_array,
-        __global        uint    *pdf_array
+        __global const  float   *kdfilter_array,
+        __global        float   *pdf_array
    )
 {
     // For every histogram bin...

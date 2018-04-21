@@ -46,7 +46,7 @@ class Univariate_distribution():
         # Re-estimate min,max since some array values may have just been eliminated
         self.logx_min = np.min(self.logx_data)
         self.logx_max = np.max(self.logx_data)
-        self.n_data_x = self.logx_data.shape[0]
+        self.n_data = self.logx_data.shape[0]
         self.n_hist_bins = n_hist_bins
         self.n_pdf_points = n_pdf_points
         self.logx_vec \
@@ -144,6 +144,14 @@ class Univariate_distribution():
         # gives a noisy pdf for the same bandwidth. So this is a hack
         # to ensure consistency of channel threshold estimation with either kernel,
         # by forcing the Epanechnikov bandwidth to be double the Gaussian.
+        flags = [
+            'kdf_is_tophat',         # 1
+            'kdf_is_triangle',       # 2
+            'kdf_is_epanechnikov',   # 4
+            'kdf_is_cosine',         # 8
+            'kdf_is_gaussian'        # 16
+            ]
+        [setattr(self,flag,2**idx) for idx,flag in enumerate(flags)]
         if kernel=='epanechnikov':
             self.bandwidth *= 2.0
         x_range = self.logx_max-self.logx_min;
@@ -151,7 +159,6 @@ class Univariate_distribution():
         pdf_dx = x_range/self.n_pdf_points
         info_dtype = np.dtype([
                 ('array_order', 'U1'),
-                ('bandwidth', np.float32),
                 ('n_data', np.uint32),
                 ('n_hist_bins', np.uint32),
                 ('n_pdf_points', np.uint32),
@@ -164,27 +171,40 @@ class Univariate_distribution():
                 ('y_max', np.float32),
                 ('y_range', np.float32),
                 ('bin_dy', np.float32),
-                ('pdf_dy', np.float32)
+                ('pdf_dy', np.float32),
+                ('kdf_code', np.uint8),
+                ('kdf_bandwidth', np.float32),
+                ('n_kdf_points_x', np.uint32),
+                ('n_kdf_points_y', np.uint32),
+                ('kdf_is_tophat', np.uint32),
+                ('kdf_is_triangle', np.uint32),
+                ('kdf_is_epanechnikov', np.uint32),
+                ('kdf_is_cosine', np.uint32),
+                ('kdf_is_gaussian', np.uint32)
             ])          
-        info_struct = np.array([(   np.string_(self.array_order),
-                                    np.float32(self.bandwidth),
-                                    np.uint32(self.logx_data.shape[0]), # n_data
-                                    np.uint32(self.n_hist_bins),        # n_hist_bins
-                                    np.uint32(self.n_pdf_points),       # n_pdf_points
-                                    np.float32(self.logx_min),          # x_min
-                                    np.float32(self.logx_max),          # x_max
-                                    np.float32(x_range),                # x_range
-                                    np.float32(bin_dx),                 # bin_dx
-                                    np.float32(pdf_dx),                 # pdf_dx
-                                    np.float32(0.0),                    # y_min
-                                    np.float32(1.0),                    # y_max
-                                    np.float32(1.0),                    # y_range
-                                    np.float32(1.0/2000),               # bin_dy
-                                    np.float32(1.0/200)                 # pdf_dy
-#                                     np.float32(self.logy_vec[0]),
-#                                     np.float32(self.logy_vec[-1]),
-#                                     np.float32(self.logy_vec[-1]-self.logy_vec[0]),
-#                                     np.float32(dy)
+        info_struct = np.array([(np.string_(self.array_order),       # order
+                                 np.uint32(self.n_data),             # n_data
+                                 np.uint32(self.n_hist_bins),        # n_hist_bins
+                                 np.uint32(self.n_pdf_points),       # n_pdf_points
+                                 np.float32(self.logx_min),          # x_min
+                                 np.float32(self.logx_max),          # x_max
+                                 np.float32(x_range),                # x_range
+                                 np.float32(bin_dx),                 # bin_dx
+                                 np.float32(pdf_dx),                 # pdf_dx
+                                 np.float32(0.0),                    # y_min
+                                 np.float32(1.0),                    # y_max
+                                 np.float32(1.0),                    # y_range
+                                 np.float32(1.0/2000),               # bin_dy
+                                 np.float32(1.0/200),                # pdf_dy
+                                 np.uint8(self.kdf_is_epanechnikov), # kd filter code
+                                 np.float32(self.bandwidth),         # kd_bandwidth
+                                 np.uint32(0),                       # n_kdf_points_x
+                                 np.uint32(0),                       # n_kdf_points_y
+                                 np.uint32(self.kdf_is_tophat),
+                                 np.uint32(self.kdf_is_triangle),
+                                 np.uint32(self.kdf_is_epanechnikov),
+                                 np.uint32(self.kdf_is_cosine),
+                                 np.uint32(self.kdf_is_gaussian)
                             )], dtype = info_dtype)
         self.kde['pdf'],pdf = kde.estimate_univariate_pdf(self.cl_src_path, 
                                                        self.cl_platform, 
