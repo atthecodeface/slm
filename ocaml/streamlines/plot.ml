@@ -99,7 +99,7 @@ let generate_masked_roi ba mask =
   let range = (max -. min) /. 0.99 in
   Printf.printf "A_height %g Max %g min %g range %g\n" a_height max min range;
   let scale i v = if (is_nan v) then 0. else (0.01+.((v -. min) /. range)) in
-  mapi_ scale masked_array
+  ba_mapi_ scale masked_array
 
 let select_subplot plot c r =
     Printf.printf "Select subplot %d,%d\n%!" c r;
@@ -374,8 +374,8 @@ let plot_updownstreamlines_overlay ?do_down:(do_down=true) t data results =
     let plot_trajectory i sidx =
       let trajectory = streamline_array.(sidx) in (* bytes *)
       let l = (Bytes.length trajectory)/2+1 in
-      let y_origin = 0.5 +. (ba_owl2d data.seeds).{sidx,1} in
-      let x_origin = 0.5 +. (ba_owl2d data.seeds).{sidx,0} in
+      let y_origin = 0.5 +. (ODM.get data.seeds sidx 1) in
+      let x_origin = 0.5 +. (ODM.get data.seeds sidx 0) in
       let x_vec = Array.create_float l in
       let y_vec = Array.create_float l in
       x_vec.(0) <- x_origin;

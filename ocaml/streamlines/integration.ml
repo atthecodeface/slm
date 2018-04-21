@@ -300,7 +300,6 @@ let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
   (* Compute average streamline lengths (sla) from total lengths (slt) and counts (slc)
   *)
   let sspd2 = (Info.float_of data.info "subpixel_seed_point_density") ** 2. in
-  let slt = ba_owl3d results.slt_array in
   let map_slc_slt ind slt =
     let slc=ODN.get results.slc_array ind in
     ODN.set results.slt_array ind (slt /. sspd2);

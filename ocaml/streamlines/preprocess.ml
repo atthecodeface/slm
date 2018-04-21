@@ -282,6 +282,8 @@ than zero (as there is always a downhill);
 
  *)
 let calc_speed_div_curl x y u v  =
+  let u = Bigarray.array2_of_genarray u in
+  let v = Bigarray.array2_of_genarray v in
   let u00 = u.{x+0,y+0} in
   let u01 = u.{x+0,y+1} in
   let u10 = u.{x+1,y+0} in
@@ -326,7 +328,7 @@ let find_and_fix_loops t data =
     let where_looped = ref [] in
     for xi=0 to roi_nx-2 do
       for yi=0 to roi_ny-2 do
-        let (vecsum,divergence,curl) = calc_speed_div_curl xi yi (ba_owl2d data.u_array) (ba_owl2d data.v_array) in
+        let (vecsum,divergence,curl) = calc_speed_div_curl xi yi data.u_array data.v_array in
         if ((vecsum < t.props.vecsum_threshold) && 
               (divergence <= t.props.divergence_threshold) && 
                 ((abs_float curl) >= t.props.curl_threshold)) then (

@@ -25,8 +25,23 @@ module Option = Batteries.Option
 module ODM = Owl.Dense.Matrix.Generic
 module ODN = Owl.Dense.Ndarray.Generic
 
-(*a Types *)
-(*t t_geotiff *)
+(** {1 Types}
+
+  These types are used by the main code and the Geotiff module. They
+  should not really be used by code outside of this file; the global
+  t_core_data from the Core module contains the data that should be
+  used for later analysis. However, the DTM array is, for example,
+  only held by the Geodata module, so to plot that the Plot module
+  currently picks inside t_geodata.
+
+ *)
+
+(**  t_geotiff
+
+  Structure used by the Geotiff module, abstracting much of the Gdal
+  handling from the main module.
+
+ *)
 type t_geotiff = {
     gtf_filename : string;
     ds : Gdal.Data_set.t;
@@ -43,7 +58,11 @@ type t_geotiff = {
     rot_y : float;
   }
 
-(*t t_geodata *)
+(**  t_geodata
+
+  The data structure that is filled out by a Geodata file
+
+ *)
 type t_geodata = {
     dtm_array              : t_ba_floats; (* w * h of float32 with NAN for no_data_value *)
     x_easting_bottomleft   : float;
@@ -56,13 +75,24 @@ type t_geodata = {
     roi_dy                 : float; (* 1.0; nothing else supported as yet *)
   }
 
-(*t t_data *)
+(**  t_data
+
+  Main data structure for the module, including the data from a
+  Geodata file (in t_geodata) and the properties for the Geodata
+  workflow.
+
+ *)
 type t_data = {
     props : t_props_geodata;
     mutable g : t_geodata;
   }
 
-(*v geodata_dummy *)
+(**  geodata_dummy
+
+  A t_geodata structure that is effectively empty, so that it may be
+  used prior to the reading of an actual Geodata file.
+
+ *)
 let geodata_dummy = {
     dtm_array              =  ba_float2d 1 1;
     x_easting_bottomleft   = 0. ;
