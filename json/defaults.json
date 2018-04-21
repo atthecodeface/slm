@@ -104,7 +104,6 @@
 		"joint_distbn_kde_kernel": "epanechnikov",
 		"joint_distbn_kde_bw_method" : "scott",
 		"joint_distbn_kde_bandwidth" : 0.4,
-		"joint_distbn_y_shear_factor": 0.0,
         "joint_distbn_mode_threshold_list" : [0.9, 0.00001],
         "joint_distbn_mode2_tilt" : 3,
 		"joint_distbn_mode2_nearness_factor": 30

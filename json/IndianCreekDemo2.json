@@ -68,6 +68,9 @@
 	},
 
 	"analysis": {
+		"marginal_distbn_kde_method": "opencl",
+		"n_hist_bins" :  50,
+		"n_pdf_points" : 50,
 		"pdf_sla_min": 1,
 		"Xpdf_sla_max": 300,
 		"pdf_slc_min": 1,

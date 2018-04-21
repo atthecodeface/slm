@@ -34,7 +34,7 @@ def estimate_univariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
         
         
     """
-    vprint(verbose,'Computing univariate histogram...',end='')
+    vprint(verbose,'Computing univariate pdf...',end='')
     
     # Prepare CL essentials
     platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
@@ -46,12 +46,11 @@ def estimate_univariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
             
-    n_data      = info_struct['n_data'][0]
-    n_hist_bins = info_struct['n_hist_bins'][0]
-    x_range     = info_struct['x_range'][0]
-    bin_dx      = info_struct['bin_dx'][0]
-    pdf_dx      = info_struct['pdf_dx'][0]
+    n_data       = info_struct['n_data'][0]
+    x_range      = info_struct['x_range'][0]
+    bin_dx       = info_struct['bin_dx'][0]
     
+    vprint(verbose,'histogram...',end='')
     # Histogram
     cl_kernel_fn = 'histogram_univariate'
     uint_histogram_array \
@@ -62,23 +61,23 @@ def estimate_univariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     histogram_array \
         = uint_histogram_array.astype(np.float32)/(n_data*bin_dx)
         
+    vprint(verbose,'kernel density estimation...',end='')
     # PDF
     cl_kernel_fn = 'pdf_univariate'
-    uint_pdf_array \
+    pdf_array \
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, info_struct,
                       histogram_array=uint_histogram_array, pdf_array='create', 
                       verbose=verbose)
-    # Normalize into a fp array
-    pdf_array \
-        = uint_pdf_array.astype(np.float32)/(np.sum(uint_pdf_array)*x_range)
+    # Normalize
+#     pdf_array /= (np.sum(pdf_array)*x_range)
         
     # Done
     vprint(verbose,'done')
     return histogram_array, pdf_array
     
-def gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
-                info_struct, sl_array=None, histogram_array='create', 
-                pdf_array=None, verbose=False):
+def gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, info_struct,
+                sl_array=None, histogram_array='create', pdf_array=None, 
+                verbose=False):
     """
     Carry out GPU computation of histogram.
     
@@ -100,7 +99,9 @@ def gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn,
     n_hist_bins  = info_struct['n_hist_bins'][0]
     n_data       = info_struct['n_data'][0]
     n_pdf_points = info_struct['n_pdf_points'][0]
-    if histogram_array=='create':
+    info_struct['n_kdf_points_x'][0] = np.uint32(9)
+    n_kdf_points = info_struct['n_kdf_points_x'][0]
+    if type(histogram_array) is str and histogram_array=='create':
         # Compute histogram
         (histogram_array, sl_buffer, histogram_buffer) \
             = prepare_memory(context, queue, order, 
@@ -112,14 +113,15 @@ def gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn,
         buffer_list = [sl_buffer, histogram_buffer]
     else:
         # Compute pdf
-        (pdf_array, histogram_buffer, pdf_buffer) \
+        (kdf_array, pdf_array, histogram_buffer, kdf_buffer, pdf_buffer) \
             = prepare_memory(context, queue, order, 
                              n_pdf_points=n_pdf_points, 
+                             n_kdf_points=n_kdf_points, 
                              histogram_array=histogram_array, 
-                             pdf_array='create',
+                             pdf_array='create', kdf_array='create',
                              verbose=verbose)    
         global_size = [n_pdf_points,1]
-        buffer_list = [histogram_buffer, pdf_buffer]
+        buffer_list = [histogram_buffer, kdf_buffer, pdf_buffer]
     local_size = None
     # Compile the CL code
     compile_options = pocl.set_compile_options(info_struct, cl_kernel_fn, job_type='kde')
@@ -129,6 +131,7 @@ def gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn,
     pocl.report_build_log(program, device, verbose)
     # Set the GPU kernel
     pdebug(compile_options)
+    pdebug(buffer_list)
     kernel = getattr(program,cl_kernel_fn)
     # Designate buffered arrays
     kernel.set_args(*buffer_list)
@@ -136,7 +139,7 @@ def gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn,
     # Do the GPU compute
     event = cl.enqueue_nd_range_kernel(queue, kernel, global_size, local_size)
     # Fetch the data back from the GPU and finish
-    if pdf_array=='create':
+    if type(pdf_array) is str and pdf_array=='create':
         # Compute pdf
         cl.enqueue_copy(queue, pdf_array, pdf_buffer)
         queue.finish()   
@@ -148,8 +151,9 @@ def gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn,
         return histogram_array
     
 def prepare_memory(context, queue, order, 
-                   n_hist_bins=0, n_pdf_points=0,
-                   sl_array=None, histogram_array=None, pdf_array=None, 
+                   n_hist_bins=0, n_pdf_points=0, n_kdf_points=0,
+                   sl_array=None, histogram_array=None, 
+                   pdf_array=None, kdf_array=None, 
                    verbose=False):
     """
     Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
@@ -162,6 +166,7 @@ def prepare_memory(context, queue, order,
         sl_array (numpy.ndarray):
         histogram_array (numpy.ndarray):
         pdf_array (numpy.ndarray):
+        kdf_array (numpy.ndarray):
         verbose (bool):
         
     Returns:
@@ -174,17 +179,19 @@ def prepare_memory(context, queue, order,
 
     if sl_array is not None:
         sl_buffer         = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=sl_array)
-    if histogram_array=='create':
+    if type(histogram_array) is str and histogram_array=='create':
         histogram_array   = np.zeros((n_hist_bins,1), dtype=np.uint32,order=order)
         histogram_buffer  = cl.Buffer(context, COPY_READ_WRITE, hostbuf=histogram_array)
     else:
         histogram_buffer  = cl.Buffer(context, COPY_READ_ONLY, hostbuf=histogram_array)
-    if pdf_array=='create':
-        pdf_array         = np.zeros((n_pdf_points,1), dtype=np.uint32,order=order)
+    if type(pdf_array) is str and pdf_array=='create':
+        pdf_array         = np.zeros((n_pdf_points,1), dtype=np.float32,order=order)
         pdf_buffer        = cl.Buffer(context, COPY_READ_WRITE, hostbuf=pdf_array)
+        kdf_array         = np.zeros((n_kdf_points,1), dtype=np.float32,order=order)
+        kdf_buffer        = cl.Buffer(context, COPY_READ_ONLY, hostbuf=pdf_array)
         
     # Deduce which array and buffers to return from context
     if pdf_array is None:
         return (histogram_array, sl_buffer, histogram_buffer) 
     else:
-        return (pdf_array, histogram_buffer, pdf_buffer) 
+        return (kdf_array, pdf_array, histogram_buffer, kdf_buffer, pdf_buffer) 
