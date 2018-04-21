@@ -72,6 +72,15 @@ body { max-width:none;}
 div.def + div.doc { margin-left: 3ex; margin-top: 0.15625rem }
 div.def table { margin-left: 6ex; }
 
+to document
+
+core
+pocl
+preprocess
+trace
+integration
+plot
+
 DYLD_LIBRARY_PATH=/Users/gavinprivate/.opam/system/lib/stubslibs/ utop
 #require "owl_top";;
 
@@ -106,9 +115,9 @@ state.py ???
 
  *)
 
-(*a Module aliases
- with these aliases we get documentation in the _doc directory *)
 (** {1 Module aliases} *)
+
+(* Module aliases are needed to get documentation in the _doc directory *)
 
 (** Globals - types and support functions used throughout *)
 module Globals     = Globals

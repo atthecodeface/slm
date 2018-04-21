@@ -499,19 +499,39 @@ struct
   let pretty_print t =
     Printf.printf "%s\n" (str t)
 
-  (**  [pv_noisy t] - Shortcut for pv_noisy for workspace *)
+  (**  [pv_noisy t f] 
+
+    Execute f () if verbosity is at least noisy
+
+  *)
   let pv_noisy   t = pv_noisy t.verbosity
 
-  (**  [pv_debug t] - Shortcut for pv_debug for workspace *)
+  (**  [pv_debug t]
+
+    Execute f () if verbosity is at least debug
+
+  *)
   let pv_debug   t = pv_debug t.verbosity
 
-  (**  [pv_info t] - Shortcut for pv_info for workspace *)
+  (**  [pv_info t]
+
+    Execute f () if verbosity is at least info
+
+  *)
   let pv_info    t = pv_info t.verbosity
 
-  (**  [pv_verbose t] - Shortcut for pv_verbose for workspace *)
+  (**  [pv_verbose t]
+
+    Execute f () if verbosity is at least verbose
+
+  *)
   let pv_verbose t = pv_verbose t.verbosity
 
-  (** [workflow_start t] *)
+  (** [workflow_start t]
+    
+    Mark start of a workflow, or possibly a subflow of a workflow.
+
+   *)
   let workflow_start ?subflow t =
     let workflow_name = Option.map_default (fun v->sfmt "%s %s" t.workflow_name v) t.workflow_name subflow in
     if (pv_level t.verbosity) > (pv_level PV_Info) then (
@@ -520,7 +540,11 @@ struct
       Printf.printf "Start %s...\n%!" workflow_name;
     )
 
-  (** [workflow_end t] *)
+  (** [workflow_end t]
+    
+    Mark end of a workflow (or most recent subflow)
+
+   *)
   let workflow_end t =
     Printf.printf "...completed %s\n\n%!" t.workflow_name
 
@@ -837,7 +861,11 @@ let verbosity_from_properties properties verbosity =
   let noisy =               Workflow.bool_of  properties ~default:false "noisy" in
   pv_verbosity ~verbose:verbose ~noisy:noisy ~debug:debug verbosity
 
-(**  [read_state properties] - globals really *)
+(**  [read_state properties] 
+
+    Read the properties of 'state'
+
+ *)
 let read_state properties (cmdline_overrides:t_cmdline_overrides) =
   let properties =          Workflow.create properties "state" in
   let verbose =             Workflow.bool_of  properties ~default:true "verbose" in
@@ -888,7 +916,11 @@ let read_state properties (cmdline_overrides:t_cmdline_overrides) =
     }
     in (props, verbosity)
 
-(**  [read_pocl verbosity properties] - extract from state *)
+(**  [read_pocl verbosity properties] 
+
+    Read the properties of 'pocl' - actually from state - to set it up for workflow
+
+ *)
 let read_pocl verbosity properties =
   let workflow =            Workflow.create properties "state" in
   let cl_platform =         Workflow.int_of  workflow ~default:0 "cl_platform" in
@@ -902,7 +934,11 @@ let read_pocl verbosity properties =
     workflow;
   }
 
-(**  [geodata_validate_properties props] Validate that the properties are supportable *)
+(**  [geodata_validate_properties props]
+
+ Validate that the properties for the geodata workflow are supported
+
+*)
 let geodata_validate_properties props =
   if (Array.length props.roi_x_bounds)<>2 then
     raise (Geodata (sfmt "Expected ROI X bounds to be a pair of integers in '%s'" props.filename));
@@ -910,7 +946,11 @@ let geodata_validate_properties props =
     raise (Geodata (sfmt "Expected ROI Y bounds to be a pair of integers in '%s'" props.filename));
   ()
 
-(**  [read_geodata verbosity properties] Create a Geodata.t given core properties *)
+(**  [read_geodata verbosity properties]
+
+ Set up properties for the Geodata workflow, given a higher level verbosity and a properties
+
+*)
 let read_geodata verbosity properties =
   let workflow         = Workflow.create properties "geodata" in
   let title            = Workflow.str_of workflow ~default:"Title" "title" in
@@ -942,7 +982,11 @@ let read_geodata verbosity properties =
   geodata_validate_properties props;
   props
 
-(**  [read_preprocess verbosity properties] *)
+(**  [read_preprocess verbosity properties]
+
+ Set up properties for the Preprocess workflow, given a higher level verbosity and a properties
+
+*)
 let read_preprocess verbosity properties =
   let workflow                        = Workflow.create properties "preprocess" in
   let do_simple_gradient_vector_field = Workflow.bool_of  workflow ~default:true "do_simple_gradient_vector_field" in
@@ -962,7 +1006,11 @@ let read_preprocess verbosity properties =
   } in
   props
 
-(**  [read_trace verbosity properties] *)
+(**  [read_trace verbosity properties]
+
+ Set up properties for the Trace workflow, given a higher level verbosity and a properties
+
+*)
 let read_trace verbosity properties =
   let workflow = Workflow.create properties "trace" in
   let do_trace_downstream          = Workflow.bool_of     workflow ~default:true "do_trace_downstream" in
@@ -999,7 +1047,11 @@ let read_trace verbosity properties =
     } in
   props
 
-(**  [read_analysis verbosity properties] *)
+(**  [read_analysis verbosity properties]
+
+ Set up properties for the Analysis workflow, given a higher level verbosity and a properties
+
+*)
 let read_analysis verbosity properties =
   let workflow = Workflow.create properties "analysis" in
   let do_marginal_distbn_dsla        = Workflow.bool_of   workflow ~default:false "do_marginal_distbn_dsla" in
@@ -1068,7 +1120,11 @@ let read_analysis verbosity properties =
     } in
   props
 
-(**  [read_plot verbosity properties] *)
+(**  [read_plot verbosity properties]
+
+ Set up properties for the Plot workflow, given a higher level verbosity and a properties
+
+*)
 let read_plot verbosity properties =
   let workflow = Workflow.create properties "plot" in
   let do_plot_dtm                         = Workflow.bool_of   workflow ~default:false "do_plot_dtm" in
@@ -1266,16 +1322,15 @@ let read_plot verbosity properties =
     } in
   props
 
-(**  [show_properties t] show the properties of a Geodata.t*)
-let show_properties t =
-  Workflow.pretty_print t
-
 (**  [read_properties file_path_list cmdline_overrides]
+
+  Read properties from a list of JSON files, and incorporate overrides
+  from the command line
+
  *)
 let read_properties file_path_list cmdline_overrides =
   let props = Properties.create () in
   List.iter (fun (path,filename) -> Properties.read_json props path filename) file_path_list;
-  (*G.show_properties t;*)
   let (state, verbosity) = read_state props cmdline_overrides in
   let pocl       = read_pocl       verbosity props in
   let geodata    = read_geodata    verbosity props in
