@@ -1,3 +1,23 @@
+(** {v Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file   integration.ml
+ * @brief  Integration using GPU for trace
+ * v}
+ *)
+
+(*a Module abbreviations *)
 open Globals
 open Core
 open Properties
@@ -21,8 +41,8 @@ type t_memory = {
     uv_array           : t_ba_floats;  (* padded ROI - vector field array input *)
     chunk_slc_array    : t_ba_ints;    (* padded ROI - #streamlines crossing pixel *)
     chunk_slt_array    : t_ba_ints;    (* padded ROI - streamline length total of all crossing pixel *)
-    chunk_nsteps_array : t_ba_int16s;    (* chunk_size - number of steps taken for a streamline from the seed *)
-    chunk_length_array : t_ba_floats;    (* chunk_size - streamline length from the seed *)
+    chunk_nsteps_array : t_ba_int16s;  (* chunk_size - number of steps taken for a streamline from the seed *)
+    chunk_length_array : t_ba_floats;  (* chunk_size - streamline length from the seed *)
     chunk_trajcs_array : t_ba_chars;   (* chunk_size * max_traj_length*2 - char path of streamline from the seed *)
 
     seeds_buffer        : Pocl.t_buffer;
@@ -108,9 +128,9 @@ let results_create data seeds =
   (* Result arrays *)
   let traj_nsteps_array  = ba_int16s (num_seeds*2) in (* *2 as there are 2 directions ? *)
   let traj_lengths_array = ba_floats (num_seeds*2) in (* *2 as there are 2 directions ? *)
-  let slc_array          = ba_int3d   2 roi_ny roi_nx in
-  let slt_array          = ba_float3d 2 roi_ny roi_nx in
-  let sla_array          = ba_float3d 2 roi_ny roi_nx in
+  let slc_array          = ba_int3d   2 roi_nx roi_ny in
+  let slt_array          = ba_float3d 2 roi_nx roi_ny in
+  let sla_array          = ba_float3d 2 roi_nx roi_ny in
   ODN.fill traj_nsteps_array  0;
   ODN.fill traj_lengths_array 0.;
   ODN.fill slc_array 0;
@@ -137,16 +157,16 @@ let memory_create_buffers pocl data seeds chunk_size =
   let roi_nx = data.pad_width*2+data.roi_nx in
   let roi_ny = data.pad_width*2+data.roi_ny in
 
-  let uv_array = ba_float2d (roi_ny) (roi_nx*2) in
-  let fill_uv y x u v = 
-    ODM.set uv_array y (x*2+0) u;
-    ODM.set uv_array y (x*2+1) v;
+  let uv_array = ba_float2d (roi_nx) (roi_ny*2) in
+  let fill_uv x y u v = 
+    ODM.set uv_array x (y*2+0) u;
+    ODM.set uv_array x (y*2+1) v;
   in
   ODM.iter2i_2d fill_uv data.u_array data.v_array;
 
   (* fill with zeros *)
-  let chunk_slc_array = ba_int2d roi_ny roi_nx  in
-  let chunk_slt_array = ba_int2d roi_ny roi_nx  in
+  let chunk_slc_array = ba_int2d roi_nx roi_ny  in
+  let chunk_slt_array = ba_int2d roi_nx roi_ny  in
 
   (* Chunk-sized temporary arrays - use for a work group, then copy to traj_* *)
   (* Use "bag o' bytes" buffer for huge trajectories array. Write (by GPU) only. *)
@@ -266,11 +286,11 @@ let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
       streamline_lists.(t.downup_index) <- streamlines_of_seed :: ((streamline_lists.(t.downup_index)));
     done;
  
-    let sum_to_total y x slc slt =
-      let tslc = ODN.get results.slc_array [|t.downup_index; y; x|] in
-      let tslt = ODN.get results.slt_array [|t.downup_index; y; x|] in
-      ODN.set results.slc_array [|t.downup_index; y; x|] (tslc + slc);
-      ODN.set results.slt_array [|t.downup_index; y; x|] (tslt +. (float slt));
+    let sum_to_total x y slc slt =
+      let tslc = ODN.get results.slc_array [|t.downup_index; x; y|] in
+      let tslt = ODN.get results.slt_array [|t.downup_index; x; y|] in
+      ODN.set results.slc_array [|t.downup_index; x; y|] (tslc + slc);
+      ODN.set results.slt_array [|t.downup_index; x; y|] (tslt +. (float slt));
     in
     ODM.iter2i_2d sum_to_total memory.chunk_slc_array memory.chunk_slt_array;
     )

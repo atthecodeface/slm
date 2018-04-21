@@ -1,4 +1,26 @@
-(*a Pocl support functions *)
+(** {v Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file   pocl.ml
+ * @brief  OpenCL support library
+ * v}
+ *)
+
+(*a Module abbreviations *)
+module ODM = Owl.Dense.Matrix.Generic
+module ODN = Owl.Dense.Ndarray.Generic
+
 open Owl_opencl.Base
 open Owl_enhance
 open Globals
@@ -6,6 +28,9 @@ open Core
 open Properties
 module Option=Batteries.Option
 
+(** {1 Types} *)
+
+(**  [t] - structure for the Pocl processing *)
 type t = {
     props : t_props_pocl;
     mutable platform : Owl_opencl_generated.cl_platform_id option;
@@ -14,42 +39,68 @@ type t = {
     mutable queue    : Owl_opencl_generated.cl_command_queue option;
   }
 
+(**  [cl_platform t] - retrieve OpenCL platform id from a Pocl.t *)
 let cl_platform t = Option.get t.platform
+
+(**  [cl_device t] - retrieve OpenCL device id from a Pocl.t *)
 let cl_device   t = Option.get t.device
+
+(**  [cl_context t] - retrieve OpenCL context from a Pocl.t *)
 let cl_context  t = Option.get t.context
+
+(**  [cl_context t] - retrieve OpenCL queue from a Pocl.t *)
 let cl_queue    t = Option.get t.queue
 
+(** {1 pv_verbosity functions} *)
+
+(**  [pv_noisy t] - Shortcut to use Pocl.t verbosity for pv_noisy *)
 let pv_noisy   t = pv_noisy   t.props.verbosity
+
+(**  [pv_debug t] - Shortcut to use Pocl.t verbosity for pv_debug *)
 let pv_debug   t = pv_debug   t.props.verbosity
+
+(**  [pv_info t] - Shortcut to use Pocl.t verbosity for pv_info *)
 let pv_info    t = pv_info    t.props.verbosity
+
+(**  [pv_verbose t] - Shortcut to use Pocl.t verbosity for pv_verbose *)
 let pv_verbose t = pv_verbose t.props.verbosity
 
+(** {1 Show functions} *)
+
+(**  [show_device pi p di d] - show data for platform p and device d *)
 let show_device pi p di d =
     Printf.printf "Device %d.%d %s\n" pi di Device.(to_string d);
     Printf.printf "\n%!"
 
+(**  [show_platform pi p] - show data and all devices for platform p *)
 let show_platform i p =
     Printf.printf "Platform %d %s\n" i Platform.(to_string p);
     let d = Device.get_devices p in
     Array.iteri (show_device i p) d;
     Printf.printf "\n%!"
 
+(**  [show_system _] - show data for all platforms and all devices *)
 let show_system _ =
   let p = Platform.get_platforms () in
   Array.iteri show_platform p
 
+(**  [show_context ctxt] - show data for a context *)
 let show_context ctxt =
     Printf.printf "Context %s\n%!" (Context.to_string ctxt)
 
+(**  [show_program program] - show data for a program *)
 let show_program program =
     Printf.printf "Program %s\n%!" (Program.to_string program)
 
+(**  [show_kernel kernel] - show data for a kernel *)
 let show_kernel kernel =
     Printf.printf "Kernel %s\n%!" (Kernel.to_string kernel)
 
+(**  [show_queue queue] - show data for a queue *)
 let show_queue queue =
     Printf.printf "Queue %s\n%!" (CommandQueue.to_string queue)
 
+(**  [debug_build program device] - display debug output for a built program on a device *)
 let debug_build program device =
     let options = program__get_build_options_str program device in
     Printf.printf "Build options\n%s\n%!" options;
@@ -59,6 +110,17 @@ let debug_build program device =
     Printf.printf "Build log\n%s\n%!" log;
     ()
 
+(**  [make_program t source compile_options]
+
+  Compile source with compile_options using the platform, device, and context specified by the Pocl.t t.
+
+  Provide verbose information if required.
+
+  On failure, output debug information for the program and raise an exception
+
+    @returns the compiled program
+
+ *)
 let make_program t source compile_options =
     let program = Program.create_with_source (cl_context t) [|source|] in
     let d = (cl_device t) in

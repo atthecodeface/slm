@@ -1,4 +1,66 @@
-(** Documentation goes here?
+(** {v Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file   globals.ml
+ * @brief  Globally useful functions and statics for the streamlines analysis
+ * v}
+ *)
+(** 
+
+The code is structured as follows:
+
+{[
+ Globals
+    |
+Properties
+    |
+  Core
+    |
+    +------------+-----------+
+    |            |           |
+  Pocl      Preprocess    Geodata
+    |            |           |
+    |            +-----------+
+    |                        |               
+    |                        |               
+    +------------+           |               
+    |            |           |               
+Integration   CountLink      |
+    |                        |               
+ Trace                       |
+    +------------------------+
+    |
+   Plot  
+    |
+Streamlines
+]}
+
+The main data structure for the global vectors and ROI DTM are held in the 'Core' data structure.
+This also keeps the properties tree, which is read and filled in by 'Properties'.
+
+The data is filled out by 'Geodata', which uses its properties to read in a Geotiff file, filling
+out the ROI DTM, and padding as appropriate, producing also the basin masks.
+
+The 'Preprocess' workflow is a pure Ocaml stage that takes the ROI DTM and masks and produces
+the U/V array vector field upon which the rest of the work is done.
+
+'Pocl' is a library that provides the access to the OpenCL subsystem, enabling programs and hence
+kernels to be compiled and invoked.
+
+ *)
+
+(* Notes
 DYLD_LIBRARY_PATH=/Users/gavinprivate/.opam/system/lib/stubslibs/ utop
 #require "owl_top";;
 
@@ -31,70 +93,70 @@ plot.py
 segment.py
 state.py ???
 
-Code structure
-
- Globals
-    |
-Properties
-    |
-  Core
-    |
-    +------------+-----------+
-    |            |           |
-  Pocl      Preprocess    Geodata
-    |            |           |
-    |            +-----------+
-    |                        |               
-    |                        |               
-    +------------+           |               
-    |            |           |               
-Integration   CountLink      |
-    |                        |               
- Trace                       |
-    +------------------------+
-    |
-   Plot  
-    |
-Streamlines
-
-
-The main data structure for the global vectors and ROI DTM are held in the 'Core' data structure.
-This also keeps the properties tree, which is read and filled in by 'Properties'.
-
-The data is filled out by 'Geodata', which uses its properties to read in a Geotiff file, filling
-out the ROI DTM, and padding as appropriate, producing also the basin masks.
-
-The 'Preprocess' workflow is a pure Ocaml stage that takes the ROI DTM and masks and produces
-the U/V array vector field upon which the rest of the work is done.
-
-'Pocl' is a library that provides the access to the OpenCL subsystem, enabling programs and hence
-kernels to be compiled and invoked.
-
-
  *)
-open Globals
-open Core
 
+(*a Module aliases
+ with these aliases we get documentation in the _doc directory *)
+(** {1 Module aliases} *)
+
+(** Globals - types and support functions used throughout *)
+module Globals     = Globals
+
+(** Properties - modules for verbosity, workflows and their properties.
+ This contains structures common to all workflows
+ *)
+module Properties  = Properties
+
+(** Core - module to manage the core data structures (and the Info for some reason) *)
+module Core        = Core
+
+(** Pocl - OpenCL abstraction layer, as a workflow (but using global properties) *)
+module Pocl        = Pocl
+
+(** Geodata - Workflow module that reads in DTM, sets up ROI and mask, filling out the core data *)
+module Geodata     = Geodata
+
+(** Preprocess - Workflow module that takes an ROI and generates the vector field, filling blockages and fixing loops if required *)
+module Preprocess  = Preprocess
+
+(** Integration - Used only by trace workflow, invokes GPU to trace streamlines and count flows through ROI pixels *)
+module Integration = Integration
+
+(** Trace - Workflow module that traces streamlines *)
+module Trace       = Trace
+
+(** Plot - Workflow module that produces plots of DTM, ROI, and processed results *)
+module Plot        = Plot
+
+(** {1 Function calls} *)
+
+(** set_root [root_dir] - set the root directory for all relative filenames. *)
 let set_root = Globals.set_root
-(** [parse_arguments _]
 
-    Parse the command line arguments using :mod:`argparse`.
-    The arguments are assumed to be passed via `_sys.argv[1:]`.
-
-    Return:
-        :obj:`argparse.Namespace`:  parsed command line arguments
-**)
+(** [str2bool s] - parse a string as a bool: t, true, yes, y, 1 all indicate true; no, n, f, false all indicate false. Everything else forces an exception
+*)
 let str2bool s =
   let s=String.lowercase_ascii s in 
   if (s="yes") || (s="y") || (s="t") || (s="true") || s="1" then true
   else if (s="no") || (s="n") || (s="f") || (s="false") || s="0" then false
-  else raise (Arg.Bad "Boolean cmd line argument expected")
+  else raise (Arg.Bad (Globals.sfmt "Boolean cmd line argument expected, but got '%s'" s))
 
+(** [verbosity_of_string s] - get an integer verbosity level from a string; if the string is an integer, then use that, otherwise try it as a 'boolean' using str2bool
+*)
 let verbosity_of_string s = 
   match int_of_string_opt s with
   | Some value -> value
   | None -> if str2bool s then 1 else 0
 
+(** [parse_arguments _]
+
+    Parse the command line arguments using the system {!module:Arg} module.
+
+    @return parameters filename and command line arguments override
+    structure, to be fed to the {!module:Properties} module when
+    reading in the properties files.
+
+*)
 let parse_arguments _ =
   let executable = Filename.basename Sys.executable_name in
   let my_usage = Printf.sprintf "Usage: %s [OPTION]\nPlots something\nOptions:" executable in
@@ -149,10 +211,12 @@ let parse_arguments _ =
   in
   (!filename, cmdline_overrides)
 
-(** process
+(** [process json_dir parameters_filename cmdline_overrides] 
 
-    do stuff
-**)
+    Read in the properties and set up the workflows, then perform the
+    workflow stages required.
+
+*)
 let process json_dir parameters_filename cmdline_overrides =
   (* Create workflow objects and fill out properties *)
   let props = Properties.read_properties [ ([json_dir], "defaults.json");

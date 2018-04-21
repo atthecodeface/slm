@@ -1,4 +1,4 @@
-(** Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+(** {v Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,32 @@
  *
  * @file   globals.ml
  * @brief  Globally useful functions and statics for the streamlines analysis
- *
+ * v}
  *)
 
-(*a Libraries *)
+(*a Module abbreviations *)
 module ODM = Owl.Dense.Matrix.Generic
 module ODN = Owl.Dense.Ndarray.Generic
 
-(*a Filename handling, including root directory *)
-let root = ref "."
+(** {1 Filename handling} *)
 
+(**  [root_dir] - global that holds the root directory to be prepended to all relative paths *)
+let root_dir = ref "."
+
+(**  [set_root root_dir]
+ *)
 let set_root new_root =
-    root := new_root
+    root_dir := new_root
 
+(** BadEnvironmentVariable of string *)
 exception BadEnvironmentVariable of string
+
+(**  [env_value_or_path path]
+
+  Attempt to interpret a string as an environment variable (such as
+$SLMDATA) else return it as a path string.
+
+ *)
 let env_value_or_path path =
   if path.[0] <> '$' then path else (
     let var_name = String.(sub path 1 ((length path)-1)) in
@@ -36,18 +48,45 @@ let env_value_or_path path =
     | None -> raise (BadEnvironmentVariable var_name)
   )
 
+(**  [filename_from_path path leaf]
+
+    Generate a full filename from a path and a leaf filename.    
+
+ @param path a list of string elements that may be environment
+ variables, absolute paths, or relative directories. This path is used
+ with the {!val root_dir} as a root directory to generate the final
+ path.
+
+@param leaf the leaf filename that is to be appended to the path after
+that is resolved
+
+ *)
 let filename_from_path path leaf =
     let path = List.map env_value_or_path path in
-    let path_stripped = List.fold_left (fun acc n->if n.[0]='/' then [n] else acc@[n]) [!root] path in
+    let path_stripped = List.fold_left (fun acc n->if n.[0]='/' then [n] else acc@[n]) [!root_dir] path in
     (String.concat "/" path_stripped) ^ "/" ^ leaf
 
-(*a Bigarray handling - mapping to/from genarrays, creation of arrays, and types *)
+(** {1 Bigarray types and handling} *)
+
+(** {2 Types} *)
+
+(**  t_ba_chars *)
+type t_ba_chars   = (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Genarray.t
+type t_ba_int16s  = (int, Bigarray.int16_unsigned_elt, Bigarray.c_layout) Bigarray.Genarray.t
+type t_ba_ints    = (int, Bigarray.int_elt, Bigarray.c_layout) Bigarray.Genarray.t
+type t_ba_floats  = (float, Bigarray.float32_elt, Bigarray.c_layout) Bigarray.Genarray.t
+
+(** {2 Mapping functions} *)
+
+(**  *)
 let owl_ba3d   ba = Bigarray.genarray_of_array3 ba
 let ba_owl3d   ba = Bigarray.array3_of_genarray ba
 let owl_ba2d   ba = Bigarray.genarray_of_array2 ba
 let ba_owl2d   ba = Bigarray.array2_of_genarray ba
 let owl_ba1d   ba = Bigarray.genarray_of_array1 ba
 let ba_owl1d   ba = Bigarray.array1_of_genarray ba
+
+(** {2 Array creation functions} *)
 
 let ba_chars     size = owl_ba1d Bigarray.(Array1.create char c_layout size)
 let ba_char2d    h w  = owl_ba2d Bigarray.(Array2.create char c_layout h w)
@@ -60,9 +99,32 @@ let ba_float2d h w    = owl_ba2d Bigarray.(Array2.create float32 c_layout h w)
 let ba_int3d   d h w  = owl_ba3d Bigarray.(Array3.create int c_layout d h w)
 let ba_float3d d h w  = owl_ba3d Bigarray.(Array3.create float32 c_layout d h w)
 
-let ba_fold f a ba =
+(** {2 Operation functions} Probably suitable to be migrated to Owl *)
+
+(**  [ba_fold f acc ba]
+
+  Fold over the big array (over any dimension?) 
+
+    @param f the function to apply to {!val acc} and the big array element to produce a new accumulator
+
+    @param acc the base accumulator to use for the first invocation of f
+
+    @param ba the big array to fold over
+
+    @return f applied to acc and every element of ba
+
+  The order of the elements of {!val:ba} that f is applied to is not
+  specified; in some implementations f may be applied in parallel to
+  many elements (with some {!val:acc}); the final result, though, is
+  the application of f to every element of ba exactly once. Hence an
+  application of [ba_fold min infinity ba] will always return the
+  minimum value in ba, but [ba_fold (fun x->Some x) None ba] will
+  return an Some x where x is {i any} element of ba.
+
+ *)
+let ba_fold f acc ba =
   let ba' = ba_owl1d (ODM.flatten ba) in
-  let b = ref a in
+  let b = ref acc in
   for i = 0 to (ODN.numel ba) - 1 do
     let c = Bigarray.Array1.unsafe_get ba' i in
     b := f !b c
@@ -78,7 +140,7 @@ let ba_foldi f a ba =
   done;
   !b
 
-(*f filtered_array *)
+(**  [filtered_array f ba] *)
 let filtered_array f ba =
   let ba = ODM.flatten ba in
   let ba' = ba_owl1d ba in
@@ -86,7 +148,7 @@ let filtered_array f ba =
   let n = Array.length indices in
   ODN.init (Bigarray.Genarray.kind ba) [|n|] (fun i -> ba'.{indices.(i)})
 
-(*f map_ *)
+(**  map_ *)
 let map_ f x =
   let x' = ODN.flatten x |> Bigarray.array1_of_genarray in
   for i = 0 to (Bigarray.Array1.dim x') - 1 do
@@ -95,7 +157,7 @@ let map_ f x =
   done;
   x
 
-(*f mapi_ *)
+(**  mapi_ *)
 let mapi_ f x =
   let x' = ODN.flatten x |> Bigarray.array1_of_genarray in
   for i = 0 to (Bigarray.Array1.dim x') - 1 do
@@ -104,31 +166,25 @@ let mapi_ f x =
   done;
   x
 
-(*f ba_filter *)
+(**  ba_filter *)
 let ba_filter xsize ysize f rv src dst =
-  let (h,w) = ODM.shape src in
+  let (w,h) = ODM.shape src in
   let min_x = (xsize-1)/2 in
   let min_y = (ysize-1)/2 in
   let max_x = w-1-min_x in
   let max_y = h-1-min_y in
   let ba_src = ba_owl2d src in
   let ba_dst = ba_owl2d dst in
-  let f_get = f (fun x y -> Bigarray.Array2.unsafe_get ba_src y x) in
-  let f_pruned y x v =
+  let f_get = f (fun x y -> Bigarray.Array2.unsafe_get ba_src x y) in
+  let f_pruned x y v =
     if ((x<min_x) || (y<min_y) || (x>max_x) || (y>max_y)) then (
-      Bigarray.Array2.unsafe_set ba_dst y x rv
+      Bigarray.Array2.unsafe_set ba_dst x y rv
     ) else (
-      Bigarray.Array2.unsafe_set ba_dst y x (f_get x y)
+      Bigarray.Array2.unsafe_set ba_dst x y (f_get x y)
     )
   in
   ODM.iteri_2d f_pruned src;
   dst
-
-(*t t_ba_chars, int16s, ints, floats *)
-type t_ba_chars   = (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Genarray.t
-type t_ba_int16s  = (int, Bigarray.int16_unsigned_elt, Bigarray.c_layout) Bigarray.Genarray.t
-type t_ba_ints    = (int, Bigarray.int_elt, Bigarray.c_layout) Bigarray.Genarray.t
-type t_ba_floats  = (float, Bigarray.float32_elt, Bigarray.c_layout) Bigarray.Genarray.t
 
 (*a Useful functions *)
 (*f trace - use as trace __POS__ to trace execution *)

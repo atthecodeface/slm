@@ -1,4 +1,4 @@
-(** Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+(** {v Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,12 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * @file   geodata.ml
- * @brief  Module to provide loading of Geotiff data and filling out the core data
- *
+ * @file   plot.ml
+ * @brief  Plot workflow
+ * v}
  *)
 
-(*a Libraries *)
+(*a Module abbreviations *)
 open Globals
 open Core
 open Properties
@@ -46,6 +46,7 @@ let pv_verbose t = pv_verbose t.props.verbosity
 let matrix_for_plot_float32 ~region ba = 
   let z = ODN.(cast_s2d (get_slice region ba)) in
   let z = ODM.map (fun a->if is_nan a then 0. else a) z in
+  let z = ODM.transpose z in
   let z = ODM.flip z in
   z
 
@@ -53,6 +54,7 @@ let matrix_for_plot_byte ~region ba =
   let (ny,nx) = ODM.shape ba in
   let z = ODM.init_2d (Bigarray.float64) ny nx (fun y x -> float (Char.code (ODM.get ba y x))) in
   let z = ODN.(get_slice region z) in
+  let z = ODM.transpose z in
   let z = ODM.flip z in
   z
 
@@ -404,7 +406,7 @@ let plot_updownstreamlines_overlay ?do_down:(do_down=true) t data results =
 let plot_dtm_shaded_relief t ?subsample:(subsample=5) data (geodata:Geodata.t_data) =
     let open Geodata in
     let dtm_array = geodata.g.dtm_array in
-    let (height, width) = ODM.shape dtm_array in
+    let (width, height) = ODM.shape dtm_array in
     let region_array = [| 0.; 0.; float width; float height; |] in
     let region = [ [0;-1;subsample];[0;-1;subsample];] in (* subsample in each direction by 5 *)
     new_figure ~title:data.properties.geodata.title ~x_pixel_scale:2. ~y_pixel_scale:2. ~region:region_array t;
@@ -465,18 +467,18 @@ let plot_streamlines t data results =
 **)
 let plot_classical_streamlines_overlay ?region:(region=all) t (data:t_core_data) results =
   let pad = data.pad_width in
-  let (ny,nx) = ODM.shape data.u_array in
+  let (nx,ny) = ODM.shape data.u_array in
   let dx, dy = 1.0, 1.0 in
   let cgrid_xg = Array.init nx (fun i -> 0.5 +. (float (i-pad))) in
   let cgrid_yg = Array.init ny (fun i -> 0.5 +. (float (i-pad))) in
-  let cgrid2_xg = Array.make_matrix ny nx 0.0 in
-  let cgrid2_yg = Array.make_matrix ny nx 0.0 in
+  let cgrid2_xg = Array.make_matrix nx ny 0.0 in
+  let cgrid2_yg = Array.make_matrix nx ny 0.0 in
   for i = 0 to nx - 1 do
     let x = cgrid_xg.(i) in
     for j = 0 to ny - 1 do
       let y = cgrid_yg.(j) in
-      cgrid2_xg.(j).(i) <- y;
-      cgrid2_yg.(j).(i) <- x
+      cgrid2_xg.(i).(j) <- x;
+      cgrid2_yg.(i).(j) <- y
     done
   done;
   let u = ODM.(cast_s2d (get_slice region data.u_array) |> to_arrays) in
@@ -484,7 +486,7 @@ let plot_classical_streamlines_overlay ?region:(region=all) t (data:t_core_data)
     let open Plplot in
     plcol0 2;
 (*    plset_pltr (pltr1 cgrid_yg cgrid_xg);*)
-    plset_pltr (pltr2 cgrid2_yg cgrid2_xg);
+    plset_pltr (pltr2 cgrid2_xg cgrid2_yg);
     plvect u v 0. (* last is scale *);
     plunset_pltr ();
     plcol0 1;
@@ -514,10 +516,10 @@ let plot_classical_streamlines t data results =
  *)
 let plot_maps t data geodata results =
   let w=workflow_start "plotting maps..." t.props.verbosity in
-  if t.props.do_plot_dtm then plot_dtm_shaded_relief t data geodata;
-  if t.props.do_plot_roi then plot_roi_shaded_relief t data;
+  if true || t.props.do_plot_dtm then plot_dtm_shaded_relief t data geodata;
+  if true || t.props.do_plot_roi then plot_roi_shaded_relief t data;
   if t.props.do_plot_streamlines then plot_streamlines t data results;
-(*plot_classical_streamlines t data results;*)
+plot_classical_streamlines t data results;
 (*  if t.props.do_plot_flow_maps then plot_flow_maps t data;
   if t.props.do_plot_segments then plot_segments t data;
   if t.props.do_plot_channels then plot_channels t data;

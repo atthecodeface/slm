@@ -1,4 +1,4 @@
-(** Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+(** {v Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  *
  * @file   geodata.ml
  * @brief  Module to provide loading of Geotiff data and filling out the core data
- *
+ * v}
  *)
 
-(*a Libraries *)
+(*a Module abbreviations *)
 open Globals
 open Core
 open Properties
@@ -45,7 +45,7 @@ type t_geotiff = {
 
 (*t t_geodata *)
 type t_geodata = {
-    dtm_array              : t_ba_floats; (* h * w of float32 with NAN for no_data_value *)
+    dtm_array              : t_ba_floats; (* w * h of float32 with NAN for no_data_value *)
     x_easting_bottomleft   : float;
     y_northing_bottomleft  : float;
     roi_x_origin           : float; (* =x_roi_n_pixel_centers[0] *)
@@ -134,8 +134,8 @@ struct
     Printf.printf "%d,%d : %d,%d\n" data_width data_height geo.width geo.height;
      *)
     let no_data_value = Option.default nan (Gdal.Band.get_no_data_value data_band) in
-    Gdal.Band.iter_read data_band (fun x y v -> ODM.set data.dtm_array y x  (if v=no_data_value then nan else v););
-    ODN.(copy_to (flip ~axis:0 data.dtm_array) data.dtm_array)
+    Gdal.Band.iter_read data_band (fun x y v -> ODM.set data.dtm_array x y  (if v=no_data_value then nan else v););
+    ODN.(copy_to (flip ~axis:1 data.dtm_array) data.dtm_array)
 
   (*f [map_data_band geo n band_type f] - read the data band n *)
   let map_data_band geo n band_type f =
@@ -196,7 +196,7 @@ let fill_data t data geo =
   ODN.iteri (fun i _ -> ODN.set data.x_roi_n_pixel_centers [|i|] (((float (i+t.props.roi_x_bounds.(0))) +. 0.5) *. roi_dx)) data.x_roi_n_pixel_centers;
   ODN.iteri (fun i _ -> ODN.set data.y_roi_n_pixel_centers [|i|] (((float (i+t.props.roi_y_bounds.(0))) +. 0.5) *. roi_dy)) data.y_roi_n_pixel_centers;
 
-  let dtm_array = ba_float2d geo.height geo.width in
+  let dtm_array = ba_float2d geo.width geo.height in
   ODN.fill dtm_array nan;
   let roi_x_origin = ODN.get data.x_roi_n_pixel_centers [|0|] in
   let roi_y_origin = ODN.get data.y_roi_n_pixel_centers [|0|] in
@@ -228,8 +228,8 @@ let read_dtm_file t data =
   update_properties t geotiff;
   fill_data t data geotiff;
   Geotiff.read_data_band geotiff t.g 1;
-  let src_area = ODN.area t.props.roi_y_bounds.(0) t.props.roi_x_bounds.(0) (t.props.roi_y_bounds.(1)-1) (t.props.roi_x_bounds.(1)-1) in
-  let dst_area = ODN.area 0 0 (data.roi_ny-1) (data.roi_nx-1) in
+  let src_area = ODN.area t.props.roi_x_bounds.(0) t.props.roi_y_bounds.(0) (t.props.roi_x_bounds.(1)-1) (t.props.roi_y_bounds.(1)-1) in
+  let dst_area = ODN.area 0 0 (data.roi_nx-1) (data.roi_ny-1) in
   ODN.copy_area_to t.g.dtm_array src_area data.roi_array dst_area;
   geotiff
 
@@ -238,11 +238,11 @@ let read_basin t data =
   let filename = filename_from_path t.props.dtm_path t.props.basins_file in
   let geo = Geotiff.read_header filename in
   Geotiff.check_supported geo; (* seems to be what the original does *)
-  let basin_array = ba_char2d data.roi_ny data.roi_nx in
+  let basin_array = ba_char2d data.roi_nx data.roi_ny in
   let basin_data x y v =
     let y = geo.height-1-y in
     if (x<t.props.roi_x_bounds.(1) && y<t.props.roi_y_bounds.(1) && x>=t.props.roi_x_bounds.(0) && y>=t.props.roi_y_bounds.(0)) then (
-      ODM.set basin_array (y-t.props.roi_y_bounds.(0)) (x-t.props.roi_x_bounds.(0)) (if List.mem v t.props.basins then '\000' else '\255' )
+      ODM.set basin_array (x-t.props.roi_x_bounds.(0)) (y-t.props.roi_y_bounds.(0)) (if List.mem v t.props.basins then '\000' else '\255' )
     )
   in
   Geotiff.map_data_band geo 1 Gdal.Band.Data.UInt16 basin_data;

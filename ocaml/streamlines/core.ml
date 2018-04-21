@@ -147,13 +147,13 @@ type t_core_data = {
     mutable roi_pixel_size : float; (* Used for general GPU and so on, from geodata file *)
     mutable roi_region : float array; (* Region LX, BY, RX, TY *)
     mutable pad_width : int; (* Used all over, copied from geodata state *)
-    mutable roi_array             : t_ba_floats; (* roi_ny*roi_nx of float32 for region of interest extracted from dtm_array *)
-    mutable basin_fatmask_array   : t_ba_chars; (* *padded* roi_ny*roi_nx of char with 255=ignore, 0=use *)
-    mutable basin_mask_array      : t_ba_chars; (* *padded* roi_ny*roi_nx of char with 255=ignore, 0=use *)
+    mutable roi_array             : t_ba_floats; (* roi_nx*roi_ny of float32 for region of interest extracted from dtm_array *)
+    mutable basin_fatmask_array   : t_ba_chars; (* *padded* roi_nx*roi_ny of char with 255=ignore, 0=use *)
+    mutable basin_mask_array      : t_ba_chars; (* *padded* roi_nx*roi_ny of char with 255=ignore, 0=use *)
     mutable x_roi_n_pixel_centers : t_ba_floats; (* roi_nx of float32 of pixel center xs *)
     mutable y_roi_n_pixel_centers : t_ba_floats; (* roi_ny of float32 of pixel center ys *)
-    mutable u_array               : t_ba_floats; (* *padded* roi_ny*roi_nx of float32 for region of interest extracted from dtm_array *)
-    mutable v_array               : t_ba_floats; (* *padded* roi_ny*roi_nx of float32 for region of interest extracted from dtm_array *)
+    mutable u_array               : t_ba_floats; (* *padded* roi_nx*roi_ny of float32 for region of interest extracted from dtm_array *)
+    mutable v_array               : t_ba_floats; (* *padded* roi_nx*roi_ny of float32 for region of interest extracted from dtm_array *)
     mutable seeds                 : t_ba_floats; (* *)
   }
 
@@ -162,9 +162,9 @@ type t_trace_results = {
     mutable streamline_arrays : bytes array array; (* .(downup) array of array of streamlines, each encoded as a stream of byte-pairs *)
     traj_nsteps_array  : t_ba_int16s; (* num_seeds*2 - number of steps for streamline from seed in direction *)
     traj_lengths_array : t_ba_floats; (* num_seeds*2 - streamline length from seed in direction *)
-    slc_array          : t_ba_ints;   (* 2:downup * padded roi_ny * padded roi_nx : count of streamlines per pixel *)
-    slt_array          : t_ba_floats; (* 2:downup * padded roi_ny * padded roi_nx : length of streamlines per pixel *)
-    sla_array          : t_ba_floats; (* 2:downup * padded roi_ny * padded roi_nx : area of streamlines per pixel *)
+    slc_array          : t_ba_ints;   (* 2:downup * padded roi_nx * padded roi_ny : count of streamlines per pixel *)
+    slt_array          : t_ba_floats; (* 2:downup * padded roi_nx * padded roi_ny : length of streamlines per pixel *)
+    sla_array          : t_ba_floats; (* 2:downup * padded roi_nx * padded roi_ny : area of streamlines per pixel *)
   }
 
 (*a Core toplevel *)
@@ -211,11 +211,11 @@ let set_roi t roi =
   t.roi_ny <- roi_ny;
   t.roi_region <- [| float roi.(0); float roi.(1); float roi.(2); float roi.(3) |];
 
-  t.roi_array             <- ba_float2d roi_ny roi_nx;
-  t.basin_fatmask_array   <- ba_char2d roi_ny roi_nx;
-  t.basin_mask_array      <- ba_char2d roi_ny roi_nx;
-  t.x_roi_n_pixel_centers <- ba_floats roi_nx;
-  t.y_roi_n_pixel_centers <- ba_floats roi_ny;
+  t.roi_array             <- ba_float2d roi_nx roi_ny;
+  t.basin_fatmask_array   <- ba_char2d  roi_nx roi_ny;
+  t.basin_mask_array      <- ba_char2d  roi_nx roi_ny;
+  t.x_roi_n_pixel_centers <- ba_floats  roi_nx;
+  t.y_roi_n_pixel_centers <- ba_floats  roi_ny;
   t.u_array <- ba_float2d 1 1;
   t.v_array <- ba_float2d 1 1;
   ODN.fill t.roi_array nan;

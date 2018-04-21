@@ -1,3 +1,23 @@
+(** {v Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file   preprocess.ml
+ * @brief  Preprocessing
+ * v}
+ *)
+
+(*a Module abbreviations *)
 (*	"preprocess": {	
 		"do_simple_gradient_vector_field" : true,
 		"do_normalize_speed" : true,
@@ -49,7 +69,7 @@ let vector_length a b = sqrt (a*.a +. b*.b)
 (*f fold2d *)
 let fold2d f acc src =
   let acc_r = ref acc in
-  let f_acc y x v =
+  let f_acc x y v =
     acc_r := f x y (!acc_r) v
   in
   ODM.iteri_2d f_acc src;
@@ -177,7 +197,7 @@ let show_blockages blockages =
         Printf.printf "Blockages at:\n";
         let (blockages_array, _) = blockages in
         let show_blockage (x,y) =
-          let dx,dy = get_flow_vector (ODM.get blockages_array y x) in
+          let dx,dy = get_flow_vector (ODM.get blockages_array x y) in
           Printf.printf "[%d, %d] @ [%d, %d] => [%d, %d]\n" dx dy x y (x+dx) (y+dy)
         in
         let x = Array.of_list where_blockages in
@@ -201,14 +221,14 @@ let show_blockages blockages =
         numpy.array,numpy.array: ROI topo x gradient, y gradient
  *)
 let compute_topo_gradient_field roi_array =
-    let gradient_x get x y = ((get (x+1) y) -. (get (x-1) y)) *. 0.5 in
-    let gradient_y get x y = ((get x (y+1)) -. (get x (y-1))) *. 0.5 in
-    let (w,h)   = ODM.shape roi_array in
-    let u_array = ODM.(empty BA.float32 w h) in
-    let v_array = ODM.(empty BA.float32 w h) in
-    ba_filter 3 1 gradient_x 0. roi_array u_array;
-    ba_filter 1 3 gradient_y 0. roi_array v_array;
-    (u_array, v_array)
+  let gradient_x get x y = ((get (x+1) y) -. (get (x-1) y)) *. 0.5 in
+  let gradient_y get x y = ((get x (y+1)) -. (get x (y-1))) *. 0.5 in
+  let (w,h)   = ODM.shape roi_array in
+  let u_array = ODM.(empty BA.float32 w h) in
+  let v_array = ODM.(empty BA.float32 w h) in
+  ba_filter 3 1 gradient_x 0. roi_array u_array;
+  ba_filter 1 3 gradient_y 0. roi_array v_array;
+  (u_array, v_array)
 
 (*f normalize_arrays u_array v_array *)
 let normalize_arrays u_array v_array =
@@ -225,8 +245,10 @@ let normalize_arrays u_array v_array =
 
  *)
 let compute_gradient_velocity_field roi_gradx_array roi_grady_array =
+trace __POS__;
   let u_array = ODM.neg roi_gradx_array in
   let v_array = ODM.neg roi_grady_array in
+trace __POS__;
   normalize_arrays u_array v_array
 
 (*f check_has_loop
@@ -260,14 +282,14 @@ than zero (as there is always a downhill);
 
  *)
 let calc_speed_div_curl x y u v  =
-  let u00 = u.{y+0,x+0} in
-  let u01 = u.{y+1,x+0} in
-  let u10 = u.{y+0,x+1} in
-  let u11 = u.{y+1,x+1} in
-  let v00 = v.{y+0,x+0} in
-  let v01 = v.{y+1,x+0} in
-  let v10 = v.{y+0,x+1} in
-  let v11 = v.{y+1,x+1} in
+  let u00 = u.{x+0,y+0} in
+  let u01 = u.{x+0,y+1} in
+  let u10 = u.{x+1,y+0} in
+  let u11 = u.{x+1,y+1} in
+  let v00 = v.{x+0,y+0} in
+  let v01 = v.{x+0,y+1} in
+  let v10 = v.{x+1,y+0} in
+  let v11 = v.{x+1,y+1} in
   let velocity_u = u00 +. u01 +. u10 +. u11 in
   let velocity_v = v00 +. v01 +. v10 +. v11 in
   let speed = (sqrt (velocity_u*.velocity_u +. velocity_v*.velocity_v)) /. 4. in
@@ -286,14 +308,14 @@ let break_out_of_loop data (x,y) =
     let lowest_neighbour acc nn =
       let (min_nn, min_h) = acc in
       let (dx,dy) = get_flow_vector nn in
-      let h = ODM.get data.roi_array (y+dy) (x+dx) in
+      let h = ODM.get data.roi_array (x+dx) (y+dy) in
       if (h < min_h) then (nn, h) else acc
     in
     let nns = [|'\001';'\002';'\004';'\008';'\016';'\032';'\064';'\128';|] in
     let (nn_min,_) = Array.fold_left lowest_neighbour ('\000', infinity) nns in
     let (dx,dy) = get_unit_flow_vector nn_min in
-    ODM.set data.u_array y x dx;
-    ODM.set data.v_array y x dy;
+    ODM.set data.u_array x y dx;
+    ODM.set data.v_array x y dy;
   )
 
 (*f find_and_fix_loops *)
@@ -325,11 +347,11 @@ let fix_blockages t blockages data =
   if where_blockages<>[] then (
     let set_uv_from_flow_vector x y nn =
       let (dx,dy) = get_unit_flow_vector nn in
-      ODM.set data.u_array y x dx;
-      ODM.set data.v_array y x dy;
+      ODM.set data.u_array x y dx;
+      ODM.set data.v_array x y dy;
     in
-    let fix_blockage (x,y) = set_uv_from_flow_vector x y (ODM.get blockages_array y x) in
-    let fix_blocked_neighbor (x,y) = set_uv_from_flow_vector x y (ODM.get blocked_neighbors_array y x) in
+    let fix_blockage (x,y) = set_uv_from_flow_vector x y (ODM.get blockages_array x y) in
+    let fix_blocked_neighbor (x,y) = set_uv_from_flow_vector x y (ODM.get blocked_neighbors_array x y) in
     pv_info t (fun _ -> Printf.printf "...%d blockages...\n%!" (List.length where_blockages));
     List.iter fix_blockage where_blockages;
     pv_info t (fun _ -> Printf.printf "...%d blocked neighbors...\n%!" (List.length where_blocked_neighbors));
