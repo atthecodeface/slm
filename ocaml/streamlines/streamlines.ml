@@ -62,7 +62,6 @@ kernels to be compiled and invoked.
 
 (* Notes
 
-
 h1 { font-size:1.8rem ; text-align:center; margin-top:5px; margin-bottom:2px; }
 h2 { font-size:1.6rem ; display:block; background-color:#90bdff; text-align:center; margin-top:5px; margin-bottom:2px; border:1px solid black; }
 h3 { font-size:1.2rem ; text-align:left; margin-left:2ex; }
@@ -71,6 +70,7 @@ pre { background: #F5F5E7; }
 .def .keyword { color : #f00; }
 body { max-width:none;}
 div.def + div.doc { margin-left: 3ex; margin-top: 0.15625rem }
+div.def table { margin-left: 6ex; }
 
 DYLD_LIBRARY_PATH=/Users/gavinprivate/.opam/system/lib/stubslibs/ utop
 #require "owl_top";;

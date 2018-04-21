@@ -25,10 +25,10 @@ module ODM = Owl.Dense.Matrix.Generic
 module ODN = Owl.Dense.Ndarray.Generic
 
 (*a Useful functions *)
-let pv_noisy   (props:t_props_trace) = pv_noisy   props.verbosity
-let pv_debug   (props:t_props_trace) = pv_debug   props.verbosity
-let pv_info    (props:t_props_trace) = pv_info    props.verbosity
-let pv_verbose (props:t_props_trace) = pv_verbose props.verbosity
+let pv_noisy   (props:t_props_trace) = Workflow.pv_noisy   props.workflow
+let pv_debug   (props:t_props_trace) = Workflow.pv_debug   props.workflow
+let pv_info    (props:t_props_trace) = Workflow.pv_info    props.workflow
+let pv_verbose (props:t_props_trace) = Workflow.pv_verbose props.workflow
 
 let cl_files = ["rng.cl";"essentials.cl";
                 "writearray.cl";"trajectoryfns.cl";"computestep.cl";
@@ -330,7 +330,7 @@ let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
         slc_array, slt_array, sla_array
  *)
 let integrate_trajectories (tprops:t_props_trace) pocl data seeds =
-  let w = workflow_start "integrating streamlines" tprops.verbosity in
+  Workflow.workflow_start ~subflow:"integrating streamlines" tprops.workflow;
   Pocl.prepare_cl_context_queue pocl;
 
   let gpu_traj_memory_limit = Pocl.get_memory_limit pocl in (* max memory permitted to use *)
@@ -371,6 +371,6 @@ let integrate_trajectories (tprops:t_props_trace) pocl data seeds =
     # slt:  =>  sqrt(area)
 
 *)
-  workflow_end w;
-    results
+  Workflow.workflow_end tprops.workflow;
+  results
 

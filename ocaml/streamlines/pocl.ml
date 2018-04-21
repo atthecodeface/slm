@@ -54,16 +54,16 @@ let cl_queue    t = Option.get t.queue
 (** {1 pv_verbosity functions} *)
 
 (**  [pv_noisy t] - Shortcut to use Pocl.t verbosity for pv_noisy *)
-let pv_noisy   t = pv_noisy   t.props.verbosity
+let pv_noisy   t = Workflow.pv_noisy t.props.workflow
 
 (**  [pv_debug t] - Shortcut to use Pocl.t verbosity for pv_debug *)
-let pv_debug   t = pv_debug   t.props.verbosity
+let pv_debug   t = Workflow.pv_noisy t.props.workflow
 
 (**  [pv_info t] - Shortcut to use Pocl.t verbosity for pv_info *)
-let pv_info    t = pv_info    t.props.verbosity
+let pv_info    t = Workflow.pv_info t.props.workflow
 
 (**  [pv_verbose t] - Shortcut to use Pocl.t verbosity for pv_verbose *)
-let pv_verbose t = pv_verbose t.props.verbosity
+let pv_verbose t = Workflow.pv_verbose t.props.workflow
 
 (** {1 Show functions} *)
 

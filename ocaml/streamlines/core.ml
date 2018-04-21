@@ -1,4 +1,4 @@
-(** Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+(** {v Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  *
  * @file   core.ml
  * @brief  Core data, Info, and Workflow handling
- *
+ * v}
  *)
 
-(*a Libraries *)
+(*a Module abbreviations *)
 open Globals
 module ODM = Owl.Dense.Matrix.Generic
 module ODN = Owl.Dense.Ndarray.Generic
@@ -223,17 +223,3 @@ let set_roi t roi =
   ODN.fill t.basin_fatmask_array '\255';
   ()
 
-(*a Workflow *)
-(*f workflow_start *)
-let workflow_start s verbosity =
-  if Properties.((pv_level verbosity) > (pv_level PV_Info)) then (
-    Printf.printf "Start %s (%s)...\n%!" s (Properties.pv_str verbosity);
-  ) else (
-    Printf.printf "Start %s...\n%!" s;
-  );
-  s
-
-(*f workflow_end *)
-let workflow_end w =
-  let s = w in
-  Printf.printf "...completed %s\n\n%!" s

@@ -43,10 +43,10 @@ type t = {
     pad_width : int;
   }
 
-let pv_noisy   t = pv_noisy   t.props.verbosity
-let pv_debug   t = pv_debug   t.props.verbosity
-let pv_info    t = pv_info    t.props.verbosity
-let pv_verbose t = pv_verbose t.props.verbosity
+let pv_noisy   t = Workflow.pv_noisy   t.props.workflow
+let pv_debug   t = Workflow.pv_debug   t.props.workflow
+let pv_info    t = Workflow.pv_info    t.props.workflow
+let pv_verbose t = Workflow.pv_verbose t.props.workflow
 
 (*a Basics *)
 (*f [create props] *)
@@ -434,12 +434,13 @@ let raw_gradient_vector_field data =
 
 (*f process t data *)
 let process t data = 
-  let w = workflow_start "preprocess" t.props.verbosity in
+  Workflow.workflow_start t.props.workflow;
   (* if self.state.do_condition: *)
   conditioned_gradient_vector_field t data;
   (*        else:
             self.raw_gradient_vector_field()
    *)
   mask_nan_uv data;
-  workflow_end w
+  Workflow.workflow_end t.props.workflow;
+  ()
 

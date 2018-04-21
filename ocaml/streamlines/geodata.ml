@@ -105,13 +105,16 @@ let geodata_dummy = {
     roi_dy                 = 0. ;
   }
 
-(*a Useful functions *)
-let pv_noisy   t = pv_noisy   t.props.verbosity
-let pv_debug   t = pv_debug   t.props.verbosity
-let pv_info    t = pv_info    t.props.verbosity
-let pv_verbose t = pv_verbose t.props.verbosity
+(** {1 Useful functions}
 
-(*a Geotiff submodule *)
+ *)
+
+let pv_noisy   t = Workflow.pv_noisy   t.props.workflow
+let pv_debug   t = Workflow.pv_debug   t.props.workflow
+let pv_info    t = Workflow.pv_info    t.props.workflow
+let pv_verbose t = Workflow.pv_verbose t.props.workflow
+
+(** {1 Geotiff submodule} *)
 (*m Geotiff module *)
 module Geotiff =
 struct
@@ -195,7 +198,8 @@ struct
 
 end
 
-(*a Top level Geodta module functions *)
+(** {1 Top level Geodata module functions}
+  *)
 exception Geodata of string
 (*f [update_properties t geo] Update the properties based on the Geotiff file *)
 let update_properties t geo =
@@ -333,7 +337,7 @@ let display t data geotiff =
 
 (*f [load t] - load a DTM file as a Geodata.t given basic properties *)
 let load t data =
-    let w = workflow_start "geodata" t.props.verbosity in
+    Workflow.workflow_start t.props.workflow;
     let geotiff = read_dtm_file t data in
     if t.props.do_basin_masking then (
       read_basin t data;
@@ -341,7 +345,7 @@ let load t data =
     ) else (
       pad_basins ~clear:true t data
     );
-    workflow_end w;
+    Workflow.workflow_end t.props.workflow;
     pv_verbose t (fun _ -> display t data geotiff);
     (data, geotiff)
 

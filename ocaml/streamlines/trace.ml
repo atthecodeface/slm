@@ -31,10 +31,10 @@ type t_data = {
   }
 
 (*a Useful functions *)
-let pv_noisy   t = pv_noisy   t.props.verbosity
-let pv_debug   t = pv_debug   t.props.verbosity
-let pv_info    t = pv_info    t.props.verbosity
-let pv_verbose t = pv_verbose t.props.verbosity
+let pv_noisy   t = Workflow.pv_noisy   t.props.workflow
+let pv_debug   t = Workflow.pv_debug   t.props.workflow
+let pv_info    t = Workflow.pv_info    t.props.workflow
+let pv_verbose t = Workflow.pv_verbose t.props.workflow
 
 (*f create props *)
 let create props =
@@ -107,9 +107,9 @@ let trace_streamlines t pocl data seeds =
             sla_array (numpy.ndarray):
  *)
 let process t pocl data =
-  let w = workflow_start "trace" t.props.verbosity in
+  Workflow.workflow_start t.props.workflow;
   let seeds = create_seeds t data in
   data.seeds <- seeds;
   let result = trace_streamlines t pocl data seeds in
-  workflow_end w;
+  Workflow.workflow_end t.props.workflow;
   result

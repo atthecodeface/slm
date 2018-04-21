@@ -38,10 +38,10 @@ type t_plot = {
   }
 
 (*a Useful functions *)
-let pv_noisy   t = pv_noisy   t.props.verbosity
-let pv_debug   t = pv_debug   t.props.verbosity
-let pv_info    t = pv_info    t.props.verbosity
-let pv_verbose t = pv_verbose t.props.verbosity
+let pv_noisy   t = Workflow.pv_noisy   t.props.workflow
+let pv_debug   t = Workflow.pv_debug   t.props.workflow
+let pv_info    t = Workflow.pv_info    t.props.workflow
+let pv_verbose t = Workflow.pv_verbose t.props.workflow
 
 let matrix_for_plot_float32 ~region ba = 
   let z = ODN.(cast_s2d (get_slice region ba)) in
@@ -515,7 +515,7 @@ let plot_classical_streamlines t data results =
 
  *)
 let plot_maps t data geodata results =
-  let w=workflow_start "plotting maps..." t.props.verbosity in
+  Workflow.workflow_start ~subflow:"maps" t.props.workflow;
   if true || t.props.do_plot_dtm then plot_dtm_shaded_relief t data geodata;
   if true || t.props.do_plot_roi then plot_roi_shaded_relief t data;
   if t.props.do_plot_streamlines then plot_streamlines t data results;
@@ -527,7 +527,7 @@ plot_classical_streamlines t data results;
   if t.props.do_plot_hillslope_lengths_contoured then plot_hillslope_lengths_contoured t data;
   if t.props.do_plot_hillslope_distributions then plot_hillslope_distributions t data;
  *)
-  workflow_end w;
+  Workflow.workflow_end t.props.workflow;
   ()
 
 (** [plot_distributions t data] blah *)
@@ -552,12 +552,12 @@ let create (props:t_props) =
 
 (** [process t data] - do all the plots *)
 let process t data geodata results = 
-    let w = workflow_start "plot" t.props.verbosity in
-    if t.props.do_plot_maps then plot_maps t data geodata results;
-    if t.props.do_plot_distributions then plot_distributions t data;
-    Owl_plot.output t.plot;
-    workflow_end w;
-    ()
+  Workflow.workflow_start t.props.workflow;
+  if t.props.do_plot_maps then plot_maps t data geodata results;
+  if t.props.do_plot_distributions then plot_distributions t data;
+  Owl_plot.output t.plot;
+  Workflow.workflow_end t.props.workflow;
+  ()
         
 (* Old
   let region = [[0;-1;5]; [0;-1;5]] in

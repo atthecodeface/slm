@@ -431,7 +431,7 @@ let create props geodata trace =
   Analyze streamline count, length distbns etc, generate stats and pdfs
  *)
 let process t = 
-  let w = workflow_start "analysis" t.props.verbosity in
+  Workflow.workflow_start t.props.workflow;
 
 (*        if self.do_marginal_distbn_dsla: self.compute_marginal_distribn_dsla()
         if self.do_marginal_distbn_dslt: self.compute_marginal_distribn_dslt()
@@ -456,7 +456,8 @@ let process t =
         if self.do_joint_distribn_dsla_dslc: self.compute_joint_distribn_dsla_dslc()
         if self.do_joint_distribn_uslc_dslc: self.compute_joint_distribn_uslc_dslc()
  *)
-  workflow_end w
+  Workflow.workflow_end t.props.workflow;
+  ()
 (*
       
 
