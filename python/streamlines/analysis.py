@@ -7,7 +7,6 @@ from sklearn.neighbors import KernelDensity
 from scipy.stats import gaussian_kde, norm
 from scipy.signal import argrelextrema
 from scipy.ndimage import median_filter, gaussian_filter, maximum_filter
-import pandas as pd
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
@@ -28,7 +27,7 @@ class Univariate_distribution():
     def __init__(self, logx_array=None, logy_array=None, pixel_size=None,
                  method='sklearn', 
                  n_hist_bins=2000, n_pdf_points=200, 
-                 shear_factor=0.0, search_cdf_min=0.95,
+                 search_cdf_min=0.95,
                  logx_min=None, logy_min=None, logx_max=None, logy_max=None,
                  order='C',
                  cl_src_path=None, cl_platform=None, cl_device=None,
@@ -41,13 +40,6 @@ class Univariate_distribution():
             logy_min = logy_array[logy_array>np.finfo(np.float32).min].min()
         if logy_max is None:
             logy_max = logy_array[logy_array>np.finfo(np.float32).min].max()      
-        # Transform the x values to shear the pdf and detrend
-        # The shear acts parallel to the x axis, in contrast to the behavior
-        # in the joint pdf method, otherwise it would have no effect on this marginal.
-        if shear_factor!=0.0:
-            logx_array -= logy_array*shear_factor
-            logx_min -= logy_min*shear_factor
-            logx_max -= logy_max*shear_factor
         self.logx_data = logx_array[  (logx_array>=logx_min) & (logx_array<=logx_max)
                                     & (logy_array>=logy_min) & (logy_array<=logy_max)  ]
         self.logx_data = self.logx_data.reshape((self.logx_data.shape[0],1))
@@ -282,7 +274,7 @@ class Bivariate_distribution():
     and bounding criteria.
     """
     def __init__(self, logx_array=None,logy_array=None, mask_array=None,
-                 method='sklearn', n_hist_bins=2000, n_pdf_points=200, shear_factor=0.0, 
+                 method='sklearn', n_hist_bins=2000, n_pdf_points=200, 
                  logx_min=None, logy_min=None, logx_max=None, logy_max=None,
                  pixel_size=None, verbose=False):
         self.logx_array = logx_array
@@ -295,11 +287,6 @@ class Bivariate_distribution():
             logy_min = logy_array[logy_array>np.finfo(np.float32).min].min()
         if logy_max is None:
             logy_max = logy_array[logy_array>np.finfo(np.float32).min].max()
-        # Transform the y values to shear the pdf and detrend
-        if shear_factor!=0.0:
-            logy_array -= logx_array*shear_factor
-            logy_min -= logx_min*shear_factor
-            logy_max -= logx_max*shear_factor
         if mask_array is not None:
             self.logxy_data = np.vstack([
                 logx_array[  (logx_array>=logx_min) & (logx_array<=logx_max) 
@@ -502,7 +489,7 @@ class Analysis(Core):
 
         self.print('**Analysis end**\n')  
       
-    def compute_marginal_distribn(self, x_array,y_array,mask_array=None,shear_factor=0.0,
+    def compute_marginal_distribn(self, x_array,y_array,mask_array=None,
                                   up_down_idx_x=0, up_down_idx_y=0, 
                                   n_hist_bins=None, n_pdf_points=None, 
                                   kernel=None, bandwidth=None, method=None,
@@ -531,7 +518,6 @@ class Analysis(Core):
                                             method=method, 
                                             n_hist_bins=n_hist_bins,
                                             n_pdf_points=n_pdf_points,
-                                            shear_factor=shear_factor, 
                                             logx_min=logx_min, logy_min=logy_min, 
                                             logx_max=logx_max, logy_max=logy_max,
                                             pixel_size = self.geodata.roi_pixel_size,
@@ -570,8 +556,7 @@ class Analysis(Core):
                                              up_down_idx_x=up_down_idx_x,
                                              up_down_idx_y=up_down_idx_y,
                                              logx_min=logx_min,logy_min=logy_min, 
-                                             logx_max=logx_max,logy_max=logy_max,
-                                             shear_factor=0.0)
+                                             logx_max=logx_max,logy_max=logy_max)
         self.print('...done')            
         
     def compute_marginal_distribn_usla(self):
@@ -590,8 +575,7 @@ class Analysis(Core):
                                              up_down_idx_x=up_down_idx_x,
                                              up_down_idx_y=up_down_idx_y,
                                              logx_min=logx_min,logy_min=logy_min, 
-                                             logx_max=logx_max,logy_max=logy_max,
-                                             shear_factor=0.0)
+                                             logx_max=logx_max,logy_max=logy_max)
         self.print('...done')            
         
     def compute_marginal_distribn_dslt(self):
@@ -610,8 +594,7 @@ class Analysis(Core):
                                              up_down_idx_x=up_down_idx_x,
                                              up_down_idx_y=up_down_idx_y,
                                              logx_min=logx_min,logy_min=logy_min, 
-                                             logx_max=logx_max,logy_max=logy_max,
-                                             shear_factor=0.0)
+                                             logx_max=logx_max,logy_max=logy_max)
         self.print('...done')            
         
     def compute_marginal_distribn_uslt(self):
@@ -630,8 +613,7 @@ class Analysis(Core):
                                              up_down_idx_x=up_down_idx_x,
                                              up_down_idx_y=up_down_idx_y,
                                              logx_min=logx_min,logy_min=logy_min, 
-                                             logx_max=logx_max,logy_max=logy_max,
-                                             shear_factor=0.0)
+                                             logx_max=logx_max,logy_max=logy_max)
         self.print('...done')            
 
     def compute_marginal_distribn_dslc(self):
@@ -650,8 +632,7 @@ class Analysis(Core):
                                              up_down_idx_x=up_down_idx_x,
                                              up_down_idx_y=up_down_idx_y,
                                              logx_min=logx_min,logy_min=logy_min, 
-                                             logx_max=logx_max,logy_max=logy_max,
-                                             shear_factor=0.0)
+                                             logx_max=logx_max,logy_max=logy_max)
         self.print('...done')            
         
     def compute_marginal_distribn_uslc(self):
@@ -670,12 +651,11 @@ class Analysis(Core):
                                              up_down_idx_x=up_down_idx_x,
                                              up_down_idx_y=up_down_idx_y,
                                              logx_min=logx_min,logy_min=logy_min, 
-                                             logx_max=logx_max,logy_max=logy_max,
-                                             shear_factor=0.0)
+                                             logx_max=logx_max,logy_max=logy_max)
         self.print('...done')            
 
 
-    def compute_joint_distribn(self, x_array,y_array, mask_array=None, shear_factor=0.0,
+    def compute_joint_distribn(self, x_array,y_array, mask_array=None,
                                up_down_idx_x=0, up_down_idx_y=0, 
                                n_hist_bins=None, n_pdf_points=None, 
                                thresholding_marginal_distbn=None,
@@ -711,7 +691,6 @@ class Analysis(Core):
                                             method=method, 
                                             n_hist_bins=n_hist_bins,
                                             n_pdf_points=n_pdf_points,
-                                            shear_factor=shear_factor, 
                                             logx_min=logx_min, logy_min=logy_min, 
                                             logx_max=logx_max, logy_max=logy_max,
                                             pixel_size = self.geodata.roi_pixel_size,
@@ -767,7 +746,6 @@ class Analysis(Core):
         x_array,y_array = self.trace.sla_array,self.trace.slt_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 0,0
-        shear_factor = self.joint_distbn_y_shear_factor
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
                                      'pdf_slt_min','pdf_slt_max'])
@@ -786,7 +764,6 @@ class Analysis(Core):
                                           up_down_idx_y=up_down_idx_y,
                                           logx_min=logx_min,logy_min=logy_min, 
                                           logx_max=logx_max,logy_max=logy_max,
-                                          shear_factor=shear_factor,
                                           upstream_modal_length=upstream_modal_length,
                                           verbose=self.state.verbose)
         self.print('...done')
@@ -799,7 +776,6 @@ class Analysis(Core):
         x_array,y_array = self.trace.sla_array,self.trace.slt_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 1,1
-        shear_factor = self.joint_distbn_y_shear_factor
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
                                      'pdf_slt_min','pdf_slt_max'])
@@ -809,7 +785,6 @@ class Analysis(Core):
                                             up_down_idx_y=up_down_idx_y,
                                             logx_min=logx_min,logy_min=logy_min, 
                                             logx_max=logx_max,logy_max=logy_max,
-                                            shear_factor=shear_factor,
                                             verbose=self.state.verbose)
         self.print('...done')
 
@@ -840,7 +815,6 @@ class Analysis(Core):
         x_array,y_array = self.trace.sla_array,self.trace.slc_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 0,0
-        shear_factor = self.joint_distbn_y_shear_factor
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
                                      'pdf_slc_min','pdf_slc_max'])
@@ -859,7 +833,6 @@ class Analysis(Core):
                                           up_down_idx_y=up_down_idx_y,
                                           logx_min=logx_min,logy_min=logy_min, 
                                           logx_max=logx_max,logy_max=logy_max,
-                                          shear_factor=shear_factor,
                                           upstream_modal_length=upstream_modal_length,
                                           verbose=self.state.verbose)
         self.print('...done')
@@ -872,7 +845,6 @@ class Analysis(Core):
         x_array,y_array = self.trace.sla_array,self.trace.slc_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 1,1
-        shear_factor = self.joint_distbn_y_shear_factor
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
                                      'pdf_slc_min','pdf_slc_max'])
@@ -882,7 +854,6 @@ class Analysis(Core):
                                             up_down_idx_y=up_down_idx_y,
                                             logx_min=logx_min,logy_min=logy_min, 
                                             logx_max=logx_max,logy_max=logy_max,
-                                            shear_factor=shear_factor,
                                             verbose=self.state.verbose)
         self.print('...done')
 
