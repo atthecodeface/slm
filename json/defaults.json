@@ -82,11 +82,14 @@
         "do_marginal_distbn_uslt":   false,
         "do_marginal_distbn_dslc":   false,
         "do_marginal_distbn_uslc":   false,
+        
+		"n_hist_bins" : 2000,
+		"n_pdf_points" : 200,
+		
 		"marginal_distbn_kde_method": "sklearn",
 		"marginal_distbn_kde_kernel": "gaussian",
 		"marginal_distbn_kde_bw_method" : "scott",
 		"marginal_distbn_kde_bandwidth" : 0.2,
-		"marginal_distbn_kde_nx_samples" : 200,
 		"search_cdf_min" : 0.95,
 		
 		"pdf_slt_min": 0.5,
@@ -101,7 +104,6 @@
 		"joint_distbn_kde_kernel": "epanechnikov",
 		"joint_distbn_kde_bw_method" : "scott",
 		"joint_distbn_kde_bandwidth" : 0.4,
-		"joint_distbn_kde_nxy_samples" : 200,
 		"joint_distbn_y_shear_factor": 0.0,
         "joint_distbn_mode_threshold_list" : [0.9, 0.00001],
         "joint_distbn_mode2_tilt" : 3,

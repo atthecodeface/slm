@@ -52,6 +52,7 @@
 	},
 
 	"analysis": {
+		"marginal_distbn_kde_method": "opencl",
         "do_marginal_distbn_dsla":   true,
         "do_marginal_distbn_usla":   true,
         "do_marginal_distbn_dslt":   true,
