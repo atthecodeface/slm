@@ -1,5 +1,6 @@
 module Json = Yojson.Basic
 open Globals
+module Option = Batteries.Option
 
 (*a Properties module *)
 (*m Properties *)
@@ -72,18 +73,20 @@ struct
       | Some s -> s
       | _ -> raise (Bad_property (sfmt "Expected string of property %s.%s" t.workflow_name member_name))
 
-    let bool_of t ?default member_name =
+    let bool_of t ?override ?default member_name =
       rebuild t;
-      match (
+      if Option.is_some override then (Option.get override) else (
         match (
-          try Json.Util.(to_bool_option (member member_name t.json)) with
-          | _ -> None
+          match (
+            try Json.Util.(to_bool_option (member member_name t.json)) with
+            | _ -> None
+          ) with
+          | None -> default
+          | x -> x
         ) with
-        | None -> default
-        | x -> x
-      ) with
-      | Some s -> s
-      | _ -> raise (Bad_property (sfmt "Expected bool of property %s.%s" t.workflow_name member_name))
+        | Some s -> s
+        | _ -> raise (Bad_property (sfmt "Expected bool of property %s.%s" t.workflow_name member_name))
+      )
 
     let float_of t ?default member_name =
       rebuild t;
@@ -183,21 +186,80 @@ let int_list_of     = Workflow.int_list_of
 let float_list_of   = Workflow.float_list_of
 let pretty_print    = Workflow.pretty_print
 
-(*a Properties for workflows *)
-(*v Exceptions *)
-exception Geodata of string
-
-(*t t_prop_verbosity *)
-type t_prop_verbosity = 
+(*a Verbosity *)
+(*t t_verbosity *)
+type t_verbosity = 
   | PV_Quiet
   | PV_Info
   | PV_Verbose
   | PV_Noisy
   | PV_Debug
 
+(*f [pv_level verbosity] *)
+let pv_level verbosity =
+  match verbosity with
+  | PV_Quiet   -> 0
+  | PV_Info    -> 1
+  | PV_Verbose -> 2
+  | PV_Noisy   -> 3
+  | PV_Debug   -> 4
+
+(*f [pv_of_int n] *)
+let pv_of_int n =
+  match n with
+  | 0 -> PV_Quiet
+  | 1 -> PV_Info
+  | 2 -> PV_Verbose
+  | 3 -> PV_Noisy
+  | _ -> PV_Debug
+
+(*f pv_str *)
+let pv_str verbosity =
+  match verbosity with
+  | PV_Quiet   -> "quiet"
+  | PV_Info    -> "info"
+  | PV_Verbose -> "verbose"
+  | PV_Noisy   -> "noisy"
+  | PV_Debug   -> "debug"
+
+(*f [pv_if verbosity level f] *)
+let pv_if verbosity level f = if ((pv_level verbosity) >= (pv_level level)) then (f ())
+
+(*f [pv_info pv] *)
+let pv_info pv = pv_if pv PV_Info
+
+(*f [pv_verbose pv f] *)
+let pv_verbose pv = pv_if pv PV_Verbose
+
+(*f [pv_noisy pv f] *)
+let pv_noisy pv = pv_if pv PV_Noisy
+
+(*f [pv_debug pv f] *)
+let pv_debug pv = pv_if pv PV_Debug
+
+(*a Properties for workflows *)
+(*v Exceptions *)
+exception Geodata of string
+
+(*t t_cmdline_overrides *)
+type t_cmdline_overrides = {
+    verbosity : t_verbosity;
+    do_reload_state :    bool option;
+    do_geodata :         bool option;
+    do_preprocess :      bool option;
+    do_condition :       bool option;
+    do_trace :           bool option;
+(*    do_postprocess :     bool option;*)
+    do_analysis :        bool option;
+    do_mapping :         bool option;
+    do_plot :            bool option;
+    do_save_state :      bool option;
+    do_export :          bool option;
+  }
+
 (*t t_props_state *)
 type t_props_state = {
-    verbosity :          t_prop_verbosity;
+    verbosity :          t_verbosity;
     verbose :            bool;
     debug :              bool;
     noisy :              bool;
@@ -225,7 +287,7 @@ type t_props_pocl = {
     cl_platform :        int;
     cl_device :          int;
     gpu_memory_limit_pc: float;
-    verbosity :          t_prop_verbosity;
+    verbosity :          t_verbosity;
   }
 
 (*t t_props_geodata *)
@@ -241,7 +303,7 @@ type t_props_geodata = {
     basins : int list;
     basins_file : string;
     do_basin_masking : bool;
-    verbosity :          t_prop_verbosity;
+    verbosity :          t_verbosity;
   }
 
 (*t t_props_preprocess *)
@@ -251,7 +313,7 @@ type t_props_preprocess = {
     vecsum_threshold : float;
     divergence_threshold : float;
     curl_threshold : float;
-    verbosity :          t_prop_verbosity;
+    verbosity :          t_verbosity;
   }
 
 (*t t_props_trace *)
@@ -270,7 +332,7 @@ type t_props_trace = {
     interchannel_max_n_steps     : int;   (* info_struct *)
     segmentation_threshold       : int;   (* info_struct *)
     left_flank_addition          : int32; (* info_struct *)
-    verbosity :          t_prop_verbosity;
+    verbosity :          t_verbosity;
   }
 
 (*t t_props_analysis *)
@@ -305,7 +367,7 @@ type t_props_analysis = {
     (* joint_distbn_mode_threshold_list :                     bool;*)
     joint_distbn_mode2_tilt :                     float; (* unused *)
     joint_distbn_mode2_nearness_factor :          float;
-    verbosity :          t_prop_verbosity;
+    verbosity :          t_verbosity;
   }
 
 (*t t_props_plot *)
@@ -407,7 +469,7 @@ type t_props_plot = {
     marginal_distbn_viz_scale :                    float;
     joint_distbn_viz_tilt :                    float;
     joint_distbn_viz_scale :                    float;
-    verbosity :          t_prop_verbosity;
+    verbosity :          t_verbosity;
   }
 
 (*t t_props *)
@@ -420,39 +482,6 @@ type t_props = {
     analysis   : t_props_analysis;
     plot       : t_props_plot;
   }
-
-(*f [pv_level verbosity] *)
-let pv_level verbosity =
-  match verbosity with
-  | PV_Quiet   -> 0
-  | PV_Info    -> 1
-  | PV_Verbose -> 2
-  | PV_Noisy   -> 3
-  | PV_Debug   -> 4
-
-(*f pv_str *)
-let pv_str verbosity =
-  match verbosity with
-  | PV_Quiet   -> "quiet"
-  | PV_Info    -> "info"
-  | PV_Verbose -> "verbose"
-  | PV_Noisy   -> "noisy"
-  | PV_Debug   -> "debug"
-
-(*f [pv_if verbosity level f] *)
-let pv_if verbosity level f = if ((pv_level verbosity) >= (pv_level level)) then (f ())
-
-(*f [pv_info pv] *)
-let pv_info pv = pv_if pv PV_Info
-
-(*f [pv_verbose pv f] *)
-let pv_verbose pv = pv_if pv PV_Verbose
-
-(*f [pv_noisy pv f] *)
-let pv_noisy pv = pv_if pv PV_Noisy
-
-(*f [pv_debug pv f] *)
-let pv_debug pv = pv_if pv PV_Debug
 
 (*f [get_verbosity] ?verbose ?debug ?noisy verbosity - get verbosity level (only making it more verbose) *)
 let get_verbosity ?verbose:(v=false) ?debug:(d=false) ?noisy:(n=false) verbosity =
@@ -474,7 +503,7 @@ let verbosity_from_properties properties verbosity =
   get_verbosity ~verbose:verbose ~noisy:noisy ~debug:debug verbosity
 
 (*f [read_state properties] - globals really *)
-let read_state properties =
+let read_state properties (cmdline_overrides:t_cmdline_overrides) =
   let properties =          Workflow.create properties "state" in
   let verbose =             Workflow.bool_of  properties ~default:true "verbose" in
   let debug =               Workflow.bool_of  properties ~default:true "debug" in
@@ -483,20 +512,22 @@ let read_state properties =
   let cl_device =           Workflow.int_of  properties ~default:0 "cl_device" in
   let gpu_memory_limit_pc = Workflow.float_of  properties ~default:50. "gpu_memory_limit_pc" in
   let array_order                  = Workflow.str_of      properties ~default:"C"  "array_order" in
-  let do_geodata =          Workflow.bool_of  properties ~default:true "do_geodata" in
-  let do_preprocess =       Workflow.bool_of  properties ~default:true "do_preprocess" in
-  let do_condition =        Workflow.bool_of  properties ~default:true "do_condition" in
-  let do_trace =            Workflow.bool_of  properties ~default:true "do_trace" in
-  let do_postprocess =      Workflow.bool_of  properties ~default:true "do_postprocess" in
-  let do_analysis =         Workflow.bool_of  properties ~default:true "do_analysis" in
-  let do_mapping =          Workflow.bool_of  properties ~default:true "do_mapping" in
-  let do_plot =             Workflow.bool_of  properties ~default:true "do_plot" in
-  let do_save_state =       Workflow.bool_of  properties ~default:true "do_save_state" in
-  let do_export =           Workflow.bool_of  properties ~default:true "do_export" in
   let do_rw_savez =         Workflow.bool_of  properties ~default:true "do_rw_savez" in
-  let do_rw_hdf5 =          Workflow.bool_of  properties ~default:true "do_rw_savez" in
-  let do_reload_state =     Workflow.bool_of  properties ~default:true "do_rw_savez" in
+  let do_rw_hdf5 =          Workflow.bool_of  properties ~default:true "do_rw_hdf5" in
+
+  let do_reload_state =     Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_reload_state  "do_reload_state" in
+  let do_geodata =          Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_geodata       "do_geodata" in
+  let do_preprocess =       Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_preprocess    "do_preprocess" in
+  let do_condition =        Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_condition     "do_condition" in
+  let do_trace =            Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_trace         "do_trace" in
+  let do_postprocess =      Workflow.bool_of  properties ~default:true (*?override:cmdline_overrides.do_postprocess*)   "do_postprocess" in
+  let do_analysis =         Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_analysis      "do_analysis" in
+  let do_mapping =          Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_mapping       "do_mapping" in
+  let do_plot =             Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_plot          "do_plot" in
+  let do_save_state =       Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_save_state    "do_save_state" in
+  let do_export =           Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_export        "do_export" in
   let verbosity =           verbosity_from_properties properties PV_Info in
+
   let props = {
       verbosity;
       verbose;
@@ -905,11 +936,11 @@ let show_properties t =
   Workflow.pretty_print t
 
 (*a Toplevel *)
-let read_properties file_path_list =
+let read_properties file_path_list cmdline_overrides =
   let props = Properties.create () in
   List.iter (fun (path,filename) -> Properties.read_json props path filename) file_path_list;
   (*G.show_properties t;*)
-  let (state, verbosity) = read_state props in
+  let (state, verbosity) = read_state props cmdline_overrides in
   let pocl       = read_pocl       verbosity props in
   let geodata    = read_geodata    verbosity props in
   let preprocess = read_preprocess verbosity props in

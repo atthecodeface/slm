@@ -1,4 +1,4 @@
-(*
+(** Documentation goes here?
 DYLD_LIBRARY_PATH=/Users/gavinprivate/.opam/system/lib/stubslibs/ utop
 #require "owl_top";;
 
@@ -74,15 +74,90 @@ kernels to be compiled and invoked.
  *)
 open Globals
 open Core
-module ODM = Owl.Dense.Matrix.Generic
-module ODN = Owl.Dense.Ndarray.Generic
 
-let go root_dir json_dir =
+let set_root = Globals.set_root
+(** [parse_arguments _]
+
+    Parse the command line arguments using :mod:`argparse`.
+    The arguments are assumed to be passed via `_sys.argv[1:]`.
+
+    Return:
+        :obj:`argparse.Namespace`:  parsed command line arguments
+**)
+let str2bool s =
+  let s=String.lowercase_ascii s in 
+  if (s="yes") || (s="y") || (s="t") || (s="true") || s="1" then true
+  else if (s="no") || (s="n") || (s="f") || (s="false") || s="0" then false
+  else raise (Arg.Bad "Boolean cmd line argument expected")
+
+let verbosity_of_string s = 
+  match int_of_string_opt s with
+  | Some value -> value
+  | None -> if str2bool s then 1 else 0
+
+let parse_arguments _ =
+  let executable = Filename.basename Sys.executable_name in
+  let my_usage = Printf.sprintf "Usage: %s [OPTION]\nPlots something\nOptions:" executable in
+  let verbosity = ref Properties.PV_Quiet in
+  let filename = ref "" in
+  let set_verbose s = verbosity := Properties.pv_of_int (verbosity_of_string s) in
+  let bool_param x = Arg.String (fun s -> x := Some (str2bool s)) in
+  let do_reload_state = ref None in
+  let do_geodata = ref None in
+  let do_preprocess = ref None in
+  let do_condition = ref None in
+  let do_trace = ref None in
+  let do_analysis = ref None in
+  let do_mapping = ref None in
+  let do_plot = ref None in
+  let do_save_state = ref None in
+  let do_export = ref None in
+  let open Arg in
+  let options =
+    [ ("--verbose", String set_verbose, "verbose mode");
+      ("-v",        String set_verbose, "verbose mode");
+      ("--file",    Set_string filename, "import parameters file");
+      ("-f",        Set_string filename, "import parameters file");
+      ("-r",        (bool_param do_reload_state), "reload previous runtime state from files");
+      ("-g",        (bool_param do_geodata),      "read geodata files (DTM, basins)");
+      ("-e",        (bool_param do_preprocess),   "perform preprocessing (optionally do conditioning; compute gradients)");
+      ("-c",        (bool_param do_condition),    "condition DTRM for best tracing (fix loops and blockages)");
+      ("-t",        (bool_param do_trace),        "perform streamline tracing");
+      ("-a",        (bool_param do_analysis),     "analyze streamline patterns, distributions");
+      ("-m",        (bool_param do_mapping),      "map channels, midlines");
+      ("-p",        (bool_param do_plot),         "carry out all plotting set in parameters files");
+      ("-s",        (bool_param do_save_state),   "save runtime state to files at completion");
+      ("-x",        (bool_param do_export),       "export figures to files");
+    ]
+  in
+  let anon _ = raise (Arg.Bad "no arguments are supported") in
+  parse (align options) anon my_usage;
+  if !filename = "" then raise (Arg.Bad "parameters filename MUST be supplied (with -f for example)");
+  let cmdline_overrides : Properties.t_cmdline_overrides = {
+    verbosity = !verbosity;
+    do_reload_state = !do_reload_state;
+    do_geodata      = !do_geodata;
+    do_preprocess   = !do_preprocess;
+    do_condition    = !do_condition;
+    do_trace        = !do_trace;
+    do_analysis     = !do_analysis;
+    do_mapping      = !do_mapping;
+    do_plot         = !do_plot;
+    do_save_state   = !do_save_state;
+    do_export       = !do_export;
+    }
+  in
+  (!filename, cmdline_overrides)
+
+(** process
+
+    do stuff
+**)
+let process json_dir parameters_filename cmdline_overrides =
   (* Create workflow objects and fill out properties *)
-  set_root root_dir;
   let props = Properties.read_properties [ ([json_dir], "defaults.json");
-                                           ([json_dir], "GuadalupeDemo1.json");
-                ] in
+                                           ([json_dir], parameters_filename);
+                ] cmdline_overrides in
   let data        = Core.create props in
   let pocl        = Pocl.create props in
   let geodata     = Geodata.create props in

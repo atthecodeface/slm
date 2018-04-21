@@ -94,7 +94,7 @@ ocaml_help_jupyter:
 .PHONY: ocaml_run
 ocaml_run:
 	jbuilder build ${OCAML_BUILD_LOCAL}/run_me/run_me.exe
-	${OCAML_PATH} SLMDATA=${SLMDATA} ${OCAML_BUILD}/run_me/run_me.exe
+	${OCAML_PATH} SLMDATA=${SLMDATA} ${OCAML_BUILD}/run_me/run_me.exe -f GuadalupeDemo1.json -a 1 -m 1
 
 .PHONY:ocaml_doc
 ocaml_doc:
