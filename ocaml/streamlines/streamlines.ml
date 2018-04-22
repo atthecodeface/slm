@@ -20,31 +20,20 @@
 
 The code is structured as follows:
 
-{[
- Globals
-    |
-Properties
-    |
-  Core
-    |
-    +------------+-----------+
-    |            |           |
-  Pocl      Preprocess    Geodata
-    |            |           |
-    |            +-----------+
-    |                        |               
-    |                        |               
-    +------------+           |               
-    |            |           |               
-Integration   CountLink      |
-    |                        |               
- Trace                       |
-    +------------------------+
-    |
-   Plot  
-    |
-Streamlines
-]}
+{ol
+{- Basic infrastructure (dependent in this order):
+
+{!module:Globals}; {!module:Properties};  {!module:Core}; {!module:Pocl}}
+{- Workflows (independent of each other, dependent on basic infrastructure)
+{ul
+{- {!module:Geodata}}
+{- {!module:Preprocess}}
+{- {!module:Integration}; {!module:Trace};}
+{- {!module:Plot}}
+}
+}
+{- {!module:Streamlines} dependent on all the other modules}
+}
 
 The main data structure for the global vectors and ROI DTM are held in the 'Core' data structure.
 This also keeps the properties tree, which is read and filled in by 'Properties'.
@@ -75,8 +64,6 @@ div.def table { margin-left: 6ex; }
 to document
 
 geodata
-trace
-integration
 plot
 
 DYLD_LIBRARY_PATH=/Users/gavinprivate/.opam/system/lib/stubslibs/ utop
@@ -97,7 +84,6 @@ LD_LIBRARY_PATH=/Users/gavinprivate/Git/brew/lib ocaml
 To do
 
 Use h_min in geodata
-Create masked ROI array with correct padding on mask
 
 
 analysis.py
@@ -248,7 +234,7 @@ let process json_dir parameters_filename cmdline_overrides =
   let plot        = Plot.create props in
 
   (* Load the data from file *)
-  let _ = Geodata.load geodata data in
+  let _ = Geodata.process geodata data in
 
   (* Preprocess the data - create vector fields u/v and tidy so that it drains properly *)
   Preprocess.process preprocess data;

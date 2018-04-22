@@ -508,11 +508,11 @@ let prepare_cl_context_queue t =
   );
   pv_verbose t (fun _ -> show_device pai dai device);
   let ctxt = Context.create [|device|] in
-  let queue   = make_queue t in
-  pv_verbose t (fun _ -> show_context ctxt);
   t.platform <- Some platform;
   t.device <- Some device;
   t.context <- Some ctxt;
+  let queue   = make_queue t in
+  pv_verbose t (fun _ -> show_context ctxt);
   t.queue <- Some queue;
   ()
 

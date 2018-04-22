@@ -105,22 +105,53 @@ let geodata_dummy = {
     roi_dy                 = 0. ;
   }
 
-(** {1 Useful functions}
+(** {1 pv_verbosity functions} *)
+
+(**  [pv_noisy t]
+
+  Shortcut to use {!type:Geodata.t_data} verbosity for {!val:Properties.pv_noisy}
 
  *)
+let pv_noisy   t = Workflow.pv_noisy t.props.workflow
 
-let pv_noisy   t = Workflow.pv_noisy   t.props.workflow
-let pv_debug   t = Workflow.pv_debug   t.props.workflow
-let pv_info    t = Workflow.pv_info    t.props.workflow
+(**  [pv_debug t]
+
+  Shortcut to use {!type:Geodata.t_data} verbosity for {!val:Properties.pv_debug}
+
+ *)
+let pv_debug   t = Workflow.pv_noisy t.props.workflow
+
+(**  [pv_info t]
+
+  Shortcut to use {!type:Geodata.t_data} verbosity for {!val:Properties.pv_info}
+
+ *)
+let pv_info    t = Workflow.pv_info t.props.workflow
+
+(**  [pv_verbose t]
+
+  Shortcut to use {!type:Geodata.t_data} verbosity for {!val:Properties.pv_verbose}
+
+ *)
 let pv_verbose t = Workflow.pv_verbose t.props.workflow
 
 (** {1 Geotiff submodule} *)
-(*m Geotiff module *)
+
 module Geotiff =
 struct
-    exception Geotiff of string
 
-  (*f [read_header filename] reads a Geotiff file header and prepares for reading data from bands *)
+  (** [Geotiff of string] exception
+
+    Raised if the Geotiff file is not supported, with a reason string
+
+  *)
+  exception Geotiff of string
+
+  (**  [read_header filename]
+
+    Reads a Geotiff file header and prepares for reading data from bands
+
+  *)
   let read_header filename =
     let ds        = Gdal.Data_set.of_source_exn filename in
     let num_bands = Gdal.Data_set.get_count ds in
@@ -147,7 +178,11 @@ struct
       rot_y;
     }
 
-  (*f show_data_band_type geo n *)
+  (**  [show_data_band_type geo n]
+
+    Print the data band type for debug
+
+  *)
   let show_data_band_type geo n =
     match Gdal.Data_set.get_band_data_type geo.ds n with
     | `byte -> Printf.printf "byte\n";
@@ -159,7 +194,11 @@ struct
     | `float64 -> Printf.printf "float64\n";
     | _ -> Printf.printf "**Unhandled******************************************************************************\n"
 
-  (*f [read_data_band geo data n] - read the data band n *)
+  (**  [read_data_band geo data n]
+
+   Read the data band n for DTM data
+
+   *)
   let read_data_band geo data n =
     let data_band = Gdal.Data_set.get_band geo.ds n Gdal.Band.Data.Float32 in
     (*
@@ -170,7 +209,11 @@ struct
     Gdal.Band.iter_read data_band (fun x y v -> ODM.set data.dtm_array x y  (if v=no_data_value then nan else v););
     ODN.(copy_to (flip ~axis:1 data.dtm_array) data.dtm_array)
 
-  (*f [map_data_band geo n band_type f] - read the data band n *)
+  (**  [map_data_band geo n band_type f]
+
+     Read the data band n for masked data (Uint16)
+
+  *)
   let map_data_band geo n band_type f =
     let data_band = Gdal.Data_set.get_band geo.ds n band_type in
     (*
@@ -179,14 +222,24 @@ struct
      *)
     Gdal.Band.iter_read data_band f
 
-  (*f [str ?indent t] returns a human-readable string of the t_geotiff structure *)
+  (**  [str ?indent t]
+
+    Return a string of the Geotiff structure using the specified indent
+
+    @return a human-readable string
+
+   *)
   let str ?indent:(indent="  ") t =
     let r = sfmt "Geotiff '%s'\n" t.gtf_filename in
     let r = r ^ (sfmt "%s%d x %d samples from %f,%f with size %g,%g\n" indent t.width t.height t.orig_x t.orig_y t.pixsz_x t.pixsz_y) in
     let r = r ^ (sfmt "%susing %d bands\n" indent t.num_bands) in
     r
 
-  (*f [check_supported t] checks that the Geotiff file is supported by the code *)
+  (**  [check_supported t]
+
+     Checks that the Geotiff file is supported by the code
+
+   *)
   let check_supported t =
     if (t.num_bands!=1) then
       raise (Geotiff (sfmt "Only a single band in GeoTiff is supoprted in '%s'" t.gtf_filename));
@@ -194,14 +247,27 @@ struct
       raise (Geotiff (sfmt "Pixel x=%g and y=%g dimensions not equal in '%s': cannot handle non-square pixels" t.pixsz_x t.pixsz_y t.gtf_filename));
     ()
 
-  (*f All done *)
+  (*f  All done *)
 
 end
 
 (** {1 Top level Geodata module functions}
   *)
+
+(**  [Geodata of string] exception
+
+  Raised if the ROI is out of bounds
+
+ *)
 exception Geodata of string
-(*f [update_properties t geo] Update the properties based on the Geotiff file *)
+
+(**  [update_properties t geo]
+
+  Update the properties based on the Geotiff file
+
+  Raise an exception if the ROI is not sensible
+
+ *)
 let update_properties t geo =
   if t.props.roi_x_bounds.(0)=min_int then t.props.roi_x_bounds.(0)<-0;
   if t.props.roi_x_bounds.(1)=min_int then t.props.roi_x_bounds.(1)<-geo.width;
@@ -217,7 +283,13 @@ let update_properties t geo =
   pv_verbose t (fun _ -> Printf.printf "ROI size %d,%d\n" t.props.roi_x_bounds.(0)  t.props.roi_x_bounds.(1));
   ()
 
-(*f [fill_data t geo ] Fill out the data based on the Geotiff file header *)
+(**  [fill_data t data geo ]
+
+  Fill out the Core data and t_data structures based on the Geotiff file header.
+
+  This does not load the DTM data nor fill our the ROI data
+
+ *)
 let fill_data t data geo =
   Core.set_roi data [|t.props.roi_x_bounds.(0); t.props.roi_y_bounds.(0);
                       t.props.roi_x_bounds.(1); t.props.roi_y_bounds.(1)|];
@@ -253,7 +325,14 @@ let fill_data t data geo =
   in
   t.g <- geodata
 
-(*f [read_dtm_file t] read a DTM file - creates data and geodata *)
+(**  [read_dtm_file t]
+
+  Read a DTM file - fills out the data and geodata based on the header
+  of the file, then reads the DTM data and copies the ROI array.
+
+  @return geotiff file, in case that is useful for higher levels
+
+ *)
 let read_dtm_file t data = 
   let filename = t.props.filename in
   let geotiff = Geotiff.read_header filename in
@@ -267,7 +346,11 @@ let read_dtm_file t data =
   ODN.copy_area_to t.g.dtm_array src_area data.roi_array dst_area;
   geotiff
 
-(*f [read_basin t data] *)
+(**  [read_basin t data]
+
+  Read the basin masking file, fleshing out the data basin masks
+
+ *)
 let read_basin t data =
   let filename = filename_from_path t.props.dtm_path t.props.basins_file in
   let geo = Geotiff.read_header filename in
@@ -284,7 +367,13 @@ let read_basin t data =
   ODM.copy_to basin_array data.basin_fatmask_array;
   ()
 
-(*f [pad_basins ~clear t data] Pads and clears the basin masks if required *)
+(**  [pad_basins ~clear t data]
+
+  Pads and clears the basin masks as required
+
+  Also masks out any DTM data that is NaN in the ROI array
+
+ *)
 let pad_basins ~clear t data =
   if clear then (
     ODN.fill data.basin_mask_array    '\000'; (* Use it all *)
@@ -298,7 +387,11 @@ let pad_basins ~clear t data =
   ODN.iteri mask_if_nan data.roi_array;
   ()
 
-(*f [display t] *)
+(**  [display t]
+
+  Display the t_data structure for verbose operation
+
+ *)
 let display t data geotiff =
     Printf.printf "**Geodata begin**\n";
     Printf.printf "Reading DTM from GeoTIFF file \"%s\"\n" geotiff.gtf_filename;
@@ -335,8 +428,19 @@ let display t data geotiff =
     Printf.printf "**Geodata end**\n";
     ()
 
-(*f [load t] - load a DTM file as a Geodata.t given basic properties *)
-let load t data =
+(**  [process t]
+
+  Run the Geodata workflow - loading the Geodata file and generating
+  masks, filling out the core data, and so on.
+
+  Load the required DTM file as a Geodata.t given basic properties
+
+  Read basin mask file if required
+
+  Pad masks as necessary
+
+ *)
+let process t data =
     Workflow.workflow_start t.props.workflow;
     let geotiff = read_dtm_file t data in
     if t.props.do_basin_masking then (
@@ -349,7 +453,11 @@ let load t data =
     pv_verbose t (fun _ -> display t data geotiff);
     (data, geotiff)
 
-(*f [create props] - initialize the library *)
+(**  [create props]
+
+  Create the t_data structure, and initialize the Gdal library
+
+ *)
 let create props =
     Gdal.Lib.init_dynamic ~lib:"libgdal.dylib" ();
     Gdal.Lib.register_all ();
