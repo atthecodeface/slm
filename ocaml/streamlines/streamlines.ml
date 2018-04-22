@@ -74,7 +74,6 @@ div.def table { margin-left: 6ex; }
 
 to document
 
-pocl
 preprocess
 trace
 integration

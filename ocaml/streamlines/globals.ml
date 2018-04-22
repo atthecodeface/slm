@@ -250,6 +250,32 @@ let ba_foldi f a ba =
   done;
   !b
 
+(**  [ba_fold2d f acc ba]
+
+  Fold a function over the 2D big array
+
+    @param f the function to apply to x, y, {!val acc} and the big array element to produce a new accumulator
+
+    @param acc the base accumulator to use for the first invocation of f
+
+    @param ba the big array to fold over
+
+    @return f applied to acc and every element of ba
+
+  The order of the elements of {!val:ba} that f is applied to is not
+  specified; in some implementations f may be applied in parallel to
+  many elements (with some {!val:acc}); the final result, though, is
+  the application of f to every element of ba exactly once.
+
+ *)
+let ba_fold2d f acc src =
+  let acc_r = ref acc in
+  let f_acc x y v =
+    acc_r := f x y (!acc_r) v
+  in
+  ODM.iteri_2d f_acc src;
+  !acc_r
+
 (**  [filtered_array f ba] - may well be used by analysis in the future *)
 let filtered_array f ba =
   let ba = ODM.flatten ba in

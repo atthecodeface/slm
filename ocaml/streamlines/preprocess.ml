@@ -34,7 +34,13 @@ module ODM = Owl.Dense.Matrix.Generic
 module ODN = Owl.Dense.Ndarray.Generic
 module BA=Bigarray
 
-(*a Types *)
+(** {1 Types } *)
+
+(**  [t]
+
+  Structure for the Preprocess workflow
+
+ *)
 type t = {
     props : t_props_preprocess;
     mutable roi_gradx_array : t_ba_floats;
@@ -43,39 +49,100 @@ type t = {
     pad_width : int;
   }
 
-let pv_noisy   t = Workflow.pv_noisy   t.props.workflow
-let pv_debug   t = Workflow.pv_debug   t.props.workflow
-let pv_info    t = Workflow.pv_info    t.props.workflow
+(** {1 pv_verbosity functions} *)
+
+(**  [pv_noisy t]
+
+  Shortcut to use {!type:Preprocess.t} verbosity for {!val:Properties.pv_noisy}
+
+ *)
+let pv_noisy   t = Workflow.pv_noisy t.props.workflow
+
+(**  [pv_debug t]
+
+  Shortcut to use {!type:Preprocess.t} verbosity for {!val:Properties.pv_debug}
+
+ *)
+let pv_debug   t = Workflow.pv_noisy t.props.workflow
+
+(**  [pv_info t]
+
+  Shortcut to use {!type:Preprocess.t} verbosity for {!val:Properties.pv_info}
+
+ *)
+let pv_info    t = Workflow.pv_info t.props.workflow
+
+(**  [pv_verbose t]
+
+  Shortcut to use {!type:Preprocess.t} verbosity for {!val:Properties.pv_verbose}
+
+ *)
 let pv_verbose t = Workflow.pv_verbose t.props.workflow
 
-(*a Basics *)
-(*f [create props] *)
-let create props =
-  let pad_width = props.geodata.pad_width in
-  let roi_gradx_array = ba_float2d 1 1 in
-  let roi_grady_array = ba_float2d 1 1 in
-  {
-    props=props.preprocess;
-    roi_gradx_array;
-    roi_grady_array;
-    where_looped=[];
-    pad_width;
-  }
+(** {1 Vector field creation}
+ *)
 
-(*a Stuff *)
-(*f vector_length *)
+(**  [vector_length a b]
+
+    Calculate the length of the vector (a,b)
+
+    @return sqrt(a*a + b*b) 
+ *)
 let vector_length a b = sqrt (a*.a +. b*.b)
 
-(*f fold2d *)
-let fold2d f acc src =
-  let acc_r = ref acc in
-  let f_acc x y v =
-    acc_r := f x y (!acc_r) v
-  in
-  ODM.iteri_2d f_acc src;
-  !acc_r
+(**  [compute_topo_gradient_field roi_array]
 
-(*f get_flow_vector *)
+  Differentiate ROI topo in x and y directions to create a gradient vector field
+
+  @return (ROI topo x gradient, y gradient) big arrays
+
+ *)
+let compute_topo_gradient_field roi_array =
+  let gradient_x get x y = ((get (x+1) y) -. (get (x-1) y)) *. 0.5 in
+  let gradient_y get x y = ((get x (y+1)) -. (get x (y-1))) *. 0.5 in
+  let (w,h)   = ODM.shape roi_array in
+  let u_array = ODM.(empty BA.float32 w h) in
+  let v_array = ODM.(empty BA.float32 w h) in
+  ba_filter 3 1 gradient_x 0. roi_array u_array;
+  ba_filter 1 3 gradient_y 0. roi_array v_array;
+  (u_array, v_array)
+
+(**  [normalize_arrays u_array v_array]
+
+  Normalize a pair of arrays, by scaling them by 1/mod(u,v)
+
+  @return (u_array, v_array)
+
+ *)
+let normalize_arrays u_array v_array =
+  let speed_array = ODM.map2 vector_length u_array v_array in
+  ODM.(u_array /= speed_array);
+  ODM.(v_array /= speed_array);
+  (u_array, v_array)
+
+(**  [compute_gradient_velocity_field roi_grady_array roi_grady_array]
+
+  Compute normalized gradient velocity vector field from ROI topo grid.
+
+  This is effectively an array of unit (dh/dx, dh/dy) vectors,
+    but held as two scalar arrays dh/dx = u and dh/dy = v
+
+  @return (u_array, v_array)
+
+ *)
+let compute_gradient_velocity_field roi_gradx_array roi_grady_array =
+  let u_array = ODM.neg roi_gradx_array in
+  let v_array = ODM.neg roi_grady_array in
+  normalize_arrays u_array v_array
+
+(** {1 Blockages and loop finding and fixing}
+ *)
+
+(**  [get_flow_vector n]
+
+  Convert a char direction indicator to an int vector pair
+
+*)
 let get_flow_vector nn = 
   let nn = Char.code nn in
   if      ((nn land  16)<>0) then (-1,-1) (* SW *)
@@ -88,7 +155,11 @@ let get_flow_vector nn =
   else if ((nn land   8)<>0) then ( 0,+1) (* N *)
   else (0,0)
 
-(*f get_unit_flow_vector *)
+(**  [get_unit_flow_vector nn]
+
+  Get a float vector pair of length 1 from a char direction indicator
+
+*)
 let get_unit_flow_vector nn = 
   let (dx,dy) = get_flow_vector nn in
   let l = dx*dx+dy*dy in
@@ -97,8 +168,12 @@ let get_unit_flow_vector nn =
     ((float dx) /. scale, (float dy) /. scale)
   )
 
-(*f has_one_diagonal_outflow filter
-  Return mask of w,x,y,z otherwise for SW, SE, NW, NE outflows
+(**  [has_just_diagonal_outflows get x y]
+
+  A map for a 2D bigarray, hence provided with a {i get x y ->
+  value} function.
+
+  @return mask of w,x,y,z otherwise for SW, SE, NW, NE outflows
     but 0 if there are any N, S, E or W outflows.
 
   Consider a gradient field of the topology; it is composed using
@@ -107,6 +182,7 @@ let get_unit_flow_vector nn =
 
   Hence if a point only has diagonal outflows it is a 'blockage'.
 
+  {[
   Consider in particular:
   roi -> roi_gradx_array -> roi_grady_array -> normalized velocity
   6 6 6 6 6     
@@ -122,6 +198,8 @@ let get_unit_flow_vector nn =
   6 9 8 9 6 -> 0 64  0 -> 0  0  1 -> NW NW  W
   6 9 9 9 6    0  0  0    0  8 64    SW  N NW
   6 6 6 6 6     
+
+  ]}
 
   The DTM will have been preconditioned by a GIS to drain to the edge
   using eight different directions
@@ -140,7 +218,10 @@ let has_just_diagonal_outflows get x y =
   if (get (x+1) (y+1)) < h then nn := !nn + 128; (* NE *)
   if (!nn land (16+32+64+128)) = !nn then (Char.chr !nn) else (Char.chr 0)
 
-(*f upstream_of_diagonal_outflow
+(**  [upstream_of_diagonal_outflow get x y]
+
+  A map for a 2D bigarray, hence provided with a {i get x y ->
+  value} function.
 
   The upstream pixels of a blockage need to be found and fixed; why is not
     quite clear.
@@ -169,112 +250,39 @@ let upstream_of_diagonal_outflow get x y =
 
   Char.chr !nn
 
-(*f find_blockages *)
-let find_blockages t data =
-    let roi_array = data.roi_array in
-    pv_info t (fun _ -> Printf.printf "Finding blockages...\n%!");
-    let blockages_array = ODN.(empty Bigarray.char (shape roi_array)) in
-    ba_filter 3 3 has_just_diagonal_outflows '\000' data.roi_array blockages_array;
-    let blocked_neighbors_array = ODN.(empty Bigarray.char (shape roi_array)) in
-    ba_filter 3 3 upstream_of_diagonal_outflow '\000' blockages_array blocked_neighbors_array;
-    (blockages_array, blocked_neighbors_array)
+(**  [calc_speed_div_curl x y u v]
 
-(*f get_blockages_lists *)
-let get_blockages_lists blockages =
-  let (blockages_array, blocked_neighbors_array) = blockages in
-  let acc_non_zero x y acc v = if v='\000' then acc else ((x,y)::acc) in
-  let where_blockages = fold2d acc_non_zero [] blockages_array in
-  let where_blocked_neighbors = fold2d acc_non_zero [] blocked_neighbors_array in
-  (where_blockages, where_blocked_neighbors)
-
-(*f show_blockages *)
-let show_blockages blockages =
-    Printf.printf "Finding blockages\n%!";
-    let (where_blockages, _) = get_blockages_lists blockages in
-    Printf.printf "found %d blockages" (List.length where_blockages);
-    if true then ( (* self.state.noisy: *)
-      if where_blockages<>[] then (
-        Printf.printf "Blockages at:\n";
-        let (blockages_array, _) = blockages in
-        let show_blockage (x,y) =
-          let dx,dy = get_flow_vector (ODM.get blockages_array x y) in
-          Printf.printf "[%d, %d] @ [%d, %d] => [%d, %d]\n" dx dy x y (x+dx) (y+dy)
-        in
-        let x = Array.of_list where_blockages in
-        Array.sort (fun (ax,ay) (bx,by) -> let r = compare ax bx in (if r=0 then compare ay by else r)) x;
-        (*List.iter show_blockage where_blockages*)
-        Array.iter show_blockage x
-      ) else (
-        Printf.printf "Blockages at.. none:\n"
-      );
-    );
-    Printf.printf "Done\n%!";
-    ()
-
-(*f compute_topo_gradient_field
-    Differentiate ROI topo in x and y directions using simple numpy method.
-    
-    Args:
-        roi_array (numpy.array):
-        
-    Returns:
-        numpy.array,numpy.array: ROI topo x gradient, y gradient
- *)
-let compute_topo_gradient_field roi_array =
-  let gradient_x get x y = ((get (x+1) y) -. (get (x-1) y)) *. 0.5 in
-  let gradient_y get x y = ((get x (y+1)) -. (get x (y-1))) *. 0.5 in
-  let (w,h)   = ODM.shape roi_array in
-  let u_array = ODM.(empty BA.float32 w h) in
-  let v_array = ODM.(empty BA.float32 w h) in
-  ba_filter 3 1 gradient_x 0. roi_array u_array;
-  ba_filter 1 3 gradient_y 0. roi_array v_array;
-  (u_array, v_array)
-
-(*f normalize_arrays u_array v_array *)
-let normalize_arrays u_array v_array =
-  let speed_array = ODM.map2 vector_length u_array v_array in
-  ODM.(u_array /= speed_array);
-  ODM.(v_array /= speed_array);
-  (u_array, v_array)
-
-(*f compute_gradient_velocity_field
-    Compute normalized gradient velocity vector field from ROI topo grid.
-
-  This is effectively an array of unit (dh/dx, dh/dy) vectors,
-    but held as two scalar arrays dh/dx = u and dh/dy = v
-
- *)
-let compute_gradient_velocity_field roi_gradx_array roi_grady_array =
-trace __POS__;
-  let u_array = ODM.neg roi_gradx_array in
-  let v_array = ODM.neg roi_grady_array in
-trace __POS__;
-  normalize_arrays u_array v_array
-
-(*f check_has_loop
-Get UV of x,y and its neighbors, the speed=mod(avg uv) divergence and curl
+Get UV of x,y and its +1 neighbors, the speed=mod(avg uv), divergence and curl
 
 Geograpically:
+{[
  uv01 uv11
  uv00 uv10
 
 speed = sqrt((+u00+u01+u10+u11)^2 + (+v00+v01+v10+v11)^2 )/4
 div   = -u00-u01+u10+u11 -v00+v01-v10+v11a
 curl  = +u00-u01+u10-u11 -v00-v01+v10+v11
+]}
 
 Another way to look at uv is uvNM = (dh/dx (x+N,y+M), dh/dy (x+N,y+M))
 
 Hence:
+{[
  uv00 . (-1,-1) = -dh/dx(x,y) - dh/dy(x,y)
+]}
 etc
 
 Hence div is
+{[
    uv01.NW + uv11.NE
  + uv00.SW + uv10.SE
+]}
 
 And curl is
+{[
    uv01.SW + uv11.NW
  + uv00.SE + uv10.NE
+]}
 
 As the vector field is a gradient vector field it ought to have a curl
 of zero (it would in a perfect world) and divergence should be greater
@@ -299,49 +307,77 @@ let calc_speed_div_curl x y u v  =
   let curl = 0. +. u00 -. u01 +. u10 -. u11 -. v00 -. v01 +. v10 +. v11 in
   (speed, div, curl)
 
-(*f break_out_of_loop *)
-let break_out_of_loop data (x,y) =
-  let roi_nx = data.roi_nx in
-  let roi_ny = data.roi_ny in
-  let well_within_bounds xi yi = (xi>=1) && (xi<roi_nx-1) && (yi>1) && (yi<roi_ny-1) in
-    (*  let well_within_bounds xi yi = false in*)
-  if not (well_within_bounds x y) then (
-  ) else (
-    let lowest_neighbour acc nn =
-      let (min_nn, min_h) = acc in
-      let (dx,dy) = get_flow_vector nn in
-      let h = ODM.get data.roi_array (x+dx) (y+dy) in
-      if (h < min_h) then (nn, h) else acc
-    in
-    let nns = [|'\001';'\002';'\004';'\008';'\016';'\032';'\064';'\128';|] in
-    let (nn_min,_) = Array.fold_left lowest_neighbour ('\000', infinity) nns in
-    let (dx,dy) = get_unit_flow_vector nn_min in
-    ODM.set data.u_array x y dx;
-    ODM.set data.v_array x y dy;
-  )
+(**  [find_blockages t data]
 
-(*f find_and_fix_loops *)
-let find_and_fix_loops t data =
-    pv_info t (fun _ -> Printf.printf "Finding and fixing loops...\n");
-    let roi_nx = data.roi_nx in
-    let roi_ny = data.roi_ny in
-    let where_looped = ref [] in
-    for xi=0 to roi_nx-2 do
-      for yi=0 to roi_ny-2 do
-        let (vecsum,divergence,curl) = calc_speed_div_curl xi yi data.u_array data.v_array in
-        if ((vecsum < t.props.vecsum_threshold) && 
-              (divergence <= t.props.divergence_threshold) && 
-                ((abs_float curl) >= t.props.curl_threshold)) then (
-          where_looped := (xi,yi) :: (xi+1,yi) :: (xi+1,yi+1) :: (xi,yi+1) :: !where_looped
-        )
-      done;
-    done;
-    pv_info t (fun _ -> Printf.printf "...found %d...\n" (List.length !where_looped));
-    List.iter (break_out_of_loop data) !where_looped;
-    pv_info t (fun _ -> Printf.printf "...done\n");
-    !where_looped
+  The DTM is preconditioned for draining to the edge in 8 directions;
+  the vector gradient field generated by preprocess is 4 direction
+  though. Hence there may be 'blockages' and 'loops.
 
-(*f fix_blockages *)
+  Find blockages (pixels where there are only diagonal outflows, so
+  the vector gradients of neighbors all lead in) and blocked neighbors
+
+  @return (blockages, blocked_neighbors) as big arrays of char
+
+ *)
+let find_blockages t data =
+    let roi_array = data.roi_array in
+
+    pv_info t (fun _ -> Printf.printf "Finding blockages...\n%!");
+    let blockages_array = ODN.(empty Bigarray.char (shape roi_array)) in
+    ba_filter 3 3 has_just_diagonal_outflows '\000' data.roi_array blockages_array;
+
+    let blocked_neighbors_array = ODN.(empty Bigarray.char (shape roi_array)) in
+    ba_filter 3 3 upstream_of_diagonal_outflow '\000' blockages_array blocked_neighbors_array;
+
+    (blockages_array, blocked_neighbors_array)
+
+(**  [get_blockages_lists (blockages_array, blocked_neighbors_array)]
+
+  Convert blockage big arrays to lists of (x,y) locations where there are blockages or blocked neighbors
+
+  @return (blockages_list, blocked_neighbors_list)
+
+ *)
+let get_blockages_lists (blockages_array, blocked_neighbors_array) =
+  let acc_non_zero x y acc v = if v='\000' then acc else ((x,y)::acc) in
+  let where_blockages = ba_fold2d acc_non_zero [] blockages_array in
+  let where_blocked_neighbors = ba_fold2d acc_non_zero [] blocked_neighbors_array in
+  (where_blockages, where_blocked_neighbors)
+
+(**  [show_blockages (blockages_array, blocked_neighbors_array)]
+
+  Show blockages from the big arrays
+
+ *)
+let show_blockages blockages =
+    Printf.printf "Finding blockages\n%!";
+    let (where_blockages, _) = get_blockages_lists blockages in
+    Printf.printf "found %d blockages" (List.length where_blockages);
+    if true then ( (* self.state.noisy: *)
+      if where_blockages<>[] then (
+        Printf.printf "Blockages at:\n";
+        let (blockages_array, _) = blockages in
+        let show_blockage (x,y) =
+          let dx,dy = get_flow_vector (ODM.get blockages_array x y) in
+          Printf.printf "[%d, %d] @ [%d, %d] => [%d, %d]\n" dx dy x y (x+dx) (y+dy)
+        in
+        let x = Array.of_list where_blockages in
+        Array.sort (fun (ax,ay) (bx,by) -> let r = compare ax bx in (if r=0 then compare ay by else r)) x;
+        (*List.iter show_blockage where_blockages*)
+        Array.iter show_blockage x
+      ) else (
+        Printf.printf "Blockages at.. none:\n"
+      );
+    );
+    Printf.printf "Done\n%!";
+    ()
+
+(**  [fix_blockages t (blockages_array, blocked_neighbors_array) data]
+
+  Fix blockages and blocked neighbors by making them use their
+  diagonal neighbor as specified by the big arrays
+
+ *)
 let fix_blockages t blockages data =
   pv_info t (fun _ -> Printf.printf "Fixing blockages...\n%!");
   let (blockages_array, blocked_neighbors_array) = blockages in
@@ -363,7 +399,66 @@ let fix_blockages t blockages data =
     pv_info t (fun _ -> Printf.printf "...none to fix\n%!");
   )
 
-(*f conditioned_gradient_vector_field t data
+(**  [break_out_of_loop data (x,y)]
+
+  Break out of a loop at a given (x,y), by forcing the pixel to flow
+  to the lowest of the 8 neighbors
+
+ *)
+let break_out_of_loop data (x,y) =
+  let roi_nx = data.roi_nx in
+  let roi_ny = data.roi_ny in
+  let well_within_bounds xi yi = (xi>=1) && (xi<roi_nx-1) && (yi>1) && (yi<roi_ny-1) in
+    (*  let well_within_bounds xi yi = false in*)
+  if not (well_within_bounds x y) then (
+  ) else (
+    let lowest_neighbour acc nn =
+      let (min_nn, min_h) = acc in
+      let (dx,dy) = get_flow_vector nn in
+      let h = ODM.get data.roi_array (x+dx) (y+dy) in
+      if (h < min_h) then (nn, h) else acc
+    in
+    let nns = [|'\001';'\002';'\004';'\008';'\016';'\032';'\064';'\128';|] in
+    let (nn_min,_) = Array.fold_left lowest_neighbour ('\000', infinity) nns in
+    let (dx,dy) = get_unit_flow_vector nn_min in
+    ODM.set data.u_array x y dx;
+    ODM.set data.v_array x y dy;
+  )
+
+(**  [find_and_fix_loops t data]
+
+  Find loops (sets of 4 elements where curl is much above zero,
+  divergence is low - i.e. are likely to be very flat and poorly
+  conditioned) by making them flow towards their lowest neighbors.
+
+  @return list of (x,y) loop points
+
+ *)
+let find_and_fix_loops t data =
+    pv_info t (fun _ -> Printf.printf "Finding and fixing loops...\n");
+    let roi_nx = data.roi_nx in
+    let roi_ny = data.roi_ny in
+    let where_looped = ref [] in
+    for xi=0 to roi_nx-2 do
+      for yi=0 to roi_ny-2 do
+        let (vecsum,divergence,curl) = calc_speed_div_curl xi yi data.u_array data.v_array in
+        if ((vecsum < t.props.vecsum_threshold) && 
+              (divergence <= t.props.divergence_threshold) && 
+                ((abs_float curl) >= t.props.curl_threshold)) then (
+          where_looped := (xi,yi) :: (xi+1,yi) :: (xi+1,yi+1) :: (xi,yi+1) :: !where_looped
+        )
+      done;
+    done;
+    pv_info t (fun _ -> Printf.printf "...found %d...\n" (List.length !where_looped));
+    List.iter (break_out_of_loop data) !where_looped;
+    pv_info t (fun _ -> Printf.printf "...done\n");
+    !where_looped
+
+(** {1 Vector field creation}
+ *)
+
+(**  [conditioned_gradient_vector_field t data]
+
         Compute topographic gradient vector field on a preconditioned DTM.
         
         The preconditioning steps are:
@@ -406,7 +501,12 @@ let conditioned_gradient_vector_field t data =
     data.v_array <- get_padded_array v_array t.pad_width 0.;
     ()
         
-(*f mask_nan_uv *)
+(**  [mask_nan_uv data]
+
+ Mask out (in the mask big arrays) any elements that have a U or V
+ value of NaN
+
+ *)
 let mask_nan_uv data =
     Printf.printf "Mask out bad uv pixels...\n%!";
     let bma   = data.basin_mask_array in
@@ -423,7 +523,10 @@ let mask_nan_uv data =
     if (!masked>0) then Printf.printf "...masked %d" !masked;
     Printf.printf "...done\n%!"
         
-(*f raw_gradient_vector_field
+(**  [raw_gradient_vector_field ?? data]
+
+Not implemented yet
+
         Compute topographic gradient vector field without preconditioning the DTM.
 let raw_gradient_vector_field data = 
         self.print('Compute raw gradient vector field')  
@@ -431,8 +534,30 @@ let raw_gradient_vector_field data =
         self.speed_array = set_speed_field(self.u_array, self.v_array)
  *)
 
+(** {1 Workflow functions} *)
 
-(*f process t data *)
+(**  [create props]
+
+  Create a Preprocess.t from its properties
+
+ *)
+let create props =
+  let pad_width = props.geodata.pad_width in
+  let roi_gradx_array = ba_float2d 1 1 in
+  let roi_grady_array = ba_float2d 1 1 in
+  {
+    props=props.preprocess;
+    roi_gradx_array;
+    roi_grady_array;
+    where_looped=[];
+    pad_width;
+  }
+
+(**  [process t data]
+
+  Run the Preprocess workflow
+
+ *)
 let process t data = 
   Workflow.workflow_start t.props.workflow;
   (* if self.state.do_condition: *)

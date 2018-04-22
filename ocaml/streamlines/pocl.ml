@@ -110,12 +110,12 @@ let pv_verbose t = Workflow.pv_verbose t.props.workflow
 
 (** {1 Show functions} *)
 
-(**  [show_device pi p di d]
+(**  [show_device pi di d]
 
-Show OpenCL information for platform p and device d
+Show OpenCL information for platform index pi and device d (index di)
 
  *)
-let show_device pi p di d =
+let show_device pi di d =
     Printf.printf "Device %d.%d %s\n" pi di Device.(to_string d);
     Printf.printf "\n%!"
 
@@ -127,15 +127,15 @@ Show OpenCL information and all devices for platform p
 let show_platform i p =
     Printf.printf "Platform %d %s\n" i Platform.(to_string p);
     let d = Device.get_devices p in
-    Array.iteri (show_device i p) d;
+    Array.iteri (show_device i) d;
     Printf.printf "\n%!"
 
-(**  [show_system _]
+(**  [show_system ()]
 
 Show OpenCL information for all platforms and all devices
 
  *)
-let show_system _ =
+let show_system () =
   let p = Platform.get_platforms () in
   Array.iteri show_platform p
 
@@ -320,7 +320,7 @@ let enqueue_kernel t kernel global_work_size =
 let event_wait t event =
   ignore (Event.wait_for [event])
 
-(** {1 Pocl stuff } *)
+(** {1 External creation/build functions } *)
 
 (**  [compile_program t source compile_options]
 
@@ -506,7 +506,7 @@ let prepare_cl_context_queue t =
   if pai<>platform_index || dai<>device_index then (
     Printf.printf "Desired OpenCL platform/device of %d/%d not available - using platform %d and device %d" platform_index device_index pai dai;
   );
-  pv_verbose t (fun _ -> show_device pai platform dai device);
+  pv_verbose t (fun _ -> show_device pai dai device);
   let ctxt = Context.create [|device|] in
   let queue   = make_queue t in
   pv_verbose t (fun _ -> show_context ctxt);

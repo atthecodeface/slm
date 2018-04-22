@@ -105,3 +105,31 @@ clean: ocaml_clean
 ocaml_clean:
 	jbuilder clean
 
+
+colin_installation_notes:
+	@echo "brew install opam ( installs dependencies: ocaml, ocamlbuild, camlp4, clingo, aspcud)"
+	@echo "opam init"
+	@echo "eval `opam config env`"
+	@echo "echo 'OCAML_TOPLEVEL_PATH=/Users/colinstark/.opam/system/lib/toplevel' >> ~/.bashrc"
+	@echo "echo 'export PATH=\"/usr/local/opt/icu4c/bin:$PATH\"' >> ~/.bashrc"
+	@echo "echo 'export PATH=\"/usr/local/opt/icu4c/sbin:$PATH\"' >> ~/.bashrc"
+	@echo "opam install jbuilder conf-m4 conf-pkg-config ocamlbuild result ocamlfind topkg ocamlmod ocamlify base-bytes integers oasis ctypes eigen"
+	@echo "opam install gdal"
+	@echo "opam install yojson"
+	@echo "opam install batteries"
+	@echo "opam install alcotest"
+	@echo "opam install odoc"
+	@echo "echo 'export PATH=\"/usr/local/opt/libpq/bin:$PATH\"' >> ~/.bashrc"
+	@echo "PATH=/usr/local/bin:$PATH opam depext conf-openblas.0.2.0"
+	@echo "opam install conf-openblas"
+	@echo "opam install utop"
+	@echo "PATH=/usr/local/bin:$PATH opam depext conf-zmq.0.1"
+	@echo "opam install jupyter"
+	@echo "PATH=/usr/local/bin:$PATH opam depext plplot.5.11.0"
+	@echo "PATH=/usr/local/bin:$PATH opam install plplot"
+	@echo "git clone Owl (from somewhere)"
+	@echo "cd Owl"
+	@echo "PATH=/usr/local/bin:$PATH make clean"
+	@echo "PATH=/usr/local/bin:$PATH make"
+	@echo "PATH=/usr/local/bin:$PATH make install"
+	@echo "jupyter kernelspec install --name ocaml-jupyter /Users/colinstark/.opam/system/share/jupyter"
