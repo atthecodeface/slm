@@ -188,7 +188,7 @@ let ba_int3d   d w h  = Bigarray.(genarray_of_array3 (Array3.create int c_layout
  *)
 let ba_float3d d w h  = Bigarray.(genarray_of_array3 (Array3.create float32 c_layout d w h))
 
-(** {2 Operation functions} Probably suitable to be migrated to Owl *)
+(** {2 Bigarray functions - for Owl?} Probably suitable to be migrated to Owl *)
 
 (**  [ba_fold f acc ba]
 
@@ -310,7 +310,7 @@ let ba_mapi_ f x =
 
   Apply an (xsize*ysize) filter to every element of 2D src, storing the
   result in dst; for regions near the edge (i.e. where the filter
-  cannot lies beyond the edges of src) then rv is used instead of the
+  lies beyond the edges of src) then rv is used instead of the
   filter application.
 
     @param xsize number of X elements required by the filter

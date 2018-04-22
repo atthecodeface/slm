@@ -22,12 +22,25 @@ open Globals
 module ODM = Owl.Dense.Matrix.Generic
 module ODN = Owl.Dense.Ndarray.Generic
 
-(*a Info module *)
+(** {1 Info module}
+
+The Info module provides name/value pairs, with the value being of a
+variant type permitting strings, ints and floats. The module is used
+to create the OpenCL compiler '#define' options.
+
+ *)
+
 module Info =
 struct
+
+  (** [Bad_value why] exception *)
   exception Bad_value of string
 
-  (*t t_value *)
+  (** [t_value] Variant type to handle the values potentially required
+  to be passed to OpenCL - ths info struct is used to generate the
+  compiler options
+
+    *)
   type t_value = 
     | Str     of string
     | Int     of int
@@ -36,15 +49,19 @@ struct
     | Uint32  of int32
     | Float32 of float
 
-  (*t t_named_value - internal type *)
+  (** [t_named_value] - A named value that is the basic element of the Info structure
+    *)
   type t_named_value = string * t_value
 
-  (*t t - type of an Info block *)
+  (**  t - structure type of an Info module, just a list of named values *)
   type t = {
       mutable info : t_named_value list;
     }
 
-  (*f [value_str v] - return string representation of a value *)
+  (**  [value_str v] - return string representation of a value
+
+    The string returned is suitable for inclusion in a '-Dfred=<x>'
+  *)
   let value_str v =
     match v with 
     | Str     x -> sfmt "'%s'" x
@@ -54,7 +71,12 @@ struct
     | Uint32  x -> sfmt "%luu" x
     | Float32 x -> sfmt "%ff" x
 
-  (*f [type_str v] - return string representation of the type of a value *)
+  (**  [type_str v] - return string representation of the type of a value
+
+    This is used for display purposes, not for communication with the
+    OpenCL compiler.
+
+  *)
   let type_str v =
     match v with 
     | Str     x -> "Str"
@@ -64,39 +86,63 @@ struct
     | Uint32  x -> "Uint32"
     | Float32 x -> "Float32"
 
-  (*f [define_str nv] - return '-D<name>=<value>' compilation 'DEFINE' string *)
+  (**  [define_str nv] - generate '-D<name>=<value>' string for the OpenCL compiler *)
   let define_str (name,value) =
     sfmt "-D%s=%s" (String.uppercase_ascii name) (value_str value)
 
-  (*f [create _] - create an Info block *)
+  (**  [create _] - create an Info block *)
   let create _ =
     { info=[]; }
 
-  (*f [add_value t name value] - internal use - add a name/value pair to the Info block  *)
-  let add_value t name value =
-    t.info <- t.info @ [(name,value)]
+  (**  [set t name value]
 
-  (*f [set t name value] - set name/value pair in the Info block *)
+    This is for internal use; externally functions such as
+    {!val:set_float32} should be used. so that {!type:t_value}
+    constructors need not be used.
+
+     *)
   let set t name value =
     t.info <- list_assoc_replace t.info name value
 
-  (*f [add_uint t name x] - add name/(unsigned int x) as a name/value pair in the Info block *)
-  let add_uint t name x =
-    add_value t name (Uint x)
+  (**  [add_uint t name x]
 
-  (*f [add_uint32 t name x] - add name/(unsigned int32 x) as a name/value pair in the Info block *)
-  let add_uint32 t name x =
-    add_value t name (Uint32 x)
+    Set name/(unsigned int x) as a name/value pair in the Info block
 
-  (*f [add_float32 t name x] - add name/(float32 x) as a name/value pair in the Info block *)
-  let add_float32 t name x =
-    add_value t name (Float32 x)
+     *)
+  let set_uint t name x =
+    set t name (Uint x)
 
-  (*f [add_str t name x] - add name/(string x) as a name/value pair in the Info block *)
-  let add_str t name x =
-    add_value t name (Str x)
+  (**  [set_uint32 t name x] 
 
-  (*f [int_of t name] - get int of the value of name in the Info block *)
+     Set name/(unsigned int32 x) as a name/value pair in the Info block
+
+     *)
+  let set_uint32 t name x =
+    set t name (Uint32 x)
+
+  (**  [set_float32 t name x]
+
+     Set name/(float32 x) as a name/value pair in the Info block
+
+     *)
+  let set_float32 t name x =
+    set t name (Float32 x)
+
+  (**  [set_str t name x] 
+
+     Set name/(string x) as a name/value pair in the Info block.
+
+     *)
+  let set_str t name x =
+    set t name (Str x)
+
+  (**  [int_of t name] 
+
+     Get int of the value of name in the Info block; this works for
+    values that are int32s, or similar, but if an int cannot be created
+    than a Bad_value exception is raised.
+
+     *)
   let int_of t name =
     match List.assoc_opt name t.info with
     | Some Int x   -> x
@@ -105,13 +151,24 @@ struct
     | Some Uint32 x -> Int32.to_int x
     | _ -> raise (Bad_value (sfmt "int_of of '%s'" name))
 
-  (*f [str_of t name] - get int of the value of name in the Info block *)
+  (**  [str_of t name] 
+
+     Get string of the value of name in the Info block. If it is not a
+     string then a Bad_value is raised.
+
+     *)
   let str_of t name =
     match List.assoc_opt name t.info with
     | Some Str s -> s
     | _ -> raise (Bad_value (sfmt "str_of of '%s'" name))
 
-  (*f [float_of t name] - get float of the value of name in the Info block *)
+  (**  [float_of t name] 
+
+    Get float of the value of name in the Info block; this works for
+    values that are ints, or similar, but if a float cannot be created
+    than a Bad_value exception is raised.
+
+     *)
   let float_of t name =
     match List.assoc_opt name t.info with
     | Some Int     x -> float x
@@ -121,15 +178,27 @@ struct
     | Some Float32 x   -> x
     | _ -> raise (Bad_value (sfmt "float_of of '%s'" name))
 
-  (*f [iter f t] - apply f:nv->unit to every name/value pair in the Info block *)
+  (**  [iter f t]
+
+    Apply f to every name/value pair in the Info block
+
+     *)
   let iter f t =
     List.iter f t.info
 
-  (*f [fold_left f acc t] - fold f:'a->nv->'a over every name/value pair in the Info block *)
+  (**  [fold_left f acc t] 
+
+    Fold f over every name/value pair in the Info block
+
+   *)
   let fold_left f acc t =
     List.fold_left f acc t.info
 
-  (*f display *)
+  (**  display
+
+    Print out the info block contents prettily for debug, for example
+
+     *)
   let display t =
     Printf.printf "Info block:\n";
     iter (fun (name,value) -> Printf.printf "  %30s : %9s %s\n" name (type_str value) (value_str value)) t;
@@ -137,8 +206,27 @@ struct
   (*f All done *)
 end
 
-(*a Data and results structures *)
-(*t t_core_data *)
+(** {1 Data and results structures}
+
+Core data structures and results, used throughout the processing stages.
+
+ *)
+
+(**  t_core_data
+
+  This is the data structure used to contain the data used throughout
+  the processing stages.
+
+  The properties covers all the workflows; the
+  info is built from those properties with some short-term adaptations
+  (since it is used for OpenCL compiler options, which vary slightly
+  on invocation).
+
+  The arrays are filled in by individual workflows; they are
+  initialized to small arrays, before they are modified at the
+  appropriate point in the workflow.
+
+ *)
 type t_core_data = {
     properties : Properties.t_props;
     info : Info.t;
@@ -157,7 +245,12 @@ type t_core_data = {
     mutable seeds                 : t_ba_floats; (* *)
   }
 
-(*t t_trace_results *)
+(**  t_trace_results
+
+  The trace results are produced by the trace workflow, and are
+  consumed by later workflow stages.
+
+ *)
 type t_trace_results = {
     mutable streamline_arrays : bytes array array; (* .(downup) array of array of streamlines, each encoded as a stream of byte-pairs *)
     traj_nsteps_array  : t_ba_int16s; (* num_seeds*2 - number of steps for streamline from seed in direction *)
@@ -167,8 +260,16 @@ type t_trace_results = {
     sla_array          : t_ba_floats; (* 2:downup * padded roi_nx * padded roi_ny : area of streamlines per pixel *)
   }
 
-(*a Core toplevel *)
-(*f [create properties] - Create the core data structure from the given properties *)
+(** {1 Core toplevel functions}
+
+ *)
+
+(**  [create properties] 
+
+  Create the core data structure from the given properties,
+  initializing arrays minimally.
+
+ *)
 let create properties =
   let roi_pixel_size = 1. in
   let roi_nx = 1 in
@@ -202,7 +303,11 @@ let create properties =
     seeds;
   }
 
-(*f [set_roi t roi] - Create Bigarrays for the core data given a region of interest and padding *)
+(**  [set_roi t roi]
+
+  Allocate empty arrays for the Region-of-Interest
+
+ *)
 let set_roi t roi =
   let roi_nx = roi.(2) - roi.(0) in (* could downsample if roi_dx were 2 *)
   let roi_ny = roi.(3) - roi.(1) in (* could downsample if roi_dy were 2 *)
@@ -219,7 +324,7 @@ let set_roi t roi =
   t.u_array <- ba_float2d 1 1;
   t.v_array <- ba_float2d 1 1;
   ODN.fill t.roi_array nan;
-  ODN.fill t.basin_mask_array '\255';
+  ODN.fill t.basin_mask_array    '\255';
   ODN.fill t.basin_fatmask_array '\255';
   ()
 

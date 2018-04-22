@@ -493,7 +493,7 @@ struct
 
   (** [pretty_print t]
 
-    Pretty print the workflow to stdout.
+    Pretty print the workflow json to stdout.
 
    *)
   let pretty_print t =
