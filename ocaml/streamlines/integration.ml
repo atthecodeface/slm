@@ -24,19 +24,100 @@ open Properties
 module ODM = Owl.Dense.Matrix.Generic
 module ODN = Owl.Dense.Ndarray.Generic
 
-(*a Useful functions *)
-let pv_noisy   (props:t_props_trace) = Workflow.pv_noisy   props.workflow
-let pv_debug   (props:t_props_trace) = Workflow.pv_debug   props.workflow
-let pv_info    (props:t_props_trace) = Workflow.pv_info    props.workflow
+(** {1 pv_verbosity functions} *)
+
+(**  [pv_noisy t]
+
+  Shortcut to use {!type:Properties.t_props_trace} verbosity for {!val:Properties.pv_noisy}
+
+ *)
+let pv_noisy   (props:t_props_trace) = Workflow.pv_noisy props.workflow
+
+(**  [pv_debug t]
+
+  Shortcut to use {!type:Properties.t_props_trace} verbosity for {!val:Properties.pv_debug}
+
+ *)
+let pv_debug   (props:t_props_trace) = Workflow.pv_noisy props.workflow
+
+(**  [pv_info t]
+
+  Shortcut to use {!type:Properties.t_props_trace} verbosity for {!val:Properties.pv_info}
+
+ *)
+let pv_info    (props:t_props_trace) = Workflow.pv_info props.workflow
+
+(**  [pv_verbose t]
+
+  Shortcut to use {!type:Properties.t_props_trace} verbosity for {!val:Properties.pv_verbose}
+
+ *)
 let pv_verbose (props:t_props_trace) = Workflow.pv_verbose props.workflow
+
+(** {1 Statics} *)
 
 let cl_files = ["rng.cl";"essentials.cl";
                 "writearray.cl";"trajectoryfns.cl";"computestep.cl";
                 "integrationfns.cl";"trajectory.cl";"integration.cl"]
 let cl_src_path = ["opencl"]
 
-(*a Types *)
-(*t t_memory *)
+(** {1 Chunks} *)
+
+(**  [t_chunk] *)
+type t_chunk = {
+    required           : bool; (* false if not required to be calculated *)
+    direction          : string;
+    downup_index       : int;   (* 0 for downstream, 1 for upstream - last index into arrays to put results *)
+    downup_sign        : float; (* -1. for upstream, +1. for downstream *)
+    chunk_index        : int; (* Which chunk number *)
+    seed_offset        : int; (* Offset to first seed in chunk *)
+    num_seeds          : int; (* Number of seeds in chunk *)
+  }
+
+(**  [chunk data downstream (n, seed_start, seed_end)]
+
+  Create a chunk (index {i n}) with the given seeds, for upstream or downstream
+
+ *)
+let chunk data downstream nse =
+  let (n, seed_start, seed_end) = nse in
+  let (required, direction, downup_index, downup_sign) = 
+    if downstream then
+      (data.properties.trace.do_trace_downstream, "Downstream", 0,(+1.))
+    else
+      data.properties.trace.do_trace_upstream,   "Upstream",   1,(-1.)
+  in
+  {
+    required; direction; downup_index; downup_sign; chunk_index=n; seed_offset=seed_start; num_seeds=(seed_end-seed_start)
+  }
+
+(**  [show_chunk t] 
+
+  Not yet implemented
+
+*)
+let show_chunk t =
+    ()
+
+(**  [generate_chunks num_seeds data num_chunks_required]
+
+  Generate a to_do_list of chunks
+
+ *)
+let generate_chunks num_seeds data num_chunks_required =
+  let chunk_size = (num_seeds + num_chunks_required - 1) / num_chunks_required in
+  let chunks = List.init num_chunks_required (fun i -> (i, i*chunk_size, min ((i+1)*chunk_size) num_seeds)) in
+  let to_do_list = List.fold_left (fun acc nse -> (chunk data true nse)::(chunk data false nse)::acc) [] chunks in
+  (chunk_size, to_do_list)
+
+(** {1 Memory} *)
+
+(**  t_memory
+
+  Structure containing the memory and OpenCL buffers for interacting
+  with the integrate_trajectories kernel.
+
+ *)
 type t_memory = {
     uv_array           : t_ba_floats;  (* padded ROI - vector field array input *)
     chunk_slc_array    : t_ba_ints;    (* padded ROI - #streamlines crossing pixel *)
@@ -55,102 +136,42 @@ type t_memory = {
     chunk_trajcs_buffer : Pocl.t_buffer;
   }
 
-(*t t_chunk *)
-type t_chunk = {
-    required           : bool; (* false if not required to be calculated *)
-    direction          : string;
-    downup_index       : int;   (* 0 for downstream, 1 for upstream - last index into arrays to put results *)
-    downup_sign        : float; (* -1. for upstream, +1. for downstream *)
-    chunk_index        : int; (* Which chunk number *)
-    seed_offset        : int; (* Offset to first seed in chunk *)
-    num_seeds          : int; (* Number of seeds in chunk *)
-  }
+(**  [copy_read pocl]
 
-(*a Post-GPU functions *)
-(*f compute_stats
-    Compute streamline point density and trajectory length min, mean, max.
+  Shortcut for creating an OpenCL buffer that is read-only by the
+  kernel and copied from a big array before execution
 
-    Returns:
-        pandas.DataFrame:  lnds_stats_df
-let compute_stats trace traj_length_array traj_nsteps_array  pixel_size =
-    vprint(verbose,'Computing streamlines statistics')
-    lnds_stats = []
-    for downup_idx in [0,1]:
-(
-        ln0(xy) = traj_length_array[:,downup_idx]*pixel_size
-        ln1(xy) = traj_nsteps_array[:,downup_idx])).T)])
-        lnds = array_of (ln0; ln1; ln0/ln1;) for all xy
-        lnds_stats.append( min(lnds,axis=0); mean(lnds,axis=0); np.max(lnds,axis=0) )
-)
-    lnds_stats_array = np.array(lnds_stats,dtype=np.float32)
-    lnds_indexes = [np.array(['downstream', 'downstream', 'downstream', 
-                              'upstream', 'upstream', 'upstream']),
-                         np.array(['min','mean','max','min','mean','max'])]
-    lnds_stats_df = pd.DataFrame(data=lnds_stats_array, 
-                                 columns=['l','n','ds'],
-                                 index=lnds_indexes)
-    vprint(verbose,lnds_stats_df.T)
-    return lnds_stats_df
- *)
+  @return OpenCL buffer
 
-(*a Pre-GPU functions *)
-(*f chunk - create a chunk *)
-let chunk data downstream nse =
-  let (n, seed_start, seed_end) = nse in
-  let (required, direction, downup_index, downup_sign) = 
-    if downstream then
-      (data.properties.trace.do_trace_downstream, "Downstream", 0,(+1.))
-    else
-      data.properties.trace.do_trace_upstream,   "Upstream",   1,(-1.)
-  in
-  {
-    required; direction; downup_index; downup_sign; chunk_index=n; seed_offset=seed_start; num_seeds=(seed_end-seed_start)
-  }
-
-(*f show_chunk *)
-let show_chunk t =
-    ()
-
-(*f choose_chunks - Get a to_do_list of (bool, "why", 0/1, +-1.0, index, seed_start, seed_end (exclusive)
- *)
-let choose_chunks num_seeds data num_chunks_required =
-  let chunk_size = (num_seeds + num_chunks_required - 1) / num_chunks_required in
-  let chunks = List.init num_chunks_required (fun i -> (i, i*chunk_size, min ((i+1)*chunk_size) num_seeds)) in
-  let to_do_list = List.fold_left (fun acc nse -> (chunk data true nse)::(chunk data false nse)::acc) [] chunks in
-  (chunk_size, to_do_list)
-
-(*f results_create *)
-let results_create data seeds =
-  let (num_seeds,_) = ODM.shape seeds in
-  let roi_nx = data.roi_nx + data.pad_width*2 in
-  let roi_ny = data.roi_ny + data.pad_width*2 in
-
-  (* Result arrays *)
-  let traj_nsteps_array  = ba_int16s (num_seeds*2) in (* *2 as there are 2 directions ? *)
-  let traj_lengths_array = ba_floats (num_seeds*2) in (* *2 as there are 2 directions ? *)
-  let slc_array          = ba_int3d   2 roi_nx roi_ny in
-  let slt_array          = ba_float3d 2 roi_nx roi_ny in
-  let sla_array          = ba_float3d 2 roi_nx roi_ny in
-  ODN.fill traj_nsteps_array  0;
-  ODN.fill traj_lengths_array 0.;
-  ODN.fill slc_array 0;
-  ODN.fill slt_array 0.;
-  ODN.fill sla_array 0.;
-  {
-    streamline_arrays= Array.make 2 (Array.make 0 (Bytes.make 0 ' '));
-    traj_nsteps_array;
-    traj_lengths_array;
-    slc_array;
-    slt_array;
-    sla_array;
-  }
-
-(*f memory_create_buffers
-    Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
  *)
 let copy_read       pocl = Pocl.buffer_of_array pocl ~copy:true true false
+
+(**  [copy_read_write pocl]
+
+  Shortcut for creating an OpenCL buffer that is read-write by the
+  kernel and copied from a big array before execution
+
+  @return OpenCL buffer
+
+ *)
 let copy_read_write pocl = Pocl.buffer_of_array pocl ~copy:true true true
+
+(**  [write_only pocl]
+
+  Shortcut for creating an OpenCL buffer that is write-only by the
+  kernel
+
+  @return OpenCL buffer
+
+ *)
 let write_only      pocl = Pocl.buffer_of_array pocl false true
+
+(**  [memory_create_buffers pocl data seeds chunk_size]
+
+  Create a t_memory strucure with big arrays and PyOpenCL buffers to
+  allow CPU-GPU data transfer for the integrate_trajectories kernel
+
+ *)
 let memory_create_buffers pocl data seeds chunk_size =
   let max_traj_length = Info.int_of data.info "max_n_steps" in
   let (num_seeds,_) = ODM.shape seeds in
@@ -214,7 +235,12 @@ let memory_create_buffers pocl data seeds chunk_size =
     chunk_trajcs_buffer;
   }
 
-(*f memory_clear *)
+(**  [memory_clear t pocl]
+
+  Clear the chunk buffers and copy them to the GPU, prior to execution
+  of the integrate_trajectories kernel
+
+ *)
 let memory_clear t pocl = 
   ODN.fill t.chunk_slc_array 0;
   ODN.fill t.chunk_slt_array 0;
@@ -222,7 +248,12 @@ let memory_clear t pocl =
   Pocl.copy_buffer_to_gpu pocl ~dst:t.chunk_slt_buffer ~src:t.chunk_slt_array;
   Pocl.finish_queue pocl
 
-(*f memory_copyback *)
+(**  [memory_copyback t pocl]
+
+  Copy back the chunk buffers from the GPU to the big arrays after execution
+  of the integrate_trajectories kernel
+
+ *)
 let memory_copyback t pocl = 
   Pocl.copy_buffer_from_gpu pocl ~src:t.chunk_trajcs_buffer ~dst:t.chunk_trajcs_array;
   Pocl.copy_buffer_from_gpu pocl ~src:t.chunk_nsteps_buffer ~dst:t.chunk_nsteps_array;
@@ -231,23 +262,51 @@ let memory_copyback t pocl =
   Pocl.copy_buffer_from_gpu pocl ~src:t.chunk_slt_buffer    ~dst:t.chunk_slt_array;
   Pocl.finish_queue pocl
 
-(*a GPU functions *)
-(*f gpu_integrate_trajectories
-    Carry out GPU computations in chunks.
+(** {1 Results} *)
+
+(**  [results_create data seeds]
+
+  Create the trace results structure given the seeds
+
  *)
-let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
-  let memory = memory_create_buffers pocl data seeds chunk_size in
-  let streamline_lists = [| []; []; |] in
-  let results = results_create data seeds in
-  let cl_kernel_source = Pocl.read_source cl_src_path cl_files in
+let results_create data seeds =
+  let (num_seeds,_) = ODM.shape seeds in
+  let roi_nx = data.roi_nx + data.pad_width*2 in
+  let roi_ny = data.roi_ny + data.pad_width*2 in
 
-  (*f gpu_integrate_chunk Downstream and upstream passes aka streamline integrations from
-     chunks of seed points aka subsets of the total set *)
-  let gpu_integrate_chunk t =
-    if t.required then (
-      pv_verbose data.properties.trace (fun _ -> show_chunk t);
+  (* Result arrays *)
+  let traj_nsteps_array  = ba_int16s (num_seeds*2) in (* *2 as there are 2 directions ? *)
+  let traj_lengths_array = ba_floats (num_seeds*2) in (* *2 as there are 2 directions ? *)
+  let slc_array          = ba_int3d   2 roi_nx roi_ny in
+  let slt_array          = ba_float3d 2 roi_nx roi_ny in
+  let sla_array          = ba_float3d 2 roi_nx roi_ny in
+  ODN.fill traj_nsteps_array  0;
+  ODN.fill traj_lengths_array 0.;
+  ODN.fill slc_array 0;
+  ODN.fill slt_array 0.;
+  ODN.fill sla_array 0.;
+  {
+    streamline_arrays= Array.make 2 (Array.make 0 (Bytes.make 0 ' '));
+    traj_nsteps_array;
+    traj_lengths_array;
+    slc_array;
+    slt_array;
+    sla_array;
+  }
 
-    (* Specify this integration job's parameters *)
+(** {1 GPU functions} *)
+
+(**  [gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_source t]
+
+  Integrate a chunk of seeds on the GPU - this is a set of consecutive
+  seeds in either upstream or downstream - and aggregate the results
+
+ *)
+let gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_source t =
+  if t.required then (
+    pv_verbose data.properties.trace (fun _ -> show_chunk t);
+
+    (* Specify this integration job's parameters and compile *)
     let global_size = [t.num_seeds; 1] in
     let info = data.info in
     Info.set info "downup_sign" (Info.Float32 t.downup_sign);
@@ -255,6 +314,8 @@ let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
     let compile_options = Pocl.compile_options pocl data info "INTEGRATE_TRAJECTORY" in
     let program = Pocl.compile_program pocl cl_kernel_source compile_options in
     let kernel = Pocl.get_kernel pocl program "integrate_trajectory" in
+
+    (* Execute the kernel *)
     memory_clear memory pocl;
 
     Pocl.kernel_set_arg_buffer pocl kernel 0 memory.seeds_buffer;
@@ -271,10 +332,11 @@ let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
     let elapsed = Owl_enhance.event__get_duration event in
     let elapsed = (Int64.to_float elapsed) *. 1E-9 in
     Printf.printf "\n##### Kernel lapsed time: %0.3f secs #####\n" elapsed;
-        
+    
     memory_copyback memory pocl;
 
-  pv_noisy data.properties.trace (fun _ -> Printf.printf "Building streamlines compressed array for chunk\n%!");
+    (* Compile streamline results *)
+    pv_noisy data.properties.trace (fun _ -> Printf.printf "Building streamlines compressed array for chunk\n%!");
     for i=0 to t.num_seeds-1 do (* i is in range 0 to chunk_size-1 *)
       let seed_downup_index = 2*(i + t.seed_offset) + t.downup_index in
       let traj_nsteps = ODN.get memory.chunk_nsteps_array [|i|] in
@@ -285,7 +347,8 @@ let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
       let streamlines_of_seed = Bytes.init (traj_nsteps*2) traj_vector in
       streamline_lists.(t.downup_index) <- streamlines_of_seed :: ((streamline_lists.(t.downup_index)));
     done;
- 
+    
+    (* Compile slc/slt array results *)
     let sum_to_total x y slc slt =
       let tslc = ODN.get results.slc_array [|t.downup_index; x; y|] in
       let tslt = ODN.get results.slt_array [|t.downup_index; x; y|] in
@@ -293,9 +356,27 @@ let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
       ODN.set results.slt_array [|t.downup_index; x; y|] (tslt +. (float slt));
     in
     ODM.iter2i_2d sum_to_total memory.chunk_slc_array memory.chunk_slt_array;
-    )
-  in
-  List.iter gpu_integrate_chunk to_do_list;
+
+  ) else (
+     (* chunk was not required *)
+  )
+
+(**  [gpu_integrate_trajectories pocl data seeds chunk_size to_do_list]
+
+  Carry out GPU computations in the chunks on {i to_do_list}.
+
+  Each chunk is handled with a separate compilation, and results are
+  aggregated.
+
+ *)
+let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
+
+  let memory = memory_create_buffers pocl data seeds chunk_size in
+  let streamline_lists = [| []; []; |] in
+  let results = results_create data seeds in
+  let cl_kernel_source = Pocl.read_source cl_src_path cl_files in
+
+  List.iter (fun chunk -> gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_source chunk) to_do_list;
 
   (* Compute average streamline lengths (sla) from total lengths (slt) and counts (slc)
   *)
@@ -318,16 +399,16 @@ let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
   pv_verbose data.properties.trace (fun _ -> Printf.printf "Total steps in all streamlines %d\n%!" (total_steps/2));
   results
 
-(*f integrate_trajectories pocl data seeds
+(**  [integrate_trajectories tprops pocl data seeds]
 
-    Trace each streamline from its corresponding seed point using 2nd-order Runge-Kutta 
-    integration of the topographic gradient vector field.
+  Integrate trajectories both upstream and downstream from the {i
+  seeds} array of unpadded ROI coordinates.
 
-    Returns:
-        list, numpy.ndarray, numpy.ndarray, pandas.DataFrame, 
-        numpy.ndarray, numpy.ndarray, numpy.ndarray:
-        streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df,
-        slc_array, slt_array, sla_array
+  Trace each streamline from its corresponding seed point using 2nd-order Runge-Kutta 
+  integration of the topographic gradient vector field.
+
+  @return trace_results
+
  *)
 let integrate_trajectories (tprops:t_props_trace) pocl data seeds =
   Workflow.workflow_start ~subflow:"integrating streamlines" tprops.workflow;
@@ -337,7 +418,7 @@ let integrate_trajectories (tprops:t_props_trace) pocl data seeds =
   let (num_seeds,_) = ODM.shape seeds in
   let full_traj_memory_request = num_seeds * (Info.int_of data.info "max_n_steps") * 2 in
   let num_chunks_required = (full_traj_memory_request+gpu_traj_memory_limit-1) / gpu_traj_memory_limit in
-  let (chunk_size, to_do_list) = choose_chunks num_seeds data num_chunks_required  in
+  let (chunk_size, to_do_list) = generate_chunks num_seeds data num_chunks_required  in
 
   let show_memory _ =
     Printf.printf "GPU/OpenCL device global memory limit for streamline trajectories: %d\n" gpu_traj_memory_limit;
@@ -358,6 +439,7 @@ let integrate_trajectories (tprops:t_props_trace) pocl data seeds =
     
   (* Streamline stats *)
   let pixel_size = Info.float_of data.info "pixel_size" in
+
 (*
     traj_stats_df = compute_stats(traj_length_array,traj_nsteps_array,pixel_size,verbose)
     dds =  traj_stats_df['ds']['downstream','mean']
@@ -373,4 +455,31 @@ let integrate_trajectories (tprops:t_props_trace) pocl data seeds =
 *)
   Workflow.workflow_end tprops.workflow;
   results
+
+(*a Post-GPU functions *)
+(*f compute_stats
+    Compute streamline point density and trajectory length min, mean, max.
+
+    Returns:
+        pandas.DataFrame:  lnds_stats_df
+let compute_stats trace traj_length_array traj_nsteps_array  pixel_size =
+    vprint(verbose,'Computing streamlines statistics')
+    lnds_stats = []
+    for downup_idx in [0,1]:
+(
+        ln0(xy) = traj_length_array[:,downup_idx]*pixel_size
+        ln1(xy) = traj_nsteps_array[:,downup_idx])).T)])
+        lnds = array_of (ln0; ln1; ln0/ln1;) for all xy
+        lnds_stats.append( min(lnds,axis=0); mean(lnds,axis=0); np.max(lnds,axis=0) )
+)
+    lnds_stats_array = np.array(lnds_stats,dtype=np.float32)
+    lnds_indexes = [np.array(['downstream', 'downstream', 'downstream', 
+                              'upstream', 'upstream', 'upstream']),
+                         np.array(['min','mean','max','min','mean','max'])]
+    lnds_stats_df = pd.DataFrame(data=lnds_stats_array, 
+                                 columns=['l','n','ds'],
+                                 index=lnds_indexes)
+    vprint(verbose,lnds_stats_df.T)
+    return lnds_stats_df
+ *)
 

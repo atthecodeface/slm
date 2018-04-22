@@ -23,30 +23,54 @@ open Globals
 open Core
 open Properties
 
-(*a Types *)
-(*t t_data *)
+(** {1 Types } *)
+
+(**  [t_data]
+
+  Structure for the Trace workflow
+
+ *)
 type t_data = {
     properties : t_props;
     props : t_props_trace;
   }
 
-(*a Useful functions *)
-let pv_noisy   t = Workflow.pv_noisy   t.props.workflow
-let pv_debug   t = Workflow.pv_debug   t.props.workflow
-let pv_info    t = Workflow.pv_info    t.props.workflow
+(** {1 pv_verbosity functions} *)
+
+(**  [pv_noisy t]
+
+  Shortcut to use {!type:Trace.t_data} verbosity for {!val:Properties.pv_noisy}
+
+ *)
+let pv_noisy   t = Workflow.pv_noisy t.props.workflow
+
+(**  [pv_debug t]
+
+  Shortcut to use {!type:Trace.t_data} verbosity for {!val:Properties.pv_debug}
+
+ *)
+let pv_debug   t = Workflow.pv_noisy t.props.workflow
+
+(**  [pv_info t]
+
+  Shortcut to use {!type:Trace.t_data} verbosity for {!val:Properties.pv_info}
+
+ *)
+let pv_info    t = Workflow.pv_info t.props.workflow
+
+(**  [pv_verbose t]
+
+  Shortcut to use {!type:Trace.t_data} verbosity for {!val:Properties.pv_verbose}
+
+ *)
 let pv_verbose t = Workflow.pv_verbose t.props.workflow
 
-(*f create props *)
-let create props =
-  {
-    properties = props;
-    props=props.trace;
-  }
+(** {1 Seed functions} *)
 
-(*f create_seeds
-  Generate a matrix with 2 rows and N columns where each column is an (x,y) index in to the ROI (unpadded)
+(**  create_seeds
 
-  Ignore points that have a mask
+  Generate an N by 2 matrix, of seed vectors for every unmasked ROI (x,y) (in unpadded coordinates)
+
  *)
 let create_seeds t data =
     pv_debug t (fun _ -> Printf.printf "Generating seed points\n%!");
@@ -67,44 +91,40 @@ let create_seeds t data =
     pv_debug t (fun _ -> Printf.printf "...done\n%!");
     seeds
 
-(*f trace_streamlines
-        Trace up or downstreamlines across region of interest (ROI) of DTM grid.
-    
-        Returns:
-            list, numpy.ndarray, numpy.ndarray, pandas.DataFrame,
-            numpy.ndarray, numpy.ndarray, numpy.ndarray: 
-            streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df,
-            slc_array, slt_array, sla_array
-let trace_streamlines blah =
-        (self.streamline_arrays_list,
-         self.traj_nsteps_array, self.traj_length_array, self.traj_stats_df,
-         self.slc_array, self.slt_array, self.sla_array) \
-            = integrate_trajectories(
-                self.state.path, self.state.cl_platform, self.state.cl_device, 
-                self.build_info_struct(),
-                self.seed_point_array, 
-                self.geodata.basin_mask_array,
-                self.preprocess.u_array,self.preprocess.v_array,
-                self.do_trace_downstream, self.do_trace_upstream, 
-                self.state.verbose
-            )
+(**  [trace_streamlines t pocl data seeds]
+
+  Trace up or downstreamlines across region of interest (ROI) of DTM grid with the given seeds.
+
+  The seeds are a big array of unpadded (x,y) ROI locations
+
+  @return trace result
+
  *)
 let trace_streamlines t pocl data seeds =
   Integration.integrate_trajectories t.props pocl data seeds
 
-(*f process
-        Trace all streamlines both upstream and downstream
-        and derive mean streamline point spacing.
+(** {1 Workflow functions} *)
+
+(**  [create props]
+
+  Create the Trace workflow data from its properties
+
+ *)
+let create props =
+  {
+    properties = props;
+    props      = props.trace;
+  }
+
+(**  [process t pocl data]
+
+  Run the Trace workflow
+
+  This traces all the streamlines both upstream and downstream,
+  and derive means streamline point spacing.
+
+  @return trace result
             
-        Attributes:
-            seed_point_array (numpy.ndarray):
-            streamline_arrays_list (list):
-            traj_nsteps_array (numpy.ndarray):
-            traj_length_array (numpy.ndarray):
-            traj_stats_df (pandas.DataFrame):
-            slc_array (numpy.ndarray):
-            slt_array (numpy.ndarray):
-            sla_array (numpy.ndarray):
  *)
 let process t pocl data =
   Workflow.workflow_start t.props.workflow;

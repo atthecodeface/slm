@@ -74,7 +74,7 @@ div.def table { margin-left: 6ex; }
 
 to document
 
-preprocess
+geodata
 trace
 integration
 plot
