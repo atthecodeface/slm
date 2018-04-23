@@ -142,13 +142,13 @@ __kernel void pdf_bivariate(
     //   e.g., 0...2  for 5-point kdf
     for (ki=0;ki<=N_KDF_PART_POINTS_X;ki++) {
         filter2d(0, histogram_array, pdf_idx, ki,
-                 &pdf_bin_accumulator ,&kdf_weight_accumulator);
+                 &pdf_bin_accumulator, &kdf_weight_accumulator);
     }
     for (ki=0;ki<=N_KDF_PART_POINTS_X;ki++) {
         filter2d(1, histogram_array, pdf_idx, ki,
-                 &pdf_bin_accumulator ,&kdf_weight_accumulator);
+                 &pdf_bin_accumulator, &kdf_weight_accumulator);
     }
-    // Normalize the pdf point accumlation by dividing by the kdf weight accumulation
+    // Normalize the pdf point accumulation by dividing by the kdf weight accumulation
     //   and write to the return pdf_array element for this CL-kernel instance
     pdf_array[pdf_idx] = pdf_bin_accumulator/kdf_weight_accumulator;
     return;
@@ -223,8 +223,8 @@ static inline void filter1d(
 /// @ingroup kde
 ///
 __kernel void pdf_univariate(
-        __global const  uint    *histogram_array,
-        __global        float   *pdf_array
+        __global const  uint  *histogram_array,
+        __global        float *pdf_array
    )
 {
     // For every histogram bin...
@@ -244,7 +244,7 @@ __kernel void pdf_univariate(
     for (ki=0;ki<=N_KDF_PART_POINTS_X;ki++) {
         filter1d(histogram_array,pdf_idx,ki,&pdf_bin_accumulator,&kdf_weight_accumulator);
     }
-    // Normalize the pdf point accumlation by dividing by the kdf weight accumulation
+    // Normalize the pdf point accumulation by dividing by the kdf weight accumulation
     //   and write to the return pdf_array element for this CL-kernel instance
     pdf_array[pdf_idx] = pdf_bin_accumulator/kdf_weight_accumulator;
     return;
