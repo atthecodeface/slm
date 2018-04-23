@@ -5,7 +5,7 @@
   (name streamlines)
   (libraries (
     owl
-    owl_opencl
+    owl-opencl
     gdal
     yojson
     batteries
