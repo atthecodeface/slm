@@ -1,10 +1,15 @@
 ocaml_all: run_ocaml
 
 BREW_PREFIX := $(shell brew config | awk -F': ' '$$1=="HOMEBREW_PREFIX" {print $$2}')
+HTML_TIDY   := ${BREW_PREFIX}/bin/tidy -q
 
-OCAML_BUILD_LOCAL := _build/default/ocaml
+OCAML_BUILD_LOCAL      := _build/default/ocaml
+OCAML_BUILT_HTML_LOCAL := _build/default/_doc/_html
 OCAML_BUILD       := ${ROOT}/${OCAML_BUILD_LOCAL}
+OCAML_BUILT_HTML  := ${ROOT}/${OCAML_BUILT_HTML_LOCAL}
 OCAML_PATH        := LD_LIBRARY_PATH=${BREW_PREFIX}/lib 
+OCAML_DOC         := ${OCAML_ROOT}/doc
+DOC_OCAML         := ${DOC_ROOT}/ocaml
 
 help_ocaml: ocaml_help
 ocaml_help:
@@ -99,6 +104,15 @@ ocaml_run:
 .PHONY:ocaml_doc
 ocaml_doc:
 	jbuilder build @doc
+
+.PHONY:ocaml_doc_export
+ocaml_doc_export:
+	jbuilder build @doc
+	cp -r ${OCAML_BUILT_HTML}/* ${DOC_OCAML}
+	cp ${OCAML_DOC}/odoc.css ${DOC_OCAML}
+	((cd ${DOC_OCAML}; find . -name '*.html' -exec ${HTML_TIDY} -m {} ';') 2>&1 | grep -v 'trimming empty') || true
+	#${HTML_TIDY} -o ${DOC_OCAML}/index.html ${OCAML_BUILT_HTML}/index.html
+	#(cd _build/default/_doc/_html; find . -name '*.html')
 
 .PHONY:ocaml_clean
 clean: ocaml_clean

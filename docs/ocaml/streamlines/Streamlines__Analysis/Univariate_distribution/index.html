@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Univariate_distribution
+(streamlines.Streamlines__Analysis.Univariate_distribution)</title>
+<link rel="stylesheet" href="../../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines__Analysis.Univariate_distribution</span></h1>
+</header>
+<div class="spec type" id="type-t"><a href="#type-t" class=
+"anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t</code> <code><span class="keyword">=</span></code> <code>{</code>
+<table class="record">
+<tr id="type-t.verbose" class="anchored">
+<td class="def field"><a href="#type-t.verbose" class=
+"anchor"></a><code>verbose : bool;</code></td>
+</tr>
+<tr id="type-t.pixel_size" class="anchored">
+<td class="def field"><a href="#type-t.pixel_size" class=
+"anchor"></a><code>pixel_size : float;</code></td>
+</tr>
+<tr id="type-t.logx_data" class="anchored">
+<td class="def field"><a href="#type-t.logx_data" class=
+"anchor"></a><code>logx_data : <a href=
+"../../Streamlines/Globals/index.html#type-t_ba_floats">Streamlines.Globals.t_ba_floats</a>;</code></td>
+</tr>
+<tr id="type-t.n_samples" class="anchored">
+<td class="def field"><a href="#type-t.n_samples" class=
+"anchor"></a><code>n_samples : int;</code></td>
+</tr>
+<tr id="type-t.logx_vec" class="anchored">
+<td class="def field"><a href="#type-t.logx_vec" class=
+"anchor"></a><code>logx_vec : <a href=
+"../../Streamlines/Globals/index.html#type-t_ba_floats">Streamlines.Globals.t_ba_floats</a>;</code></td>
+</tr>
+<tr id="type-t.x_vec" class="anchored">
+<td class="def field"><a href="#type-t.x_vec" class=
+"anchor"></a><code>x_vec : <a href=
+"../../Streamlines/Globals/index.html#type-t_ba_floats">Streamlines.Globals.t_ba_floats</a>;</code></td>
+</tr>
+<tr id="type-t.search_cdf_min" class="anchored">
+<td class="def field"><a href="#type-t.search_cdf_min" class=
+"anchor"></a><code>search_cdf_min : float;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-create"><a href="#val-create" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> create
+: ?⁠pixel_size:float <span class="keyword">‑&gt;</span>
+?⁠n_samples:int <span class="keyword">‑&gt;</span>
+?⁠shear_factor:float <span class="keyword">‑&gt;</span>
+?⁠search_cdf_min:float <span class="keyword">‑&gt;</span>
+?⁠logx_min:float <span class="keyword">‑&gt;</span>
+?⁠logy_min:float <span class="keyword">‑&gt;</span>
+?⁠logx_max:float <span class="keyword">‑&gt;</span>
+?⁠logy_max:float <span class="keyword">‑&gt;</span>
+logx_array:(float,&nbsp;Bigarray.float32_elt)&nbsp;<a href=
+"../index.html#module-ODN">ODN</a>.t <span class=
+"keyword">‑&gt;</span>
+logy_array:(float,&nbsp;Bigarray.float32_elt)&nbsp;<a href=
+"../index.html#module-ODN">ODN</a>.t <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t">t</a></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-compute_kde"><a href=
+"#val-compute_kde" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+compute_kde : ?⁠bw_method:string <span class="keyword">‑&gt;</span>
+<span class="type-var">'a</span> <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-statistics"><a href="#val-statistics"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+statistics : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-find_modes"><a href="#val-find_modes"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+find_modes : <span class="type-var">'a</span> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-choose_threshold"><a href=
+"#val-choose_threshold" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+choose_threshold : <span class="type-var">'a</span> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-compute_marginal_distribn"><a href=
+"#val-compute_marginal_distribn" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+compute_marginal_distribn : <span class="type-var">'a</span>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+</body>
+</html>

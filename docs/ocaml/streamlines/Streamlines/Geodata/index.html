@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Geodata (streamlines.Streamlines.Geodata)</title>
+<link rel="stylesheet" href="../../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines.Geodata</span></h1>
+</header>
+<div class="doc">
+<p>Geodata - Workflow module that reads in DTM, sets up ROI and
+mask, filling out the core data</p>
+</div>
+<pre>
+Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file   geodata.ml
+ * @brief  Module to provide loading of Geotiff data and filling out the core data
+ *</pre>
+<div class="spec module" id="module-Option"><a href=
+"#module-Option" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+Option = Batteries.Option</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-ODM"><a href="#module-ODM"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+ODM = Owl.Dense.Matrix.Generic</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-ODN"><a href="#module-ODN"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+ODN = Owl.Dense.Ndarray.Generic</code></div>
+<div class="doc"></div>
+</div>
+<h2>Types</h2>
+<p>These types are used by the main code and the Geotiff module.
+They should not really be used by code outside of this file; the
+global t_core_data from the Core module contains the data that
+should be used for later analysis. However, the DTM array is, for
+example, only held by the Geodata module, so to plot that the Plot
+module currently picks inside t_geodata.</p>
+<div class="spec type" id="type-t_geotiff"><a href=
+"#type-t_geotiff" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_geotiff</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-t_geotiff.gtf_filename" class="anchored">
+<td class="def field"><a href="#type-t_geotiff.gtf_filename" class=
+"anchor"></a><code>gtf_filename : string;</code></td>
+</tr>
+<tr id="type-t_geotiff.ds" class="anchored">
+<td class="def field"><a href="#type-t_geotiff.ds" class=
+"anchor"></a><code>ds : Gdal.Data_set.t;</code></td>
+</tr>
+<tr id="type-t_geotiff.trans" class="anchored">
+<td class="def field"><a href="#type-t_geotiff.trans" class=
+"anchor"></a><code>trans : Gdal.Geo_transform.t;</code></td>
+</tr>
+<tr id="type-t_geotiff.num_bands" class="anchored">
+<td class="def field"><a href="#type-t_geotiff.num_bands" class=
+"anchor"></a><code>num_bands : int;</code></td>
+</tr>
+<tr id="type-t_geotiff.width" class="anchored">
+<td class="def field"><a href="#type-t_geotiff.width" class=
+"anchor"></a><code>width : int;</code></td>
+</tr>
+<tr id="type-t_geotiff.height" class="anchored">
+<td class="def field"><a href="#type-t_geotiff.height" class=
+"anchor"></a><code>height : int;</code></td>
+</tr>
+<tr id="type-t_geotiff.projection" class="anchored">
+<td class="def field"><a href="#type-t_geotiff.projection" class=
+"anchor"></a><code>projection : string;</code></td>
+</tr>
+<tr id="type-t_geotiff.orig_x" class="anchored">
+<td class="def field"><a href="#type-t_geotiff.orig_x" class=
+"anchor"></a><code>orig_x : float;</code></td>
+</tr>
+<tr id="type-t_geotiff.orig_y" class="anchored">
+<td class="def field"><a href="#type-t_geotiff.orig_y" class=
+"anchor"></a><code>orig_y : float;</code></td>
+</tr>
+<tr id="type-t_geotiff.pixsz_x" class="anchored">
+<td class="def field"><a href="#type-t_geotiff.pixsz_x" class=
+"anchor"></a><code>pixsz_x : float;</code></td>
+</tr>
+<tr id="type-t_geotiff.pixsz_y" class="anchored">
+<td class="def field"><a href="#type-t_geotiff.pixsz_y" class=
+"anchor"></a><code>pixsz_y : float;</code></td>
+</tr>
+<tr id="type-t_geotiff.rot_x" class="anchored">
+<td class="def field"><a href="#type-t_geotiff.rot_x" class=
+"anchor"></a><code>rot_x : float;</code></td>
+</tr>
+<tr id="type-t_geotiff.rot_y" class="anchored">
+<td class="def field"><a href="#type-t_geotiff.rot_y" class=
+"anchor"></a><code>rot_y : float;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_geotiff</p>
+<p>Structure used by the Geotiff module, abstracting much of the
+Gdal handling from the main module.</p>
+</div>
+</div>
+<div class="spec type" id="type-t_geodata"><a href=
+"#type-t_geodata" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_geodata</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-t_geodata.dtm_array" class="anchored">
+<td class="def field"><a href="#type-t_geodata.dtm_array" class=
+"anchor"></a><code>dtm_array : <a href=
+"../Globals/index.html#type-t_ba_floats">Globals.t_ba_floats</a>;</code></td>
+</tr>
+<tr id="type-t_geodata.x_easting_bottomleft" class="anchored">
+<td class="def field"><a href=
+"#type-t_geodata.x_easting_bottomleft" class=
+"anchor"></a><code>x_easting_bottomleft : float;</code></td>
+</tr>
+<tr id="type-t_geodata.y_northing_bottomleft" class="anchored">
+<td class="def field"><a href=
+"#type-t_geodata.y_northing_bottomleft" class=
+"anchor"></a><code>y_northing_bottomleft : float;</code></td>
+</tr>
+<tr id="type-t_geodata.roi_x_origin" class="anchored">
+<td class="def field"><a href="#type-t_geodata.roi_x_origin" class=
+"anchor"></a><code>roi_x_origin : float;</code></td>
+</tr>
+<tr id="type-t_geodata.roi_y_origin" class="anchored">
+<td class="def field"><a href="#type-t_geodata.roi_y_origin" class=
+"anchor"></a><code>roi_y_origin : float;</code></td>
+</tr>
+<tr id="type-t_geodata.roi_width" class="anchored">
+<td class="def field"><a href="#type-t_geodata.roi_width" class=
+"anchor"></a><code>roi_width : float;</code></td>
+</tr>
+<tr id="type-t_geodata.roi_height" class="anchored">
+<td class="def field"><a href="#type-t_geodata.roi_height" class=
+"anchor"></a><code>roi_height : float;</code></td>
+</tr>
+<tr id="type-t_geodata.roi_dx" class="anchored">
+<td class="def field"><a href="#type-t_geodata.roi_dx" class=
+"anchor"></a><code>roi_dx : float;</code></td>
+</tr>
+<tr id="type-t_geodata.roi_dy" class="anchored">
+<td class="def field"><a href="#type-t_geodata.roi_dy" class=
+"anchor"></a><code>roi_dy : float;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_geodata</p>
+<p>The data structure that is filled out by a Geodata file</p>
+</div>
+</div>
+<div class="spec type" id="type-t_data"><a href="#type-t_data"
+class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_data</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-t_data.props" class="anchored">
+<td class="def field"><a href="#type-t_data.props" class=
+"anchor"></a><code>props : <a href=
+"../Properties/index.html#type-t_props_geodata">Properties.t_props_geodata</a>;</code></td>
+</tr>
+<tr id="type-t_data.g" class="anchored">
+<td class="def field"><a href="#type-t_data.g" class=
+"anchor"></a><code><span class="keyword">mutable</span> g :
+<a href="index.html#type-t_geodata">t_geodata</a>;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_data</p>
+<p>Main data structure for the module, including the data from a
+Geodata file (in t_geodata) and the properties for the Geodata
+workflow.</p>
+</div>
+</div>
+<div class="spec val" id="val-geodata_dummy"><a href=
+"#val-geodata_dummy" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+geodata_dummy : <a href=
+"index.html#type-t_geodata">t_geodata</a></code></div>
+<div class="doc">
+<p>geodata_dummy</p>
+<p>A t_geodata structure that is effectively empty, so that it may
+be used prior to the reading of an actual Geodata file.</p>
+</div>
+</div>
+<h2>pv_verbosity functions</h2>
+<div class="spec val" id="val-pv_noisy"><a href="#val-pv_noisy"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_noisy : <a href="index.html#type-t_data">t_data</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_noisy t</code></p>
+<p>Shortcut to use <a href=
+"index.html#type-t_data">Geodata.t_data</a> verbosity for <a href=
+"../Properties/index.html#val-pv_noisy">Properties.pv_noisy</a></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_debug"><a href="#val-pv_debug"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_debug : <a href="index.html#type-t_data">t_data</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_debug t</code></p>
+<p>Shortcut to use <a href=
+"index.html#type-t_data">Geodata.t_data</a> verbosity for <a href=
+"../Properties/index.html#val-pv_debug">Properties.pv_debug</a></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_info"><a href="#val-pv_info"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> pv_info
+: <a href="index.html#type-t_data">t_data</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_info t</code></p>
+<p>Shortcut to use <a href=
+"index.html#type-t_data">Geodata.t_data</a> verbosity for <a href=
+"../Properties/index.html#val-pv_info">Properties.pv_info</a></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_verbose"><a href="#val-pv_verbose"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_verbose : <a href="index.html#type-t_data">t_data</a>
+<span class="keyword">‑&gt;</span> (unit <span class=
+"keyword">‑&gt;</span> unit) <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p><code class="code">pv_verbose t</code></p>
+<p>Shortcut to use <a href=
+"index.html#type-t_data">Geodata.t_data</a> verbosity for <a href=
+"../Properties/index.html#val-pv_verbose">Properties.pv_verbose</a></p>
+</div>
+</div>
+<h2>Geotiff submodule</h2>
+<div class="spec module" id="module-Geotiff"><a href=
+"#module-Geotiff" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href="Geotiff/index.html">Geotiff</a> : <span class=
+"keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc"></div>
+</div>
+<h2>Top level Geodata module functions</h2>
+<div class="spec exception" id="exception-Geodata"><a href=
+"#exception-Geodata" class="anchor"></a>
+<div class="def exception"><code><span class=
+"keyword">exception</span></code> <code><span class=
+"exception">Geodata</span> <span class="keyword">of</span>
+string</code></div>
+<div class="doc">
+<p><code class="code">Geodata of string</code> exception</p>
+<p>Raised if the ROI is out of bounds</p>
+</div>
+</div>
+<div class="spec val" id="val-update_properties"><a href=
+"#val-update_properties" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+update_properties : <a href="index.html#type-t_data">t_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_geotiff">t_geotiff</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">update_properties t geo</code></p>
+<p>Update the properties based on the Geotiff file</p>
+<p>Raise an exception if the ROI is not sensible</p>
+</div>
+</div>
+<div class="spec val" id="val-fill_data"><a href="#val-fill_data"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+fill_data : <a href="index.html#type-t_data">t_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Core/index.html#type-t_core_data">Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_geotiff">t_geotiff</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">fill_data t data geo</code></p>
+<p>Fill out the Core data and t_data structures based on the
+Geotiff file header.</p>
+<p>This does not load the DTM data nor fill our the ROI data</p>
+</div>
+</div>
+<div class="spec val" id="val-read_dtm_file"><a href=
+"#val-read_dtm_file" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+read_dtm_file : <a href="index.html#type-t_data">t_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Core/index.html#type-t_core_data">Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_geotiff">t_geotiff</a></code></div>
+<div class="doc">
+<p><code class="code">read_dtm_file t</code></p>
+<p>Read a DTM file - fills out the data and geodata based on the
+header of the file, then reads the DTM data and copies the ROI
+array.</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> geotiff file, in
+case that is useful for higher levels</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-read_basin"><a href="#val-read_basin"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+read_basin : <a href="index.html#type-t_data">t_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Core/index.html#type-t_core_data">Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">read_basin t data</code></p>
+<p>Read the basin masking file, fleshing out the data basin
+masks</p>
+</div>
+</div>
+<div class="spec val" id="val-pad_basins"><a href="#val-pad_basins"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pad_basins : clear:bool <span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_data">t_data</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../Core/index.html#type-t_core_data">Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pad_basins ~clear t data</code></p>
+<p>Pads and clears the basin masks as required</p>
+<p>Also masks out any DTM data that is NaN in the ROI array</p>
+</div>
+</div>
+<div class="spec val" id="val-display"><a href="#val-display"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> display
+: <a href="index.html#type-t_data">t_data</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../Core/index.html#type-t_core_data">Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_geotiff">t_geotiff</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">display t</code></p>
+<p>Display the t_data structure for verbose operation</p>
+</div>
+</div>
+<div class="spec val" id="val-process"><a href="#val-process"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> process
+: <a href="index.html#type-t_data">t_data</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../Core/index.html#type-t_core_data">Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Core/index.html#type-t_core_data">Core.t_core_data</a>
+<span class="keyword">*</span> <a href=
+"index.html#type-t_geotiff">t_geotiff</a></code></div>
+<div class="doc">
+<p><code class="code">process t</code></p>
+<p>Run the Geodata workflow - loading the Geodata file and
+generating masks, filling out the core data, and so on.</p>
+<p>Load the required DTM file as a Geodata.t given basic
+properties</p>
+<p>Read basin mask file if required</p>
+<p>Pad masks as necessary</p>
+</div>
+</div>
+<div class="spec val" id="val-create"><a href="#val-create" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> create
+: <a href=
+"../Properties/index.html#type-t_props">Properties.t_props</a>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_data">t_data</a></code></div>
+<div class="doc">
+<p><code class="code">create props</code></p>
+<p>Create the t_data structure, and initialize the Gdal library</p>
+</div>
+</div>
+</body>
+</html>

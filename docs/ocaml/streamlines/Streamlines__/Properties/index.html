@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Properties (streamlines.Streamlines__.Properties)</title>
+<link rel="stylesheet" href="../../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines__.Properties</span></h1>
+</header>
+<pre>
+Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file   properties.ml
+ * @brief  Workflow and properties libraries
+ *</pre>
+<div class="spec module" id="module-Json"><a href="#module-Json"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+Json = Yojson.Basic</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-Option"><a href=
+"#module-Option" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+Option = Batteries.Option</code></div>
+<div class="doc"></div>
+</div>
+<h2>Verbosity</h2>
+<p>Verbosity is a basic part of the properties of a workflow. The
+verbosity can be set to one of many different levels, and the
+properties for a workflow can each have its own verbosity.
+Functions are provided to permit the execution of code dependent on
+the verbosity level.</p>
+<div class="spec type" id="type-t_verbosity"><a href=
+"#type-t_verbosity" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_verbosity</code> <code><span class="keyword">=</span></code>
+<table class="variant">
+<tr id="type-t_verbosity.PV_Quiet" class="anchored">
+<td class="def constructor"><a href="#type-t_verbosity.PV_Quiet"
+class="anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">PV_Quiet</span></code></td>
+</tr>
+<tr id="type-t_verbosity.PV_Info" class="anchored">
+<td class="def constructor"><a href="#type-t_verbosity.PV_Info"
+class="anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">PV_Info</span></code></td>
+</tr>
+<tr id="type-t_verbosity.PV_Verbose" class="anchored">
+<td class="def constructor"><a href="#type-t_verbosity.PV_Verbose"
+class="anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">PV_Verbose</span></code></td>
+</tr>
+<tr id="type-t_verbosity.PV_Noisy" class="anchored">
+<td class="def constructor"><a href="#type-t_verbosity.PV_Noisy"
+class="anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">PV_Noisy</span></code></td>
+</tr>
+<tr id="type-t_verbosity.PV_Debug" class="anchored">
+<td class="def constructor"><a href="#type-t_verbosity.PV_Debug"
+class="anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">PV_Debug</span></code></td>
+</tr>
+</table>
+</div>
+<div class="doc">
+<p><code class="code">t_verbosity</code> enumeration for the
+different levels of verbosity</p>
+</div>
+</div>
+<div class="spec val" id="val-pv_level"><a href="#val-pv_level"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_level : <a href="index.html#type-t_verbosity">t_verbosity</a>
+<span class="keyword">‑&gt;</span> int</code></div>
+<div class="doc">
+<p><code class="code">pv_level verbosity</code> converts the
+verbosity to an integer level.</p>
+<p>This function is for internal use - it is best to use the
+pv_verbose/pv_debug etc functions to control execution of code
+dependent on the verbosity level.</p>
+<p>This function is used internally to grade verbosity, and hence
+to select the 'more verbose level' verbosity from a pair of
+verbositys.</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> an integer
+corresponding to 0 being quiet to (currently) 4 being
+noisiest.</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-pv_of_int"><a href="#val-pv_of_int"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_of_int : int <span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_verbosity">t_verbosity</a></code></div>
+<div class="doc">
+<p><code class="code">pv_of_int level</code> converts an integer
+level to a verbosity</p>
+<p>This function is used by argument parsing to convert a command
+line verbosity to a level for execution of the code.</p>
+<p>This is the inverse function to <a href=
+"index.html#val-pv_level">pv_level</a></p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> the verbosity level
+corresponding to the integer</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-pv_str"><a href="#val-pv_str" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> pv_str
+: <a href="index.html#type-t_verbosity">t_verbosity</a>
+<span class="keyword">‑&gt;</span> string</code></div>
+<div class="doc">
+<p><code class="code">pv_str verbosity</code> produces a string
+corresponding to the verbosity level</p>
+<p>This function is used to show how verbose a workflow is when it
+starts</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> a textual
+representation of the verbosity level</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-pv_verbosity"><a href=
+"#val-pv_verbosity" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_verbosity : ?⁠verbose:bool <span class="keyword">‑&gt;</span>
+?⁠debug:bool <span class="keyword">‑&gt;</span> ?⁠noisy:bool
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_verbosity">t_verbosity</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t_verbosity">t_verbosity</a></code></div>
+<div class="doc">
+<p><code class="code">pv_verbosity</code> ?verbose ?debug ?noisy
+verbosity - upgrade verbosity level</p>
+<p>The verbosity level of a Workflow is the larger of that
+specified by its properties and that for the whole execution; this
+function permits 'upgrading' the verbosity based on the three
+properties 'verbose', 'noisy' and 'debug'.</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> a verbosity level at
+least as high as <a href=
+"index.html#type-t_cmdline_overrides.verbosity">verbosity</a>,
+upgraded based on <a href=
+"index.html#type-t_props_state.verbose">verbose</a>, <a href=
+"index.html#type-t_props_state.noisy">noisy</a> and <a href=
+"index.html#type-t_props_state.debug">debug</a></li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-pv_if"><a href="#val-pv_if" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> pv_if :
+<a href="index.html#type-t_verbosity">t_verbosity</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t_verbosity">t_verbosity</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_if verbosity level f</code> - if <a href=
+"index.html#type-t_cmdline_overrides.verbosity">verbosity</a>
+exceeds level then invoke</p>
+<pre><code class="code">f ()</code></pre>
+<p>This is an internal function, for use in pv_info, pv_verbose,
+etc.</p>
+<p>It invokes the function f with a unit argument if the verbosity
+at least matches level</p>
+</div>
+</div>
+<div class="spec val" id="val-pv_info"><a href="#val-pv_info"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> pv_info
+: <a href="index.html#type-t_verbosity">t_verbosity</a>
+<span class="keyword">‑&gt;</span> (unit <span class=
+"keyword">‑&gt;</span> unit) <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p><code class="code">pv_info pv</code></p>
+<p>Predicate function used with</p>
+<pre><code class="code">fun _ -&gt; ...</code></pre>
+<p>to invoke the function <i>only</i> if the verbosity level is at
+least PV_Info. Use, for example, as</p>
+<pre><code class=
+"code">pv_info verbosity (fun _ -&gt; Printf.printf "Verbosity is at least info")</code></pre>
+<p>.</p>
+</div>
+</div>
+<div class="spec val" id="val-pv_verbose"><a href="#val-pv_verbose"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_verbose : <a href="index.html#type-t_verbosity">t_verbosity</a>
+<span class="keyword">‑&gt;</span> (unit <span class=
+"keyword">‑&gt;</span> unit) <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p><code class="code">pv_verbose pv</code></p>
+<p>Predicate function used with</p>
+<pre><code class="code">fun _ -&gt; ...</code></pre>
+<p>to invoke the function <i>only</i> if the verbosity level is at
+least PV_Verbose. Use, for example, as</p>
+<pre><code class=
+"code">pv_verbose verbosity (fun _ -&gt; Printf.printf "Verbosity is at least verbose")</code></pre>
+<p>.</p>
+</div>
+</div>
+<div class="spec val" id="val-pv_noisy"><a href="#val-pv_noisy"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_noisy : <a href="index.html#type-t_verbosity">t_verbosity</a>
+<span class="keyword">‑&gt;</span> (unit <span class=
+"keyword">‑&gt;</span> unit) <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p><code class="code">pv_noisy pv</code></p>
+<p>Predicate function used with</p>
+<pre><code class="code">fun _ -&gt; ...</code></pre>
+<p>to invoke the function <i>only</i> if the verbosity level is at
+least PV_Noisy. Use, for example, as</p>
+<pre><code class=
+"code">pv_noisy verbosity (fun _ -&gt; Printf.printf "Verbosity is at least noisy")</code></pre>
+<p>.</p>
+</div>
+</div>
+<div class="spec val" id="val-pv_debug"><a href="#val-pv_debug"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_debug : <a href="index.html#type-t_verbosity">t_verbosity</a>
+<span class="keyword">‑&gt;</span> (unit <span class=
+"keyword">‑&gt;</span> unit) <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p><code class="code">pv_debug pv</code></p>
+<p>Predicate function used with</p>
+<pre><code class="code">fun _ -&gt; ...</code></pre>
+<p>to invoke the function <i>only</i> if the verbosity level is at
+least PV_Debug. Use, for example, as</p>
+<pre><code class=
+"code">pv_debug verbosity (fun _ -&gt; Printf.printf "Verbosity is at least debug")</code></pre>
+<p>.</p>
+</div>
+</div>
+<h2>Properties module</h2>
+<div class="spec module" id="module-Properties"><a href=
+"#module-Properties" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href="Properties/index.html">Properties</a> : <span class=
+"keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc"></div>
+</div>
+<h2>Workflow module</h2>
+<div class="spec module" id="module-Workflow"><a href=
+"#module-Workflow" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href="Workflow/index.html">Workflow</a> : <span class=
+"keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc"></div>
+</div>
+<h2>Properties types</h2>
+<div class="spec exception" id="exception-Geodata"><a href=
+"#exception-Geodata" class="anchor"></a>
+<div class="def exception"><code><span class=
+"keyword">exception</span></code> <code><span class=
+"exception">Geodata</span> <span class="keyword">of</span>
+string</code></div>
+<div class="doc">
+<p>Geodata exception</p>
+</div>
+</div>
+<div class="spec type" id="type-t_cmdline_overrides"><a href=
+"#type-t_cmdline_overrides" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_cmdline_overrides</code> <code><span class=
+"keyword">=</span></code> <code>{</code>
+<table class="record">
+<tr id="type-t_cmdline_overrides.verbosity" class="anchored">
+<td class="def field"><a href="#type-t_cmdline_overrides.verbosity"
+class="anchor"></a><code>verbosity : <a href=
+"index.html#type-t_verbosity">t_verbosity</a>;</code></td>
+</tr>
+<tr id="type-t_cmdline_overrides.do_reload_state" class="anchored">
+<td class="def field"><a href=
+"#type-t_cmdline_overrides.do_reload_state" class=
+"anchor"></a><code>do_reload_state : bool option;</code></td>
+</tr>
+<tr id="type-t_cmdline_overrides.do_geodata" class="anchored">
+<td class="def field"><a href=
+"#type-t_cmdline_overrides.do_geodata" class=
+"anchor"></a><code>do_geodata : bool option;</code></td>
+</tr>
+<tr id="type-t_cmdline_overrides.do_preprocess" class="anchored">
+<td class="def field"><a href=
+"#type-t_cmdline_overrides.do_preprocess" class=
+"anchor"></a><code>do_preprocess : bool option;</code></td>
+</tr>
+<tr id="type-t_cmdline_overrides.do_condition" class="anchored">
+<td class="def field"><a href=
+"#type-t_cmdline_overrides.do_condition" class=
+"anchor"></a><code>do_condition : bool option;</code></td>
+</tr>
+<tr id="type-t_cmdline_overrides.do_trace" class="anchored">
+<td class="def field"><a href="#type-t_cmdline_overrides.do_trace"
+class="anchor"></a><code>do_trace : bool option;</code></td>
+</tr>
+<tr id="type-t_cmdline_overrides.do_analysis" class="anchored">
+<td class="def field"><a href=
+"#type-t_cmdline_overrides.do_analysis" class=
+"anchor"></a><code>do_analysis : bool option;</code></td>
+</tr>
+<tr id="type-t_cmdline_overrides.do_mapping" class="anchored">
+<td class="def field"><a href=
+"#type-t_cmdline_overrides.do_mapping" class=
+"anchor"></a><code>do_mapping : bool option;</code></td>
+</tr>
+<tr id="type-t_cmdline_overrides.do_plot" class="anchored">
+<td class="def field"><a href="#type-t_cmdline_overrides.do_plot"
+class="anchor"></a><code>do_plot : bool option;</code></td>
+</tr>
+<tr id="type-t_cmdline_overrides.do_save_state" class="anchored">
+<td class="def field"><a href=
+"#type-t_cmdline_overrides.do_save_state" class=
+"anchor"></a><code>do_save_state : bool option;</code></td>
+</tr>
+<tr id="type-t_cmdline_overrides.do_export" class="anchored">
+<td class="def field"><a href="#type-t_cmdline_overrides.do_export"
+class="anchor"></a><code>do_export : bool option;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_cmdline_overrides</p>
+<p>Structure containing command line settings, which can override
+the properties from the JSON files.</p>
+<p>If the options are 'None' then there is no override; else it is
+'Some &lt;value&gt;', and the value should override that from the
+JSON properties.</p>
+<p>This structure is filled out in streamlines.ml, and used in
+read_state</p>
+</div>
+</div>
+<div class="spec type" id="type-t_props_state"><a href=
+"#type-t_props_state" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_props_state</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-t_props_state.verbosity" class="anchored">
+<td class="def field"><a href="#type-t_props_state.verbosity"
+class="anchor"></a><code>verbosity : <a href=
+"index.html#type-t_verbosity">t_verbosity</a>;</code></td>
+</tr>
+<tr id="type-t_props_state.verbose" class="anchored">
+<td class="def field"><a href="#type-t_props_state.verbose" class=
+"anchor"></a><code>verbose : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.debug" class="anchored">
+<td class="def field"><a href="#type-t_props_state.debug" class=
+"anchor"></a><code>debug : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.noisy" class="anchored">
+<td class="def field"><a href="#type-t_props_state.noisy" class=
+"anchor"></a><code>noisy : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.cl_platform" class="anchored">
+<td class="def field"><a href="#type-t_props_state.cl_platform"
+class="anchor"></a><code>cl_platform : int;</code></td>
+</tr>
+<tr id="type-t_props_state.cl_device" class="anchored">
+<td class="def field"><a href="#type-t_props_state.cl_device"
+class="anchor"></a><code>cl_device : int;</code></td>
+</tr>
+<tr id="type-t_props_state.gpu_memory_limit_pc" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_state.gpu_memory_limit_pc" class=
+"anchor"></a><code>gpu_memory_limit_pc : float;</code></td>
+</tr>
+<tr id="type-t_props_state.array_order" class="anchored">
+<td class="def field"><a href="#type-t_props_state.array_order"
+class="anchor"></a><code>array_order : string;</code></td>
+</tr>
+<tr id="type-t_props_state.do_geodata" class="anchored">
+<td class="def field"><a href="#type-t_props_state.do_geodata"
+class="anchor"></a><code>do_geodata : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.do_preprocess" class="anchored">
+<td class="def field"><a href="#type-t_props_state.do_preprocess"
+class="anchor"></a><code>do_preprocess : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.do_condition" class="anchored">
+<td class="def field"><a href="#type-t_props_state.do_condition"
+class="anchor"></a><code>do_condition : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.do_trace" class="anchored">
+<td class="def field"><a href="#type-t_props_state.do_trace" class=
+"anchor"></a><code>do_trace : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.do_postprocess" class="anchored">
+<td class="def field"><a href="#type-t_props_state.do_postprocess"
+class="anchor"></a><code>do_postprocess : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.do_analysis" class="anchored">
+<td class="def field"><a href="#type-t_props_state.do_analysis"
+class="anchor"></a><code>do_analysis : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.do_mapping" class="anchored">
+<td class="def field"><a href="#type-t_props_state.do_mapping"
+class="anchor"></a><code>do_mapping : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.do_plot" class="anchored">
+<td class="def field"><a href="#type-t_props_state.do_plot" class=
+"anchor"></a><code>do_plot : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.do_save_state" class="anchored">
+<td class="def field"><a href="#type-t_props_state.do_save_state"
+class="anchor"></a><code>do_save_state : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.do_export" class="anchored">
+<td class="def field"><a href="#type-t_props_state.do_export"
+class="anchor"></a><code>do_export : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.do_rw_savez" class="anchored">
+<td class="def field"><a href="#type-t_props_state.do_rw_savez"
+class="anchor"></a><code>do_rw_savez : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.do_rw_hdf5" class="anchored">
+<td class="def field"><a href="#type-t_props_state.do_rw_hdf5"
+class="anchor"></a><code>do_rw_hdf5 : bool;</code></td>
+</tr>
+<tr id="type-t_props_state.do_reload_state" class="anchored">
+<td class="def field"><a href="#type-t_props_state.do_reload_state"
+class="anchor"></a><code>do_reload_state : bool;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_props_state</p>
+<p>Properties for the 'toplevel', which is specified in the 'state'
+section of the JSON files.</p>
+<p>Some of these can be overridden on the command line</p>
+</div>
+</div>
+<div class="spec type" id="type-t_props_pocl"><a href=
+"#type-t_props_pocl" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_props_pocl</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-t_props_pocl.cl_platform" class="anchored">
+<td class="def field"><a href="#type-t_props_pocl.cl_platform"
+class="anchor"></a><code>cl_platform : int;</code></td>
+</tr>
+<tr id="type-t_props_pocl.cl_device" class="anchored">
+<td class="def field"><a href="#type-t_props_pocl.cl_device" class=
+"anchor"></a><code>cl_device : int;</code></td>
+</tr>
+<tr id="type-t_props_pocl.gpu_memory_limit_pc" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_pocl.gpu_memory_limit_pc" class=
+"anchor"></a><code>gpu_memory_limit_pc : float;</code></td>
+</tr>
+<tr id="type-t_props_pocl.workflow" class="anchored">
+<td class="def field"><a href="#type-t_props_pocl.workflow" class=
+"anchor"></a><code>workflow : <a href=
+"Workflow/index.html#type-t">Workflow.t</a>;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_props_pocl</p>
+<p>Properties for the <i>pocl</i>, these are specified in the
+'state' section of the JSON files.</p>
+</div>
+</div>
+<div class="spec type" id="type-t_props_geodata"><a href=
+"#type-t_props_geodata" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_props_geodata</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-t_props_geodata.filename" class="anchored">
+<td class="def field"><a href="#type-t_props_geodata.filename"
+class="anchor"></a><code>filename : string;</code></td>
+</tr>
+<tr id="type-t_props_geodata.dtm_file" class="anchored">
+<td class="def field"><a href="#type-t_props_geodata.dtm_file"
+class="anchor"></a><code>dtm_file : string;</code></td>
+</tr>
+<tr id="type-t_props_geodata.dtm_path" class="anchored">
+<td class="def field"><a href="#type-t_props_geodata.dtm_path"
+class="anchor"></a><code>dtm_path : string list;</code></td>
+</tr>
+<tr id="type-t_props_geodata.no_data_values" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_geodata.no_data_values" class=
+"anchor"></a><code>no_data_values : float list;</code></td>
+</tr>
+<tr id="type-t_props_geodata.pad_width" class="anchored">
+<td class="def field"><a href="#type-t_props_geodata.pad_width"
+class="anchor"></a><code>pad_width : int;</code></td>
+</tr>
+<tr id="type-t_props_geodata.title" class="anchored">
+<td class="def field"><a href="#type-t_props_geodata.title" class=
+"anchor"></a><code>title : string;</code></td>
+</tr>
+<tr id="type-t_props_geodata.roi_x_bounds" class="anchored">
+<td class="def field"><a href="#type-t_props_geodata.roi_x_bounds"
+class="anchor"></a><code>roi_x_bounds : int array;</code></td>
+</tr>
+<tr id="type-t_props_geodata.roi_y_bounds" class="anchored">
+<td class="def field"><a href="#type-t_props_geodata.roi_y_bounds"
+class="anchor"></a><code>roi_y_bounds : int array;</code></td>
+</tr>
+<tr id="type-t_props_geodata.basins" class="anchored">
+<td class="def field"><a href="#type-t_props_geodata.basins" class=
+"anchor"></a><code>basins : int list;</code></td>
+</tr>
+<tr id="type-t_props_geodata.basins_file" class="anchored">
+<td class="def field"><a href="#type-t_props_geodata.basins_file"
+class="anchor"></a><code>basins_file : string;</code></td>
+</tr>
+<tr id="type-t_props_geodata.do_basin_masking" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_geodata.do_basin_masking" class=
+"anchor"></a><code>do_basin_masking : bool;</code></td>
+</tr>
+<tr id="type-t_props_geodata.workflow" class="anchored">
+<td class="def field"><a href="#type-t_props_geodata.workflow"
+class="anchor"></a><code>workflow : <a href=
+"Workflow/index.html#type-t">Workflow.t</a>;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_props_geodata</p>
+<p>Properties for the <i>geodata</i> workflow.</p>
+</div>
+</div>
+<div class="spec type" id="type-t_props_preprocess"><a href=
+"#type-t_props_preprocess" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_props_preprocess</code> <code><span class=
+"keyword">=</span></code> <code>{</code>
+<table class="record">
+<tr id="type-t_props_preprocess.do_simple_gradient_vector_field"
+class="anchored">
+<td class="def field"><a href=
+"#type-t_props_preprocess.do_simple_gradient_vector_field" class=
+"anchor"></a><code>do_simple_gradient_vector_field :
+bool;</code></td>
+</tr>
+<tr id="type-t_props_preprocess.do_normalize_speed" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_preprocess.do_normalize_speed" class=
+"anchor"></a><code>do_normalize_speed : bool;</code></td>
+</tr>
+<tr id="type-t_props_preprocess.vecsum_threshold" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_preprocess.vecsum_threshold" class=
+"anchor"></a><code>vecsum_threshold : float;</code></td>
+</tr>
+<tr id="type-t_props_preprocess.divergence_threshold" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_preprocess.divergence_threshold" class=
+"anchor"></a><code>divergence_threshold : float;</code></td>
+</tr>
+<tr id="type-t_props_preprocess.curl_threshold" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_preprocess.curl_threshold" class=
+"anchor"></a><code>curl_threshold : float;</code></td>
+</tr>
+<tr id="type-t_props_preprocess.workflow" class="anchored">
+<td class="def field"><a href="#type-t_props_preprocess.workflow"
+class="anchor"></a><code>workflow : <a href=
+"Workflow/index.html#type-t">Workflow.t</a>;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_props_preprocess</p>
+<p>Properties for the <i>preprocess</i> workflow.</p>
+</div>
+</div>
+<div class="spec type" id="type-t_props_trace"><a href=
+"#type-t_props_trace" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_props_trace</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-t_props_trace.integrator_step_factor" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_trace.integrator_step_factor" class=
+"anchor"></a><code>integrator_step_factor : float;</code></td>
+</tr>
+<tr id="type-t_props_trace.do_trace_upstream" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_trace.do_trace_upstream" class=
+"anchor"></a><code>do_trace_upstream : bool;</code></td>
+</tr>
+<tr id="type-t_props_trace.do_trace_downstream" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_trace.do_trace_downstream" class=
+"anchor"></a><code>do_trace_downstream : bool;</code></td>
+</tr>
+<tr id="type-t_props_trace.max_integration_step_error" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_trace.max_integration_step_error" class=
+"anchor"></a><code>max_integration_step_error : float;</code></td>
+</tr>
+<tr id="type-t_props_trace.max_length" class="anchored">
+<td class="def field"><a href="#type-t_props_trace.max_length"
+class="anchor"></a><code>max_length : float;</code></td>
+</tr>
+<tr id="type-t_props_trace.integration_halt_threshold" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_trace.integration_halt_threshold" class=
+"anchor"></a><code>integration_halt_threshold : float;</code></td>
+</tr>
+<tr id="type-t_props_trace.trajectory_resolution" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_trace.trajectory_resolution" class=
+"anchor"></a><code>trajectory_resolution : int;</code></td>
+</tr>
+<tr id="type-t_props_trace.subpixel_seed_point_density" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_trace.subpixel_seed_point_density" class=
+"anchor"></a><code>subpixel_seed_point_density : int;</code></td>
+</tr>
+<tr id="type-t_props_trace.jitter_magnitude" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_trace.jitter_magnitude" class=
+"anchor"></a><code>jitter_magnitude : float;</code></td>
+</tr>
+<tr id="type-t_props_trace.interchannel_max_n_steps" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_trace.interchannel_max_n_steps" class=
+"anchor"></a><code>interchannel_max_n_steps : int;</code></td>
+</tr>
+<tr id="type-t_props_trace.segmentation_threshold" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_trace.segmentation_threshold" class=
+"anchor"></a><code>segmentation_threshold : int;</code></td>
+</tr>
+<tr id="type-t_props_trace.left_flank_addition" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_trace.left_flank_addition" class=
+"anchor"></a><code>left_flank_addition : int32;</code></td>
+</tr>
+<tr id="type-t_props_trace.workflow" class="anchored">
+<td class="def field"><a href="#type-t_props_trace.workflow" class=
+"anchor"></a><code>workflow : <a href=
+"Workflow/index.html#type-t">Workflow.t</a>;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_props_trace</p>
+<p>Properties for the <i>trace</i> workflow.</p>
+</div>
+</div>
+<div class="spec type" id="type-t_props_analysis"><a href=
+"#type-t_props_analysis" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_props_analysis</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-t_props_analysis.do_marginal_distbn_dsla" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.do_marginal_distbn_dsla" class=
+"anchor"></a><code>do_marginal_distbn_dsla : bool;</code></td>
+</tr>
+<tr id="type-t_props_analysis.do_marginal_distbn_usla" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.do_marginal_distbn_usla" class=
+"anchor"></a><code>do_marginal_distbn_usla : bool;</code></td>
+</tr>
+<tr id="type-t_props_analysis.do_marginal_distbn_dslt" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.do_marginal_distbn_dslt" class=
+"anchor"></a><code>do_marginal_distbn_dslt : bool;</code></td>
+</tr>
+<tr id="type-t_props_analysis.do_marginal_distbn_uslt" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.do_marginal_distbn_uslt" class=
+"anchor"></a><code>do_marginal_distbn_uslt : bool;</code></td>
+</tr>
+<tr id="type-t_props_analysis.do_marginal_distbn_dslc" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.do_marginal_distbn_dslc" class=
+"anchor"></a><code>do_marginal_distbn_dslc : bool;</code></td>
+</tr>
+<tr id="type-t_props_analysis.do_marginal_distbn_uslc" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.do_marginal_distbn_uslc" class=
+"anchor"></a><code>do_marginal_distbn_uslc : bool;</code></td>
+</tr>
+<tr id="type-t_props_analysis.marginal_distbn_kde_kernel" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.marginal_distbn_kde_kernel" class=
+"anchor"></a><code>marginal_distbn_kde_kernel : string;</code></td>
+</tr>
+<tr id="type-t_props_analysis.marginal_distbn_kde_bw_method" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.marginal_distbn_kde_bw_method" class=
+"anchor"></a><code>marginal_distbn_kde_bw_method :
+string;</code></td>
+</tr>
+<tr id="type-t_props_analysis.marginal_distbn_kde_bandwidth" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.marginal_distbn_kde_bandwidth" class=
+"anchor"></a><code>marginal_distbn_kde_bandwidth :
+float;</code></td>
+</tr>
+<tr id="type-t_props_analysis.marginal_distbn_kde_nx_samples"
+class="anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.marginal_distbn_kde_nx_samples" class=
+"anchor"></a><code>marginal_distbn_kde_nx_samples :
+int;</code></td>
+</tr>
+<tr id="type-t_props_analysis.pdf_slt_min" class="anchored">
+<td class="def field"><a href="#type-t_props_analysis.pdf_slt_min"
+class="anchor"></a><code>pdf_slt_min : float;</code></td>
+</tr>
+<tr id="type-t_props_analysis.do_joint_distribn_dsla_dslt" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.do_joint_distribn_dsla_dslt" class=
+"anchor"></a><code>do_joint_distribn_dsla_dslt : bool;</code></td>
+</tr>
+<tr id="type-t_props_analysis.do_joint_distribn_usla_uslt" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.do_joint_distribn_usla_uslt" class=
+"anchor"></a><code>do_joint_distribn_usla_uslt : bool;</code></td>
+</tr>
+<tr id="type-t_props_analysis.do_joint_distribn_uslt_dslt" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.do_joint_distribn_uslt_dslt" class=
+"anchor"></a><code>do_joint_distribn_uslt_dslt : bool;</code></td>
+</tr>
+<tr id="type-t_props_analysis.do_joint_distribn_dsla_usla" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.do_joint_distribn_dsla_usla" class=
+"anchor"></a><code>do_joint_distribn_dsla_usla : bool;</code></td>
+</tr>
+<tr id="type-t_props_analysis.do_joint_distribn_dsla_dslc" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.do_joint_distribn_dsla_dslc" class=
+"anchor"></a><code>do_joint_distribn_dsla_dslc : bool;</code></td>
+</tr>
+<tr id="type-t_props_analysis.do_joint_distribn_usla_uslc" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.do_joint_distribn_usla_uslc" class=
+"anchor"></a><code>do_joint_distribn_usla_uslc : bool;</code></td>
+</tr>
+<tr id="type-t_props_analysis.do_joint_distribn_uslc_dslc" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.do_joint_distribn_uslc_dslc" class=
+"anchor"></a><code>do_joint_distribn_uslc_dslc : bool;</code></td>
+</tr>
+<tr id="type-t_props_analysis.joint_distbn_kde_kernel" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.joint_distbn_kde_kernel" class=
+"anchor"></a><code>joint_distbn_kde_kernel : string;</code></td>
+</tr>
+<tr id="type-t_props_analysis.joint_distbn_kde_bw_method" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.joint_distbn_kde_bw_method" class=
+"anchor"></a><code>joint_distbn_kde_bw_method : string;</code></td>
+</tr>
+<tr id="type-t_props_analysis.joint_distbn_kde_bandwidth" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.joint_distbn_kde_bandwidth" class=
+"anchor"></a><code>joint_distbn_kde_bandwidth : float;</code></td>
+</tr>
+<tr id="type-t_props_analysis.joint_distbn_kde_nxy_samples" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.joint_distbn_kde_nxy_samples" class=
+"anchor"></a><code>joint_distbn_kde_nxy_samples : int;</code></td>
+</tr>
+<tr id="type-t_props_analysis.joint_distbn_y_shear_factor" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.joint_distbn_y_shear_factor" class=
+"anchor"></a><code>joint_distbn_y_shear_factor : float;</code></td>
+</tr>
+<tr id="type-t_props_analysis.joint_distbn_mode2_tilt" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.joint_distbn_mode2_tilt" class=
+"anchor"></a><code>joint_distbn_mode2_tilt : float;</code></td>
+</tr>
+<tr id="type-t_props_analysis.joint_distbn_mode2_nearness_factor"
+class="anchored">
+<td class="def field"><a href=
+"#type-t_props_analysis.joint_distbn_mode2_nearness_factor" class=
+"anchor"></a><code>joint_distbn_mode2_nearness_factor :
+float;</code></td>
+</tr>
+<tr id="type-t_props_analysis.workflow" class="anchored">
+<td class="def field"><a href="#type-t_props_analysis.workflow"
+class="anchor"></a><code>workflow : <a href=
+"Workflow/index.html#type-t">Workflow.t</a>;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_props_analysis</p>
+<p>Properties for the <i>analysis</i> workflow.</p>
+</div>
+</div>
+<div class="spec type" id="type-t_props_plot"><a href=
+"#type-t_props_plot" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_props_plot</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-t_props_plot.do_plot_dtm" class="anchored">
+<td class="def field"><a href="#type-t_props_plot.do_plot_dtm"
+class="anchor"></a><code>do_plot_dtm : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_roi" class="anchored">
+<td class="def field"><a href="#type-t_props_plot.do_plot_roi"
+class="anchor"></a><code>do_plot_roi : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_streamlines" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_streamlines" class=
+"anchor"></a><code>do_plot_streamlines : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_flow_maps" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_flow_maps" class=
+"anchor"></a><code>do_plot_flow_maps : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_segments" class="anchored">
+<td class="def field"><a href="#type-t_props_plot.do_plot_segments"
+class="anchor"></a><code>do_plot_segments : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_channels" class="anchored">
+<td class="def field"><a href="#type-t_props_plot.do_plot_channels"
+class="anchor"></a><code>do_plot_channels : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_hillslope_lengths" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_hillslope_lengths" class=
+"anchor"></a><code>do_plot_hillslope_lengths : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_hillslope_lengths_contoured"
+class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_hillslope_lengths_contoured" class=
+"anchor"></a><code>do_plot_hillslope_lengths_contoured :
+bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_hillslope_distributions" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_hillslope_distributions" class=
+"anchor"></a><code>do_plot_hillslope_distributions :
+bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_downstreamlines" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_downstreamlines" class=
+"anchor"></a><code>do_plot_downstreamlines : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_upstreamlines" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_upstreamlines" class=
+"anchor"></a><code>do_plot_upstreamlines : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_seed_points" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_seed_points" class=
+"anchor"></a><code>do_plot_seed_points : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_flow_vectors" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_flow_vectors" class=
+"anchor"></a><code>do_plot_flow_vectors : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_blockages" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_blockages" class=
+"anchor"></a><code>do_plot_blockages : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_loops" class="anchored">
+<td class="def field"><a href="#type-t_props_plot.do_plot_loops"
+class="anchor"></a><code>do_plot_loops : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.plot_interpolation_method" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.plot_interpolation_method" class=
+"anchor"></a><code>plot_interpolation_method : string;</code></td>
+</tr>
+<tr id="type-t_props_plot.plot_streamline_limit" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.plot_streamline_limit" class=
+"anchor"></a><code>plot_streamline_limit : int;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_color_shaded_relief" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_color_shaded_relief" class=
+"anchor"></a><code>do_plot_color_shaded_relief : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_curvature_roi" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_curvature_roi" class=
+"anchor"></a><code>do_plot_curvature_roi : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_colorized_streamlines" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_colorized_streamlines" class=
+"anchor"></a><code>do_plot_colorized_streamlines :
+bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_merged_streamline_density_bands"
+class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_merged_streamline_density_bands" class=
+"anchor"></a><code>do_plot_merged_streamline_density_bands :
+bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.plot_window_size_factor" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.plot_window_size_factor" class=
+"anchor"></a><code>plot_window_size_factor : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.plot_window_pdf_size_factor" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.plot_window_pdf_size_factor" class=
+"anchor"></a><code>plot_window_pdf_size_factor : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.plot_window_width" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.plot_window_width" class=
+"anchor"></a><code>plot_window_width : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.plot_window_height" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.plot_window_height" class=
+"anchor"></a><code>plot_window_height : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.hillshade_azimuth" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.hillshade_azimuth" class=
+"anchor"></a><code>hillshade_azimuth : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.hillshade_angle" class="anchored">
+<td class="def field"><a href="#type-t_props_plot.hillshade_angle"
+class="anchor"></a><code>hillshade_angle : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.downstreamline_color" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.downstreamline_color" class=
+"anchor"></a><code>downstreamline_color : string;</code></td>
+</tr>
+<tr id="type-t_props_plot.upstreamline_color" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.upstreamline_color" class=
+"anchor"></a><code>upstreamline_color : string;</code></td>
+</tr>
+<tr id="type-t_props_plot.streamline_point_marker" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.streamline_point_marker" class=
+"anchor"></a><code>streamline_point_marker : string;</code></td>
+</tr>
+<tr id="type-t_props_plot.streamline_point_size" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.streamline_point_size" class=
+"anchor"></a><code>streamline_point_size : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.streamline_point_alpha" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.streamline_point_alpha" class=
+"anchor"></a><code>streamline_point_alpha : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.shaded_relief_hillshade_alpha" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.shaded_relief_hillshade_alpha" class=
+"anchor"></a><code>shaded_relief_hillshade_alpha :
+float;</code></td>
+</tr>
+<tr id="type-t_props_plot.shaded_relief_color_alpha" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.shaded_relief_color_alpha" class=
+"anchor"></a><code>shaded_relief_color_alpha : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.streamline_shaded_relief_hillshade_alpha"
+class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.streamline_shaded_relief_hillshade_alpha"
+class="anchor"></a><code>streamline_shaded_relief_hillshade_alpha :
+float;</code></td>
+</tr>
+<tr id="type-t_props_plot.streamline_shaded_relief_color_alpha"
+class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.streamline_shaded_relief_color_alpha" class=
+"anchor"></a><code>streamline_shaded_relief_color_alpha :
+float;</code></td>
+</tr>
+<tr id="type-t_props_plot.streamline_density_alpha" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.streamline_density_alpha" class=
+"anchor"></a><code>streamline_density_alpha : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.streamline_density_cmap" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.streamline_density_cmap" class=
+"anchor"></a><code>streamline_density_cmap : string;</code></td>
+</tr>
+<tr id="type-t_props_plot.grid_shaded_relief_hillshade_alpha"
+class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.grid_shaded_relief_hillshade_alpha" class=
+"anchor"></a><code>grid_shaded_relief_hillshade_alpha :
+float;</code></td>
+</tr>
+<tr id="type-t_props_plot.grid_shaded_relief_color_alpha" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.grid_shaded_relief_color_alpha" class=
+"anchor"></a><code>grid_shaded_relief_color_alpha :
+float;</code></td>
+</tr>
+<tr id="type-t_props_plot.seed_point_marker" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.seed_point_marker" class=
+"anchor"></a><code>seed_point_marker : string;</code></td>
+</tr>
+<tr id="type-t_props_plot.seed_point_marker_size" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.seed_point_marker_size" class=
+"anchor"></a><code>seed_point_marker_size : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.seed_point_marker_color" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.seed_point_marker_color" class=
+"anchor"></a><code>seed_point_marker_color : string;</code></td>
+</tr>
+<tr id="type-t_props_plot.seed_point_marker_alpha" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.seed_point_marker_alpha" class=
+"anchor"></a><code>seed_point_marker_alpha : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.channel_head_marker" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.channel_head_marker" class=
+"anchor"></a><code>channel_head_marker : string;</code></td>
+</tr>
+<tr id="type-t_props_plot.channel_head_marker_alpha" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.channel_head_marker_alpha" class=
+"anchor"></a><code>channel_head_marker_alpha : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.channel_shaded_relief_hillshade_alpha"
+class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.channel_shaded_relief_hillshade_alpha" class=
+"anchor"></a><code>channel_shaded_relief_hillshade_alpha :
+float;</code></td>
+</tr>
+<tr id="type-t_props_plot.gradient_vector_color" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.gradient_vector_color" class=
+"anchor"></a><code>gradient_vector_color : string;</code></td>
+</tr>
+<tr id="type-t_props_plot.gradient_vector_alpha" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.gradient_vector_alpha" class=
+"anchor"></a><code>gradient_vector_alpha : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.gradient_vector_scale" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.gradient_vector_scale" class=
+"anchor"></a><code>gradient_vector_scale : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.blockage_marker_size" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.blockage_marker_size" class=
+"anchor"></a><code>blockage_marker_size : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.loops_marker_size" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.loops_marker_size" class=
+"anchor"></a><code>loops_marker_size : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.classical_streamplot_density" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.classical_streamplot_density" class=
+"anchor"></a><code>classical_streamplot_density :
+float;</code></td>
+</tr>
+<tr id="type-t_props_plot.terrain_cmap" class="anchored">
+<td class="def field"><a href="#type-t_props_plot.terrain_cmap"
+class="anchor"></a><code>terrain_cmap : string;</code></td>
+</tr>
+<tr id="type-t_props_plot.shuffle_random_seed" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.shuffle_random_seed" class=
+"anchor"></a><code>shuffle_random_seed : int;</code></td>
+</tr>
+<tr id="type-t_props_plot.random_cmap_seed" class="anchored">
+<td class="def field"><a href="#type-t_props_plot.random_cmap_seed"
+class="anchor"></a><code>random_cmap_seed : int;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_maps" class="anchored">
+<td class="def field"><a href="#type-t_props_plot.do_plot_maps"
+class="anchor"></a><code>do_plot_maps : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_distributions" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_distributions" class=
+"anchor"></a><code>do_plot_distributions : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_marginal_pdf_dsla" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_marginal_pdf_dsla" class=
+"anchor"></a><code>do_plot_marginal_pdf_dsla : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_marginal_pdf_usla" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_marginal_pdf_usla" class=
+"anchor"></a><code>do_plot_marginal_pdf_usla : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_marginal_pdf_dslt" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_marginal_pdf_dslt" class=
+"anchor"></a><code>do_plot_marginal_pdf_dslt : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_marginal_pdf_uslt" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_marginal_pdf_uslt" class=
+"anchor"></a><code>do_plot_marginal_pdf_uslt : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_marginal_pdf_dslc" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_marginal_pdf_dslc" class=
+"anchor"></a><code>do_plot_marginal_pdf_dslc : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_marginal_pdf_uslc" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_marginal_pdf_uslc" class=
+"anchor"></a><code>do_plot_marginal_pdf_uslc : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_joint_pdf_dsla_usla" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_joint_pdf_dsla_usla" class=
+"anchor"></a><code>do_plot_joint_pdf_dsla_usla : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_joint_pdf_dsla_dslt" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_joint_pdf_dsla_dslt" class=
+"anchor"></a><code>do_plot_joint_pdf_dsla_dslt : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_joint_pdf_usla_uslt" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_joint_pdf_usla_uslt" class=
+"anchor"></a><code>do_plot_joint_pdf_usla_uslt : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_joint_pdf_uslt_dslt" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_joint_pdf_uslt_dslt" class=
+"anchor"></a><code>do_plot_joint_pdf_uslt_dslt : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_joint_pdf_dsla_dslc" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_joint_pdf_dsla_dslc" class=
+"anchor"></a><code>do_plot_joint_pdf_dsla_dslc : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_joint_pdf_usla_uslc" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_joint_pdf_usla_uslc" class=
+"anchor"></a><code>do_plot_joint_pdf_usla_uslc : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.do_plot_joint_pdf_uslc_dslc" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.do_plot_joint_pdf_uslc_dslc" class=
+"anchor"></a><code>do_plot_joint_pdf_uslc_dslc : bool;</code></td>
+</tr>
+<tr id="type-t_props_plot.joint_distbn_n_contours" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.joint_distbn_n_contours" class=
+"anchor"></a><code>joint_distbn_n_contours : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.marginal_distbn_viz_tilt" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.marginal_distbn_viz_tilt" class=
+"anchor"></a><code>marginal_distbn_viz_tilt : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.marginal_distbn_viz_scale" class=
+"anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.marginal_distbn_viz_scale" class=
+"anchor"></a><code>marginal_distbn_viz_scale : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.joint_distbn_viz_tilt" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.joint_distbn_viz_tilt" class=
+"anchor"></a><code>joint_distbn_viz_tilt : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.joint_distbn_viz_scale" class="anchored">
+<td class="def field"><a href=
+"#type-t_props_plot.joint_distbn_viz_scale" class=
+"anchor"></a><code>joint_distbn_viz_scale : float;</code></td>
+</tr>
+<tr id="type-t_props_plot.workflow" class="anchored">
+<td class="def field"><a href="#type-t_props_plot.workflow" class=
+"anchor"></a><code>workflow : <a href=
+"Workflow/index.html#type-t">Workflow.t</a>;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_props_plot</p>
+<p>Properties for the <i>plot</i> workflow.</p>
+</div>
+</div>
+<div class="spec type" id="type-t_props"><a href="#type-t_props"
+class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_props</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-t_props.state" class="anchored">
+<td class="def field"><a href="#type-t_props.state" class=
+"anchor"></a><code>state : <a href=
+"index.html#type-t_props_state">t_props_state</a>;</code></td>
+</tr>
+<tr id="type-t_props.pocl" class="anchored">
+<td class="def field"><a href="#type-t_props.pocl" class=
+"anchor"></a><code>pocl : <a href=
+"index.html#type-t_props_pocl">t_props_pocl</a>;</code></td>
+</tr>
+<tr id="type-t_props.geodata" class="anchored">
+<td class="def field"><a href="#type-t_props.geodata" class=
+"anchor"></a><code>geodata : <a href=
+"index.html#type-t_props_geodata">t_props_geodata</a>;</code></td>
+</tr>
+<tr id="type-t_props.preprocess" class="anchored">
+<td class="def field"><a href="#type-t_props.preprocess" class=
+"anchor"></a><code>preprocess : <a href=
+"index.html#type-t_props_preprocess">t_props_preprocess</a>;</code></td>
+</tr>
+<tr id="type-t_props.trace" class="anchored">
+<td class="def field"><a href="#type-t_props.trace" class=
+"anchor"></a><code>trace : <a href=
+"index.html#type-t_props_trace">t_props_trace</a>;</code></td>
+</tr>
+<tr id="type-t_props.analysis" class="anchored">
+<td class="def field"><a href="#type-t_props.analysis" class=
+"anchor"></a><code>analysis : <a href=
+"index.html#type-t_props_analysis">t_props_analysis</a>;</code></td>
+</tr>
+<tr id="type-t_props.plot" class="anchored">
+<td class="def field"><a href="#type-t_props.plot" class=
+"anchor"></a><code>plot : <a href=
+"index.html#type-t_props_plot">t_props_plot</a>;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_props</p>
+<p>Structure pulling together the properties for all the
+workflows</p>
+</div>
+</div>
+<h2>Properties functions</h2>
+<div class="spec val" id="val-verbosity_from_properties"><a href=
+"#val-verbosity_from_properties" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+verbosity_from_properties : <a href=
+"Workflow/index.html#type-t">Workflow.t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t_verbosity">t_verbosity</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t_verbosity">t_verbosity</a></code></div>
+<div class="doc">
+<p><code class="code">verbosity_from_properties properties
+verbosity</code></p>
+<p>Upgrade verbosity based on 'verbose', 'noisy' and 'debug'
+properties</p>
+</div>
+</div>
+<div class="spec val" id="val-read_state"><a href="#val-read_state"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+read_state : <a href=
+"Properties/index.html#type-t">Properties.t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t_cmdline_overrides">t_cmdline_overrides</a>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_props_state">t_props_state</a> <span class=
+"keyword">*</span> <a href=
+"index.html#type-t_verbosity">t_verbosity</a></code></div>
+<div class="doc">
+<p><code class="code">read_state properties</code></p>
+<p>Read the properties of 'state'</p>
+</div>
+</div>
+<div class="spec val" id="val-read_pocl"><a href="#val-read_pocl"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+read_pocl : <a href="index.html#type-t_verbosity">t_verbosity</a>
+<span class="keyword">‑&gt;</span> <a href=
+"Properties/index.html#type-t">Properties.t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t_props_pocl">t_props_pocl</a></code></div>
+<div class="doc">
+<p><code class="code">read_pocl verbosity properties</code></p>
+<p>Read the properties of 'pocl' - actually from state - to set it
+up for workflow</p>
+</div>
+</div>
+<div class="spec val" id="val-geodata_validate_properties"><a href=
+"#val-geodata_validate_properties" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+geodata_validate_properties : <a href=
+"index.html#type-t_props_geodata">t_props_geodata</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">geodata_validate_properties props</code></p>
+<p>Validate that the properties for the geodata workflow are
+supported</p>
+</div>
+</div>
+<div class="spec val" id="val-read_geodata"><a href=
+"#val-read_geodata" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+read_geodata : <a href=
+"index.html#type-t_verbosity">t_verbosity</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"Properties/index.html#type-t">Properties.t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t_props_geodata">t_props_geodata</a></code></div>
+<div class="doc">
+<p><code class="code">read_geodata verbosity properties</code></p>
+<p>Set up properties for the Geodata workflow, given a higher level
+verbosity and a properties</p>
+</div>
+</div>
+<div class="spec val" id="val-read_preprocess"><a href=
+"#val-read_preprocess" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+read_preprocess : <a href=
+"index.html#type-t_verbosity">t_verbosity</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"Properties/index.html#type-t">Properties.t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t_props_preprocess">t_props_preprocess</a></code></div>
+<div class="doc">
+<p><code class="code">read_preprocess verbosity
+properties</code></p>
+<p>Set up properties for the Preprocess workflow, given a higher
+level verbosity and a properties</p>
+</div>
+</div>
+<div class="spec val" id="val-read_trace"><a href="#val-read_trace"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+read_trace : <a href="index.html#type-t_verbosity">t_verbosity</a>
+<span class="keyword">‑&gt;</span> <a href=
+"Properties/index.html#type-t">Properties.t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t_props_trace">t_props_trace</a></code></div>
+<div class="doc">
+<p><code class="code">read_trace verbosity properties</code></p>
+<p>Set up properties for the Trace workflow, given a higher level
+verbosity and a properties</p>
+</div>
+</div>
+<div class="spec val" id="val-read_analysis"><a href=
+"#val-read_analysis" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+read_analysis : <a href=
+"index.html#type-t_verbosity">t_verbosity</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"Properties/index.html#type-t">Properties.t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t_props_analysis">t_props_analysis</a></code></div>
+<div class="doc">
+<p><code class="code">read_analysis verbosity properties</code></p>
+<p>Set up properties for the Analysis workflow, given a higher
+level verbosity and a properties</p>
+</div>
+</div>
+<div class="spec val" id="val-read_plot"><a href="#val-read_plot"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+read_plot : <a href="index.html#type-t_verbosity">t_verbosity</a>
+<span class="keyword">‑&gt;</span> <a href=
+"Properties/index.html#type-t">Properties.t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t_props_plot">t_props_plot</a></code></div>
+<div class="doc">
+<p><code class="code">read_plot verbosity properties</code></p>
+<p>Set up properties for the Plot workflow, given a higher level
+verbosity and a properties</p>
+</div>
+</div>
+<div class="spec val" id="val-read_properties"><a href=
+"#val-read_properties" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+read_properties : (string list <span class="keyword">*</span>
+string) list <span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_cmdline_overrides">t_cmdline_overrides</a>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_props">t_props</a></code></div>
+<div class="doc">
+<p><code class="code">read_properties file_path_list
+cmdline_overrides</code></p>
+<p>Read properties from a list of JSON files, and incorporate
+overrides from the command line</p>
+</div>
+</div>
+</body>
+</html>

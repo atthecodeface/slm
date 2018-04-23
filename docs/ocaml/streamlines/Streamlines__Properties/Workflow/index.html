@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Workflow
+(streamlines.Streamlines__Properties.Workflow)</title>
+<link rel="stylesheet" href="../../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines__Properties.Workflow</span></h1>
+</header>
+<div class="spec exception" id="exception-Bad_property"><a href=
+"#exception-Bad_property" class="anchor"></a>
+<div class="def exception"><code><span class=
+"keyword">exception</span></code> <code><span class=
+"exception">Bad_property</span> <span class="keyword">of</span>
+string</code></div>
+<div class="doc">
+<p><code class="code">Bad_property string</code> exception</p>
+</div>
+</div>
+<div class="spec type" id="type-t"><a href="#type-t" class=
+"anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t</code> <code><span class="keyword">=</span></code> <code>{</code>
+<table class="record">
+<tr id="type-t.properties" class="anchored">
+<td class="def field"><a href="#type-t.properties" class=
+"anchor"></a><code>properties : <a href=
+"../Properties/index.html#type-t">Properties.t</a>;</code></td>
+</tr>
+<tr id="type-t.workflow_name" class="anchored">
+<td class="def field"><a href="#type-t.workflow_name" class=
+"anchor"></a><code>workflow_name : string;</code></td>
+</tr>
+<tr id="type-t.json" class="anchored">
+<td class="def field"><a href="#type-t.json" class=
+"anchor"></a><code><span class="keyword">mutable</span> json :
+<a href="../index.html#module-Json">Json</a>.json;</code></td>
+</tr>
+<tr id="type-t.rebuild_json" class="anchored">
+<td class="def field"><a href="#type-t.rebuild_json" class=
+"anchor"></a><code><span class="keyword">mutable</span>
+rebuild_json : bool;</code></td>
+</tr>
+<tr id="type-t.verbosity" class="anchored">
+<td class="def field"><a href="#type-t.verbosity" class=
+"anchor"></a><code><span class="keyword">mutable</span> verbosity :
+<a href=
+"../index.html#type-t_verbosity">t_verbosity</a>;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p><code class="code">t</code> structure</p>
+<p>Structure for a workflow, with its name (for selecting its
+properties from the JSON files, and for displaying when it starts
+and stops), JSON files, and evaluated properties. The
+<i>rebuild</i> property is set to force the properties to be
+reevaluated before they are next used - this is therefore set when
+JSON files are added to the workflow, as this requires such a
+reevaluation.</p>
+<p>The properties themselves are kept in the <i>json</i>
+element.</p>
+</div>
+</div>
+<div class="spec val" id="val-create"><a href="#val-create" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> create
+: <a href="../Properties/index.html#type-t">Properties.t</a>
+<span class="keyword">‑&gt;</span> string <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t">t</a></code></div>
+<div class="doc">
+<p><code class="code">create properties workflow_name</code></p>
+<p>Create a workflow with a given name and Properties.t</p>
+</div>
+</div>
+<div class="spec val" id="val-add_json"><a href="#val-add_json"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+add_json : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> Yojson.Basic.json <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">add_json t json</code></p>
+<p>Internal function, used to extract the properties from the
+<a href="index.html#type-t.workflow_name">workflow_name</a> member
+of the JSON, replacing only those properties specified by that
+JSON.</p>
+</div>
+</div>
+<div class="spec val" id="val-rebuild"><a href="#val-rebuild"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> rebuild
+: <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">rebuild t</code></p>
+<p>Rebuild the <i>json</i> element by extracting the contents of
+the workflow from the JSON files in <i>properties</i> - but only do
+the rebuild if marked to do so.</p>
+</div>
+</div>
+<div class="spec val" id="val-str_of"><a href="#val-str_of" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> str_of
+: <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> ?⁠default:string <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+string</code></div>
+<div class="doc">
+<p><code class="code">str_of t ?default member_name</code></p>
+<p>Extract <i>member_name</i> from the json for the workflow if
+present; if not, use default. If this fails, then raise
+Bad_property.</p>
+<p>A string representation of the extracted property is returned.
+If that does not make sense, then, again, Bad_property is
+raised.</p>
+</div>
+</div>
+<div class="spec val" id="val-bool_of"><a href="#val-bool_of"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> bool_of
+: <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> ?⁠override:bool <span class=
+"keyword">‑&gt;</span> ?⁠default:bool <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+bool</code></div>
+<div class="doc">
+<p><code class="code">bool_of t ?default member_name</code></p>
+<p>Extract <i>member_name</i> from the json for the workflow if
+present; if not, use default. If this fails, then raise
+Bad_property.</p>
+<p>A boolean representation of the extracted property is returned.
+If that does not make sense, then, again, Bad_property is
+raised.</p>
+</div>
+</div>
+<div class="spec val" id="val-float_of"><a href="#val-float_of"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+float_of : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> ?⁠default:float <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+float</code></div>
+<div class="doc">
+<p><code class="code">float_of t ?default member_name</code></p>
+<p>Extract <i>member_name</i> from the json for the workflow if
+present; if not, use default. If this fails, then raise
+Bad_property.</p>
+<p>A float representation of the extracted property is returned. If
+that does not make sense, then, again, Bad_property is raised.</p>
+</div>
+</div>
+<div class="spec val" id="val-int_of"><a href="#val-int_of" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> int_of
+: <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> ?⁠default:int <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+int</code></div>
+<div class="doc">
+<p><code class="code">int_of t ?default member_name</code></p>
+<p>Extract <i>member_name</i> from the json for the workflow if
+present; if not, use default. If this fails, then raise
+Bad_property.</p>
+<p>An integer representation of the extracted property is returned.
+If that does not make sense, then, again, Bad_property is
+raised.</p>
+</div>
+</div>
+<div class="spec val" id="val-int32_of"><a href="#val-int32_of"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+int32_of : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> ?⁠default:int32 <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+int32</code></div>
+<div class="doc">
+<p><code class="code">int32_of t ?default member_name</code></p>
+<p>Extract <i>member_name</i> from the json for the workflow if
+present; if not, use default. If this fails, then raise
+Bad_property.</p>
+<p>An Int32 representation of the extracted property is returned.
+If that does not make sense, then, again, Bad_property is
+raised.</p>
+</div>
+</div>
+<div class="spec val" id="val-str_list_of"><a href=
+"#val-str_list_of" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+str_list_of : ?⁠default:string list <span class=
+"keyword">‑&gt;</span> <a href="index.html#type-t">t</a>
+<span class="keyword">‑&gt;</span> string <span class=
+"keyword">‑&gt;</span> string list</code></div>
+<div class="doc">
+<p><code class="code">str_list_of t ?default member_name</code></p>
+<p>Extract <i>member_name</i> from the json for the workflow if
+present; if not, use default. If this fails, then raise
+Bad_property.</p>
+<p>A string list representation of the extracted property is
+returned. If that does not make sense, then, again, Bad_property is
+raised.</p>
+</div>
+</div>
+<div class="spec val" id="val-int_list_of"><a href=
+"#val-int_list_of" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+int_list_of : ?⁠default:int list <span class="keyword">‑&gt;</span>
+<a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+int list</code></div>
+<div class="doc">
+<p><code class="code">int_list_of t ?default member_name</code></p>
+<p>Extract <i>member_name</i> from the json for the workflow if
+present; if not, use default. If this fails, then raise
+Bad_property.</p>
+<p>An int list representation of the extracted property is
+returned. If that does not make sense, then, again, Bad_property is
+raised.</p>
+</div>
+</div>
+<div class="spec val" id="val-float_list_of"><a href=
+"#val-float_list_of" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+float_list_of : ?⁠default:float list <span class=
+"keyword">‑&gt;</span> <a href="index.html#type-t">t</a>
+<span class="keyword">‑&gt;</span> string <span class=
+"keyword">‑&gt;</span> float list</code></div>
+<div class="doc">
+<p><code class="code">float_list_of t ?default
+member_name</code></p>
+<p>Extract <i>member_name</i> from the json for the workflow if
+present; if not, use default. If this fails, then raise
+Bad_property.</p>
+<p>A float list representation of the extracted property is
+returned. If that does not make sense, then, again, Bad_property is
+raised.</p>
+</div>
+</div>
+<div class="spec val" id="val-get_verbosity"><a href=
+"#val-get_verbosity" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+get_verbosity : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../index.html#type-t_verbosity">t_verbosity</a></code></div>
+<div class="doc">
+<p><code class="code">get_verbosity t</code></p>
+<p>Get the verbosity</p>
+</div>
+</div>
+<div class="spec val" id="val-set_verbosity"><a href=
+"#val-set_verbosity" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_verbosity : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../index.html#type-t_verbosity">t_verbosity</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">set_verbosity t verbosity</code></p>
+<p>Upgrade verbosity based on 'verbose', 'noisy' and 'debug'
+properties and set it</p>
+</div>
+</div>
+<div class="spec val" id="val-str"><a href="#val-str" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> str :
+<a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> string</code></div>
+<div class="doc">
+<p><code class="code">str t</code></p>
+<p>Generate a pretty string of the contents of the workflow json,
+for debug usually.</p>
+</div>
+</div>
+<div class="spec val" id="val-pretty_print"><a href=
+"#val-pretty_print" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pretty_print : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pretty_print t</code></p>
+<p>Pretty print the workflow json to stdout.</p>
+</div>
+</div>
+<div class="spec val" id="val-pv_noisy"><a href="#val-pv_noisy"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_noisy : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_noisy t f</code></p>
+<p>Execute f () if verbosity is at least noisy</p>
+</div>
+</div>
+<div class="spec val" id="val-pv_debug"><a href="#val-pv_debug"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_debug : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_debug t</code></p>
+<p>Execute f () if verbosity is at least debug</p>
+</div>
+</div>
+<div class="spec val" id="val-pv_info"><a href="#val-pv_info"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> pv_info
+: <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_info t</code></p>
+<p>Execute f () if verbosity is at least info</p>
+</div>
+</div>
+<div class="spec val" id="val-pv_verbose"><a href="#val-pv_verbose"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_verbose : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_verbose t</code></p>
+<p>Execute f () if verbosity is at least verbose</p>
+</div>
+</div>
+<div class="spec val" id="val-workflow_start"><a href=
+"#val-workflow_start" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+workflow_start : ?⁠subflow:string <span class=
+"keyword">‑&gt;</span> <a href="index.html#type-t">t</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">workflow_start t</code></p>
+<p>Mark start of a workflow, or possibly a subflow of a
+workflow.</p>
+</div>
+</div>
+<div class="spec val" id="val-workflow_end"><a href=
+"#val-workflow_end" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+workflow_end : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">workflow_end t</code></p>
+<p>Mark end of a workflow (or most recent subflow)</p>
+</div>
+</div>
+</body>
+</html>

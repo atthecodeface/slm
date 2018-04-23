@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Globals (streamlines.Streamlines.Globals)</title>
+<link rel="stylesheet" href="../../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines.Globals</span></h1>
+</header>
+<div class="doc">
+<p>Globals - types and support functions used throughout</p>
+</div>
+<pre>
+Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file   globals.ml
+ * @brief  Globally useful functions and statics for the streamlines analysis
+ *</pre>
+<div class="spec module" id="module-ODM"><a href="#module-ODM"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+ODM = Owl.Dense.Matrix.Generic</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-ODN"><a href="#module-ODN"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+ODN = Owl.Dense.Ndarray.Generic</code></div>
+<div class="doc"></div>
+</div>
+<h2>Filename handling</h2>
+<p>These functions standardize the handling of filename generation
+from paths, directory and leafnames. A global <i>rot directory</i>
+is supported, to provide a base for all relative filenames. Path
+elements may also be environment variables, which are automatically
+substituted.</p>
+<div class="spec exception" id="exception-BadEnvironmentVariable">
+<a href="#exception-BadEnvironmentVariable" class="anchor"></a>
+<div class="def exception"><code><span class=
+"keyword">exception</span></code> <code><span class=
+"exception">BadEnvironmentVariable</span> <span class=
+"keyword">of</span> string</code></div>
+<div class="doc">
+<p>BadEnvironmentVariable exception</p>
+<p>Raised if an environment variable is referenced that is not
+actually within the environment</p>
+</div>
+</div>
+<div class="spec val" id="val-root_dir"><a href="#val-root_dir"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+root_dir : string Pervasives.ref</code></div>
+<div class="doc">
+<p><code class="code">root_dir</code> - global that holds the root
+directory to be prepended to all relative paths</p>
+</div>
+</div>
+<div class="spec val" id="val-set_root"><a href="#val-set_root"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_root : string <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p><code class="code">set_root root_dir</code></p>
+<p>Sets the global root directory that is used for all relative
+paths</p>
+</div>
+</div>
+<div class="spec val" id="val-env_value_or_path"><a href=
+"#val-env_value_or_path" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+env_value_or_path : string <span class="keyword">‑&gt;</span>
+string</code></div>
+<div class="doc">
+<p><code class="code">env_value_or_path path</code></p>
+<p>Attempt to interpret a string as an environment variable (such
+as $SLMDATA) else return it as a path string.</p>
+</div>
+</div>
+<div class="spec val" id="val-filename_from_path"><a href=
+"#val-filename_from_path" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+filename_from_path : string list <span class="keyword">‑&gt;</span>
+string <span class="keyword">‑&gt;</span> string</code></div>
+<div class="doc">
+<p><code class="code">filename_from_path path leaf</code></p>
+<p>Generate a full filename from a path and a leaf filename.</p>
+<ul class="at-tag">
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">path</span>: a list of string elements that may be
+environment variables, absolute paths, or relative directories.
+This path is used with the val root_dir as a root directory to
+generate the final path.</li>
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">leaf</span>: the leaf filename that is to be appended
+to the path after that is resolved</li>
+</ul>
+</div>
+</div>
+<h2>Bigarray types and handling</h2>
+<h3>Types</h3>
+<div class="spec type" id="type-t_ba_chars"><a href=
+"#type-t_ba_chars" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_ba_chars</code> <code><span class="keyword">=</span>
+(char,&nbsp;Bigarray.int8_unsigned_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p>t_ba_chars</p>
+<p>Type short-cut for a Bigarray of chars that can be used with Owl
+and OpenCL</p>
+</div>
+</div>
+<div class="spec type" id="type-t_ba_int16s"><a href=
+"#type-t_ba_int16s" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_ba_int16s</code> <code><span class="keyword">=</span>
+(int,&nbsp;Bigarray.int16_unsigned_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p>t_ba_int16s</p>
+<p>Type short-cut for a Bigarray of 16-bit unsigned ints that can
+be used with Owl and OpenCL</p>
+</div>
+</div>
+<div class="spec type" id="type-t_ba_ints"><a href=
+"#type-t_ba_ints" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_ba_ints</code> <code><span class="keyword">=</span>
+(int,&nbsp;Bigarray.int_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p>t_ba_ints</p>
+<p>Type short-cut for a Bigarray of Ocaml ints, for use internally
+and with Owl. Since Ocaml int's are system-size dependent (31 or 63
+bits) the t_ba_ints is less useful for OpenCL.</p>
+</div>
+</div>
+<div class="spec type" id="type-t_ba_floats"><a href=
+"#type-t_ba_floats" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_ba_floats</code> <code><span class="keyword">=</span>
+(float,&nbsp;Bigarray.float32_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p>t_ba_floats</p>
+<p>Type short-cut for a Bigarray of single-precision floats for use
+with Owl and OpenCL</p>
+</div>
+</div>
+<h3>Array creation functions</h3>
+<div class="spec val" id="val-ba_chars"><a href="#val-ba_chars"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+ba_chars : int <span class="keyword">‑&gt;</span>
+(char,&nbsp;Bigarray.int8_unsigned_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p><code class="code">ba_chars size</code></p>
+<p>Create a big array of val size! unsigned chars for use with Owl
+and OpenCL</p>
+</div>
+</div>
+<div class="spec val" id="val-ba_int16s"><a href="#val-ba_int16s"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+ba_int16s : int <span class="keyword">‑&gt;</span>
+(int,&nbsp;Bigarray.int16_unsigned_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p><code class="code">ba_int16s size</code></p>
+<p>Create a big array of val size! unsigned 16-bit integers for use
+with Owl and OpenCL</p>
+</div>
+</div>
+<div class="spec val" id="val-ba_ints"><a href="#val-ba_ints"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> ba_ints
+: int <span class="keyword">‑&gt;</span>
+(int,&nbsp;Bigarray.int_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p><code class="code">ba_ints size</code></p>
+<p>Create a big array of val size! Ocaml ints chars for use
+internally and with Owl</p>
+</div>
+</div>
+<div class="spec val" id="val-ba_floats"><a href="#val-ba_floats"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+ba_floats : int <span class="keyword">‑&gt;</span>
+(float,&nbsp;Bigarray.float32_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p><code class="code">ba_floats size</code></p>
+<p>Create a big array of val size! single-preicision floats for use
+with Owl and OpenCL</p>
+</div>
+</div>
+<div class="spec val" id="val-ba_char2d"><a href="#val-ba_char2d"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+ba_char2d : int <span class="keyword">‑&gt;</span> int <span class=
+"keyword">‑&gt;</span>
+(char,&nbsp;Bigarray.int8_unsigned_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p><code class="code">ba_char2d width height</code></p>
+<p>Create a big array of val width! by val height! of unsigned
+chars for use with Owl and OpenCL</p>
+</div>
+</div>
+<div class="spec val" id="val-ba_int162d"><a href="#val-ba_int162d"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+ba_int162d : int <span class="keyword">‑&gt;</span> int
+<span class="keyword">‑&gt;</span>
+(int,&nbsp;Bigarray.int16_unsigned_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p><code class="code">ba_int162d width height</code></p>
+<p>Create a big array of val width! by val height! of unsigned
+16-bit integers for use with Owl and OpenCL</p>
+</div>
+</div>
+<div class="spec val" id="val-ba_int2d"><a href="#val-ba_int2d"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+ba_int2d : int <span class="keyword">‑&gt;</span> int <span class=
+"keyword">‑&gt;</span>
+(int,&nbsp;Bigarray.int_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p><code class="code">ba_int2d width height</code></p>
+<p>Create a big array of val width! by val height! of Ocaml
+integers for use internally and with Owl</p>
+</div>
+</div>
+<div class="spec val" id="val-ba_float2d"><a href="#val-ba_float2d"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+ba_float2d : int <span class="keyword">‑&gt;</span> int
+<span class="keyword">‑&gt;</span>
+(float,&nbsp;Bigarray.float32_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p><code class="code">ba_float2d width height</code></p>
+<p>Create a big array of val width! by val height! of single
+precision floats for use with Owl and OpenCL</p>
+</div>
+</div>
+<div class="spec val" id="val-ba_int3d"><a href="#val-ba_int3d"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+ba_int3d : int <span class="keyword">‑&gt;</span> int <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span>
+(int,&nbsp;Bigarray.int_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p><code class="code">ba_int3d depth width height</code></p>
+<p>Create a big array of val depth! by val width! by val height! of
+Ocaml integers for interal use</p>
+</div>
+</div>
+<div class="spec val" id="val-ba_float3d"><a href="#val-ba_float3d"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+ba_float3d : int <span class="keyword">‑&gt;</span> int
+<span class="keyword">‑&gt;</span> int <span class=
+"keyword">‑&gt;</span>
+(float,&nbsp;Bigarray.float32_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p><code class="code">ba_float3d depth width height</code></p>
+<p>Create a big array of val depth! by val width! by val height! of
+single precision floats for use with Owl and OpenCL</p>
+</div>
+</div>
+<h3>Bigarray functions - for Owl?</h3>
+<p>Probably suitable to be migrated to Owl</p>
+<div class="spec val" id="val-ba_fold"><a href="#val-ba_fold"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> ba_fold
+: (<span class="type-var">'a</span> <span class=
+"keyword">‑&gt;</span> <span class="type-var">'b</span>
+<span class="keyword">‑&gt;</span> <span class=
+"type-var">'a</span>) <span class="keyword">‑&gt;</span>
+<span class="type-var">'a</span> <span class="keyword">‑&gt;</span>
+(<span class="type-var">'b</span>,&nbsp;<span class=
+"type-var">'c</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class=
+"keyword">‑&gt;</span> <span class=
+"type-var">'a</span></code></div>
+<div class="doc">
+<p><code class="code">ba_fold f acc ba</code></p>
+<p>Fold a function over the big array</p>
+<ul class="at-tag">
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">f</span>: the function to apply to val acc and the
+big array element to produce a new accumulator</li>
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">acc</span>: the base accumulator to use for the first
+invocation of f</li>
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">ba</span>: the big array to fold over</li>
+<li>
+<p><span class="at-tag return">Returns</span> f applied to acc and
+every element of ba</p>
+<p>The order of the elements of ba that f is applied to is not
+specified; in some implementations f may be applied in parallel to
+many elements (with some acc); the final result, though, is the
+application of f to every element of ba exactly once. Hence an
+application of <code class="code">ba_fold min infinity ba</code>
+will always return the minimum value in ba, but <code class=
+"code">ba_fold (fun x-&gt;Some x) None ba</code> will return an
+Some x where x is <i>any</i> element of ba.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-ba_foldi"><a href="#val-ba_foldi"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+ba_foldi : (int <span class="keyword">‑&gt;</span> <span class=
+"type-var">'a</span> <span class="keyword">‑&gt;</span>
+<span class="type-var">'b</span> <span class="keyword">‑&gt;</span>
+<span class="type-var">'a</span>) <span class=
+"keyword">‑&gt;</span> <span class="type-var">'a</span>
+<span class="keyword">‑&gt;</span> (<span class=
+"type-var">'b</span>,&nbsp;<span class=
+"type-var">'c</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class=
+"keyword">‑&gt;</span> <span class=
+"type-var">'a</span></code></div>
+<div class="doc">
+<p><code class="code">ba_foldi f acc ba</code></p>
+<p>Fold a function over the big array with flattened element
+index</p>
+<ul class="at-tag">
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">f</span>: the function to apply to val acc and the
+big array element to produce a new accumulator</li>
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">acc</span>: the base accumulator to use for the first
+invocation of f</li>
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">ba</span>: the big array to fold over</li>
+<li>
+<p><span class="at-tag return">Returns</span> f applied to acc and
+every element of ba</p>
+<p>The order of the elements of ba that f is applied to is not
+specified; in some implementations f may be applied in parallel to
+many elements (with some acc); the final result, though, is the
+application of f to every element of ba exactly once. Hence an
+application of <code class="code">ba_fold min infinity ba</code>
+will always return the minimum value in ba, but <code class=
+"code">ba_fold (fun x-&gt;Some x) None ba</code> will return an
+Some x where x is <i>any</i> element of ba.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-ba_fold2d"><a href="#val-ba_fold2d"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+ba_fold2d : (int <span class="keyword">‑&gt;</span> int
+<span class="keyword">‑&gt;</span> <span class="type-var">'a</span>
+<span class="keyword">‑&gt;</span> <span class="type-var">'b</span>
+<span class="keyword">‑&gt;</span> <span class=
+"type-var">'a</span>) <span class="keyword">‑&gt;</span>
+<span class="type-var">'a</span> <span class="keyword">‑&gt;</span>
+(<span class="type-var">'b</span>,&nbsp;<span class=
+"type-var">'c</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class=
+"keyword">‑&gt;</span> <span class=
+"type-var">'a</span></code></div>
+<div class="doc">
+<p><code class="code">ba_fold2d f acc ba</code></p>
+<p>Fold a function over the 2D big array</p>
+<ul class="at-tag">
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">f</span>: the function to apply to x, y, val acc and
+the big array element to produce a new accumulator</li>
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">acc</span>: the base accumulator to use for the first
+invocation of f</li>
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">ba</span>: the big array to fold over</li>
+<li>
+<p><span class="at-tag return">Returns</span> f applied to acc and
+every element of ba</p>
+<p>The order of the elements of ba that f is applied to is not
+specified; in some implementations f may be applied in parallel to
+many elements (with some acc); the final result, though, is the
+application of f to every element of ba exactly once.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-filtered_array"><a href=
+"#val-filtered_array" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+filtered_array : (int <span class="keyword">‑&gt;</span>
+<span class="type-var">'a</span> <span class="keyword">‑&gt;</span>
+bool) <span class="keyword">‑&gt;</span> (<span class=
+"type-var">'a</span>,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class=
+"keyword">‑&gt;</span> (<span class=
+"type-var">'a</span>,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;<a href=
+"index.html#module-ODN">ODN</a>.t</code></div>
+<div class="doc">
+<p><code class="code">filtered_array f ba</code> - may well be used
+by analysis in the future</p>
+</div>
+</div>
+<div class="spec val" id="val-ba_map_"><a href="#val-ba_map_"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> ba_map_
+: (<span class="type-var">'a</span> <span class=
+"keyword">‑&gt;</span> <span class="type-var">'a</span>)
+<span class="keyword">‑&gt;</span> (<span class=
+"type-var">'a</span>,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;<a href=
+"index.html#module-ODN">ODN</a>.t <span class=
+"keyword">‑&gt;</span> (<span class=
+"type-var">'a</span>,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;<a href=
+"index.html#module-ODN">ODN</a>.t</code></div>
+<div class="doc">
+<p><code class="code">ba_map_ f ba</code></p>
+<p>Map a function over the big array in-place</p>
+<ul class="at-tag">
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">f</span>: the function to apply to the big array
+element to produce a new replacement value</li>
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">ba</span>: the big array to fold over</li>
+<li>
+<p><span class="at-tag return">Returns</span> ba after f has been
+applied to each element</p>
+<p>The order of the elements of ba that f is applied to is not
+specified; in some implementations f may be applied in parallel to
+many elements; the final result, though, is the application of f to
+every element of ba exactly once.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-ba_mapi_"><a href="#val-ba_mapi_"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+ba_mapi_ : (int <span class="keyword">‑&gt;</span> <span class=
+"type-var">'a</span> <span class="keyword">‑&gt;</span>
+<span class="type-var">'a</span>) <span class=
+"keyword">‑&gt;</span> (<span class=
+"type-var">'a</span>,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;<a href=
+"index.html#module-ODN">ODN</a>.t <span class=
+"keyword">‑&gt;</span> (<span class=
+"type-var">'a</span>,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;<a href=
+"index.html#module-ODN">ODN</a>.t</code></div>
+<div class="doc">
+<p><code class="code">ba_mapi_ f ba</code></p>
+<p>Map a function over the big array in-place using element
+index</p>
+<ul class="at-tag">
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">f</span>: the function to apply to the big array
+element to produce a new replacement value</li>
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">ba</span>: the big array to fold over</li>
+<li>
+<p><span class="at-tag return">Returns</span> ba after f has been
+applied to each element</p>
+<p>The order of the elements of ba that f is applied to is not
+specified; in some implementations f may be applied in parallel to
+many elements; the final result, though, is the application of f to
+every element of ba exactly once.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-ba_filter"><a href="#val-ba_filter"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+ba_filter : int <span class="keyword">‑&gt;</span> int <span class=
+"keyword">‑&gt;</span> ((int <span class="keyword">‑&gt;</span> int
+<span class="keyword">‑&gt;</span> <span class=
+"type-var">'a</span>) <span class="keyword">‑&gt;</span> int
+<span class="keyword">‑&gt;</span> int <span class=
+"keyword">‑&gt;</span> <span class="type-var">'b</span>)
+<span class="keyword">‑&gt;</span> <span class="type-var">'b</span>
+<span class="keyword">‑&gt;</span> (<span class=
+"type-var">'a</span>,&nbsp;<span class=
+"type-var">'c</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class=
+"keyword">‑&gt;</span> (<span class=
+"type-var">'b</span>,&nbsp;<span class=
+"type-var">'d</span>,&nbsp;<span class=
+"type-var">'e</span>)&nbsp;Bigarray.Genarray.t <span class=
+"keyword">‑&gt;</span> (<span class=
+"type-var">'b</span>,&nbsp;<span class=
+"type-var">'d</span>,&nbsp;<span class=
+"type-var">'e</span>)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p><code class="code">ba_filter xsize ysize f rv src dst</code></p>
+<p>Apply an (xsize*ysize) filter to every element of 2D src,
+storing the result in dst; for regions near the edge (i.e. where
+the filter lies beyond the edges of src) then rv is used instead of
+the filter application.</p>
+<ul class="at-tag">
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">xsize</span>: number of X elements required by the
+filter</li>
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">ysize</span>: number of Y elements required by the
+filter</li>
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">f</span>: the function to apply to X and Y of src the
+big array element to produce a new value.</li>
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">rv</span>: value to store in destination for the edge
+(X-1)/2 and (Y-1)/2 values</li>
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">src</span>: the big array to apply the filter to</li>
+<li><span class="at-tag parameter">Parameter</span> <span class=
+"module-path">dst</span>: the big array to store the result in</li>
+<li>
+<p><span class="at-tag return">Returns</span> dst</p>
+<p>The order of the elements of src that f is applied to is not
+specified; in some implementations f may be applied in parallel to
+many elements. f is invoked with a 'get' function and x and y as
+arguments; an example function would be</p>
+<pre><code class=
+"code">let gradient_x get x y = ((get (x+1) y) -. (get (x-1) y)) *. 0.5</code></pre></li>
+</ul>
+</div>
+</div>
+<h2>Useful functions</h2>
+<div class="spec val" id="val-trace"><a href="#val-trace" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> trace :
+(string <span class="keyword">*</span> int <span class=
+"keyword">*</span> int <span class="keyword">*</span> int)
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">trace pos</code></p>
+<p>Trace function used to debug code, particularly when it is
+crashing. Use as trace __POS__ to trace execution</p>
+</div>
+</div>
+<div class="spec val" id="val-sfmt"><a href="#val-sfmt" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> sfmt :
+(<span class=
+"type-var">'a</span>,&nbsp;unit,&nbsp;string)&nbsp;Pervasives.format
+<span class="keyword">‑&gt;</span> <span class=
+"type-var">'a</span></code></div>
+<div class="doc">
+<p><code class="code">sfmt</code></p>
+<p>Short-cut for Printf.sprintf, used throughout the code for
+reduced code clutter.</p>
+</div>
+</div>
+<div class="spec val" id="val-get_padded_array"><a href=
+"#val-get_padded_array" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+get_padded_array : (<span class=
+"type-var">'a</span>,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span>
+<span class="type-var">'a</span> <span class="keyword">‑&gt;</span>
+(<span class="type-var">'a</span>,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t</code></div>
+<div class="doc">
+<p><code class="code">get_padded_array ba width value</code></p>
+<p>Pad a 2D generic big array by a certain padding width on all
+four sides, using the specified value for that padding.</p>
+</div>
+</div>
+<div class="spec val" id="val-list_assoc_replace"><a href=
+"#val-list_assoc_replace" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+list_assoc_replace : (<span class="type-var">'a</span> <span class=
+"keyword">*</span> <span class="type-var">'b</span>) list
+<span class="keyword">‑&gt;</span> <span class="type-var">'a</span>
+<span class="keyword">‑&gt;</span> <span class="type-var">'b</span>
+<span class="keyword">‑&gt;</span> (<span class=
+"type-var">'a</span> <span class="keyword">*</span> <span class=
+"type-var">'b</span>) list</code></div>
+<div class="doc">
+<p><code class="code">list_assoc_replace name value</code></p>
+<p>Add or replace (name*value) in assoc List</p>
+</div>
+</div>
+<div class="spec val" id="val-is_nan"><a href="#val-is_nan" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> is_nan
+: float <span class="keyword">‑&gt;</span> bool</code></div>
+<div class="doc">
+<p><code class="code">is_nan x</code></p>
+<p>Shorthand for the correct way to determine if a float is NAN</p>
+</div>
+</div>
+</body>
+</html>

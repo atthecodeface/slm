@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Streamlines__Plot (streamlines.Streamlines__Plot)</title>
+<link rel="stylesheet" href="../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines__Plot</span></h1>
+</header>
+<pre>
+Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file   plot.ml
+ * @brief  Plot workflow
+ *</pre>
+<div class="spec module" id="module-Option"><a href=
+"#module-Option" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+Option = Batteries.Option</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-Owl_plot"><a href=
+"#module-Owl_plot" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+Owl_plot = <a href=
+"../Streamlines__/index.html#module-Local_owl_plot">Streamlines__.Local_owl_plot</a></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-ODM"><a href="#module-ODM"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+ODM = Owl.Dense.Matrix.Generic</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-ODN"><a href="#module-ODN"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+ODN = Owl.Dense.Ndarray.Generic</code></div>
+<div class="doc"></div>
+</div>
+<h2>Types</h2>
+<div class="spec type" id="type-t_plot"><a href="#type-t_plot"
+class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_plot</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-t_plot.props" class="anchored">
+<td class="def field"><a href="#type-t_plot.props" class=
+"anchor"></a><code>props : <a href=
+"../Streamlines/Properties/index.html#type-t_props_plot">Streamlines.Properties.t_props_plot</a>;</code></td>
+</tr>
+<tr id="type-t_plot.region" class="anchored">
+<td class="def field"><a href="#type-t_plot.region" class=
+"anchor"></a><code>region : int list list;</code></td>
+</tr>
+<tr id="type-t_plot.plot" class="anchored">
+<td class="def field"><a href="#type-t_plot.plot" class=
+"anchor"></a><code>plot : <a href=
+"../Streamlines__/Local_owl_plot/index.html#type-handle">Owl_plot.handle</a>;</code></td>
+</tr>
+<tr id="type-t_plot.subplots" class="anchored">
+<td class="def field"><a href="#type-t_plot.subplots" class=
+"anchor"></a><code>subplots : int <span class="keyword">*</span>
+int;</code></td>
+</tr>
+<tr id="type-t_plot.current_sub" class="anchored">
+<td class="def field"><a href="#type-t_plot.current_sub" class=
+"anchor"></a><code><span class="keyword">mutable</span> current_sub
+: int;</code></td>
+</tr>
+<tr id="type-t_plot.filename" class="anchored">
+<td class="def field"><a href="#type-t_plot.filename" class=
+"anchor"></a><code>filename : string;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_plot</p>
+<p>Structure used by the Plot workflow module</p>
+</div>
+</div>
+<h2>pv_verbosity functions</h2>
+<div class="spec val" id="val-pv_noisy"><a href="#val-pv_noisy"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_noisy : <a href="index.html#type-t_plot">t_plot</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_noisy t</code></p>
+<p>Shortcut to use <span class="xref-unresolved" title=
+"unresolved reference to &quot;Plot.t_plot&quot;">Plot.t_plot</span>
+verbosity for <span class="xref-unresolved" title=
+"unresolved reference to &quot;Properties.pv_noisy&quot;">Properties.pv_noisy</span></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_debug"><a href="#val-pv_debug"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_debug : <a href="index.html#type-t_plot">t_plot</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_debug t</code></p>
+<p>Shortcut to use <span class="xref-unresolved" title=
+"unresolved reference to &quot;Plot.t_plot&quot;">Plot.t_plot</span>
+verbosity for <span class="xref-unresolved" title=
+"unresolved reference to &quot;Properties.pv_debug&quot;">Properties.pv_debug</span></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_info"><a href="#val-pv_info"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> pv_info
+: <a href="index.html#type-t_plot">t_plot</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_info t</code></p>
+<p>Shortcut to use <span class="xref-unresolved" title=
+"unresolved reference to &quot;Plot.t_plot&quot;">Plot.t_plot</span>
+verbosity for <span class="xref-unresolved" title=
+"unresolved reference to &quot;Properties.pv_info&quot;">Properties.pv_info</span></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_verbose"><a href="#val-pv_verbose"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_verbose : <a href="index.html#type-t_plot">t_plot</a>
+<span class="keyword">‑&gt;</span> (unit <span class=
+"keyword">‑&gt;</span> unit) <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p><code class="code">pv_verbose t</code></p>
+<p>Shortcut to use <span class="xref-unresolved" title=
+"unresolved reference to &quot;Plot.t_plot&quot;">Plot.t_plot</span>
+verbosity for <span class="xref-unresolved" title=
+"unresolved reference to &quot;Properties.pv_verbose&quot;">Properties.pv_verbose</span></p>
+</div>
+</div>
+<h2>Matrix conversion functions to generate plottable big arrays
+(doubles) from others</h2>
+<div class="spec val" id="val-matrix_for_plot_float32"><a href=
+"#val-matrix_for_plot_float32" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+matrix_for_plot_float32 : region:int list list <span class=
+"keyword">‑&gt;</span>
+(float,&nbsp;Bigarray.float32_elt)&nbsp;<a href=
+"index.html#module-ODN">ODN</a>.t <span class=
+"keyword">‑&gt;</span>
+(float,&nbsp;Bigarray.float64_elt)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t</code></div>
+<div class="doc">
+<p><code class="code">matrix_for_plot_float32 ~region ba</code></p>
+<p>Take an (x,y) big array of float32s and prepare it for plotting;
+replacing any NaNs with 0, transposing it to be (y,x), then
+flipping vertically (as 0,0 is at the top? for plplot)</p>
+<p>The region is extracted first - for all, use ; to subsample by 5
+in X and 3 in Y use <code class="code">[0;-1;5];[0;-1;3]</code>; to
+select X from 10 to 30 and Y from 40 to 70 use <code class=
+"code">[10;30];[40;70]</code> etc</p>
+</div>
+</div>
+<div class="spec val" id="val-matrix_for_plot_byte"><a href=
+"#val-matrix_for_plot_byte" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+matrix_for_plot_byte : region:int list list <span class=
+"keyword">‑&gt;</span> (char,&nbsp;<span class=
+"type-var">'a</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class=
+"keyword">‑&gt;</span>
+(float,&nbsp;Bigarray.float64_elt)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t</code></div>
+<div class="doc">
+<p><code class="code">matrix_for_plot_byte ~region ba</code></p>
+<p>Take an (x,y) big array of chars and prepare it for plotting;
+transposing it to be (y,x), then flipping vertically (as 0,0 is at
+the top? for plplot)</p>
+<p>see <a href=
+"index.html#val-matrix_for_plot_float32">matrix_for_plot_float32</a>
+for details on regions</p>
+</div>
+</div>
+<h2>Shading and Masking array creation</h2>
+<div class="spec val" id="val-generate_hillshade"><a href=
+"#val-generate_hillshade" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+generate_hillshade : (float,&nbsp;<span class=
+"type-var">'a</span>)&nbsp;<a href=
+"../Streamlines__/Globals/index.html#module-ODM">Streamlines__.Globals.ODM</a>.t
+<span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+(float,&nbsp;<span class="type-var">'a</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t</code></div>
+<div class="doc">
+<p><code class="code">generate_hillshade ba azimuth_degrees
+angle_altitude_degrees</code></p>
+<p>Hillshade render DTM topo with light from direction
+azimuth_degrees and tilt angle_attitude_degrees</p>
+<p>Generate a <code class="code">0,1</code> matrix with each pixel
+being a shaded relief</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> a bigarray matching
+the layout of ba (so if X-Y in, then X-Y out)</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-generate_masked_roi"><a href=
+"#val-generate_masked_roi" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+generate_masked_roi : (float,&nbsp;<span class=
+"type-var">'a</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class=
+"keyword">‑&gt;</span> (char,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;<a href=
+"index.html#module-ODN">ODN</a>.t <span class=
+"keyword">‑&gt;</span> (float,&nbsp;<span class=
+"type-var">'a</span>)&nbsp;<a href=
+"../Streamlines__/Globals/index.html#module-ODN">Streamlines__.Globals.ODN</a>.t</code></div>
+<div class="doc">
+<p><code class="code">generate_masked_roi ba mask</code></p>
+<p>Generate a <code class="code">0,0.99</code> matrix with each
+pixel being a height, with masked out as 1.0</p>
+<p>This can be plotted with a color map with colors in the range
+0-0.99 of required alpha, and a color for 1.0 with an alpha of
+0</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> bigarray of the same
+shape as ba</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-all"><a href="#val-all" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> all :
+<span class="type-var">'a</span> list</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-pi"><a href="#val-pi" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> pi :
+float</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-plot_roi_contours"><a href=
+"#val-plot_roi_contours" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plot_roi_contours : ?⁠region:int list list <span class=
+"keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines__/Local_owl_plot/index.html#type-handle">Owl_plot.handle</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines__/Local_owl_plot/index.html#type-handle">Owl_plot.handle</a></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-plot_roi_image"><a href=
+"#val-plot_roi_image" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plot_roi_image : ?⁠region:int list list <span class=
+"keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines__/Local_owl_plot/index.html#type-handle">Owl_plot.handle</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines__/Local_owl_plot/index.html#type-handle">Owl_plot.handle</a></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-oldplot_roi_image"><a href=
+"#val-oldplot_roi_image" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+oldplot_roi_image : ?⁠region:int list list <span class=
+"keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines__/Local_owl_plot/index.html#type-handle">Owl_plot.handle</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines__/Local_owl_plot/index.html#type-handle">Owl_plot.handle</a></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-plot_basin_mask"><a href=
+"#val-plot_basin_mask" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plot_basin_mask : ?⁠region:int list list <span class=
+"keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines__/Local_owl_plot/index.html#type-handle">Owl_plot.handle</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines__/Local_owl_plot/index.html#type-handle">Owl_plot.handle</a></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-new_figure"><a href="#val-new_figure"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+new_figure : ?⁠title:string <span class="keyword">‑&gt;</span>
+?⁠window_title:string <span class="keyword">‑&gt;</span>
+?⁠region:float array <span class="keyword">‑&gt;</span>
+?⁠x_pixel_scale:float <span class="keyword">‑&gt;</span>
+?⁠y_pixel_scale:float <span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_plot">t_plot</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">new_figure ?title ?window_title ?region
+?x_pixel_scale ?y_pixel_scale t</code></p>
+<p>Create a new figure with bounding boxes and so on</p>
+</div>
+</div>
+<h2>Overlay plot functions</h2>
+<div class="spec val" id="val-plot_updownstreamlines_overlay">
+<a href="#val-plot_updownstreamlines_overlay" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plot_updownstreamlines_overlay : ?⁠do_down:bool <span class=
+"keyword">‑&gt;</span> <a href="index.html#type-t_plot">t_plot</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_trace_results">Streamlines.Core.t_trace_results</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">plot_updownstreamlines_overlay ?do_down t
+data results</code></p>
+<p>Plot upstream or downstream streamlines, by selecting
+streamlines from seeds in the results (randomly if there are more
+than the limit specified in the properties).</p>
+<p>Show a progress while the plotting is ongoing</p>
+<p>Plot trajectories from the seed using lines (should be of the
+correct color, size and alpha)</p>
+</div>
+</div>
+<div class="spec val" id="val-plot_roi_shaded_relief_overlay">
+<a href="#val-plot_roi_shaded_relief_overlay" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plot_roi_shaded_relief_overlay : ?⁠do_plot_color_relief:bool
+<span class="keyword">‑&gt;</span> ?⁠color_alpha:float <span class=
+"keyword">‑&gt;</span> ?⁠hillshade_alpha:float <span class=
+"keyword">‑&gt;</span> <a href="index.html#type-t_plot">t_plot</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">plot_roi_shaded_relief_overlay
+?do_plot_color_relief ?color_alpha ?hillshade_alpha t
+data</code></p>
+<p>Append a plot of a shaded relief of ROI</p>
+</div>
+</div>
+<div class="spec val" id="val-plot_classical_streamlines_overlay">
+<a href="#val-plot_classical_streamlines_overlay" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plot_classical_streamlines_overlay : ?⁠region:int list list
+<span class="keyword">‑&gt;</span> <span class="type-var">'a</span>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <span class="type-var">'b</span>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">plot_classical_streamlines_overlay t data
+results</code></p>
+<p>Classic streamlines (overlay method)</p>
+<p>*</p>
+</div>
+</div>
+<h2>Output plot creation functions</h2>
+<div class="spec val" id="val-plot_dtm_shaded_relief"><a href=
+"#val-plot_dtm_shaded_relief" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plot_dtm_shaded_relief : <a href=
+"index.html#type-t_plot">t_plot</a> <span class=
+"keyword">‑&gt;</span> ?⁠subsample:int <span class=
+"keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Geodata/index.html#type-t_data">Streamlines.Geodata.t_data</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">plot_dtm_shaded_relief t
+?subsample:(subsample=5) data geodata</code></p>
+<p>Create a figure with a plot of the shaded relief of DTM</p>
+<p>Add the figure to the output plots</p>
+</div>
+</div>
+<div class="spec val" id="val-plot_roi_shaded_relief"><a href=
+"#val-plot_roi_shaded_relief" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plot_roi_shaded_relief : <a href=
+"index.html#type-t_plot">t_plot</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">plot_roi_shaded_relief t data</code></p>
+<p>Create a figure with the plot of the shaded relief of ROI</p>
+<p>Add the figure to the output plots</p>
+</div>
+</div>
+<div class="spec val" id="val-plot_streamlines"><a href=
+"#val-plot_streamlines" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plot_streamlines : <a href="index.html#type-t_plot">t_plot</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_trace_results">Streamlines.Core.t_trace_results</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">plot_streamlines t data results</code></p>
+<p>Create a figure with the semi-transparent shaded relief, and
+plot flow vectors, streamlines, seed points, blockages and loops on
+as required by the properties</p>
+<p>Add the figure to the output plots</p>
+</div>
+</div>
+<div class="spec val" id="val-plot_classical_streamlines"><a href=
+"#val-plot_classical_streamlines" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plot_classical_streamlines : <a href=
+"index.html#type-t_plot">t_plot</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <span class="type-var">'a</span>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">plot_classical_streamlines t data
+results</code></p>
+<p>Create a figure with the ROI shaded relieft overlaid by arrows
+for classical streamlines for the vector uv field</p>
+</div>
+</div>
+<h2>Output plot group creation functions</h2>
+<div class="spec val" id="val-plot_maps"><a href="#val-plot_maps"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plot_maps : <a href="index.html#type-t_plot">t_plot</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Geodata/index.html#type-t_data">Streamlines.Geodata.t_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_trace_results">Streamlines.Core.t_trace_results</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">plot_maps t data geodata results</code></p>
+<p>Plot maps of DTM ROI streamlines and processed grids</p>
+</div>
+</div>
+<div class="spec val" id="val-plot_distributions"><a href=
+"#val-plot_distributions" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plot_distributions : <span class="type-var">'a</span> <span class=
+"keyword">‑&gt;</span> <span class="type-var">'b</span>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">plot_distributions t data</code></p>
+<p>blah</p>
+</div>
+</div>
+<h2>Workflow functions</h2>
+<div class="spec val" id="val-create"><a href="#val-create" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> create
+: <a href=
+"../Streamlines/Properties/index.html#type-t_props">Streamlines.Properties.t_props</a>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_plot">t_plot</a></code></div>
+<div class="doc">
+<p><code class="code">create props</code></p>
+<p>Create the Plot workflow from its properties</p>
+</div>
+</div>
+<div class="spec val" id="val-process"><a href="#val-process"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> process
+: <a href="index.html#type-t_plot">t_plot</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Geodata/index.html#type-t_data">Streamlines.Geodata.t_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_trace_results">Streamlines.Core.t_trace_results</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">process t data geodata results</code></p>
+<p>Perform the plot workflow, creating all the plots required by
+the properties.</p>
+</div>
+</div>
+</body>
+</html>

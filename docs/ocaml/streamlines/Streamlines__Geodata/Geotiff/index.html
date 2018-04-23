@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Geotiff (streamlines.Streamlines__Geodata.Geotiff)</title>
+<link rel="stylesheet" href="../../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines__Geodata.Geotiff</span></h1>
+</header>
+<div class="spec exception" id="exception-Geotiff"><a href=
+"#exception-Geotiff" class="anchor"></a>
+<div class="def exception"><code><span class=
+"keyword">exception</span></code> <code><span class=
+"exception">Geotiff</span> <span class="keyword">of</span>
+string</code></div>
+<div class="doc">
+<p><code class="code">Geotiff of string</code> exception</p>
+<p>Raised if the Geotiff file is not supported, with a reason
+string</p>
+</div>
+</div>
+<div class="spec val" id="val-read_header"><a href=
+"#val-read_header" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+read_header : string <span class="keyword">‑&gt;</span> <a href=
+"../index.html#type-t_geotiff">t_geotiff</a></code></div>
+<div class="doc">
+<p><code class="code">read_header filename</code></p>
+<p>Reads a Geotiff file header and prepares for reading data from
+bands</p>
+</div>
+</div>
+<div class="spec val" id="val-show_data_band_type"><a href=
+"#val-show_data_band_type" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+show_data_band_type : <a href=
+"../index.html#type-t_geotiff">t_geotiff</a> <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p><code class="code">show_data_band_type geo n</code></p>
+<p>Print the data band type for debug</p>
+</div>
+</div>
+<div class="spec val" id="val-read_data_band"><a href=
+"#val-read_data_band" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+read_data_band : <a href=
+"../index.html#type-t_geotiff">t_geotiff</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../index.html#type-t_geodata">t_geodata</a> <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p><code class="code">read_data_band geo data n</code></p>
+<p>Read the data band n for DTM data</p>
+</div>
+</div>
+<div class="spec val" id="val-map_data_band"><a href=
+"#val-map_data_band" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+map_data_band : <a href=
+"../index.html#type-t_geotiff">t_geotiff</a> <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span>
+(<span class="type-var">'a</span>,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;Gdal.Band.Data.t <span class=
+"keyword">‑&gt;</span> (int <span class="keyword">‑&gt;</span> int
+<span class="keyword">‑&gt;</span> <span class="type-var">'a</span>
+<span class="keyword">‑&gt;</span> unit) <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">map_data_band geo n band_type f</code></p>
+<p>Read the data band n for masked data (Uint16)</p>
+</div>
+</div>
+<div class="spec val" id="val-str"><a href="#val-str" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> str :
+?⁠indent:string <span class="keyword">‑&gt;</span> <a href=
+"../index.html#type-t_geotiff">t_geotiff</a> <span class=
+"keyword">‑&gt;</span> string</code></div>
+<div class="doc">
+<p><code class="code">str ?indent t</code></p>
+<p>Return a string of the Geotiff structure using the specified
+indent</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> a human-readable
+string</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-check_supported"><a href=
+"#val-check_supported" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+check_supported : <a href=
+"../index.html#type-t_geotiff">t_geotiff</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">check_supported t</code></p>
+<p>Checks that the Geotiff file is supported by the code</p>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Streamlines__Local_owl_plot
+(streamlines.Streamlines__Local_owl_plot)</title>
+<link rel="stylesheet" href="../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines__Local_owl_plot</span></h1>
+</header>
+<p>Plot Module</p>
+<div class="spec type" id="type-dsmat"><a href="#type-dsmat" class=
+"anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+dsmat</code> <code><span class="keyword">=</span>
+Owl_dense_matrix.D.mat</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec type" id="type-color"><a href="#type-color" class=
+"anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+color</code> <code><span class="keyword">=</span></code>
+<table class="variant">
+<tr id="type-color.RED" class="anchored">
+<td class="def constructor"><a href="#type-color.RED" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">RED</span></code></td>
+</tr>
+<tr id="type-color.GREEN" class="anchored">
+<td class="def constructor"><a href="#type-color.GREEN" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">GREEN</span></code></td>
+</tr>
+<tr id="type-color.BLUE" class="anchored">
+<td class="def constructor"><a href="#type-color.BLUE" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">BLUE</span></code></td>
+</tr>
+</table>
+</div>
+<div class="doc"></div>
+</div>
+<div class="spec type" id="type-legend_typ"><a href=
+"#type-legend_typ" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+legend_typ</code> <code><span class="keyword">=</span></code>
+<table class="variant">
+<tr id="type-legend_typ.LINE" class="anchored">
+<td class="def constructor"><a href="#type-legend_typ.LINE" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">LINE</span></code></td>
+</tr>
+<tr id="type-legend_typ.SCATTER" class="anchored">
+<td class="def constructor"><a href="#type-legend_typ.SCATTER"
+class="anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">SCATTER</span></code></td>
+</tr>
+<tr id="type-legend_typ.BOX" class="anchored">
+<td class="def constructor"><a href="#type-legend_typ.BOX" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">BOX</span></code></td>
+</tr>
+</table>
+</div>
+<div class="doc"></div>
+</div>
+<div class="spec type" id="type-legend_position"><a href=
+"#type-legend_position" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+legend_position</code> <code><span class="keyword">=</span></code>
+<table class="variant">
+<tr id="type-legend_position.North" class="anchored">
+<td class="def constructor"><a href="#type-legend_position.North"
+class="anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">North</span></code></td>
+</tr>
+<tr id="type-legend_position.South" class="anchored">
+<td class="def constructor"><a href="#type-legend_position.South"
+class="anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">South</span></code></td>
+</tr>
+<tr id="type-legend_position.West" class="anchored">
+<td class="def constructor"><a href="#type-legend_position.West"
+class="anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">West</span></code></td>
+</tr>
+<tr id="type-legend_position.East" class="anchored">
+<td class="def constructor"><a href="#type-legend_position.East"
+class="anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">East</span></code></td>
+</tr>
+<tr id="type-legend_position.NorthWest" class="anchored">
+<td class="def constructor"><a href=
+"#type-legend_position.NorthWest" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">NorthWest</span></code></td>
+</tr>
+<tr id="type-legend_position.NorthEast" class="anchored">
+<td class="def constructor"><a href=
+"#type-legend_position.NorthEast" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">NorthEast</span></code></td>
+</tr>
+<tr id="type-legend_position.SouthWest" class="anchored">
+<td class="def constructor"><a href=
+"#type-legend_position.SouthWest" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">SouthWest</span></code></td>
+</tr>
+<tr id="type-legend_position.SouthEast" class="anchored">
+<td class="def constructor"><a href=
+"#type-legend_position.SouthEast" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">SouthEast</span></code></td>
+</tr>
+</table>
+</div>
+<div class="doc"></div>
+</div>
+<div class="spec type" id="type-legend_item"><a href=
+"#type-legend_item" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+legend_item</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-legend_item.plot_type" class="anchored">
+<td class="def field"><a href="#type-legend_item.plot_type" class=
+"anchor"></a><code><span class="keyword">mutable</span> plot_type :
+<a href="index.html#type-legend_typ">legend_typ</a>;</code></td>
+</tr>
+<tr id="type-legend_item.line_style" class="anchored">
+<td class="def field"><a href="#type-legend_item.line_style" class=
+"anchor"></a><code><span class="keyword">mutable</span> line_style
+: int;</code></td>
+</tr>
+<tr id="type-legend_item.line_color" class="anchored">
+<td class="def field"><a href="#type-legend_item.line_color" class=
+"anchor"></a><code><span class="keyword">mutable</span> line_color
+: int <span class="keyword">*</span> int <span class=
+"keyword">*</span> int;</code></td>
+</tr>
+<tr id="type-legend_item.marker" class="anchored">
+<td class="def field"><a href="#type-legend_item.marker" class=
+"anchor"></a><code><span class="keyword">mutable</span> marker :
+string;</code></td>
+</tr>
+<tr id="type-legend_item.marker_color" class="anchored">
+<td class="def field"><a href="#type-legend_item.marker_color"
+class="anchor"></a><code><span class="keyword">mutable</span>
+marker_color : int <span class="keyword">*</span> int <span class=
+"keyword">*</span> int;</code></td>
+</tr>
+<tr id="type-legend_item.fill_pattern" class="anchored">
+<td class="def field"><a href="#type-legend_item.fill_pattern"
+class="anchor"></a><code><span class="keyword">mutable</span>
+fill_pattern : int;</code></td>
+</tr>
+<tr id="type-legend_item.fill_color" class="anchored">
+<td class="def field"><a href="#type-legend_item.fill_color" class=
+"anchor"></a><code><span class="keyword">mutable</span> fill_color
+: int <span class="keyword">*</span> int <span class=
+"keyword">*</span> int;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec type" id="type-page"><a href="#type-page" class=
+"anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+page</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-page.title" class="anchored">
+<td class="def field"><a href="#type-page.title" class=
+"anchor"></a><code><span class="keyword">mutable</span> title :
+string;</code></td>
+</tr>
+<tr id="type-page.fgcolor" class="anchored">
+<td class="def field"><a href="#type-page.fgcolor" class=
+"anchor"></a><code><span class="keyword">mutable</span> fgcolor :
+int <span class="keyword">*</span> int <span class=
+"keyword">*</span> int;</code></td>
+</tr>
+<tr id="type-page.fontsize" class="anchored">
+<td class="def field"><a href="#type-page.fontsize" class=
+"anchor"></a><code><span class="keyword">mutable</span> fontsize :
+float;</code></td>
+</tr>
+<tr id="type-page.is_3d" class="anchored">
+<td class="def field"><a href="#type-page.is_3d" class=
+"anchor"></a><code><span class="keyword">mutable</span> is_3d :
+bool;</code></td>
+</tr>
+<tr id="type-page.no_axes" class="anchored">
+<td class="def field"><a href="#type-page.no_axes" class=
+"anchor"></a><code><span class="keyword">mutable</span> no_axes :
+bool;</code></td>
+</tr>
+<tr id="type-page.xlabel" class="anchored">
+<td class="def field"><a href="#type-page.xlabel" class=
+"anchor"></a><code><span class="keyword">mutable</span> xlabel :
+string;</code></td>
+</tr>
+<tr id="type-page.ylabel" class="anchored">
+<td class="def field"><a href="#type-page.ylabel" class=
+"anchor"></a><code><span class="keyword">mutable</span> ylabel :
+string;</code></td>
+</tr>
+<tr id="type-page.zlabel" class="anchored">
+<td class="def field"><a href="#type-page.zlabel" class=
+"anchor"></a><code><span class="keyword">mutable</span> zlabel :
+string;</code></td>
+</tr>
+<tr id="type-page.xrange" class="anchored">
+<td class="def field"><a href="#type-page.xrange" class=
+"anchor"></a><code><span class="keyword">mutable</span> xrange :
+float <span class="keyword">*</span> float;</code></td>
+</tr>
+<tr id="type-page.yrange" class="anchored">
+<td class="def field"><a href="#type-page.yrange" class=
+"anchor"></a><code><span class="keyword">mutable</span> yrange :
+float <span class="keyword">*</span> float;</code></td>
+</tr>
+<tr id="type-page.zrange" class="anchored">
+<td class="def field"><a href="#type-page.zrange" class=
+"anchor"></a><code><span class="keyword">mutable</span> zrange :
+float <span class="keyword">*</span> float;</code></td>
+</tr>
+<tr id="type-page.auto_xrange" class="anchored">
+<td class="def field"><a href="#type-page.auto_xrange" class=
+"anchor"></a><code><span class="keyword">mutable</span> auto_xrange
+: bool;</code></td>
+</tr>
+<tr id="type-page.auto_yrange" class="anchored">
+<td class="def field"><a href="#type-page.auto_yrange" class=
+"anchor"></a><code><span class="keyword">mutable</span> auto_yrange
+: bool;</code></td>
+</tr>
+<tr id="type-page.auto_zrange" class="anchored">
+<td class="def field"><a href="#type-page.auto_zrange" class=
+"anchor"></a><code><span class="keyword">mutable</span> auto_zrange
+: bool;</code></td>
+</tr>
+<tr id="type-page.xticklabels" class="anchored">
+<td class="def field"><a href="#type-page.xticklabels" class=
+"anchor"></a><code><span class="keyword">mutable</span> xticklabels
+: (float <span class="keyword">*</span> string) list;</code></td>
+</tr>
+<tr id="type-page.yticklabels" class="anchored">
+<td class="def field"><a href="#type-page.yticklabels" class=
+"anchor"></a><code><span class="keyword">mutable</span> yticklabels
+: (float <span class="keyword">*</span> string) list;</code></td>
+</tr>
+<tr id="type-page.zticklabels" class="anchored">
+<td class="def field"><a href="#type-page.zticklabels" class=
+"anchor"></a><code><span class="keyword">mutable</span> zticklabels
+: (float <span class="keyword">*</span> string) list;</code></td>
+</tr>
+<tr id="type-page.xlogscale" class="anchored">
+<td class="def field"><a href="#type-page.xlogscale" class=
+"anchor"></a><code><span class="keyword">mutable</span> xlogscale :
+bool;</code></td>
+</tr>
+<tr id="type-page.ylogscale" class="anchored">
+<td class="def field"><a href="#type-page.ylogscale" class=
+"anchor"></a><code><span class="keyword">mutable</span> ylogscale :
+bool;</code></td>
+</tr>
+<tr id="type-page.xgrid" class="anchored">
+<td class="def field"><a href="#type-page.xgrid" class=
+"anchor"></a><code><span class="keyword">mutable</span> xgrid :
+bool;</code></td>
+</tr>
+<tr id="type-page.ygrid" class="anchored">
+<td class="def field"><a href="#type-page.ygrid" class=
+"anchor"></a><code><span class="keyword">mutable</span> ygrid :
+bool;</code></td>
+</tr>
+<tr id="type-page.zgrid" class="anchored">
+<td class="def field"><a href="#type-page.zgrid" class=
+"anchor"></a><code><span class="keyword">mutable</span> zgrid :
+bool;</code></td>
+</tr>
+<tr id="type-page.altitude" class="anchored">
+<td class="def field"><a href="#type-page.altitude" class=
+"anchor"></a><code><span class="keyword">mutable</span> altitude :
+float;</code></td>
+</tr>
+<tr id="type-page.azimuth" class="anchored">
+<td class="def field"><a href="#type-page.azimuth" class=
+"anchor"></a><code><span class="keyword">mutable</span> azimuth :
+float;</code></td>
+</tr>
+<tr id="type-page.legend" class="anchored">
+<td class="def field"><a href="#type-page.legend" class=
+"anchor"></a><code><span class="keyword">mutable</span> legend :
+bool;</code></td>
+</tr>
+<tr id="type-page.legend_position" class="anchored">
+<td class="def field"><a href="#type-page.legend_position" class=
+"anchor"></a><code><span class="keyword">mutable</span>
+legend_position : <a href=
+"index.html#type-legend_position">legend_position</a>;</code></td>
+</tr>
+<tr id="type-page.legend_items" class="anchored">
+<td class="def field"><a href="#type-page.legend_items" class=
+"anchor"></a><code><span class="keyword">mutable</span>
+legend_items : <a href=
+"index.html#type-legend_item">legend_item</a> array;</code></td>
+</tr>
+<tr id="type-page.legend_names" class="anchored">
+<td class="def field"><a href="#type-page.legend_names" class=
+"anchor"></a><code><span class="keyword">mutable</span>
+legend_names : string array;</code></td>
+</tr>
+<tr id="type-page.plots" class="anchored">
+<td class="def field"><a href="#type-page.plots" class=
+"anchor"></a><code><span class="keyword">mutable</span> plots :
+(unit <span class="keyword">‑&gt;</span> unit) array;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec type" id="type-handle"><a href="#type-handle"
+class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+handle</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-handle.holdon" class="anchored">
+<td class="def field"><a href="#type-handle.holdon" class=
+"anchor"></a><code><span class="keyword">mutable</span> holdon :
+bool;</code></td>
+</tr>
+<tr id="type-handle.output" class="anchored">
+<td class="def field"><a href="#type-handle.output" class=
+"anchor"></a><code><span class="keyword">mutable</span> output :
+string;</code></td>
+</tr>
+<tr id="type-handle.bgcolor" class="anchored">
+<td class="def field"><a href="#type-handle.bgcolor" class=
+"anchor"></a><code><span class="keyword">mutable</span> bgcolor :
+int <span class="keyword">*</span> int <span class=
+"keyword">*</span> int;</code></td>
+</tr>
+<tr id="type-handle.pensize" class="anchored">
+<td class="def field"><a href="#type-handle.pensize" class=
+"anchor"></a><code><span class="keyword">mutable</span> pensize :
+float;</code></td>
+</tr>
+<tr id="type-handle.page_size" class="anchored">
+<td class="def field"><a href="#type-handle.page_size" class=
+"anchor"></a><code><span class="keyword">mutable</span> page_size :
+int <span class="keyword">*</span> int;</code></td>
+</tr>
+<tr id="type-handle.shape" class="anchored">
+<td class="def field"><a href="#type-handle.shape" class=
+"anchor"></a><code><span class="keyword">mutable</span> shape : int
+<span class="keyword">*</span> int;</code></td>
+</tr>
+<tr id="type-handle.pages" class="anchored">
+<td class="def field"><a href="#type-handle.pages" class=
+"anchor"></a><code><span class="keyword">mutable</span> pages :
+<a href="index.html#type-page">page</a> array;</code></td>
+</tr>
+<tr id="type-handle.current_page" class="anchored">
+<td class="def field"><a href="#type-handle.current_page" class=
+"anchor"></a><code><span class="keyword">mutable</span>
+current_page : int;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec type" id="type-axis"><a href="#type-axis" class=
+"anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+axis</code> <code><span class="keyword">=</span></code>
+<table class="variant">
+<tr id="type-axis.X" class="anchored">
+<td class="def constructor"><a href="#type-axis.X" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">X</span></code></td>
+</tr>
+<tr id="type-axis.Y" class="anchored">
+<td class="def constructor"><a href="#type-axis.Y" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Y</span></code></td>
+</tr>
+<tr id="type-axis.Z" class="anchored">
+<td class="def constructor"><a href="#type-axis.Z" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Z</span></code></td>
+</tr>
+<tr id="type-axis.XY" class="anchored">
+<td class="def constructor"><a href="#type-axis.XY" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">XY</span></code></td>
+</tr>
+<tr id="type-axis.XZ" class="anchored">
+<td class="def constructor"><a href="#type-axis.XZ" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">XZ</span></code></td>
+</tr>
+<tr id="type-axis.YZ" class="anchored">
+<td class="def constructor"><a href="#type-axis.YZ" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">YZ</span></code></td>
+</tr>
+<tr id="type-axis.XYZ" class="anchored">
+<td class="def constructor"><a href="#type-axis.XYZ" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">XYZ</span></code></td>
+</tr>
+</table>
+</div>
+<div class="doc"></div>
+</div>
+<div class="spec type" id="type-spec"><a href="#type-spec" class=
+"anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+spec</code> <code><span class="keyword">=</span></code>
+<table class="variant">
+<tr id="type-spec.RGB" class="anchored">
+<td class="def constructor"><a href="#type-spec.RGB" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">RGB</span> <span class=
+"keyword">of</span> int <span class="keyword">*</span> int
+<span class="keyword">*</span> int</code></td>
+</tr>
+<tr id="type-spec.LineStyle" class="anchored">
+<td class="def constructor"><a href="#type-spec.LineStyle" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">LineStyle</span> <span class=
+"keyword">of</span> int</code></td>
+</tr>
+<tr id="type-spec.LineWidth" class="anchored">
+<td class="def constructor"><a href="#type-spec.LineWidth" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">LineWidth</span> <span class=
+"keyword">of</span> float</code></td>
+</tr>
+<tr id="type-spec.Marker" class="anchored">
+<td class="def constructor"><a href="#type-spec.Marker" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Marker</span> <span class=
+"keyword">of</span> string</code></td>
+</tr>
+<tr id="type-spec.MarkerSize" class="anchored">
+<td class="def constructor"><a href="#type-spec.MarkerSize" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">MarkerSize</span> <span class=
+"keyword">of</span> float</code></td>
+</tr>
+<tr id="type-spec.Fill" class="anchored">
+<td class="def constructor"><a href="#type-spec.Fill" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Fill</span></code></td>
+</tr>
+<tr id="type-spec.FillPattern" class="anchored">
+<td class="def constructor"><a href="#type-spec.FillPattern" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">FillPattern</span> <span class=
+"keyword">of</span> int</code></td>
+</tr>
+<tr id="type-spec.Contour" class="anchored">
+<td class="def constructor"><a href="#type-spec.Contour" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Contour</span></code></td>
+</tr>
+<tr id="type-spec.Altitude" class="anchored">
+<td class="def constructor"><a href="#type-spec.Altitude" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Altitude</span> <span class=
+"keyword">of</span> float</code></td>
+</tr>
+<tr id="type-spec.Azimuth" class="anchored">
+<td class="def constructor"><a href="#type-spec.Azimuth" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Azimuth</span> <span class=
+"keyword">of</span> float</code></td>
+</tr>
+<tr id="type-spec.ZLine" class="anchored">
+<td class="def constructor"><a href="#type-spec.ZLine" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">ZLine</span> <span class=
+"keyword">of</span> <a href=
+"index.html#type-axis">axis</a></code></td>
+</tr>
+<tr id="type-spec.NoMagColor" class="anchored">
+<td class="def constructor"><a href="#type-spec.NoMagColor" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">NoMagColor</span></code></td>
+</tr>
+<tr id="type-spec.Curtain" class="anchored">
+<td class="def constructor"><a href="#type-spec.Curtain" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Curtain</span></code></td>
+</tr>
+<tr id="type-spec.Faceted" class="anchored">
+<td class="def constructor"><a href="#type-spec.Faceted" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Faceted</span></code></td>
+</tr>
+<tr id="type-spec.Axis" class="anchored">
+<td class="def constructor"><a href="#type-spec.Axis" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Axis</span> <span class=
+"keyword">of</span> <a href=
+"index.html#type-axis">axis</a></code></td>
+</tr>
+</table>
+</div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_rgb"><a href="#val-_get_rgb"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_rgb : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> (int <span class=
+"keyword">*</span> int <span class="keyword">*</span> int)
+<span class="keyword">‑&gt;</span> int <span class=
+"keyword">*</span> int <span class="keyword">*</span>
+int</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_line_style"><a href=
+"#val-_get_line_style" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_line_style : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> int <span class=
+"keyword">‑&gt;</span> int</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_line_width"><a href=
+"#val-_get_line_width" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_line_width : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_marker"><a href=
+"#val-_get_marker" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_marker : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> string <span class=
+"keyword">‑&gt;</span> string</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_marker_size"><a href=
+"#val-_get_marker_size" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_marker_size : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_fill"><a href="#val-_get_fill"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_fill : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> bool <span class=
+"keyword">‑&gt;</span> bool</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_fill_pattern"><a href=
+"#val-_get_fill_pattern" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_fill_pattern : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> int <span class=
+"keyword">‑&gt;</span> int</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_contour"><a href=
+"#val-_get_contour" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_contour : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> bool <span class=
+"keyword">‑&gt;</span> bool</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_altitude"><a href=
+"#val-_get_altitude" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_altitude : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_azimuth"><a href=
+"#val-_get_azimuth" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_azimuth : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_zline"><a href="#val-_get_zline"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_zline : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> Plplot.plplot3d_style_enum
+<span class="keyword">‑&gt;</span>
+Plplot.plplot3d_style_enum</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_mag_color"><a href=
+"#val-_get_mag_color" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_mag_color : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> bool <span class=
+"keyword">‑&gt;</span> bool</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_curtain"><a href=
+"#val-_get_curtain" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_curtain : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> bool <span class=
+"keyword">‑&gt;</span> bool</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_faceted"><a href=
+"#val-_get_faceted" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_faceted : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> bool <span class=
+"keyword">‑&gt;</span> bool</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_get_axis"><a href="#val-_get_axis"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_get_axis : <a href="index.html#type-spec">spec</a> list
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-axis">axis</a> <span class="keyword">‑&gt;</span>
+<a href="index.html#type-axis">axis</a></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_create_page"><a href=
+"#val-_create_page" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_create_page : unit <span class="keyword">‑&gt;</span> <a href=
+"index.html#type-page">page</a></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_create_handle"><a href=
+"#val-_create_handle" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_create_handle : unit <span class="keyword">‑&gt;</span> <a href=
+"index.html#type-handle">handle</a></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-create"><a href="#val-create" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> create
+: ?⁠m:int <span class="keyword">‑&gt;</span> ?⁠n:int <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+<a href="index.html#type-handle">handle</a></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-new_page"><a href="#val-new_page"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+new_page : <a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_default_handle"><a href=
+"#val-_default_handle" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_default_handle : <a href=
+"index.html#type-handle">handle</a></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_supported_device"><a href=
+"#val-_supported_device" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_supported_device : string list</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_set_device"><a href=
+"#val-_set_device" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_set_device : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_add_legend_item"><a href=
+"#val-_add_legend_item" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_add_legend_item : <a href="index.html#type-page">page</a>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-legend_typ">legend_typ</a> <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span> (int
+<span class="keyword">*</span> int <span class="keyword">*</span>
+int) <span class="keyword">‑&gt;</span> string <span class=
+"keyword">‑&gt;</span> (int <span class="keyword">*</span> int
+<span class="keyword">*</span> int) <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span> (int
+<span class="keyword">*</span> int <span class="keyword">*</span>
+int) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_plplot_position"><a href=
+"#val-_plplot_position" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_plplot_position : <a href=
+"index.html#type-legend_position">legend_position</a> <span class=
+"keyword">‑&gt;</span> Plplot.plplot_position_enum
+list</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_draw_legend"><a href=
+"#val-_draw_legend" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_draw_legend : <a href="index.html#type-page">page</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_calculate_paper_size"><a href=
+"#val-_calculate_paper_size" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_calculate_paper_size : int <span class="keyword">‑&gt;</span> int
+<span class="keyword">‑&gt;</span> int <span class=
+"keyword">*</span> int</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_config_2d_axis"><a href=
+"#val-_config_2d_axis" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_config_2d_axis : <a href="index.html#type-page">page</a>
+<span class="keyword">‑&gt;</span> int</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_initialise"><a href=
+"#val-_initialise" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_initialise : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_draw_ticklabels"><a href=
+"#val-_draw_ticklabels" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_draw_ticklabels : <a href="index.html#type-page">page</a>
+<span class="keyword">‑&gt;</span> Plplot.plplot_axis_type
+<span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> string</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_prepare_page"><a href=
+"#val-_prepare_page" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_prepare_page : <a href="index.html#type-page">page</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_finalise"><a href="#val-_finalise"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_finalise : unit <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-output"><a href="#val-output" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> output
+: <a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_output"><a href="#val-set_output"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_output : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> string <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_title"><a href="#val-set_title"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_title : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> string <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_xlabel"><a href="#val-set_xlabel"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_xlabel : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> string <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_ylabel"><a href="#val-set_ylabel"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_ylabel : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> string <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_zlabel"><a href="#val-set_zlabel"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_zlabel : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> string <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_xrange"><a href="#val-set_xrange"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_xrange : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_yrange"><a href="#val-set_yrange"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_yrange : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_zrange"><a href="#val-set_zrange"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_zrange : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_xticklabels"><a href=
+"#val-set_xticklabels" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_xticklabels : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> (float <span class=
+"keyword">*</span> string) list <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_yticklabels"><a href=
+"#val-set_yticklabels" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_yticklabels : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> (float <span class=
+"keyword">*</span> string) list <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_zticklabels"><a href=
+"#val-set_zticklabels" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_zticklabels : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> (float <span class=
+"keyword">*</span> string) list <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_foreground_color"><a href=
+"#val-set_foreground_color" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_foreground_color : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> int <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span> int
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_background_color"><a href=
+"#val-set_background_color" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_background_color : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> int <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span> int
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_font_size"><a href=
+"#val-set_font_size" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_font_size : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_pen_size"><a href=
+"#val-set_pen_size" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_pen_size : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_page_size"><a href=
+"#val-set_page_size" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_page_size : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> int <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-legend_on"><a href="#val-legend_on"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+legend_on : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> ?⁠position:<a href=
+"index.html#type-legend_position">legend_position</a> <span class=
+"keyword">‑&gt;</span> string array <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-legend_off"><a href="#val-legend_off"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+legend_off : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-rgb"><a href="#val-rgb" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> rgb :
+<span class="type-var">'a</span> option</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-text"><a href="#val-text" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> text :
+?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+float <span class="keyword">‑&gt;</span> ?⁠dx:float <span class=
+"keyword">‑&gt;</span> ?⁠dy:float <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_thinning"><a href="#val-_thinning"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_thinning : <span class="type-var">'a</span> array <span class=
+"keyword">‑&gt;</span> <span class="type-var">'a</span>
+array</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_union_range"><a href=
+"#val-_union_range" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_union_range : float <span class="keyword">‑&gt;</span> (float
+<span class="keyword">*</span> float) <span class=
+"keyword">‑&gt;</span> float array <span class=
+"keyword">‑&gt;</span> float <span class="keyword">*</span>
+float</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_adjust_range"><a href=
+"#val-_adjust_range" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_adjust_range : ?⁠margin:float <span class="keyword">‑&gt;</span>
+<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> float array <span class=
+"keyword">‑&gt;</span> <a href="index.html#type-axis">axis</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-plot"><a href="#val-plot" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> plot :
+?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-plot_fun"><a href="#val-plot_fun"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plot_fun : ?⁠h:<a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> (Owl_dense_matrix.D.elt <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.elt) <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.elt <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.elt <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-scatter"><a href="#val-scatter"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> scatter
+: ?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-histogram"><a href="#val-histogram"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+histogram : ?⁠h:<a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> ?⁠bin:int <span class="keyword">‑&gt;</span>
+Owl_dense_matrix.D.mat <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-subplot"><a href="#val-subplot"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> subplot
+: <a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span> int
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-stem"><a href="#val-stem" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> stem :
+?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-autocorr"><a href="#val-autocorr"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+autocorr : ?⁠h:<a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-draw_line"><a href="#val-draw_line"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+draw_line : ?⁠h:<a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+float <span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-plot_multi"><a href="#val-plot_multi"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plot_multi : <span class="type-var">'a</span> option</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_draw_error_bar"><a href=
+"#val-_draw_error_bar" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_draw_error_bar : ?⁠w:float <span class="keyword">‑&gt;</span>
+float <span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-error_bar"><a href="#val-error_bar"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+error_bar : ?⁠h:<a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span>
+(float,&nbsp;Bigarray.float64_elt)&nbsp;Owl_dense_matrix_generic.t
+<span class="keyword">‑&gt;</span>
+(float,&nbsp;Bigarray.float64_elt)&nbsp;Owl_dense_matrix_generic.t
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_draw_whiskers_box"><a href=
+"#val-_draw_whiskers_box" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_draw_whiskers_box : float <span class="keyword">‑&gt;</span> float
+<span class="keyword">‑&gt;</span> float array <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-boxplot"><a href="#val-boxplot"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> boxplot
+: ?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_draw_bar"><a href="#val-_draw_bar"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_draw_bar : float <span class="keyword">‑&gt;</span> float
+<span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-draw_rect"><a href="#val-draw_rect"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+draw_rect : ?⁠h:<a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+float <span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-bar"><a href="#val-bar" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> bar :
+?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-area"><a href="#val-area" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> area :
+?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-draw_polygon"><a href=
+"#val-draw_polygon" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+draw_polygon : ?⁠h:<a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_ecdf_interleave"><a href=
+"#val-_ecdf_interleave" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_ecdf_interleave : float array <span class="keyword">‑&gt;</span>
+int <span class="keyword">‑&gt;</span> float array</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-ecdf"><a href="#val-ecdf" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> ecdf :
+?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-stairs"><a href="#val-stairs" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> stairs
+: ?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-draw_circle"><a href=
+"#val-draw_circle" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+draw_circle : ?⁠h:<a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+float <span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_draw_arc"><a href="#val-_draw_arc"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_draw_arc : <span class="type-var">'a</span> <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+float array <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-pie"><a href="#val-pie" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> pie :
+?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-loglog"><a href="#val-loglog" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> loglog
+: ?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> ?⁠x:Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-semilogx"><a href="#val-semilogx"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+semilogx : ?⁠h:<a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> ?⁠x:Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-semilogy"><a href="#val-semilogy"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+semilogy : ?⁠h:<a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> ?⁠x:Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-surf"><a href="#val-surf" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> surf :
+?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-plot3d"><a href="#val-plot3d" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> plot3d
+: ?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-mesh"><a href="#val-mesh" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> mesh :
+?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-heatmap"><a href="#val-heatmap"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> heatmap
+: ?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-contour"><a href="#val-contour"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> contour
+: ?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_draw_extended_line"><a href=
+"#val-_draw_extended_line" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_draw_extended_line : float <span class="keyword">‑&gt;</span>
+float <span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+float <span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+float <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-probplot"><a href="#val-probplot"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+probplot : ?⁠h:<a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> ?⁠dist:(Owl_dense_matrix.D.elt <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.elt) <span class=
+"keyword">‑&gt;</span> ?⁠noref:bool <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-normplot"><a href="#val-normplot"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+normplot : ?⁠h:<a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> ?⁠sigma:float <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-wblplot"><a href="#val-wblplot"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> wblplot
+: ?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> ?⁠lambda:float <span class=
+"keyword">‑&gt;</span> ?⁠k:float <span class="keyword">‑&gt;</span>
+Owl_dense_matrix.D.mat <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-_ecdf_dist"><a href="#val-_ecdf_dist"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+_ecdf_dist : <span class="type-var">'a</span> array <span class=
+"keyword">‑&gt;</span> <span class="type-var">'b</span> array
+<span class="keyword">‑&gt;</span> <span class="type-var">'b</span>
+<span class="keyword">‑&gt;</span> <span class=
+"type-var">'a</span></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-qqplot"><a href="#val-qqplot" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> qqplot
+: ?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> ?⁠pd:(Owl_dense_matrix.D.elt <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.elt) <span class=
+"keyword">‑&gt;</span> ?⁠x:Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-scatterhist"><a href=
+"#val-scatterhist" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+scatterhist : <span class="type-var">'a</span> option</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-image"><a href="#val-image" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> image :
+?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-spy"><a href="#val-spy" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> spy :
+?⁠h:<a href="index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> ?⁠spec:<a href=
+"index.html#type-spec">spec</a> list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-image_boundary"><a href=
+"#val-image_boundary" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+image_boundary : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> <span class="type-var">'a</span>
+<span class="keyword">‑&gt;</span> <span class="type-var">'b</span>
+<span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+<span class="type-var">'c</span> <span class="keyword">‑&gt;</span>
+<span class="type-var">'d</span> <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-image_set_page_size"><a href=
+"#val-image_set_page_size" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+image_set_page_size : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> <span class="type-var">'a</span>
+<span class="keyword">‑&gt;</span> <span class="type-var">'b</span>
+<span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+<span class="type-var">'c</span> <span class="keyword">‑&gt;</span>
+<span class="type-var">'d</span> <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-remove_axes"><a href=
+"#val-remove_axes" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+remove_axes : <a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-image_remove_axes"><a href=
+"#val-image_remove_axes" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+image_remove_axes : <span class="type-var">'a</span> <span class=
+"keyword">‑&gt;</span> <a href="index.html#type-page">page</a>
+<span class="keyword">‑&gt;</span> <span class="type-var">'b</span>
+<span class="keyword">‑&gt;</span> <span class="type-var">'c</span>
+<span class="keyword">‑&gt;</span> <span class="type-var">'d</span>
+<span class="keyword">‑&gt;</span> <span class="type-var">'e</span>
+<span class="keyword">‑&gt;</span> <span class="type-var">'f</span>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-cmap_grey"><a href="#val-cmap_grey"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+cmap_grey : (float <span class="keyword">*</span> (float
+<span class="keyword">*</span> float <span class="keyword">*</span>
+float)) list</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-cmap_terrain"><a href=
+"#val-cmap_terrain" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+cmap_terrain : (float <span class="keyword">*</span> (float
+<span class="keyword">*</span> float <span class="keyword">*</span>
+float)) list</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-set_cmap"><a href="#val-set_cmap"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_cmap : ?⁠masked:float <span class="keyword">‑&gt;</span>
+?⁠alpha:float <span class="keyword">‑&gt;</span> ?⁠num_col:int
+<span class="keyword">‑&gt;</span> (float <span class=
+"keyword">*</span> (float <span class="keyword">*</span> float
+<span class="keyword">*</span> float)) list <span class=
+"keyword">‑&gt;</span> <span class="type-var">'a</span>
+<span class="keyword">‑&gt;</span> <span class="type-var">'b</span>
+<span class="keyword">‑&gt;</span> <span class="type-var">'c</span>
+<span class="keyword">‑&gt;</span> <span class="type-var">'d</span>
+<span class="keyword">‑&gt;</span> <span class="type-var">'e</span>
+<span class="keyword">‑&gt;</span> <span class="type-var">'f</span>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-gjs_image"><a href="#val-gjs_image"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+gjs_image : h:<a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> ?⁠preplot_options:(<a href=
+"index.html#type-handle">handle</a> <span class=
+"keyword">‑&gt;</span> <a href="index.html#type-page">page</a>
+<span class="keyword">‑&gt;</span> Owl_dense_matrix.D.elt array
+array <span class="keyword">‑&gt;</span> float <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+Owl_dense_matrix.D.elt <span class="keyword">‑&gt;</span>
+Owl_dense_matrix.D.elt <span class="keyword">‑&gt;</span> unit)
+list <span class="keyword">‑&gt;</span> ?⁠plot_options:(<a href=
+"index.html#type-page">page</a> <span class="keyword">‑&gt;</span>
+Owl_dense_matrix.D.elt array array <span class=
+"keyword">‑&gt;</span> float <span class="keyword">‑&gt;</span>
+float <span class="keyword">‑&gt;</span> Owl_dense_matrix.D.elt
+<span class="keyword">‑&gt;</span> Owl_dense_matrix.D.elt
+<span class="keyword">‑&gt;</span> unit) list <span class=
+"keyword">‑&gt;</span> Owl_dense_matrix.D.mat <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-add_plplot"><a href="#val-add_plplot"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+add_plplot : h:<a href="index.html#type-handle">handle</a>
+<span class="keyword">‑&gt;</span> (unit <span class=
+"keyword">‑&gt;</span> unit) <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-colors"><a href="#val-colors" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> colors
+: (string <span class="keyword">*</span> (int <span class=
+"keyword">*</span> int <span class="keyword">*</span> int))
+list</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-color_of_name"><a href=
+"#val-color_of_name" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+color_of_name : string <span class="keyword">‑&gt;</span> int
+<span class="keyword">*</span> int <span class="keyword">*</span>
+int</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-plsyms"><a href="#val-plsyms" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> plsyms
+: (string <span class="keyword">*</span> int) list</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-plsym_of_marker"><a href=
+"#val-plsym_of_marker" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+plsym_of_marker : string <span class="keyword">‑&gt;</span>
+int</code></div>
+<div class="doc"></div>
+</div>
+</body>
+</html>

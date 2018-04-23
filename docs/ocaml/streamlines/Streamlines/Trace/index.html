@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Trace (streamlines.Streamlines.Trace)</title>
+<link rel="stylesheet" href="../../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines.Trace</span></h1>
+</header>
+<div class="doc">
+<p>Trace - Workflow module that traces streamlines</p>
+</div>
+<pre>
+Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file   trace.ml
+ * @brief  Trace workflow
+ *</pre>
+<div class="spec module" id="module-Option"><a href=
+"#module-Option" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+Option = Batteries.Option</code></div>
+<div class="doc"></div>
+</div>
+<h2>Types</h2>
+<div class="spec type" id="type-t_data"><a href="#type-t_data"
+class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_data</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-t_data.properties" class="anchored">
+<td class="def field"><a href="#type-t_data.properties" class=
+"anchor"></a><code>properties : <a href=
+"../Properties/index.html#type-t_props">Properties.t_props</a>;</code></td>
+</tr>
+<tr id="type-t_data.props" class="anchored">
+<td class="def field"><a href="#type-t_data.props" class=
+"anchor"></a><code>props : <a href=
+"../Properties/index.html#type-t_props_trace">Properties.t_props_trace</a>;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p><code class="code">t_data</code></p>
+<p>Structure for the Trace workflow</p>
+</div>
+</div>
+<h2>pv_verbosity functions</h2>
+<div class="spec val" id="val-pv_noisy"><a href="#val-pv_noisy"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_noisy : <a href="index.html#type-t_data">t_data</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_noisy t</code></p>
+<p>Shortcut to use <a href=
+"index.html#type-t_data">Trace.t_data</a> verbosity for <a href=
+"../Properties/index.html#val-pv_noisy">Properties.pv_noisy</a></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_debug"><a href="#val-pv_debug"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_debug : <a href="index.html#type-t_data">t_data</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_debug t</code></p>
+<p>Shortcut to use <a href=
+"index.html#type-t_data">Trace.t_data</a> verbosity for <a href=
+"../Properties/index.html#val-pv_debug">Properties.pv_debug</a></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_info"><a href="#val-pv_info"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> pv_info
+: <a href="index.html#type-t_data">t_data</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_info t</code></p>
+<p>Shortcut to use <a href=
+"index.html#type-t_data">Trace.t_data</a> verbosity for <a href=
+"../Properties/index.html#val-pv_info">Properties.pv_info</a></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_verbose"><a href="#val-pv_verbose"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_verbose : <a href="index.html#type-t_data">t_data</a>
+<span class="keyword">‑&gt;</span> (unit <span class=
+"keyword">‑&gt;</span> unit) <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p><code class="code">pv_verbose t</code></p>
+<p>Shortcut to use <a href=
+"index.html#type-t_data">Trace.t_data</a> verbosity for <a href=
+"../Properties/index.html#val-pv_verbose">Properties.pv_verbose</a></p>
+</div>
+</div>
+<h2>Seed functions</h2>
+<div class="spec val" id="val-create_seeds"><a href=
+"#val-create_seeds" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+create_seeds : <a href="index.html#type-t_data">t_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Core/index.html#type-t_core_data">Core.t_core_data</a>
+<span class="keyword">‑&gt;</span>
+(float,&nbsp;Bigarray.float32_elt,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t</code></div>
+<div class="doc">
+<p>create_seeds</p>
+<p>Generate an N by 2 matrix, of seed vectors for every unmasked
+ROI (x,y) (in unpadded coordinates)</p>
+</div>
+</div>
+<div class="spec val" id="val-trace_streamlines"><a href=
+"#val-trace_streamlines" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+trace_streamlines : <a href="index.html#type-t_data">t_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Pocl/index.html#type-t">Pocl.t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../Core/index.html#type-t_core_data">Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> (<span class=
+"type-var">'a</span>,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;<a href=
+"../../Streamlines__/Integration/index.html#module-ODM">Streamlines__.Integration.ODM</a>.t
+<span class="keyword">‑&gt;</span> <a href=
+"../Core/index.html#type-t_trace_results">Core.t_trace_results</a></code></div>
+<div class="doc">
+<p><code class="code">trace_streamlines t pocl data
+seeds</code></p>
+<p>Trace up or downstreamlines across region of interest (ROI) of
+DTM grid with the given seeds.</p>
+<p>The seeds are a big array of unpadded (x,y) ROI locations</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> trace result</li>
+</ul>
+</div>
+</div>
+<h2>Workflow functions</h2>
+<div class="spec val" id="val-create"><a href="#val-create" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> create
+: <a href=
+"../Properties/index.html#type-t_props">Properties.t_props</a>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_data">t_data</a></code></div>
+<div class="doc">
+<p><code class="code">create props</code></p>
+<p>Create the Trace workflow data from its properties</p>
+</div>
+</div>
+<div class="spec val" id="val-process"><a href="#val-process"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> process
+: <a href="index.html#type-t_data">t_data</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../Pocl/index.html#type-t">Pocl.t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../Core/index.html#type-t_core_data">Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Core/index.html#type-t_trace_results">Core.t_trace_results</a></code></div>
+<div class="doc">
+<p><code class="code">process t pocl data</code></p>
+<p>Run the Trace workflow</p>
+<p>This traces all the streamlines both upstream and downstream,
+and derive means streamline point spacing.</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> trace result</li>
+</ul>
+</div>
+</div>
+</body>
+</html>

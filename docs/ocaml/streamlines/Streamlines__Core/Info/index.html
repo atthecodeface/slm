@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Info (streamlines.Streamlines__Core.Info)</title>
+<link rel="stylesheet" href="../../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines__Core.Info</span></h1>
+</header>
+<div class="spec exception" id="exception-Bad_value"><a href=
+"#exception-Bad_value" class="anchor"></a>
+<div class="def exception"><code><span class=
+"keyword">exception</span></code> <code><span class=
+"exception">Bad_value</span> <span class="keyword">of</span>
+string</code></div>
+<div class="doc">
+<p><code class="code">Bad_value why</code> exception</p>
+</div>
+</div>
+<div class="spec type" id="type-t_value"><a href="#type-t_value"
+class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_value</code> <code><span class="keyword">=</span></code>
+<table class="variant">
+<tr id="type-t_value.Str" class="anchored">
+<td class="def constructor"><a href="#type-t_value.Str" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Str</span> <span class=
+"keyword">of</span> string</code></td>
+</tr>
+<tr id="type-t_value.Int" class="anchored">
+<td class="def constructor"><a href="#type-t_value.Int" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Int</span> <span class=
+"keyword">of</span> int</code></td>
+</tr>
+<tr id="type-t_value.Int32" class="anchored">
+<td class="def constructor"><a href="#type-t_value.Int32" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Int32</span> <span class=
+"keyword">of</span> int32</code></td>
+</tr>
+<tr id="type-t_value.Uint" class="anchored">
+<td class="def constructor"><a href="#type-t_value.Uint" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Uint</span> <span class=
+"keyword">of</span> int</code></td>
+</tr>
+<tr id="type-t_value.Uint32" class="anchored">
+<td class="def constructor"><a href="#type-t_value.Uint32" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Uint32</span> <span class=
+"keyword">of</span> int32</code></td>
+</tr>
+<tr id="type-t_value.Float32" class="anchored">
+<td class="def constructor"><a href="#type-t_value.Float32" class=
+"anchor"></a><code><span class="keyword">|</span></code>
+<code><span class="constructor">Float32</span> <span class=
+"keyword">of</span> float</code></td>
+</tr>
+</table>
+</div>
+<div class="doc">
+<p><code class="code">t_value</code> Variant type to handle the
+values potentially required to be passed to OpenCL - ths info
+struct is used to generate the compiler options</p>
+</div>
+</div>
+<div class="spec type" id="type-t_named_value"><a href=
+"#type-t_named_value" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_named_value</code> <code><span class="keyword">=</span> string
+<span class="keyword">*</span> <a href=
+"index.html#type-t_value">t_value</a></code></div>
+<div class="doc">
+<p><code class="code">t_named_value</code> - A named value that is
+the basic element of the Info structure</p>
+</div>
+</div>
+<div class="spec type" id="type-t"><a href="#type-t" class=
+"anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t</code> <code><span class="keyword">=</span></code> <code>{</code>
+<table class="record">
+<tr id="type-t.info" class="anchored">
+<td class="def field"><a href="#type-t.info" class=
+"anchor"></a><code><span class="keyword">mutable</span> info :
+<a href="index.html#type-t_named_value">t_named_value</a>
+list;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t - structure type of an Info module, just a list of named
+values</p>
+</div>
+</div>
+<div class="spec val" id="val-value_str"><a href="#val-value_str"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+value_str : <a href="index.html#type-t_value">t_value</a>
+<span class="keyword">‑&gt;</span> string</code></div>
+<div class="doc">
+<p><code class="code">value_str v</code> - return string
+representation of a value</p>
+<p>The string returned is suitable for inclusion in a
+'-Dfred=&lt;x&gt;'</p>
+</div>
+</div>
+<div class="spec val" id="val-type_str"><a href="#val-type_str"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+type_str : <a href="index.html#type-t_value">t_value</a>
+<span class="keyword">‑&gt;</span> string</code></div>
+<div class="doc">
+<p><code class="code">type_str v</code> - return string
+representation of the type of a value</p>
+<p>This is used for display purposes, not for communication with
+the OpenCL compiler.</p>
+</div>
+</div>
+<div class="spec val" id="val-define_str"><a href="#val-define_str"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+define_str : (string <span class="keyword">*</span> <a href=
+"index.html#type-t_value">t_value</a>) <span class=
+"keyword">‑&gt;</span> string</code></div>
+<div class="doc">
+<p><code class="code">define_str nv</code> - generate
+'-D&lt;name&gt;=&lt;value&gt;' string for the OpenCL compiler</p>
+</div>
+</div>
+<div class="spec val" id="val-create"><a href="#val-create" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> create
+: <span class="type-var">'a</span> <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t">t</a></code></div>
+<div class="doc">
+<p><code class="code">create _</code> - create an Info block</p>
+</div>
+</div>
+<div class="spec val" id="val-set"><a href="#val-set" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> set :
+<a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+<a href="index.html#type-t_value">t_value</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">set t name value</code></p>
+<p>This is for internal use; externally functions such as <a href=
+"index.html#val-set_float32">set_float32</a> should be used. so
+that <a href="index.html#type-t_value">t_value</a> constructors
+need not be used.</p>
+</div>
+</div>
+<div class="spec val" id="val-set_uint"><a href="#val-set_uint"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_uint : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+int <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">add_uint t name x</code></p>
+<p>Set name/(unsigned int x) as a name/value pair in the Info
+block</p>
+</div>
+</div>
+<div class="spec val" id="val-set_uint32"><a href="#val-set_uint32"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_uint32 : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+int32 <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">set_uint32 t name x</code></p>
+<p>Set name/(unsigned int32 x) as a name/value pair in the Info
+block</p>
+</div>
+</div>
+<div class="spec val" id="val-set_float32"><a href=
+"#val-set_float32" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_float32 : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+float <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">set_float32 t name x</code></p>
+<p>Set name/(float32 x) as a name/value pair in the Info block</p>
+</div>
+</div>
+<div class="spec val" id="val-set_str"><a href="#val-set_str"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> set_str
+: <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+string <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">set_str t name x</code></p>
+<p>Set name/(string x) as a name/value pair in the Info block.</p>
+</div>
+</div>
+<div class="spec val" id="val-int_of"><a href="#val-int_of" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> int_of
+: <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+int</code></div>
+<div class="doc">
+<p><code class="code">int_of t name</code></p>
+<p>Get int of the value of name in the Info block; this works for
+values that are int32s, or similar, but if an int cannot be created
+than a Bad_value exception is raised.</p>
+</div>
+</div>
+<div class="spec val" id="val-str_of"><a href="#val-str_of" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> str_of
+: <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+string</code></div>
+<div class="doc">
+<p><code class="code">str_of t name</code></p>
+<p>Get string of the value of name in the Info block. If it is not
+a string then a Bad_value is raised.</p>
+</div>
+</div>
+<div class="spec val" id="val-float_of"><a href="#val-float_of"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+float_of : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+float</code></div>
+<div class="doc">
+<p><code class="code">float_of t name</code></p>
+<p>Get float of the value of name in the Info block; this works for
+values that are ints, or similar, but if a float cannot be created
+than a Bad_value exception is raised.</p>
+</div>
+</div>
+<div class="spec val" id="val-iter"><a href="#val-iter" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> iter :
+(<a href="index.html#type-t_named_value">t_named_value</a>
+<span class="keyword">‑&gt;</span> unit) <span class=
+"keyword">‑&gt;</span> <a href="index.html#type-t">t</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">iter f t</code></p>
+<p>Apply f to every name/value pair in the Info block</p>
+</div>
+</div>
+<div class="spec val" id="val-fold_left"><a href="#val-fold_left"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+fold_left : (<span class="type-var">'a</span> <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t_named_value">t_named_value</a> <span class=
+"keyword">‑&gt;</span> <span class="type-var">'a</span>)
+<span class="keyword">‑&gt;</span> <span class="type-var">'a</span>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t">t</a> <span class="keyword">‑&gt;</span>
+<span class="type-var">'a</span></code></div>
+<div class="doc">
+<p><code class="code">fold_left f acc t</code></p>
+<p>Fold f over every name/value pair in the Info block</p>
+</div>
+</div>
+<div class="spec val" id="val-display"><a href="#val-display"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> display
+: <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p>display</p>
+<p>Print out the info block contents prettily for debug, for
+example</p>
+</div>
+</div>
+</body>
+</html>

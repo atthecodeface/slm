@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Streamlines__Analysis
+(streamlines.Streamlines__Analysis)</title>
+<link rel="stylesheet" href="../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines__Analysis</span></h1>
+</header>
+<p>Copyright (C) 2017-2018, Colin P Stark and Gavin J Stark. All
+rights reserved. * * Licensed under the Apache License, Version 2.0
+(the "License"); * you may not use this file except in compliance
+with the License. * You may obtain a copy of the License at * *
+http://www.apache.org/licenses/LICENSE-2.0 * * Unless required by
+applicable law or agreed to in writing, software * distributed
+under the License is distributed on an "AS IS" BASIS, * WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+See the License for the specific language governing permissions and
+* limitations under the License. * *</p>
+<ul class="at-tag">
+<li><span class="at-tag file">@file</span> analysis.ml *</li>
+<li><span class="at-tag brief">@brief</span> Tools to compute
+statistical distributions (pdfs) and model their properties *</li>
+</ul>
+<div class="spec module" id="module-ODM"><a href="#module-ODM"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+ODM = Owl.Dense.Matrix.Generic</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-ODN"><a href="#module-ODN"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+ODN = Owl.Dense.Ndarray.Generic</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-OS"><a href="#module-OS" class=
+"anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+OS = Owl.Stats</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-Option"><a href=
+"#module-Option" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+Option = Batteries.Option</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-log_or_min"><a href="#val-log_or_min"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+log_or_min : float <span class="keyword">‑&gt;</span>
+float</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-Univariate_distribution">
+<a href="#module-Univariate_distribution" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href=
+"Univariate_distribution/index.html">Univariate_distribution</a> :
+<span class="keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-Bivariate_distribution">
+<a href="#module-Bivariate_distribution" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href=
+"Bivariate_distribution/index.html">Bivariate_distribution</a> :
+<span class="keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec type" id="type-t"><a href="#type-t" class=
+"anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t</code> <code><span class="keyword">=</span></code> <code>{</code>
+<table class="record">
+<tr id="type-t.props" class="anchored">
+<td class="def field"><a href="#type-t.props" class=
+"anchor"></a><code>props : <a href=
+"../Streamlines/Properties/index.html#type-t_props_analysis">Streamlines.Properties.t_props_analysis</a>;</code></td>
+</tr>
+<tr id="type-t.area_correction_factor" class="anchored">
+<td class="def field"><a href="#type-t.area_correction_factor"
+class="anchor"></a><code><span class="keyword">mutable</span>
+area_correction_factor : float;</code></td>
+</tr>
+<tr id="type-t.length_correction_factor" class="anchored">
+<td class="def field"><a href="#type-t.length_correction_factor"
+class="anchor"></a><code><span class="keyword">mutable</span>
+length_correction_factor : float;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-create"><a href="#val-create" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> create
+: <a href=
+"../Streamlines/Properties/index.html#type-t_props">Streamlines.Properties.t_props</a>
+<span class="keyword">‑&gt;</span> <span class="type-var">'a</span>
+<span class="keyword">‑&gt;</span> <span class="type-var">'b</span>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t">t</a></code></div>
+<div class="doc"></div>
+</div>
+<div class="spec val" id="val-process"><a href="#val-process"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> process
+: <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc"></div>
+</div>
+</body>
+</html>

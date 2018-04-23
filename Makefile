@@ -1,6 +1,7 @@
 all: help
 
 ROOT :=	${CURDIR}
+DOC_ROOT := ${ROOT}/docs
 OCAML_ROOT := ${ROOT}/ocaml
 SLMDATA := $(ROOT)/../slmdata
 

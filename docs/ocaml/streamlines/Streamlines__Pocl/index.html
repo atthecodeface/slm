@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Streamlines__Pocl (streamlines.Streamlines__Pocl)</title>
+<link rel="stylesheet" href="../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines__Pocl</span></h1>
+</header>
+<pre>
+Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file   pocl.ml
+ * @brief  OpenCL support library
+ *</pre>
+<div class="spec module" id="module-ODM"><a href="#module-ODM"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+ODM = Owl.Dense.Matrix.Generic</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-ODN"><a href="#module-ODN"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+ODN = Owl.Dense.Ndarray.Generic</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-Option"><a href=
+"#module-Option" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+Option = Batteries.Option</code></div>
+<div class="doc"></div>
+</div>
+<h2>Types</h2>
+<div class="spec type" id="type-t"><a href="#type-t" class=
+"anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t</code> <code><span class="keyword">=</span></code> <code>{</code>
+<table class="record">
+<tr id="type-t.props" class="anchored">
+<td class="def field"><a href="#type-t.props" class=
+"anchor"></a><code>props : <a href=
+"../Streamlines/Properties/index.html#type-t_props_pocl">Streamlines.Properties.t_props_pocl</a>;</code></td>
+</tr>
+<tr id="type-t.platform" class="anchored">
+<td class="def field"><a href="#type-t.platform" class=
+"anchor"></a><code><span class="keyword">mutable</span> platform :
+Owl_opencl_generated.cl_platform_id option;</code></td>
+</tr>
+<tr id="type-t.device" class="anchored">
+<td class="def field"><a href="#type-t.device" class=
+"anchor"></a><code><span class="keyword">mutable</span> device :
+Owl_opencl_generated.cl_device_id option;</code></td>
+</tr>
+<tr id="type-t.context" class="anchored">
+<td class="def field"><a href="#type-t.context" class=
+"anchor"></a><code><span class="keyword">mutable</span> context :
+Owl_opencl_generated.cl_context option;</code></td>
+</tr>
+<tr id="type-t.queue" class="anchored">
+<td class="def field"><a href="#type-t.queue" class=
+"anchor"></a><code><span class="keyword">mutable</span> queue :
+Owl_opencl_generated.cl_command_queue option;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p><code class="code">t</code></p>
+<p>Structure for the Pocl processing</p>
+</div>
+</div>
+<div class="spec type" id="type-t_buffer"><a href="#type-t_buffer"
+class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_buffer</code> <code><span class="keyword">=</span>
+Owl_opencl_generated.cl_mem</code></div>
+<div class="doc">
+<p><code class="code">t_buffer</code></p>
+<p>OpenCL buffer type, rename that from Owl.</p>
+</div>
+</div>
+<div class="spec val" id="val-cl_platform"><a href=
+"#val-cl_platform" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+cl_platform : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span>
+Owl_opencl_generated.cl_platform_id</code></div>
+<div class="doc">
+<p><code class="code">cl_platform t</code></p>
+<p>Retrieve OpenCL platform id from a <span class="xref-unresolved"
+title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span></p>
+</div>
+</div>
+<div class="spec val" id="val-cl_device"><a href="#val-cl_device"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+cl_device : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span>
+Owl_opencl_generated.cl_device_id</code></div>
+<div class="doc">
+<p><code class="code">cl_device t</code></p>
+<p>Retrieve OpenCL device id from a <span class="xref-unresolved"
+title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span></p>
+</div>
+</div>
+<div class="spec val" id="val-cl_context"><a href="#val-cl_context"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+cl_context : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> Owl_opencl_generated.cl_context</code></div>
+<div class="doc">
+<p><code class="code">cl_context t</code></p>
+<p>Retrieve OpenCL context from a <span class="xref-unresolved"
+title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span></p>
+</div>
+</div>
+<div class="spec val" id="val-cl_queue"><a href="#val-cl_queue"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+cl_queue : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span>
+Owl_opencl_generated.cl_command_queue</code></div>
+<div class="doc">
+<p><code class="code">cl_queue t</code></p>
+<p>Retrieve OpenCL queue from a <span class="xref-unresolved"
+title="unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span></p>
+</div>
+</div>
+<h2>pv_verbosity functions</h2>
+<div class="spec val" id="val-pv_noisy"><a href="#val-pv_noisy"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_noisy : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_noisy t</code></p>
+<p>Shortcut to use <span class="xref-unresolved" title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span>
+verbosity for <span class="xref-unresolved" title=
+"unresolved reference to &quot;Properties.pv_noisy&quot;">Properties.pv_noisy</span></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_debug"><a href="#val-pv_debug"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_debug : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_debug t</code></p>
+<p>Shortcut to use <span class="xref-unresolved" title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span>
+verbosity for <span class="xref-unresolved" title=
+"unresolved reference to &quot;Properties.pv_debug&quot;">Properties.pv_debug</span></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_info"><a href="#val-pv_info"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> pv_info
+: <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_info t</code></p>
+<p>Shortcut to use <span class="xref-unresolved" title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span>
+verbosity for <span class="xref-unresolved" title=
+"unresolved reference to &quot;Properties.pv_info&quot;">Properties.pv_info</span></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_verbose"><a href="#val-pv_verbose"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_verbose : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_verbose t</code></p>
+<p>Shortcut to use <span class="xref-unresolved" title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span>
+verbosity for <span class="xref-unresolved" title=
+"unresolved reference to &quot;Properties.pv_verbose&quot;">Properties.pv_verbose</span></p>
+</div>
+</div>
+<h2>Show functions</h2>
+<div class="spec val" id="val-show_device"><a href=
+"#val-show_device" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+show_device : int <span class="keyword">‑&gt;</span> int
+<span class="keyword">‑&gt;</span>
+Owl_opencl_generated.cl_device_id <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">show_device pi di d</code></p>
+<p>Show OpenCL information for platform index pi and device d
+(index di)</p>
+</div>
+</div>
+<div class="spec val" id="val-show_platform"><a href=
+"#val-show_platform" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+show_platform : int <span class="keyword">‑&gt;</span>
+Owl_opencl_generated.cl_platform_id <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">show_platform pi p</code></p>
+<p>Show OpenCL information and all devices for platform p</p>
+</div>
+</div>
+<div class="spec val" id="val-show_system"><a href=
+"#val-show_system" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+show_system : unit <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p><code class="code">show_system ()</code></p>
+<p>Show OpenCL information for all platforms and all devices</p>
+</div>
+</div>
+<div class="spec val" id="val-show_context"><a href=
+"#val-show_context" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+show_context : Owl_opencl_generated.cl_context <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">show_context ctxt</code></p>
+<p>Show OpenCL information for a context</p>
+</div>
+</div>
+<div class="spec val" id="val-show_program"><a href=
+"#val-show_program" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+show_program : Owl_opencl_generated.cl_program <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">show_program program</code></p>
+<p>Show OpenCL information for a program</p>
+</div>
+</div>
+<div class="spec val" id="val-show_kernel"><a href=
+"#val-show_kernel" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+show_kernel : Owl_opencl_generated.cl_kernel <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">show_kernel kernel</code></p>
+<p>Show OpenCL information for a kernel</p>
+</div>
+</div>
+<div class="spec val" id="val-show_queue"><a href="#val-show_queue"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+show_queue : Owl_opencl_generated.cl_command_queue <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">show_queue queue</code></p>
+<p>Show OpenCL information for a queue</p>
+</div>
+</div>
+<h2>Program and kernel building functions</h2>
+<div class="spec val" id="val-debug_build"><a href=
+"#val-debug_build" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+debug_build : Owl_opencl.G.cl_program <span class=
+"keyword">‑&gt;</span> Owl_opencl.G.cl_device_id <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">debug_build program device</code></p>
+<p>display debug output for a built program on a device</p>
+</div>
+</div>
+<div class="spec val" id="val-make_program"><a href=
+"#val-make_program" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+make_program : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+string <span class="keyword">‑&gt;</span>
+Owl_opencl_generated.cl_program</code></div>
+<div class="doc">
+<p><code class="code">make_program t source
+compile_options</code></p>
+<p>Compile source with compile_options using the platform, device,
+and context specified by the <span class="xref-unresolved" title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span> t.</p>
+<p>Provide verbose information if required.</p>
+<p>On failure, output debug information for the program and raise
+an exception</p>
+<ul class="at-tag">
+<li><span class="at-tag returns">@returns</span> the compiled
+program</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-get_kernel"><a href="#val-get_kernel"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+get_kernel : <span class="type-var">'a</span> <span class=
+"keyword">‑&gt;</span> Owl_opencl_generated.cl_program <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+Owl_opencl_generated.cl_kernel</code></div>
+<div class="doc">
+<p><code class="code">get_kernel pocl program name</code></p>
+<p>Get the kernel of the given name from the compiled program</p>
+</div>
+</div>
+<div class="spec val" id="val-make_queue"><a href="#val-make_queue"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+make_queue : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span>
+Owl_opencl_generated.cl_command_queue</code></div>
+<div class="doc">
+<p><code class="code">make_queue t</code></p>
+<p>Make an OpenCL queue for the context and device in the
+<span class="xref-unresolved" title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span></p>
+</div>
+</div>
+<h2>Buffer handling functions</h2>
+<div class="spec val" id="val-buffer_of_array"><a href=
+"#val-buffer_of_array" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+buffer_of_array : ?⁠copy:bool <span class="keyword">‑&gt;</span>
+<a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> bool <span class="keyword">‑&gt;</span>
+<span class="type-var">'c</span> <span class="keyword">‑&gt;</span>
+(<span class="type-var">'a</span>,&nbsp;<span class=
+"type-var">'b</span>,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t
+<span class="keyword">‑&gt;</span>
+Owl_opencl_generated.cl_mem</code></div>
+<div class="doc">
+<p><code class="code">buffer_of_array ?copy t kernel_read
+kernel_write ba</code></p>
+<p>Create an OpenCL buffer from a given bigarray, with appropriate
+read/write/copy settings</p>
+</div>
+</div>
+<div class="spec val" id="val-copy_buffer_to_gpu"><a href=
+"#val-copy_buffer_to_gpu" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+copy_buffer_to_gpu : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> src:(<span class=
+"type-var">'a</span>,&nbsp;<span class=
+"type-var">'b</span>,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t
+<span class="keyword">‑&gt;</span> dst:Owl_opencl.G.cl_mem
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">copy_buffer_to_gpu t src dst</code></p>
+<p>Copy data from a bigarray src to an OpenCL buffer dst, using the
+queue of the <span class="xref-unresolved" title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span></p>
+<p>The event indicating completion is ignored; the method used in
+this code is to wait for the queue to finish to guarantee
+completion of the buffer copy.</p>
+</div>
+</div>
+<div class="spec val" id="val-copy_buffer_from_gpu"><a href=
+"#val-copy_buffer_from_gpu" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+copy_buffer_from_gpu : <a href="index.html#type-t">t</a>
+<span class="keyword">‑&gt;</span> src:Owl_opencl.G.cl_mem
+<span class="keyword">‑&gt;</span> dst:(<span class=
+"type-var">'a</span>,&nbsp;<span class=
+"type-var">'b</span>,&nbsp;Bigarray.c_layout)&nbsp;Bigarray.Genarray.t
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">copy_buffer_from_gpu t src dst</code></p>
+<p>Copy data from an OpenCL buffer src to a bigarray dst, using the
+queue of the <span class="xref-unresolved" title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span></p>
+<p>The event indicating completion is ignored; the method used in
+this code is to wait for the queue to finish to guarantee
+completion of the buffer copy.</p>
+</div>
+</div>
+<h2>Queue, event handling and kernel execution</h2>
+<div class="spec val" id="val-finish_queue"><a href=
+"#val-finish_queue" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+finish_queue : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">finish_queue t</code></p>
+<p>Wait for the queue in the <span class="xref-unresolved" title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span> to
+finish (kernels to execute, copies to complete, etc)</p>
+</div>
+</div>
+<div class="spec val" id="val-kernel_set_arg_buffer"><a href=
+"#val-kernel_set_arg_buffer" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+kernel_set_arg_buffer : <a href="index.html#type-t">t</a>
+<span class="keyword">‑&gt;</span> Owl_opencl_generated.cl_kernel
+<span class="keyword">‑&gt;</span> int <span class=
+"keyword">‑&gt;</span> Owl_opencl.G.cl_mem <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">kernel_set_arg_buffer t kernel index
+buffer</code></p>
+<p>Set kernel argument <i>index</i> to be the OpenCL
+<i>buffer</i></p>
+</div>
+</div>
+<div class="spec val" id="val-enqueue_kernel"><a href=
+"#val-enqueue_kernel" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+enqueue_kernel : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> Owl_opencl_generated.cl_kernel <span class=
+"keyword">‑&gt;</span> int list <span class="keyword">‑&gt;</span>
+Owl_opencl_generated.cl_event</code></div>
+<div class="doc">
+<p><code class="code">enqueue_kernel t kernel
+global_work_size</code></p>
+<p>Enqueue a kernel with a specified work size, to the queue of the
+<span class="xref-unresolved" title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span>.</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> event indicating
+completion of the kernel</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-event_wait"><a href="#val-event_wait"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+event_wait : <span class="type-var">'a</span> <span class=
+"keyword">‑&gt;</span> Owl_opencl_generated.cl_event <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">event_wait t event</code></p>
+<p>Wait for an event</p>
+</div>
+</div>
+<h2>External creation/build functions</h2>
+<div class="spec val" id="val-compile_program"><a href=
+"#val-compile_program" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+compile_program : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+string <span class="keyword">‑&gt;</span>
+Owl_opencl_generated.cl_program</code></div>
+<div class="doc">
+<p><code class="code">compile_program t source
+compile_options</code></p>
+<p>Compile an OpenCL program on the device/context of the
+<span class="xref-unresolved" title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span> using
+the specified source (text) and compilation options</p>
+</div>
+</div>
+<div class="spec val" id="val-get_memory_limit"><a href=
+"#val-get_memory_limit" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+get_memory_limit : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> int</code></div>
+<div class="doc">
+<p><code class="code">get_memory_limit t</code></p>
+<p>Get the memory limit for the device of the <span class=
+"xref-unresolved" title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span></p>
+</div>
+</div>
+<div class="spec val" id="val-compile_options"><a href=
+"#val-compile_options" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+compile_options : <span class="type-var">'a</span> <span class=
+"keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/Info/index.html#type-t">Streamlines.Core.Info.t</a>
+<span class="keyword">‑&gt;</span> string <span class=
+"keyword">‑&gt;</span> string</code></div>
+<div class="doc">
+<p><code class="code">compile_options t data info_struct
+kernel_name</code></p>
+<p>Convert the info struct into a list of '-D' compiler macros.</p>
+<p>This uses the kernel_name (as this is passed in as a
+define).</p>
+</div>
+</div>
+<div class="spec val" id="val-append_in_file"><a href=
+"#val-append_in_file" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+append_in_file : (string <span class="keyword">*</span> int)
+<span class="keyword">‑&gt;</span> string <span class=
+"keyword">‑&gt;</span> Pervasives.in_channel <span class=
+"keyword">‑&gt;</span> string <span class="keyword">*</span>
+int</code></div>
+<div class="doc">
+<p><code class="code">append_in_file (source, source_lines)
+filename f</code></p>
+<p>Internal function; appends the contents of f (the contents of
+<i>filename</i>) to source, adding after blank lines a comment line
+with the filename and source line number, so that OpenCL
+compilation errors may be readily discovered.</p>
+<p>The function is designed to be used in folding over a list of
+source code files.</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> (source,
+source_lines)</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-read_source"><a href=
+"#val-read_source" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+read_source : string list <span class="keyword">‑&gt;</span> string
+list <span class="keyword">‑&gt;</span> string</code></div>
+<div class="doc">
+<p><code class="code">read_source path cl_files</code></p>
+<p>Read in a list of source code (OpenCL) files, returning a string
+containing the source. The source code lines are annotated where
+sensible with filename and line numbers, to ease finding errors and
+warnings in OpenCL compilation.</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> source code
+annotated with file and line numbers</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-rebuild_info_struct"><a href=
+"#val-rebuild_info_struct" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+rebuild_info_struct : <a href="index.html#type-t">t</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/Info/index.html#type-t">Streamlines.Core.Info.t</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">rebuild_info_struct pocl data
+info_struct</code></p>
+<p>Rebuild an info struct from properties.</p>
+</div>
+</div>
+<div class="spec val" id="val-prepare_cl_context_queue"><a href=
+"#val-prepare_cl_context_queue" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+prepare_cl_context_queue : <a href="index.html#type-t">t</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">prepare_cl_context_queue t</code></p>
+<p>Prepare an OpenCL context using the properties in the
+<span class="xref-unresolved" title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span></p>
+<p>If the requested platform is not valid on the system then
+platform 0 is used instead</p>
+</div>
+</div>
+<div class="spec val" id="val-create"><a href="#val-create" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> create
+: <a href=
+"../Streamlines/Properties/index.html#type-t_props">Streamlines.Properties.t_props</a>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t">t</a></code></div>
+<div class="doc">
+<p><code class="code">create props</code></p>
+<p>Create the <span class="xref-unresolved" title=
+"unresolved reference to &quot;Pocl.t&quot;">Pocl.t</span>
+structure from a given set of properties. The OpenCL platform,
+device, context etc. are created by a later call to <a href=
+"index.html#val-prepare_cl_context_queue">prepare_cl_context_queue</a>.</p>
+</div>
+</div>
+</body>
+</html>

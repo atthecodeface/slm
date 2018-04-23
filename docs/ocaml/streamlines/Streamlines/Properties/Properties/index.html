@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Properties
+(streamlines.Streamlines.Properties.Properties)</title>
+<link rel="stylesheet" href="../../../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../../../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines.Properties.Properties</span></h1>
+</header>
+<div class="spec type" id="type-t"><a href="#type-t" class=
+"anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t</code> <code><span class="keyword">=</span></code> <code>{</code>
+<table class="record">
+<tr id="type-t.jsons" class="anchored">
+<td class="def field"><a href="#type-t.jsons" class=
+"anchor"></a><code><span class="keyword">mutable</span> jsons :
+<a href="../index.html#module-Json">Json</a>.json list;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p><code class="code">t</code> type structure of <i>Properties</i>,
+just a list of json currently</p>
+<p>The JSON files are kept in the list 'least relevant' first -
+hence the 'defaults.json' is first on the list.</p>
+</div>
+</div>
+<div class="spec val" id="val-create"><a href="#val-create" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> create
+: <span class="type-var">'a</span> <span class=
+"keyword">‑&gt;</span> <a href=
+"index.html#type-t">t</a></code></div>
+<div class="doc">
+<p><code class="code">create _</code></p>
+<p>Create an instance of the Properites 't' structure</p>
+</div>
+</div>
+<div class="spec val" id="val-read_json"><a href="#val-read_json"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+read_json : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> string list <span class=
+"keyword">‑&gt;</span> string <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p><code class="code">read_json t path leaf</code></p>
+<p>Add a new JSON file given by path and leaf, whose contents
+override those of earlier JSON files supplied. Any property not
+specified by the new JSON file, though, is fetched from the
+previous files.</p>
+</div>
+</div>
+<div class="spec val" id="val-iter_jsons"><a href="#val-iter_jsons"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+iter_jsons : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> (<a href=
+"../index.html#module-Json">Json</a>.json <span class=
+"keyword">‑&gt;</span> unit) <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p><code class="code">iter_jsons t f</code></p>
+<p>Iterate over all the JSONs, applying f to each, with later
+invocations required to override the earlier invocations.</p>
+</div>
+</div>
+</body>
+</html>

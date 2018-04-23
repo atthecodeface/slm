@@ -1,3 +1,12 @@
 *.swp
+*~
+.DS_Store
+*bak
 .merlin
 _build
+.jbuilder-keep
+.ipynb_checkpoints
+__pycache__
+opencl/*.c
+latex
+html

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Streamlines (streamlines.Streamlines)</title>
+<link rel="stylesheet" href="../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines</span></h1>
+</header>
+<pre>
+Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file   globals.ml
+ * @brief  Globally useful functions and statics for the streamlines analysis
+ *</pre>
+<p>The code is structured as follows:</p>
+<ol>
+<li>
+<p>Basic infrastructure (dependent in this order):</p>
+<p><a href="Globals/index.html">Globals</a>; <a href=
+"Properties/index.html">Properties</a>; <a href=
+"Core/index.html">Core</a>; <a href="Pocl/index.html">Pocl</a></p>
+</li>
+<li>
+<p>Workflows (independent of each other, dependent on basic
+infrastructure)</p>
+<ul>
+<li><a href="Geodata/index.html">Geodata</a></li>
+<li><a href="Preprocess/index.html">Preprocess</a></li>
+<li><a href="Integration/index.html">Integration</a>; <a href=
+"Trace/index.html">Trace</a>;</li>
+<li><a href="Plot/index.html">Plot</a></li>
+</ul>
+</li>
+<li><a href="index.html">Streamlines</a> dependent on all the other
+modules</li>
+</ol>
+<p>The main data structure for the global vectors and ROI DTM are
+held in the 'Core' data structure. This also keeps the properties
+tree, which is read and filled in by 'Properties'.</p>
+<p>The data is filled out by 'Geodata', which uses its properties
+to read in a Geotiff file, filling out the ROI DTM, and padding as
+appropriate, producing also the basin masks.</p>
+<p>The 'Preprocess' workflow is a pure Ocaml stage that takes the
+ROI DTM and masks and produces the U/V array vector field upon
+which the rest of the work is done.</p>
+<p>'Pocl' is a library that provides the access to the OpenCL
+subsystem, enabling programs and hence kernels to be compiled and
+invoked.</p>
+<h2>Module aliases</h2>
+<div class="spec module" id="module-Globals"><a href=
+"#module-Globals" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href="Globals/index.html">Globals</a> : <span class=
+"keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc">
+<p>Globals - types and support functions used throughout</p>
+</div>
+</div>
+<div class="spec module" id="module-Properties"><a href=
+"#module-Properties" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href="Properties/index.html">Properties</a> : <span class=
+"keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc">
+<p>Properties - modules for verbosity, workflows and their
+properties. This contains structures common to all workflows</p>
+</div>
+</div>
+<div class="spec module" id="module-Core"><a href="#module-Core"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href="Core/index.html">Core</a> : <span class=
+"keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc">
+<p>Core - module to manage the core data structures (and the Info
+for some reason)</p>
+</div>
+</div>
+<div class="spec module" id="module-Pocl"><a href="#module-Pocl"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href="Pocl/index.html">Pocl</a> : <span class=
+"keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc">
+<p>Pocl - OpenCL abstraction layer, as a workflow (but using global
+properties)</p>
+</div>
+</div>
+<div class="spec module" id="module-Geodata"><a href=
+"#module-Geodata" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href="Geodata/index.html">Geodata</a> : <span class=
+"keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc">
+<p>Geodata - Workflow module that reads in DTM, sets up ROI and
+mask, filling out the core data</p>
+</div>
+</div>
+<div class="spec module" id="module-Preprocess"><a href=
+"#module-Preprocess" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href="Preprocess/index.html">Preprocess</a> : <span class=
+"keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc">
+<p>Preprocess - Workflow module that takes an ROI and generates the
+vector field, filling blockages and fixing loops if required</p>
+</div>
+</div>
+<div class="spec module" id="module-Integration"><a href=
+"#module-Integration" class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href="Integration/index.html">Integration</a> : <span class=
+"keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc">
+<p>Integration - Used only by trace workflow, invokes GPU to trace
+streamlines and count flows through ROI pixels</p>
+</div>
+</div>
+<div class="spec module" id="module-Trace"><a href="#module-Trace"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href="Trace/index.html">Trace</a> : <span class=
+"keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc">
+<p>Trace - Workflow module that traces streamlines</p>
+</div>
+</div>
+<div class="spec module" id="module-Plot"><a href="#module-Plot"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href="Plot/index.html">Plot</a> : <span class=
+"keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc">
+<p>Plot - Workflow module that produces plots of DTM, ROI, and
+processed results</p>
+</div>
+</div>
+<h2>Function calls</h2>
+<div class="spec val" id="val-set_root"><a href="#val-set_root"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+set_root : string <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p>set_root <code class="code">root_dir</code> - set the root
+directory for all relative filenames.</p>
+</div>
+</div>
+<div class="spec val" id="val-str2bool"><a href="#val-str2bool"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+str2bool : string <span class="keyword">‑&gt;</span>
+bool</code></div>
+<div class="doc">
+<p><code class="code">str2bool s</code> - parse a string as a bool:
+t, true, yes, y, 1 all indicate true; no, n, f, false all indicate
+false. Everything else forces an exception</p>
+</div>
+</div>
+<div class="spec val" id="val-verbosity_of_string"><a href=
+"#val-verbosity_of_string" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+verbosity_of_string : string <span class="keyword">‑&gt;</span>
+int</code></div>
+<div class="doc">
+<p><code class="code">verbosity_of_string s</code> - get an integer
+verbosity level from a string; if the string is an integer, then
+use that, otherwise try it as a 'boolean' using str2bool</p>
+</div>
+</div>
+<div class="spec val" id="val-parse_arguments"><a href=
+"#val-parse_arguments" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+parse_arguments : <span class="type-var">'a</span> <span class=
+"keyword">‑&gt;</span> string <span class="keyword">*</span>
+<a href=
+"Properties/index.html#type-t_cmdline_overrides">Properties.t_cmdline_overrides</a></code></div>
+<div class="doc">
+<p><code class="code">parse_arguments _</code></p>
+<p>Parse the command line arguments using the system Arg
+module.</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> parameters filename
+and command line arguments override structure, to be fed to the
+<a href="Properties/index.html">Properties</a> module when reading
+in the properties files.</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-process"><a href="#val-process"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> process
+: string <span class="keyword">‑&gt;</span> string <span class=
+"keyword">‑&gt;</span> <a href=
+"Properties/index.html#type-t_cmdline_overrides">Properties.t_cmdline_overrides</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">process json_dir parameters_filename
+cmdline_overrides</code></p>
+<p>Read in the properties and set up the workflows, then perform
+the workflow stages required.</p>
+</div>
+</div>
+</body>
+</html>

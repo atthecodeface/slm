@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Streamlines__Core (streamlines.Streamlines__Core)</title>
+<link rel="stylesheet" href="../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines__Core</span></h1>
+</header>
+<pre>
+Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file   core.ml
+ * @brief  Core data, Info, and Workflow handling
+ *</pre>
+<div class="spec module" id="module-ODM"><a href="#module-ODM"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+ODM = Owl.Dense.Matrix.Generic</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-ODN"><a href="#module-ODN"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+ODN = Owl.Dense.Ndarray.Generic</code></div>
+<div class="doc"></div>
+</div>
+<h2>Info module</h2>
+<p>The Info module provides name/value pairs, with the value being
+of a variant type permitting strings, ints and floats. The module
+is used to create the OpenCL compiler '#define' options.</p>
+<div class="spec module" id="module-Info"><a href="#module-Info"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+<a href="Info/index.html">Info</a> : <span class=
+"keyword">sig</span> ... <span class=
+"keyword">end</span></code></div>
+<div class="doc"></div>
+</div>
+<h2>Data and results structures</h2>
+<p>Core data structures and results, used throughout the processing
+stages.</p>
+<div class="spec type" id="type-t_core_data"><a href=
+"#type-t_core_data" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_core_data</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-t_core_data.properties" class="anchored">
+<td class="def field"><a href="#type-t_core_data.properties" class=
+"anchor"></a><code>properties : <a href=
+"../Streamlines/Properties/index.html#type-t_props">Streamlines.Properties.t_props</a>;</code></td>
+</tr>
+<tr id="type-t_core_data.info" class="anchored">
+<td class="def field"><a href="#type-t_core_data.info" class=
+"anchor"></a><code>info : <a href=
+"Info/index.html#type-t">Info.t</a>;</code></td>
+</tr>
+<tr id="type-t_core_data.roi_nx" class="anchored">
+<td class="def field"><a href="#type-t_core_data.roi_nx" class=
+"anchor"></a><code><span class="keyword">mutable</span> roi_nx :
+int;</code></td>
+</tr>
+<tr id="type-t_core_data.roi_ny" class="anchored">
+<td class="def field"><a href="#type-t_core_data.roi_ny" class=
+"anchor"></a><code><span class="keyword">mutable</span> roi_ny :
+int;</code></td>
+</tr>
+<tr id="type-t_core_data.roi_pixel_size" class="anchored">
+<td class="def field"><a href="#type-t_core_data.roi_pixel_size"
+class="anchor"></a><code><span class="keyword">mutable</span>
+roi_pixel_size : float;</code></td>
+</tr>
+<tr id="type-t_core_data.roi_region" class="anchored">
+<td class="def field"><a href="#type-t_core_data.roi_region" class=
+"anchor"></a><code><span class="keyword">mutable</span> roi_region
+: float array;</code></td>
+</tr>
+<tr id="type-t_core_data.pad_width" class="anchored">
+<td class="def field"><a href="#type-t_core_data.pad_width" class=
+"anchor"></a><code><span class="keyword">mutable</span> pad_width :
+int;</code></td>
+</tr>
+<tr id="type-t_core_data.roi_array" class="anchored">
+<td class="def field"><a href="#type-t_core_data.roi_array" class=
+"anchor"></a><code><span class="keyword">mutable</span> roi_array :
+<a href=
+"../Streamlines/Globals/index.html#type-t_ba_floats">Streamlines.Globals.t_ba_floats</a>;</code></td>
+</tr>
+<tr id="type-t_core_data.basin_fatmask_array" class="anchored">
+<td class="def field"><a href=
+"#type-t_core_data.basin_fatmask_array" class=
+"anchor"></a><code><span class="keyword">mutable</span>
+basin_fatmask_array : <a href=
+"../Streamlines/Globals/index.html#type-t_ba_chars">Streamlines.Globals.t_ba_chars</a>;</code></td>
+</tr>
+<tr id="type-t_core_data.basin_mask_array" class="anchored">
+<td class="def field"><a href="#type-t_core_data.basin_mask_array"
+class="anchor"></a><code><span class="keyword">mutable</span>
+basin_mask_array : <a href=
+"../Streamlines/Globals/index.html#type-t_ba_chars">Streamlines.Globals.t_ba_chars</a>;</code></td>
+</tr>
+<tr id="type-t_core_data.x_roi_n_pixel_centers" class="anchored">
+<td class="def field"><a href=
+"#type-t_core_data.x_roi_n_pixel_centers" class=
+"anchor"></a><code><span class="keyword">mutable</span>
+x_roi_n_pixel_centers : <a href=
+"../Streamlines/Globals/index.html#type-t_ba_floats">Streamlines.Globals.t_ba_floats</a>;</code></td>
+</tr>
+<tr id="type-t_core_data.y_roi_n_pixel_centers" class="anchored">
+<td class="def field"><a href=
+"#type-t_core_data.y_roi_n_pixel_centers" class=
+"anchor"></a><code><span class="keyword">mutable</span>
+y_roi_n_pixel_centers : <a href=
+"../Streamlines/Globals/index.html#type-t_ba_floats">Streamlines.Globals.t_ba_floats</a>;</code></td>
+</tr>
+<tr id="type-t_core_data.u_array" class="anchored">
+<td class="def field"><a href="#type-t_core_data.u_array" class=
+"anchor"></a><code><span class="keyword">mutable</span> u_array :
+<a href=
+"../Streamlines/Globals/index.html#type-t_ba_floats">Streamlines.Globals.t_ba_floats</a>;</code></td>
+</tr>
+<tr id="type-t_core_data.v_array" class="anchored">
+<td class="def field"><a href="#type-t_core_data.v_array" class=
+"anchor"></a><code><span class="keyword">mutable</span> v_array :
+<a href=
+"../Streamlines/Globals/index.html#type-t_ba_floats">Streamlines.Globals.t_ba_floats</a>;</code></td>
+</tr>
+<tr id="type-t_core_data.seeds" class="anchored">
+<td class="def field"><a href="#type-t_core_data.seeds" class=
+"anchor"></a><code><span class="keyword">mutable</span> seeds :
+<a href=
+"../Streamlines/Globals/index.html#type-t_ba_floats">Streamlines.Globals.t_ba_floats</a>;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_core_data</p>
+<p>This is the data structure used to contain the data used
+throughout the processing stages.</p>
+<p>The properties covers all the workflows; the info is built from
+those properties with some short-term adaptations (since it is used
+for OpenCL compiler options, which vary slightly on
+invocation).</p>
+<p>The arrays are filled in by individual workflows; they are
+initialized to small arrays, before they are modified at the
+appropriate point in the workflow.</p>
+</div>
+</div>
+<div class="spec type" id="type-t_trace_results"><a href=
+"#type-t_trace_results" class="anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t_trace_results</code> <code><span class="keyword">=</span></code>
+<code>{</code>
+<table class="record">
+<tr id="type-t_trace_results.streamline_arrays" class="anchored">
+<td class="def field"><a href=
+"#type-t_trace_results.streamline_arrays" class=
+"anchor"></a><code><span class="keyword">mutable</span>
+streamline_arrays : bytes array array;</code></td>
+</tr>
+<tr id="type-t_trace_results.traj_nsteps_array" class="anchored">
+<td class="def field"><a href=
+"#type-t_trace_results.traj_nsteps_array" class=
+"anchor"></a><code>traj_nsteps_array : <a href=
+"../Streamlines/Globals/index.html#type-t_ba_int16s">Streamlines.Globals.t_ba_int16s</a>;</code></td>
+</tr>
+<tr id="type-t_trace_results.traj_lengths_array" class="anchored">
+<td class="def field"><a href=
+"#type-t_trace_results.traj_lengths_array" class=
+"anchor"></a><code>traj_lengths_array : <a href=
+"../Streamlines/Globals/index.html#type-t_ba_floats">Streamlines.Globals.t_ba_floats</a>;</code></td>
+</tr>
+<tr id="type-t_trace_results.slc_array" class="anchored">
+<td class="def field"><a href="#type-t_trace_results.slc_array"
+class="anchor"></a><code>slc_array : <a href=
+"../Streamlines/Globals/index.html#type-t_ba_ints">Streamlines.Globals.t_ba_ints</a>;</code></td>
+</tr>
+<tr id="type-t_trace_results.slt_array" class="anchored">
+<td class="def field"><a href="#type-t_trace_results.slt_array"
+class="anchor"></a><code>slt_array : <a href=
+"../Streamlines/Globals/index.html#type-t_ba_floats">Streamlines.Globals.t_ba_floats</a>;</code></td>
+</tr>
+<tr id="type-t_trace_results.sla_array" class="anchored">
+<td class="def field"><a href="#type-t_trace_results.sla_array"
+class="anchor"></a><code>sla_array : <a href=
+"../Streamlines/Globals/index.html#type-t_ba_floats">Streamlines.Globals.t_ba_floats</a>;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p>t_trace_results</p>
+<p>The trace results are produced by the trace workflow, and are
+consumed by later workflow stages.</p>
+</div>
+</div>
+<h2>Core toplevel functions</h2>
+<div class="spec val" id="val-create"><a href="#val-create" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> create
+: <a href=
+"../Streamlines/Properties/index.html#type-t_props">Streamlines.Properties.t_props</a>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t_core_data">t_core_data</a></code></div>
+<div class="doc">
+<p><code class="code">create properties</code></p>
+<p>Create the core data structure from the given properties,
+initializing arrays minimally.</p>
+</div>
+</div>
+<div class="spec val" id="val-set_roi"><a href="#val-set_roi"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> set_roi
+: <a href="index.html#type-t_core_data">t_core_data</a>
+<span class="keyword">‑&gt;</span> int array <span class=
+"keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">set_roi t roi</code></p>
+<p>Allocate empty arrays for the Region-of-Interest</p>
+</div>
+</div>
+</body>
+</html>

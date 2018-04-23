@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Apple macOS version 5.6.0" />
+<meta charset="utf-8" />
+<title>Streamlines__Preprocess
+(streamlines.Streamlines__Preprocess)</title>
+<link rel="stylesheet" href="../../odoc.css" />
+<meta name="viewport" content=
+"width=device-width,initial-scale=1.0" />
+<meta name="generator" content="doc-ock-html v1.0.0-1-g1fc9bf0" />
+</head>
+<body>
+<nav id="top"><a href="../index.html">Up</a> — <span class=
+"package">package <a href=
+"../index.html">streamlines</a></span></nav>
+<header>
+<h1><span class="keyword">Module</span> <span class=
+"module-path">Streamlines__Preprocess</span></h1>
+</header>
+<pre>
+Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file   preprocess.ml
+ * @brief  Preprocessing
+ *</pre>
+<div class="spec module" id="module-ODM"><a href="#module-ODM"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+ODM = Owl.Dense.Matrix.Generic</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-ODN"><a href="#module-ODN"
+class="anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+ODN = Owl.Dense.Ndarray.Generic</code></div>
+<div class="doc"></div>
+</div>
+<div class="spec module" id="module-BA"><a href="#module-BA" class=
+"anchor"></a>
+<div class="def module"><code><span class="keyword">module</span>
+BA = Bigarray</code></div>
+<div class="doc"></div>
+</div>
+<h2>Types</h2>
+<div class="spec type" id="type-t"><a href="#type-t" class=
+"anchor"></a>
+<div class="def type"><code><span class="keyword">type</span>
+t</code> <code><span class="keyword">=</span></code> <code>{</code>
+<table class="record">
+<tr id="type-t.props" class="anchored">
+<td class="def field"><a href="#type-t.props" class=
+"anchor"></a><code>props : <a href=
+"../Streamlines/Properties/index.html#type-t_props_preprocess">Streamlines.Properties.t_props_preprocess</a>;</code></td>
+</tr>
+<tr id="type-t.roi_gradx_array" class="anchored">
+<td class="def field"><a href="#type-t.roi_gradx_array" class=
+"anchor"></a><code><span class="keyword">mutable</span>
+roi_gradx_array : <a href=
+"../Streamlines/Globals/index.html#type-t_ba_floats">Streamlines.Globals.t_ba_floats</a>;</code></td>
+</tr>
+<tr id="type-t.roi_grady_array" class="anchored">
+<td class="def field"><a href="#type-t.roi_grady_array" class=
+"anchor"></a><code><span class="keyword">mutable</span>
+roi_grady_array : <a href=
+"../Streamlines/Globals/index.html#type-t_ba_floats">Streamlines.Globals.t_ba_floats</a>;</code></td>
+</tr>
+<tr id="type-t.where_looped" class="anchored">
+<td class="def field"><a href="#type-t.where_looped" class=
+"anchor"></a><code><span class="keyword">mutable</span>
+where_looped : (int <span class="keyword">*</span> int)
+list;</code></td>
+</tr>
+<tr id="type-t.pad_width" class="anchored">
+<td class="def field"><a href="#type-t.pad_width" class=
+"anchor"></a><code>pad_width : int;</code></td>
+</tr>
+</table>
+<code>}</code></div>
+<div class="doc">
+<p><code class="code">t</code></p>
+<p>Structure for the Preprocess workflow</p>
+</div>
+</div>
+<h2>pv_verbosity functions</h2>
+<div class="spec val" id="val-pv_noisy"><a href="#val-pv_noisy"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_noisy : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_noisy t</code></p>
+<p>Shortcut to use <span class="xref-unresolved" title=
+"unresolved reference to &quot;Preprocess.t&quot;">Preprocess.t</span>
+verbosity for <span class="xref-unresolved" title=
+"unresolved reference to &quot;Properties.pv_noisy&quot;">Properties.pv_noisy</span></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_debug"><a href="#val-pv_debug"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_debug : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_debug t</code></p>
+<p>Shortcut to use <span class="xref-unresolved" title=
+"unresolved reference to &quot;Preprocess.t&quot;">Preprocess.t</span>
+verbosity for <span class="xref-unresolved" title=
+"unresolved reference to &quot;Properties.pv_debug&quot;">Properties.pv_debug</span></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_info"><a href="#val-pv_info"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> pv_info
+: <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_info t</code></p>
+<p>Shortcut to use <span class="xref-unresolved" title=
+"unresolved reference to &quot;Preprocess.t&quot;">Preprocess.t</span>
+verbosity for <span class="xref-unresolved" title=
+"unresolved reference to &quot;Properties.pv_info&quot;">Properties.pv_info</span></p>
+</div>
+</div>
+<div class="spec val" id="val-pv_verbose"><a href="#val-pv_verbose"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+pv_verbose : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> (unit <span class="keyword">‑&gt;</span>
+unit) <span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">pv_verbose t</code></p>
+<p>Shortcut to use <span class="xref-unresolved" title=
+"unresolved reference to &quot;Preprocess.t&quot;">Preprocess.t</span>
+verbosity for <span class="xref-unresolved" title=
+"unresolved reference to &quot;Properties.pv_verbose&quot;">Properties.pv_verbose</span></p>
+</div>
+</div>
+<h2>Vector field creation</h2>
+<div class="spec val" id="val-vector_length"><a href=
+"#val-vector_length" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+vector_length : float <span class="keyword">‑&gt;</span> float
+<span class="keyword">‑&gt;</span> float</code></div>
+<div class="doc">
+<p><code class="code">vector_length a b</code></p>
+<p>Calculate the length of the vector (a,b)</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> sqrt(a*a + b*b)</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-compute_topo_gradient_field"><a href=
+"#val-compute_topo_gradient_field" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+compute_topo_gradient_field : (float,&nbsp;<span class=
+"type-var">'a</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class=
+"keyword">‑&gt;</span> (float,&nbsp;<a href=
+"index.html#module-BA">BA</a>.float32_elt)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class="keyword">*</span>
+(float,&nbsp;<a href=
+"index.html#module-BA">BA</a>.float32_elt)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t</code></div>
+<div class="doc">
+<p><code class="code">compute_topo_gradient_field
+roi_array</code></p>
+<p>Differentiate ROI topo in x and y directions to create a
+gradient vector field</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> (ROI topo x
+gradient, y gradient) big arrays</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-normalize_arrays"><a href=
+"#val-normalize_arrays" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+normalize_arrays : (float,&nbsp;<span class=
+"type-var">'a</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class=
+"keyword">‑&gt;</span> (float,&nbsp;<span class=
+"type-var">'a</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class=
+"keyword">‑&gt;</span> (float,&nbsp;<span class=
+"type-var">'a</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class="keyword">*</span>
+(float,&nbsp;<span class="type-var">'a</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t</code></div>
+<div class="doc">
+<p><code class="code">normalize_arrays u_array v_array</code></p>
+<p>Normalize a pair of arrays, by scaling them by 1/mod(u,v)</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> (u_array,
+v_array)</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-compute_gradient_velocity_field">
+<a href="#val-compute_gradient_velocity_field" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+compute_gradient_velocity_field : (float,&nbsp;<span class=
+"type-var">'a</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class=
+"keyword">‑&gt;</span> (float,&nbsp;<span class=
+"type-var">'a</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class=
+"keyword">‑&gt;</span> (float,&nbsp;<span class=
+"type-var">'a</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t <span class="keyword">*</span>
+(float,&nbsp;<span class="type-var">'a</span>)&nbsp;<a href=
+"index.html#module-ODM">ODM</a>.t</code></div>
+<div class="doc">
+<p><code class="code">compute_gradient_velocity_field
+roi_grady_array roi_grady_array</code></p>
+<p>Compute normalized gradient velocity vector field from ROI topo
+grid.</p>
+<p>This is effectively an array of unit (dh/dx, dh/dy) vectors, but
+held as two scalar arrays dh/dx = u and dh/dy = v</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> (u_array,
+v_array)</li>
+</ul>
+</div>
+</div>
+<h2>Blockages and loop finding and fixing</h2>
+<div class="spec val" id="val-get_flow_vector"><a href=
+"#val-get_flow_vector" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+get_flow_vector : char <span class="keyword">‑&gt;</span> int
+<span class="keyword">*</span> int</code></div>
+<div class="doc">
+<p><code class="code">get_flow_vector n</code></p>
+<p>Convert a char direction indicator to an int vector pair</p>
+</div>
+</div>
+<div class="spec val" id="val-get_unit_flow_vector"><a href=
+"#val-get_unit_flow_vector" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+get_unit_flow_vector : char <span class="keyword">‑&gt;</span>
+float <span class="keyword">*</span> float</code></div>
+<div class="doc">
+<p><code class="code">get_unit_flow_vector nn</code></p>
+<p>Get a float vector pair of length 1 from a char direction
+indicator</p>
+</div>
+</div>
+<div class="spec val" id="val-has_just_diagonal_outflows"><a href=
+"#val-has_just_diagonal_outflows" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+has_just_diagonal_outflows : (int <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span>
+<span class="type-var">'a</span>) <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span> int
+<span class="keyword">‑&gt;</span> char</code></div>
+<div class="doc">
+<p><code class="code">has_just_diagonal_outflows get x y</code></p>
+<p>A map for a 2D bigarray, hence provided with a <i>get x y -&gt;
+value</i> function.</p>
+<ul class="at-tag">
+<li>
+<p><span class="at-tag return">Returns</span> mask of w,x,y,z
+otherwise for SW, SE, NW, NE outflows but 0 if there are any N, S,
+E or W outflows.</p>
+<p>Consider a gradient field of the topology; it is composed using
+dh/dx and dh/dy. Hence diagonal outflows are missed at the vector
+flow, which is generated from that gradient field</p>
+<p>Hence if a point only has diagonal outflows it is a
+'blockage'.</p>
+<pre><code class="code">  Consider in particular:
+  roi -&gt; roi_gradx_array -&gt; roi_grady_array -&gt; normalized velocity
+  6 6 6 6 6     
+  6 7 9 9 6    +1.5 +1.0 -1.5   -1.5 -1.0 -1.5    -,+ -,+ +,+
+  6 9 8 9 6 -&gt; +1.0    0 -1.0 -&gt;-1.0    0    0 -&gt; -,+ 0,0 +,0
+  6 9 9 9 6    +1.5    0 -1.5   +1.5 +1.0 +1.5    -,- 0,- +,-
+  6 6 6 6 6     
+
+  This is mapped to blockages and blocked_neighbors
+
+  6 6 6 6 6     
+  6 7 9 9 6    0  0  0    0  0  0    NW NW NE
+  6 9 8 9 6 -&gt; 0 64  0 -&gt; 0  0  1 -&gt; NW NW  W
+  6 9 9 9 6    0  0  0    0  8 64    SW  N NW
+  6 6 6 6 6     
+</code></pre>
+<p>The DTM will have been preconditioned by a GIS to drain to the
+edge using eight different directions</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-upstream_of_diagonal_outflow">
+<a href="#val-upstream_of_diagonal_outflow" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+upstream_of_diagonal_outflow : (int <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span> char)
+<span class="keyword">‑&gt;</span> int <span class=
+"keyword">‑&gt;</span> int <span class="keyword">‑&gt;</span>
+char</code></div>
+<div class="doc">
+<p><code class="code">upstream_of_diagonal_outflow get x
+y</code></p>
+<p>A map for a 2D bigarray, hence provided with a <i>get x y -&gt;
+value</i> function.</p>
+<p>The upstream pixels of a blockage need to be found and fixed;
+why is not quite clear.</p>
+<p>This helps to remove loops introduced by tweaking the vector
+field at the blockages</p>
+</div>
+</div>
+<div class="spec val" id="val-calc_speed_div_curl"><a href=
+"#val-calc_speed_div_curl" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+calc_speed_div_curl : int <span class="keyword">‑&gt;</span> int
+<span class="keyword">‑&gt;</span> (float,&nbsp;<span class=
+"type-var">'a</span>,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;Bigarray.Genarray.t <span class=
+"keyword">‑&gt;</span> (float,&nbsp;<span class=
+"type-var">'c</span>,&nbsp;<span class=
+"type-var">'d</span>)&nbsp;Bigarray.Genarray.t <span class=
+"keyword">‑&gt;</span> float <span class="keyword">*</span> float
+<span class="keyword">*</span> float</code></div>
+<div class="doc">
+<p><code class="code">calc_speed_div_curl x y u v</code></p>
+<p>Get UV of x,y and its +1 neighbors, the speed=mod(avg uv),
+divergence and curl</p>
+<p>Geograpically:</p>
+<pre><code class="code"> uv01 uv11
+ uv00 uv10
+
+speed = sqrt((+u00+u01+u10+u11)^2 + (+v00+v01+v10+v11)^2 )/4
+div   = -u00-u01+u10+u11 -v00+v01-v10+v11a
+curl  = +u00-u01+u10-u11 -v00-v01+v10+v11</code></pre>
+<p>Another way to look at uv is uvNM = (dh/dx (x+N,y+M), dh/dy
+(x+N,y+M))</p>
+<p>Hence:</p>
+<pre><code class=
+"code"> uv00 . (-1,-1) = -dh/dx(x,y) - dh/dy(x,y)</code></pre>
+<p>etc</p>
+<p>Hence div is</p>
+<pre><code class="code">   uv01.NW + uv11.NE
+ + uv00.SW + uv10.SE</code></pre>
+<p>And curl is</p>
+<pre><code class="code">   uv01.SW + uv11.NW
+ + uv00.SE + uv10.NE</code></pre>
+<p>As the vector field is a gradient vector field it ought to have
+a curl of zero (it would in a perfect world) and divergence should
+be greater than zero (as there is always a downhill);</p>
+</div>
+</div>
+<div class="spec val" id="val-find_blockages"><a href=
+"#val-find_blockages" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+find_blockages : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span>
+(char,&nbsp;Bigarray.int8_unsigned_elt)&nbsp;<a href=
+"index.html#module-ODN">ODN</a>.t <span class="keyword">*</span>
+(char,&nbsp;Bigarray.int8_unsigned_elt)&nbsp;<a href=
+"index.html#module-ODN">ODN</a>.t</code></div>
+<div class="doc">
+<p><code class="code">find_blockages t data</code></p>
+<p>The DTM is preconditioned for draining to the edge in 8
+directions; the vector gradient field generated by preprocess is 4
+direction though. Hence there may be 'blockages' and 'loops.</p>
+<p>Find blockages (pixels where there are only diagonal outflows,
+so the vector gradients of neighbors all lead in) and blocked
+neighbors</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> (blockages,
+blocked_neighbors) as big arrays of char</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-get_blockages_lists"><a href=
+"#val-get_blockages_lists" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+get_blockages_lists : ((char,&nbsp;<span class=
+"type-var">'a</span>)&nbsp;<a href=
+"../Streamlines__/Globals/index.html#module-ODM">Streamlines__.Globals.ODM</a>.t
+<span class="keyword">*</span> (char,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;<a href=
+"../Streamlines__/Globals/index.html#module-ODM">Streamlines__.Globals.ODM</a>.t)
+<span class="keyword">‑&gt;</span> (int <span class=
+"keyword">*</span> int) list <span class="keyword">*</span> (int
+<span class="keyword">*</span> int) list</code></div>
+<div class="doc">
+<p><code class="code">get_blockages_lists (blockages_array,
+blocked_neighbors_array)</code></p>
+<p>Convert blockage big arrays to lists of (x,y) locations where
+there are blockages or blocked neighbors</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> (blockages_list,
+blocked_neighbors_list)</li>
+</ul>
+</div>
+</div>
+<div class="spec val" id="val-show_blockages"><a href=
+"#val-show_blockages" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+show_blockages : ((char,&nbsp;<span class=
+"type-var">'a</span>)&nbsp;<a href=
+"../Streamlines__/Globals/index.html#module-ODM">Streamlines__.Globals.ODM</a>.t
+<span class="keyword">*</span> (char,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;<a href=
+"../Streamlines__/Globals/index.html#module-ODM">Streamlines__.Globals.ODM</a>.t)
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">show_blockages (blockages_array,
+blocked_neighbors_array)</code></p>
+<p>Show blockages from the big arrays</p>
+</div>
+</div>
+<div class="spec val" id="val-fix_blockages"><a href=
+"#val-fix_blockages" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+fix_blockages : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> ((char,&nbsp;<span class=
+"type-var">'a</span>)&nbsp;<a href=
+"../Streamlines__/Globals/index.html#module-ODM">Streamlines__.Globals.ODM</a>.t
+<span class="keyword">*</span> (char,&nbsp;<span class=
+"type-var">'b</span>)&nbsp;<a href=
+"../Streamlines__/Globals/index.html#module-ODM">Streamlines__.Globals.ODM</a>.t)
+<span class="keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">fix_blockages t (blockages_array,
+blocked_neighbors_array) data</code></p>
+<p>Fix blockages and blocked neighbors by making them use their
+diagonal neighbor as specified by the big arrays</p>
+</div>
+</div>
+<div class="spec val" id="val-break_out_of_loop"><a href=
+"#val-break_out_of_loop" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+break_out_of_loop : <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> (int <span class=
+"keyword">*</span> int) <span class="keyword">‑&gt;</span>
+unit</code></div>
+<div class="doc">
+<p><code class="code">break_out_of_loop data (x,y)</code></p>
+<p>Break out of a loop at a given (x,y), by forcing the pixel to
+flow to the lowest of the 8 neighbors</p>
+</div>
+</div>
+<div class="spec val" id="val-find_and_fix_loops"><a href=
+"#val-find_and_fix_loops" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+find_and_fix_loops : <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> (int <span class=
+"keyword">*</span> int) list</code></div>
+<div class="doc">
+<p><code class="code">find_and_fix_loops t data</code></p>
+<p>Find loops (sets of 4 elements where curl is much above zero,
+divergence is low - i.e. are likely to be very flat and poorly
+conditioned) by making them flow towards their lowest
+neighbors.</p>
+<ul class="at-tag">
+<li><span class="at-tag return">Returns</span> list of (x,y) loop
+points</li>
+</ul>
+</div>
+</div>
+<h2>Vector field creation</h2>
+<div class="spec val" id="val-conditioned_gradient_vector_field">
+<a href="#val-conditioned_gradient_vector_field" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+conditioned_gradient_vector_field : <a href=
+"index.html#type-t">t</a> <span class="keyword">‑&gt;</span>
+<a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">conditioned_gradient_vector_field t
+data</code></p>
+<p>Compute topographic gradient vector field on a preconditioned
+DTM.</p>
+<p>The preconditioning steps are:</p>
+<p>1. Find blockages in gradient vector field 2. Calculate surface
+derivatives (gradient &amp; 'curvature') 3. Set gradient vector
+field magnitudes ('speeds') 4. Find and fix loops in gradient
+vector field 5. Fix blockages in gradient vector field 6. Set
+initial streamline points ('seeds')</p>
+</div>
+</div>
+<div class="spec val" id="val-mask_nan_uv"><a href=
+"#val-mask_nan_uv" class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span>
+mask_nan_uv : <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">mask_nan_uv data</code></p>
+<p>Mask out (in the mask big arrays) any elements that have a U or
+V value of NaN</p>
+</div>
+</div>
+<p><code class="code">raw_gradient_vector_field ?? data</code></p>
+<p>Not implemented yet</p>
+<p>Compute topographic gradient vector field without
+preconditioning the DTM. let raw_gradient_vector_field data =
+self.print('Compute raw gradient vector field')
+(self.roi_gradx_array,self.roi_grady_array) =
+derivatives(self.geodata.roi_array) self.speed_array =
+set_speed_field(self.u_array, self.v_array)</p>
+<h2>Workflow functions</h2>
+<div class="spec val" id="val-create"><a href="#val-create" class=
+"anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> create
+: <a href=
+"../Streamlines/Properties/index.html#type-t_props">Streamlines.Properties.t_props</a>
+<span class="keyword">‑&gt;</span> <a href=
+"index.html#type-t">t</a></code></div>
+<div class="doc">
+<p><code class="code">create props</code></p>
+<p>Create a Preprocess.t from its properties</p>
+</div>
+</div>
+<div class="spec val" id="val-process"><a href="#val-process"
+class="anchor"></a>
+<div class="def val"><code><span class="keyword">val</span> process
+: <a href="index.html#type-t">t</a> <span class=
+"keyword">‑&gt;</span> <a href=
+"../Streamlines/Core/index.html#type-t_core_data">Streamlines.Core.t_core_data</a>
+<span class="keyword">‑&gt;</span> unit</code></div>
+<div class="doc">
+<p><code class="code">process t data</code></p>
+<p>Run the Preprocess workflow</p>
+</div>
+</div>
+</body>
+</html>
