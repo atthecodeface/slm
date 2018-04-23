@@ -122,8 +122,8 @@ __kernel void histogram_bivariate(
 /// @ingroup kde
 ///
 __kernel void pdf_bivariate(
-        __global const  uint    *histogram_array,
-        __global        float   *pdf_array
+        __global const  uint  *histogram_array,
+        __global        float *pdf_array
    )
 {
     // For every histogram bin...
@@ -141,7 +141,12 @@ __kernel void pdf_bivariate(
     // Step through half kdf taking advantage of symmetry
     //   e.g., 0...2  for 5-point kdf
     for (ki=0;ki<=N_KDF_PART_POINTS_X;ki++) {
-        filter(histogram_array,pdf_idx,ki, &pdf_bin_accumulator,&kdf_weight_accumulator);
+        filter2d(0, histogram_array, pdf_idx, ki,
+                 &pdf_bin_accumulator ,&kdf_weight_accumulator);
+    }
+    for (ki=0;ki<=N_KDF_PART_POINTS_X;ki++) {
+        filter2d(1, histogram_array, pdf_idx, ki,
+                 &pdf_bin_accumulator ,&kdf_weight_accumulator);
     }
     // Normalize the pdf point accumlation by dividing by the kdf weight accumulation
     //   and write to the return pdf_array element for this CL-kernel instance
@@ -151,7 +156,7 @@ __kernel void pdf_bivariate(
 #endif
 
 
-static inline void filter(
+static inline void filter1d(
         __global const uint *histogram_array, const uint pdf_idx,
         const uint ki, double *pdf_bin_accumulator, double *kdf_weight_accumulator )
 {
@@ -237,7 +242,7 @@ __kernel void pdf_univariate(
     // Step through half kdf taking advantage of symmetry
     //   e.g., 0...2  for 5-point kdf
     for (ki=0;ki<=N_KDF_PART_POINTS_X;ki++) {
-        filter(histogram_array,pdf_idx,ki, &pdf_bin_accumulator,&kdf_weight_accumulator);
+        filter1d(histogram_array,pdf_idx,ki,&pdf_bin_accumulator,&kdf_weight_accumulator);
     }
     // Normalize the pdf point accumlation by dividing by the kdf weight accumulation
     //   and write to the return pdf_array element for this CL-kernel instance
