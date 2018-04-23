@@ -40,17 +40,41 @@ __kernel void histogram_univariate(
 }
 #endif
 
-#if KDF_CODE==KDF_IS_EPANECHNIKOV
+// None of the filter kernels below trap for bounds exceedance |x|>w.
+// Shouldn't be necessary, but I need to check it's really safe.
+
+#ifdef KDF_IS_TOPHAT
+static inline double kdf_sample(const double x, const double w) {
+    return 0.5f;
+}
+#endif
+
+#ifdef KDF_IS_TRIANGLE
+static inline double kdf_sample(const double x, const double w) {
+    return (1.0f-fabs(x/w));
+}
+#endif
+
+#ifdef KDF_IS_EPANECHNIKOV
 static inline double kdf_sample(const double x, const double w) {
     return 0.75f*(1.0f-(x/w)*(x/w));
 }
-//static inline double kdf_integrate(const double x, const double w) {
-//    return 0.75f*(x/w)*(1.0f-(x/w)*(x/w)/3.0f);
-//}
-//static inline double kdf_bin_integrate(const double x, const double w) {
-//    return kdf_integrate(x+BIN_DX/2.0f,w),integral_kdf(x-BIN_DX/2.0f,w);
-//}
 #endif
+
+#ifdef KDF_IS_COSINE
+static inline double kdf_sample(const double x, const double w) {
+    return M_PI_4*cos((M_PI_2*x)/w);
+}
+#endif
+
+#ifdef KDF_IS_GAUSSIAN
+// This is a hack: needs to be rescaled in w and renormalized given the clipping
+static inline double kdf_sample(const double x, const double w) {
+    return M_SQRT1_2*exp(-0.5f*(x/w)*(x/w));
+}
+#endif
+
+
 
 #ifdef KERNEL_PDF_UNIVARIATE
 ///

@@ -144,28 +144,25 @@ class Univariate_distribution():
         # gives a noisy pdf for the same bandwidth. So this is a hack
         # to ensure consistency of channel threshold estimation with either kernel,
         # by forcing the Epanechnikov bandwidth to be double the Gaussian.
-        if kernel=='epanechnikov':
-            self.bandwidth *= 2.0
-        flags = [
-            'kdf_is_tophat',         # 1
-            'kdf_is_triangle',       # 2
-            'kdf_is_epanechnikov',   # 4
-            'kdf_is_cosine',         # 8
-            'kdf_is_gaussian'        # 16
-            ]
-        [setattr(self,flag,2**idx) for idx,flag in enumerate(flags)]
+        if kernel=='gaussian':
+            self.bandwidth /= 2.0
+        available_kernels = ['tophat','triangle','epanechnikov','cosine','gaussian']
+        if kernel not in available_kernels:
+            raise ValueError('PDF kernel {} is not among those available: {}'
+                             .format(kernel, available_kernels))
+        pdebug(kernel,len(kernel))
         x_range = self.logx_max-self.logx_min;
         bin_dx = x_range/self.n_hist_bins
         pdf_dx = x_range/self.n_pdf_points
         info_dtype = np.dtype([
                 ('array_order', 'U1'),
                 ('kdf_bandwidth', np.float32),
-                ('kdf_code', np.uint8),
-                ('kdf_is_tophat', np.uint32),
-                ('kdf_is_triangle', np.uint32),
-                ('kdf_is_epanechnikov', np.uint32),
-                ('kdf_is_cosine', np.uint32),
-                ('kdf_is_gaussian', np.uint32),
+                ('kdf_kernel', 'U'+str(len(kernel))),
+#                 ('kdf_is_tophat', np.uint32),
+#                 ('kdf_is_triangle', np.uint32),
+#                 ('kdf_is_epanechnikov', np.uint32),
+#                 ('kdf_is_cosine', np.uint32),
+#                 ('kdf_is_gaussian', np.uint32),
                 ('n_data', np.uint32),
                 ('n_hist_bins', np.uint32),
                 ('n_pdf_points', np.uint32),
@@ -188,12 +185,12 @@ class Univariate_distribution():
             ])          
         info_struct = np.array([(np.string_(self.array_order),       # order
                                  np.float32(self.bandwidth),         # kdf_bandwidth
-                                 np.uint8(self.kdf_is_epanechnikov), # kdf_code
-                                 np.uint32(self.kdf_is_tophat),
-                                 np.uint32(self.kdf_is_triangle),
-                                 np.uint32(self.kdf_is_epanechnikov),
-                                 np.uint32(self.kdf_is_cosine),
-                                 np.uint32(self.kdf_is_gaussian),
+                                 np.string_(kernel),               # kdf_code
+#                                  np.uint32(self.kdf_is_tophat),
+#                                  np.uint32(self.kdf_is_triangle),
+#                                  np.uint32(self.kdf_is_epanechnikov),
+#                                  np.uint32(self.kdf_is_cosine),
+#                                  np.uint32(self.kdf_is_gaussian),
                                  np.uint32(self.n_data),             # n_data
                                  np.uint32(self.n_hist_bins),        # n_hist_bins
                                  np.uint32(self.n_pdf_points),       # n_pdf_points

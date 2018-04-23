@@ -147,7 +147,7 @@ def gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, info_str
         program = cl.Program(context, cl_kernel_source).build(options=compile_options)
     pocl.report_build_log(program, device, verbose)
     # Set the GPU kernel
-#     pdebug(compile_options)
+    pdebug(compile_options)
 #     pdebug(buffer_list)
     kernel = getattr(program,cl_kernel_fn)
     # Designate buffered arrays
