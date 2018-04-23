@@ -62,6 +62,8 @@
 	},
 
 	"analysis": {
+		"marginal_distbn_kde_method": "opencl",
+		"marginal_distbn_kde_kernel": "epanechnikov",
 		"pdf_sla_min": 1,
 		"Xpdf_sla_max": 300,
 		"pdf_slc_min": 1,
