@@ -158,11 +158,6 @@ class Univariate_distribution():
                 ('array_order', 'U1'),
                 ('kdf_bandwidth', np.float32),
                 ('kdf_kernel', 'U'+str(len(kernel))),
-#                 ('kdf_is_tophat', np.uint32),
-#                 ('kdf_is_triangle', np.uint32),
-#                 ('kdf_is_epanechnikov', np.uint32),
-#                 ('kdf_is_cosine', np.uint32),
-#                 ('kdf_is_gaussian', np.uint32),
                 ('n_data', np.uint32),
                 ('n_hist_bins', np.uint32),
                 ('n_pdf_points', np.uint32),
@@ -185,12 +180,7 @@ class Univariate_distribution():
             ])          
         info_struct = np.array([(np.string_(self.array_order),       # order
                                  np.float32(self.bandwidth),         # kdf_bandwidth
-                                 np.string_(kernel),               # kdf_code
-#                                  np.uint32(self.kdf_is_tophat),
-#                                  np.uint32(self.kdf_is_triangle),
-#                                  np.uint32(self.kdf_is_epanechnikov),
-#                                  np.uint32(self.kdf_is_cosine),
-#                                  np.uint32(self.kdf_is_gaussian),
+                                 np.string_(kernel),                 # kdf_code
                                  np.uint32(self.n_data),             # n_data
                                  np.uint32(self.n_hist_bins),        # n_hist_bins
                                  np.uint32(self.n_pdf_points),       # n_pdf_points
