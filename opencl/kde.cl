@@ -102,9 +102,6 @@ __kernel void pdf_univariate(
 
     // Get this pdf point's index
     const uint pdf_idx = global_id;
-    // Compute this pdf point's value
-//    const double pdf_point = (double)X_MIN+((double)global_id+0.5f)*PDF_DX;
-//    printf("pdf_point=%g\n",pdf_point);
 
     // Create a buffer variable for the pdf point "bin" accumulator
     __private double pdf_bin_accumulator=0.0f;
@@ -128,7 +125,6 @@ __kernel void pdf_univariate(
         // Left edge of kdf bin
         kdf_bin_edge = kdf_bin_point-PDF_DX/2.0f;
         // First left kdf-sampled pdf bin index
-        // Will be clipped to [0,N_PDF_POINTS-1]
         rpki = pdf_idx+ki;
         lpki = pdf_idx-ki+1;
         // Step through span of histogram bins

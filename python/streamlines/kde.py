@@ -88,7 +88,7 @@ def estimate_univariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     # Done
     vprint(verbose,'done')
     
-    return histogram_array, pdf_array/sum(pdf_array)/bin_dx
+    return histogram_array, pdf_array/(sum(pdf_array)*bin_dx)
     
 def gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, info_struct,
                 sl_array=None, histogram_array='create', pdf_array=None, 
