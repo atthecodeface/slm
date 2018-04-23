@@ -130,15 +130,14 @@ def gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, info_str
     else:
         # Compute pdf
         do_pdf = True
-        (kdf_array, pdf_array, histogram_buffer, kdf_buffer, pdf_buffer) \
+        (pdf_array, histogram_buffer, pdf_buffer) \
             = prepare_memory(context, queue, order, 
                              n_pdf_points=n_pdf_points, 
-                             n_kdf_points=n_kdf_points, 
                              histogram_array=histogram_array, 
-                             pdf_array='create', kdf_array='create',
+                             pdf_array='create',
                              verbose=verbose)    
         global_size = [n_pdf_points,1]
-        buffer_list = [histogram_buffer, kdf_buffer, pdf_buffer]
+        buffer_list = [histogram_buffer, pdf_buffer]
     local_size = None
     # Compile the CL code
     compile_options = pocl.set_compile_options(info_struct, cl_kernel_fn, job_type='kde')
@@ -169,9 +168,9 @@ def gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, info_str
         return histogram_array
     
 def prepare_memory(context, queue, order, 
-                   n_hist_bins=0, n_pdf_points=0, n_kdf_points=0,
+                   n_hist_bins=0, n_pdf_points=0,
                    sl_array=None, histogram_array=None, 
-                   pdf_array=None, kdf_array=None, 
+                   pdf_array=None,
                    verbose=False):
     """
     Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
@@ -184,7 +183,6 @@ def prepare_memory(context, queue, order,
         sl_array (numpy.ndarray):
         histogram_array (numpy.ndarray):
         pdf_array (numpy.ndarray):
-        kdf_array (numpy.ndarray):
         verbose (bool):
         
     Returns:
@@ -205,11 +203,9 @@ def prepare_memory(context, queue, order,
     if type(pdf_array) is str and pdf_array=='create':
         pdf_array         = np.zeros((n_pdf_points,1), dtype=np.float32,order=order)
         pdf_buffer        = cl.Buffer(context, COPY_READ_WRITE, hostbuf=pdf_array)
-        kdf_array         = np.zeros((n_kdf_points,1), dtype=np.float32,order=order)
-        kdf_buffer        = cl.Buffer(context, COPY_READ_ONLY, hostbuf=pdf_array)
         
     # Deduce which array and buffers to return from context
     if pdf_array is None:
         return (histogram_array, sl_buffer, histogram_buffer) 
     else:
-        return (kdf_array, pdf_array, histogram_buffer, kdf_buffer, pdf_buffer) 
+        return (pdf_array, histogram_buffer, pdf_buffer) 
