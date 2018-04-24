@@ -53,8 +53,9 @@
 
 	"analysis": {
 		"marginal_distbn_kde_method": "opencl",
+		"joint_distbn_kde_method":    "sklearn",
 		"n_hist_bins" :  200,
-		"n_pdf_points" : 200,
+		"n_pdf_points" : 20,
         "do_marginal_distbn_dsla":   true,
         "do_marginal_distbn_usla":   true,
         "do_marginal_distbn_dslt":   true,

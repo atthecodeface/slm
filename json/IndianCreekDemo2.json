@@ -70,8 +70,10 @@
 	"analysis": {
 		"marginal_distbn_kde_method": "opencl",
 		"marginal_distbn_kde_kernel": "epanechnikov",
-		"n_hist_bins" :  2000,
-		"n_pdf_points" : 200,
+		"joint_distbn_kde_method":    "sklearn",
+		"joint_distbn_kde_kernel":    "epanechnikov",
+		"n_hist_bins" :  20,
+		"n_pdf_points" : 20,
 		"pdf_sla_min": 1,
 		"Xpdf_sla_max": 300,
 		"pdf_slc_min": 1,
