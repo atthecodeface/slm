@@ -4,13 +4,17 @@
 ///
 /// In reality these macros are set in the Python wrapper files, e.g., @p integration.py,
 /// in the variable @p compile_options, itself set by @p pocl.set_compile_options().
-/// This example reflects the set of -D macro flags passed when building
+/// This example reflects the set of
+
+#define macro flags passed when building
 /// the kernel integrate_trajectory() in integration.cl.
 
 ///
 /// @defgroup kernelflags Kernel instance control options
 /// Basic kernel compilation and seed point offset information.
-/// Communicated to CL kernels via compiler -D macro options.
+/// Communicated to CL kernels via compiler.
+
+#define macro options.
 ///
 
 /// @{
@@ -33,7 +37,9 @@
 ///
 /// @defgroup intflags Streamline integration parameters
 /// Parameters used to control R-K streamline integration behavior.
-/// Communicated to CL kernels via compiler -D macro options.
+/// Communicated to CL kernels via compiler.
+
+#define macro options.
 ///
 
 /// @{
@@ -54,7 +60,9 @@
 ///
 /// @defgroup arrayflags Parameters describing grid array geometry, size, ordering
 /// Parameters describing DTM grid array geometry, size, ordering, padding, etc.
-/// Communicated to CL kernels via compiler -D macro options.
+/// Communicated to CL kernels via compiler.
+
+#define macro options.
 ///
 
 /// @{
@@ -75,7 +83,9 @@
 ///
 /// @defgroup trajflags Jittered trajectory integration control parameters
 /// Parameters used to control sub-pixel, jittered streamline integration.
-/// Communicated to CL kernels via compiler -D macro options.
+/// Communicated to CL kernels via compiler.
+
+#define macro options.
 ///
 
 /// @{
@@ -89,7 +99,9 @@
 ///
 /// @defgroup mapflags Mapping flags and control parameters
 /// Mapping grid-pixel flags provided by @p mapping_array; mapping control parameters.
-/// Communicated to CL kernels via compiler -D macro options.
+/// Communicated to CL kernels via compiler.
+
+#define macro options.
 ///
 
 /// @{
@@ -112,3 +124,44 @@
 #define LEFT_FLANK_ADDITION  2147483648u
 #define SEGMENTATION_THRESHOLD  50u
 /// @}
+
+
+
+///
+/// @defgroup kdeflags PDF kernel-density estimation flags and control parameters
+/// PDF kernel-density estimation flags and control parameters.
+/// Communicated to CL kernels via compiler.
+
+#define macro options.
+///
+
+/// @{
+#define KERNEL_HISTOGRAM_UNIVARIATE
+#define KERNEL_HISTOGRAM_BIVARIATE
+#define KERNEL_PDF_UNIVARIATE
+#define KERNEL_PDF_BIVARIATE
+#define KDF_BANDWIDTH=0.4000000059604645f
+#define KDF_IS_TOPHAT
+#define KDF_IS_TRIANGLE
+#define KDF_IS_EPANECHNIKOV
+#define KDF_IS_COSINE
+#define KDF_IS_GAUSSIAN
+#define N_DATA=202u
+#define N_HIST_BINS=2000u
+#define N_PDF_POINTS=200u
+#define X_MIN=0.0f
+#define X_MAX=4.368579864501953f
+#define X_RANGE=4.368579864501953f
+#define BIN_DX=0.00218428997322917f
+#define PDF_DX=0.021842898800969124f
+#define KDF_WIDTH_X=2.269500255584717f
+#define N_KDF_PART_POINTS_X=51u
+#define Y_MIN=-0.6931471824645996f
+#define Y_MAX=5.776393413543701f
+#define Y_RANGE=6.469540596008301f
+#define BIN_DY=0.003234770381823182f
+#define PDF_DY=0.032347701489925385f
+#define KDF_WIDTH_Y=2.4467508792877197f
+#define N_KDF_PART_POINTS_Y=37u
+/// @}
+

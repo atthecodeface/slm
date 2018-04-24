@@ -88,6 +88,28 @@ class Univariate_distribution():
         self.cl_src_path = cl_src_path
         self.cl_platform = cl_platform
         self.cl_device = cl_device
+        
+        self.info_dtype = np.dtype([    ('array_order', 'U1'),
+                                        ('kdf_bandwidth', np.float32),
+                                        ('kdf_kernel', 'U20'),
+                                        ('n_data', np.uint32),
+                                        ('n_hist_bins', np.uint32),
+                                        ('n_pdf_points', np.uint32),
+                                        ('x_min', np.float32),
+                                        ('x_max', np.float32),
+                                        ('x_range', np.float32),
+                                        ('bin_dx', np.float32),
+                                        ('pdf_dx', np.float32),
+                                        ('kdf_width_x', np.float32),
+                                        ('n_kdf_part_points_x', np.uint32),
+                                        ('y_min', np.float32),
+                                        ('y_max', np.float32),
+                                        ('y_range', np.float32),
+                                        ('bin_dy', np.float32),
+                                        ('pdf_dy', np.float32),
+                                        ('kdf_width_y', np.float32),
+                                        ('n_kdf_part_points_y', np.uint32)  ])          
+             
         self.verbose = verbose
 
     def print(self, *args, **kwargs):
@@ -139,74 +161,44 @@ class Univariate_distribution():
     def compute_kde_opencl(self, kernel='epanechnikov', bandwidth=0.15):
         self.kernel = kernel
         self.bandwidth = bandwidth
-        # defaults.json specifies a Gaussian, but in practice, when deducing a 
-        # channel threshold from the multi-modal pdf of dslt, an Epanechnikov kernel
-        # gives a noisy pdf for the same bandwidth. So this is a hack
-        # to ensure consistency of channel threshold estimation with either kernel,
-        # by forcing the Epanechnikov bandwidth to be double the Gaussian.
+        # hack
         if kernel=='gaussian':
             self.bandwidth /= 2.0
         available_kernels = ['tophat','triangle','epanechnikov','cosine','gaussian']
         if kernel not in available_kernels:
-            raise ValueError('PDF kernel {} is not among those available: {}'
+            raise ValueError('PDF kernel "{}" is not among those available: {}'
                              .format(kernel, available_kernels))
-        pdebug(kernel,len(kernel))
         x_range = self.logx_max-self.logx_min;
         bin_dx = x_range/self.n_hist_bins
         pdf_dx = x_range/self.n_pdf_points
-        info_dtype = np.dtype([
-                ('array_order', 'U1'),
-                ('kdf_bandwidth', np.float32),
-                ('kdf_kernel', 'U'+str(len(kernel))),
-                ('n_data', np.uint32),
-                ('n_hist_bins', np.uint32),
-                ('n_pdf_points', np.uint32),
-                ('x_min', np.float32),
-                ('x_max', np.float32),
-                ('x_range', np.float32),
-                ('bin_dx', np.float32),
-                ('pdf_dx', np.float32),
-                ('kdf_width_x', np.float32),
-                ('n_kdf_points_x', np.uint32),
-                ('n_kdf_part_points_x', np.uint32),
-                ('y_min', np.float32),
-                ('y_max', np.float32),
-                ('y_range', np.float32),
-                ('bin_dy', np.float32),
-                ('pdf_dy', np.float32),
-                ('kdf_width_y', np.float32),
-                ('n_kdf_points_y', np.uint32),
-                ('n_kdf_part_points_y', np.uint32)
-            ])          
-        info_struct = np.array([(np.string_(self.array_order),       # order
-                                 np.float32(self.bandwidth),         # kdf_bandwidth
-                                 np.string_(kernel),                 # kdf_code
-                                 np.uint32(self.n_data),             # n_data
-                                 np.uint32(self.n_hist_bins),        # n_hist_bins
-                                 np.uint32(self.n_pdf_points),       # n_pdf_points
-                                 np.float32(self.logx_min),          # x_min
-                                 np.float32(self.logx_max),          # x_max
-                                 np.float32(x_range),                # x_range
-                                 np.float32(bin_dx),                 # bin_dx
-                                 np.float32(pdf_dx),                 # pdf_dx
-                                 np.float32(0.0),                    # kdf_width_x
-                                 np.uint32(0),                       # n_kdf_points_x
-                                 np.uint32(0),                       # n_kdf_part_points_x
-                                 np.float32(0.0),                    # y_min
-                                 np.float32(1.0),                    # y_max
-                                 np.float32(1.0),                    # y_range
-                                 np.float32(1.0/2000),               # bin_dy
-                                 np.float32(1.0/200),                # pdf_dy
-                                 np.float32(0.0),                    # kdf_width_y
-                                 np.uint32(0),                       # n_kdf_points_y
-                                 np.uint32(0)                        # n_kdf_part_points_y
-                            )], dtype = info_dtype)
-        histogram,self.kde['pdf'] = kde.estimate_univariate_pdf(self.cl_src_path, 
-                                                       self.cl_platform, 
-                                                       self.cl_device, 
-                                                       info_struct,
-                                                       self.logx_data, 
-                                                       self.verbose)
+        self.info_struct \
+            = np.array([(np.string_(self.array_order),       # order
+                         np.float32(self.bandwidth),         # kdf_bandwidth
+                         np.string_(kernel),                 # kdf_code
+                         np.uint32(self.n_data),             # n_data
+                         np.uint32(self.n_hist_bins),        # n_hist_bins
+                         np.uint32(self.n_pdf_points),       # n_pdf_points
+                         np.float32(self.logx_min),          # x_min
+                         np.float32(self.logx_max),          # x_max
+                         np.float32(x_range),                # x_range
+                         np.float32(bin_dx),                 # bin_dx
+                         np.float32(pdf_dx),                 # pdf_dx
+                         np.float32(0.0),                    # kdf_width_x
+                         np.uint32(0),                       # n_kdf_part_points_x
+                         np.float32(0.0),                    # y_min
+                         np.float32(1.0),                    # y_max
+                         np.float32(1.0),                    # y_range
+                         np.float32(1.0/2000),               # bin_dy
+                         np.float32(1.0/200),                # pdf_dy
+                         np.float32(0.0),                    # kdf_width_y
+                         np.uint32(0)                        # n_kdf_part_points_y
+                         )], dtype = self.info_dtype)
+        self.kde['pdf'] = kde.estimate_univariate_pdf(self.cl_src_path, 
+                                                        self.cl_platform, 
+                                                        self.cl_device, 
+                                                        self.info_struct,
+                                                        self.logx_data, 
+                                                        self.verbose)
         self.kde['cdf'] = np.cumsum(self.kde['pdf'])*bin_dx
         if not np.isclose(self.kde['cdf'][-1], 1.0, rtol=5e-3):
             self.print(
@@ -289,11 +281,14 @@ class Bivariate_distribution():
     and bounding criteria.
     """
     def __init__(self, logx_array=None,logy_array=None, mask_array=None,
+                 pixel_size=None, 
                  method='sklearn', n_hist_bins=2000, n_pdf_points=200, 
                  logx_min=None, logy_min=None, logx_max=None, logy_max=None,
-                 pixel_size=None, verbose=False):
-        self.logx_array = logx_array
-        self.logy_array = logy_array
+                 order='C',
+                 cl_src_path=None, cl_platform=None, cl_device=None,
+                 verbose=False):
+        self.logx_data = logx_array
+        self.logy_data = logy_array
         if logx_min is None:
             logx_min = logx_array[logx_array>np.finfo(np.float32).min].min()
         if logx_max is None:
@@ -320,10 +315,21 @@ class Bivariate_distribution():
                 ]).T
             
         # x,y meshgrid for sampling the bivariate pdf f(x,y)
-        self.logx_mesh,self.logy_mesh = np.mgrid[logx_min:logx_max:n_pdf_points,
-                                                 logy_min:logy_max:n_pdf_points]
+        # For some weird reason, the numbers of points in x,y need to be complex-valued 
+        self.logx_mesh,self.logy_mesh \
+            = np.mgrid[logx_min:logx_max:np.complex(n_pdf_points),
+                       logy_min:logy_max:np.complex(n_pdf_points)]
         self.logxy_data_indexes = np.vstack([self.logx_mesh.ravel(), 
                                              self.logy_mesh.ravel()]).T
+                                             
+        self.logx_min = logx_min
+        self.logx_max = logx_max
+        self.logy_min = logy_min
+        self.logy_max = logy_max
+        self.n_data = self.logxy_data.shape[0]
+        self.n_hist_bins = n_hist_bins
+        self.n_pdf_points = n_pdf_points
+                                             
         self.x_mesh = np.exp(self.logx_mesh)
         self.y_mesh = np.exp(self.logy_mesh)
         self.x_vec = self.x_mesh[:,0]
@@ -348,7 +354,37 @@ class Bivariate_distribution():
         self.mode_cluster_ij_list = [None,None]
         
         self.pixel_size = pixel_size
+        self.array_order = order
+        self.cl_src_path = cl_src_path
+        self.cl_platform = cl_platform
+        self.cl_device = cl_device
+        
+        self.info_dtype = np.dtype([    ('array_order', 'U1'),
+                                        ('kdf_bandwidth', np.float32),
+                                        ('kdf_kernel', 'U20'),
+                                        ('n_data', np.uint32),
+                                        ('n_hist_bins', np.uint32),
+                                        ('n_pdf_points', np.uint32),
+                                        ('x_min', np.float32),
+                                        ('x_max', np.float32),
+                                        ('x_range', np.float32),
+                                        ('bin_dx', np.float32),
+                                        ('pdf_dx', np.float32),
+                                        ('kdf_width_x', np.float32),
+                                        ('n_kdf_part_points_x', np.uint32),
+                                        ('y_min', np.float32),
+                                        ('y_max', np.float32),
+                                        ('y_range', np.float32),
+                                        ('bin_dy', np.float32),
+                                        ('pdf_dy', np.float32),
+                                        ('kdf_width_y', np.float32),
+                                        ('n_kdf_part_points_y', np.uint32)  ])          
+             
         self.verbose = verbose
+
+    def print(self, *args, **kwargs):
+        if self.verbose:
+            print(*args, **kwargs)
 
     def compute_kde_scipy(self, bw_method='scott'):
         # Compute bivariate pdf
@@ -366,6 +402,60 @@ class Bivariate_distribution():
             np.exp(self.kde['model'].score_samples(self.logxy_data_indexes)
                                                         ),self.logx_mesh.shape)  
 
+    def compute_kde_opencl(self, kernel='epanechnikov', bandwidth=0.10):
+        self.kernel = kernel
+        self.bandwidth = bandwidth
+        available_kernels = ['tophat','triangle','epanechnikov','cosine','gaussian']
+        if kernel not in available_kernels:
+            raise ValueError('PDF kernel "{}" is not among those available: {}'
+                             .format(kernel, available_kernels))
+        x_range = self.logx_max-self.logx_min;
+        bin_dx = x_range/self.n_hist_bins
+        pdf_dx = x_range/self.n_pdf_points
+        y_range = self.logy_max-self.logy_min;
+        bin_dy = y_range/self.n_hist_bins
+        pdf_dy = y_range/self.n_pdf_points
+        
+#         pdebug(x_range, y_range, self.logx_min, self.logx_max,
+#                self.logy_min, self.logy_max)
+#         pdebug(self.logx_data.shape)
+#         pdebug(self.logy_data.shape)
+#         pdebug(self.logxy_data.shape)
+        self.info_struct \
+            = np.array([(np.string_(self.array_order),       # order
+                         np.float32(self.bandwidth),         # kdf_bandwidth
+                         np.string_(kernel),                 # kdf_code
+                         np.uint32(self.n_data),             # n_data
+                         np.uint32(self.n_hist_bins),        # n_hist_bins
+                         np.uint32(self.n_pdf_points),       # n_pdf_points
+                         np.float32(self.logx_min),          # x_min
+                         np.float32(self.logx_max),          # x_max
+                         np.float32(x_range),                # x_range
+                         np.float32(bin_dx),                 # bin_dx
+                         np.float32(pdf_dx),                 # pdf_dx
+                         np.float32(0.0),                    # kdf_width_x
+                         np.uint32(0),                       # n_kdf_part_points_x
+                         np.float32(self.logy_min),          # y_min
+                         np.float32(self.logy_max),          # y_max
+                         np.float32(y_range),                # y_range
+                         np.float32(bin_dy),                 # bin_dy
+                         np.float32(pdf_dy),                 # pdf_dy
+                         np.float32(0.0),                    # kdf_width_y
+                         np.uint32(0)                        # n_kdf_part_points_y
+                         )], dtype = self.info_dtype)
+        self.kde['pdf'] = kde.estimate_bivariate_pdf(   self.cl_src_path, 
+                                                        self.cl_platform, 
+                                                        self.cl_device, 
+                                                        self.info_struct,
+                                                        self.logxy_data, 
+                                                        self.verbose  )
+        self.kde['cdf'] = np.cumsum(self.kde['pdf'])*bin_dx
+#         if not np.isclose(self.kde['cdf'][-1], 1.0, rtol=5e-3):
+#             self.print(
+#                 'Error/imprecision when computing cumulative probability distribution:',
+#                        'pdf integrates to {:3f} not to 1.0'.format(self.kde['cdf'][-1]))
+
+
     def find_mode(self, mode_idx, tilt=0):
         # Prep
         kde_pdf = self.kde['pdf']*np.power(self.y_mesh,tilt)
@@ -373,6 +463,7 @@ class Bivariate_distribution():
         # Find mode = (x,y) @ max{f(x,y)}
         max_pdf_idx = np.argmax(kde_pdf,axis=None)
         mode_ij = np.unravel_index(max_pdf_idx, kde_pdf.shape)
+#         pdebug('mode_ij',mode_ij,self.x_mesh.shape,self.x_mesh.shape)
         mode_xy = np.array([ self.x_mesh[mode_ij[0],0],self.y_mesh[0,mode_ij[1]] ])
         
         # If tilt used to locate 2ndary mode, precisely relocate without tilt
@@ -435,10 +526,10 @@ class Bivariate_distribution():
                           for band in near_mode_pdf_bands]))
         self.mode_cluster_ij_list[mode_idx] \
             = np.concatenate([
-                        np.array(np.where(  (self.logx_array>=np.log(nmpz[0][0]))
-                                          & (self.logx_array<=np.log(nmpz[0][1]))
-                                          & (self.logy_array>=np.log(nmpz[1][0])) 
-                                          & (self.logy_array<=np.log(nmpz[1][1]))  )).T
+                        np.array(np.where(  (self.logx_data>=np.log(nmpz[0][0]))
+                                          & (self.logx_data<=np.log(nmpz[0][1]))
+                                          & (self.logy_data>=np.log(nmpz[1][0])) 
+                                          & (self.logy_data<=np.log(nmpz[1][1]))  )).T
                         for nmpz in near_mode_pdf_zones
                ])     
     
@@ -530,22 +621,22 @@ class Analysis(Core):
         if bandwidth is None:
             bandwidth = self.marginal_distbn_kde_bandwidth  
         uv_distbn = Univariate_distribution(logx_array=logx_array, logy_array=logy_array,
+                                            pixel_size = self.geodata.roi_pixel_size,
                                             method=method, 
                                             n_hist_bins=n_hist_bins,
                                             n_pdf_points=n_pdf_points,
                                             logx_min=logx_min, logy_min=logy_min, 
                                             logx_max=logx_max, logy_max=logy_max,
-                                            pixel_size = self.geodata.roi_pixel_size,
                                             search_cdf_min = self.search_cdf_min,
                                             order=self.state.array_order,
                                             cl_src_path=self.state.cl_src_path, 
                                             cl_platform=self.state.cl_platform, 
                                             cl_device=self.state.cl_device,
                                             verbose=self.state.verbose)
-        if method=='sklearn':
-            uv_distbn.compute_kde_sklearn(kernel=kernel, bandwidth=bandwidth)
-        elif method=='opencl':
+        if method=='opencl':
             uv_distbn.compute_kde_opencl(kernel=kernel, bandwidth=bandwidth)
+        elif method=='sklearn':
+            uv_distbn.compute_kde_sklearn(kernel=kernel, bandwidth=bandwidth)
         elif method=='scipy':
             uv_distbn.compute_kde_scipy(bw_method=self.marginal_distbn_kde_bw_method)
         else:
@@ -695,23 +786,27 @@ class Analysis(Core):
         else:
             n_hist_bins = n_hist_bins
         if n_pdf_points is None:
-            n_pdf_points = np.complex(self.n_pdf_points)
-        else:
-            n_pdf_points = np.complex(n_pdf_points)
+            n_pdf_points = self.n_pdf_points
         if kernel is None:
             kernel = self.joint_distbn_kde_kernel
         if bandwidth is None:
             bandwidth = self.joint_distbn_kde_bandwidth  
         bv_distbn = Bivariate_distribution(logx_array=logx_array, logy_array=logy_array,
+                                            pixel_size = self.geodata.roi_pixel_size,
                                             method=method, 
                                             n_hist_bins=n_hist_bins,
                                             n_pdf_points=n_pdf_points,
                                             logx_min=logx_min, logy_min=logy_min, 
                                             logx_max=logx_max, logy_max=logy_max,
-                                            pixel_size = self.geodata.roi_pixel_size,
+                                            order=self.state.array_order,
+                                            cl_src_path=self.state.cl_src_path, 
+                                            cl_platform=self.state.cl_platform, 
+                                            cl_device=self.state.cl_device,
                                             verbose=self.state.verbose)
         
-        if method=='sklearn':
+        if method=='opencl':
+            bv_distbn.compute_kde_opencl(kernel=kernel, bandwidth=bandwidth)
+        elif method=='sklearn':
             bv_distbn.compute_kde_sklearn(kernel=kernel, bandwidth=bandwidth)
         elif method=='scipy':
             bv_distbn.compute_kde_scipy(bw_method=self.joint_distbn_kde_bw_method)

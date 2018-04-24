@@ -151,16 +151,14 @@ def set_compile_options(info_struct, kernel_def, downup_sign=1,
             '-D','BIN_DX={}f'.format(info_struct['bin_dx'][0]),
             '-D','PDF_DX={}f'.format(info_struct['pdf_dx'][0]),
             '-D','KDF_WIDTH_X={}f'.format(info_struct['kdf_width_x'][0]),
-            '-D','N_KDF_POINTS_X={}u'.format(info_struct['n_kdf_points_x'][0]),
-            '-D','N_KDF_PART_POINTS_X={}u'.format(info_struct['n_kdf_points_x'][0]),
+            '-D','N_KDF_PART_POINTS_X={}u'.format(info_struct['n_kdf_part_points_x'][0]),
             '-D','Y_MIN={}f'.format(info_struct['y_min'][0]),
             '-D','Y_MAX={}f'.format(info_struct['y_max'][0]),
             '-D','Y_RANGE={}f'.format(info_struct['y_range'][0]),
             '-D','BIN_DY={}f'.format(info_struct['bin_dy'][0]),
             '-D','PDF_DY={}f'.format(info_struct['pdf_dy'][0]),
             '-D','KDF_WIDTH_Y={}f'.format(info_struct['kdf_width_y'][0]),
-            '-D','N_KDF_POINTS_Y={}u'.format(info_struct['n_kdf_points_y'][0]),
-            '-D','N_KDF_PART_POINTS_Y={}u'.format(info_struct['n_kdf_points_y'][0])
+            '-D','N_KDF_PART_POINTS_Y={}u'.format(info_struct['n_kdf_part_points_y'][0])
         ]
     else:
         return [

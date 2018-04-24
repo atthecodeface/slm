@@ -13,7 +13,6 @@
 ///      The reason remains obscure: it may be because of GPU timeout, but more likely
 ///      is because of a memory leakage.
 ///
-///
 
 ///
 /// Byte reversal
@@ -36,7 +35,8 @@
 /// Macro to scramble the initial RNG state to reduce correlation of
 ///    neighboring streamline jitters
 ///
-/// @param[in,out] initial_rng_state: RNG state (thus initally the seed) and RNG variate
+/// @param[out] initial_rng_state: RNG state and variate
+/// @param[in] seed_idx:           RNG seed
 ///
 #define INITIALIZE_RNG(initial_rng_state,seed_idx) \
     initial_rng_state = seed_idx; \

@@ -15,11 +15,11 @@
 /// from regular grid of velocity vectors in global uv_array with ordering type
 /// set by macro definitions C_ORDER or F_ORDER.
 ///
-/// #ifdef C_ORDER: Assumes a C-order, row-major, last-index-fastest array type.
+/// ifdef C_ORDER: Assumes a C-order, row-major, last-index-fastest array type.
 ///
-/// @param[in]  vec (float2 *, RO): real-valued vector position (x,y) onto which to
-///                                 interpolate (u,v)
-/// @param[in] uv_array  (float *,  RO): gridded velocity vector components (u,v)
+/// @param[in] vec      (float2 *, RO): real-valued vector position (x,y) onto which to
+///                                     interpolate (u,v)
+/// @param[in] uv_array (float2 *, RO): gridded velocity vector components (u,v)
 ///
 /// @returns  normalized velocity vector (u,v) sampled at position vec (x,y)
 ///
@@ -51,7 +51,7 @@ static float2 speed_interpolator(float2 vec, __global const float2 *uv_array)
 /// Compute the array index of the padded grid pixel pointed to by
 /// a float2 grid position vector (choice of row-major or column-major arrays).
 ///
-/// #ifdef C_ORDER: Assumes a C-order, row-major, last-index-fastest array type.
+/// ifdef C_ORDER: Assumes a C-order, row-major, last-index-fastest array type.
 ///
 /// @param[in]  vec (float2 *, RO): real-valued vector position (x,y)
 ///
@@ -68,17 +68,18 @@ static inline uint get_array_idx(float2 vec) {
 #ifdef F_ORDER
 /// Bilinearly interpolate a velocity vector (choice of row-major or column-major arrays).
 ///
-/// #ifdef F_ORDER: Assumes a Fortran-order, column-major, first-index-fastest array type.
+/// ifdef F_ORDER: Assumes a Fortran-order, column-major, first-index-fastest array type.
 ///
-/// @param[in]  vec (float2 *, RO): real-valued vector position (x,y) onto which to
-///                                 interpolate (u,v)
-/// @param[in] uv_array  (float *,  RO): gridded velocity vector components (u,v)
+/// @param[in] vec      (float2 *, RO): real-valued vector position (x,y) onto which to
+///                                     interpolate (u,v)
+/// @param[in] uv_array (float2 *, RO): gridded velocity vector components (u,v)
 ///
 /// @returns  normalized velocity vector (u,v) at position vec (x,y)
 ///
 /// @ingroup utilities
 ///
-static float2 speed_interpolator(float2 vec, __global const float2 *uv_array)
+static float2 speed_interpolator(float2 vec,
+                                __global const float2 *uv_array)
 {
     const uint x_lft = (uint)(max(0.0f, vec[0]+PAD_WIDTH_PP5));
     const uint y_dwn = (uint)(max(0.0f, vec[1]+PAD_WIDTH_PP5));
@@ -104,7 +105,7 @@ static float2 speed_interpolator(float2 vec, __global const float2 *uv_array)
 /// Compute the array index of the padded grid pixel pointed to by
 /// a float2 grid position vector (choice of row-major or column-major arrays).
 ///
-/// #ifdef F_ORDER: Assumes a Fortran-order, column-major, first-index-fastest array type.
+/// ifdef F_ORDER: Assumes a Fortran-order, column-major, first-index-fastest array type.
 ///
 /// @param[in]  vec (float2 *, RO): real-valued vector position (x,y)
 ///
@@ -137,7 +138,7 @@ static char2 compress(float2 raw_vector) {
 /// Used in connect_channels() to unpack a streamline trajectory.
 ///
 /// @param[in]  compressed_vector (char2): vector (trajectory step) in
-///             compressed (byte,byte) form
+///                                        compressed (byte,byte) form
 ///
 /// @retval  float2: uncompressed vector (trajectory step)
 ///
