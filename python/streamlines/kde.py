@@ -58,15 +58,19 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     bin_dy       = info_struct['bin_dy'][0]
     pdf_dy       = info_struct['pdf_dy'][0]
     stddev_y      = np.std(sl_array[:,1])
+    
+#     tmp_sl_array = sl_array.T.copy()
+#     sl_array =tmp_sl_array
+    pdebug(sl_array.shape,sl_array.flags)
         
     # Set up kernel filter
     # Silverman hack for now
-    kdf_width_x = 1.06*stddev_x*np.power(n_data,-0.2)*8
-    kdf_width_y = 1.06*stddev_y*np.power(n_data,-0.2)*8
+    kdf_width_x = 1.06*stddev_x*np.power(n_data,-0.2)*10
+    kdf_width_y = 1.06*stddev_y*np.power(n_data,-0.2)*10
     info_struct['kdf_width_x'][0] = kdf_width_x
     info_struct['kdf_width_y'][0] = kdf_width_y
     info_struct['n_kdf_part_points_x'][0] = np.uint32(np.floor(kdf_width_x/pdf_dx))//2
-    info_struct['n_kdf_part_points_y'][0] = np.uint32(np.floor(kdf_width_y/pdf_dy))//2
+    info_struct['n_kdf_part_points_y'][0] = np.uint32(np.floor(kdf_width_y/bin_dy))//2
     
     pdebug('\n kdf_width_x',info_struct['kdf_width_x'][0])
     pdebug('\n n_kdf_part_points_x',info_struct['n_kdf_part_points_x'][0])
@@ -80,18 +84,28 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     cl_kernel_fn = 'histogram_bivariate'
     histogram_array \
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
-                      info_struct, sl_array,histogram_array='create', 
-                      is_bivariate=True, verbose=verbose)
+                      info_struct, action='histogram',  is_bivariate=True, 
+                      sl_array=sl_array, verbose=verbose)
         
-    vprint(verbose,'kernel filtering...',end='')
-#     histogram_array = histogram_array.astype(np.float32)
+    vprint(verbose,'kernel filtering rows...',end='')
+#     histogram_array = histogram_array.astype(np.float32).copy()
 #     return histogram_array/(np.sum(histogram_array)*bin_dx*bin_dy)
     # PDF
-    cl_kernel_fn = 'pdf_bivariate'
+    cl_kernel_fn = 'pdf_bivariate_rows'
+    partial_pdf_array \
+        = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
+                      info_struct, action='partial_pdf',  is_bivariate=True, 
+                      histogram_array=histogram_array,
+                      verbose=verbose)
+#     return partial_pdf_array/(np.sum(partial_pdf_array)*bin_dx*bin_dy)
+
+    vprint(verbose,'kernel filtering columns...',end='')
+    cl_kernel_fn = 'pdf_bivariate_cols'
     pdf_array \
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
-                      info_struct, histogram_array=histogram_array,pdf_array='create',
-                      is_bivariate=True, verbose=verbose)
+                      info_struct,  action='full_pdf',  is_bivariate=True, 
+                      partial_pdf_array=partial_pdf_array,
+                      verbose=verbose)
     # Done
     vprint(verbose,'done')
     pdebug('\n',pdf_array)
@@ -145,7 +159,7 @@ def estimate_univariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     cl_kernel_fn = 'histogram_univariate'
     histogram_array \
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
-                      info_struct, sl_array=sl_array, histogram_array='create', 
+                      info_struct, action='histogram', sl_array=sl_array, 
                       verbose=verbose)
         
     vprint(verbose,'kernel filtering...',end='')
@@ -153,7 +167,7 @@ def estimate_univariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     cl_kernel_fn = 'pdf_univariate'
     pdf_array \
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
-                      info_struct, histogram_array=histogram_array, pdf_array='create',
+                      info_struct, action='full_pdf', histogram_array=histogram_array,
                       verbose=verbose)
     # Done
     vprint(verbose,'done')
@@ -161,8 +175,10 @@ def estimate_univariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     return pdf_array/(sum(pdf_array)*bin_dx)
     
 def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_struct,
-                    sl_array=None, histogram_array='create', pdf_array=None, 
-                    is_bivariate=False, verbose=False ):
+                 action='histogram', is_bivariate=False, 
+                 sl_array=None,  histogram_array=None, 
+                 partial_pdf_array=None,  pdf_array=None, 
+                 verbose=False ):
     """
     Carry out GPU computation of histogram.
     
@@ -185,28 +201,49 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_st
     n_data       = info_struct['n_data'][0]
     n_pdf_points = info_struct['n_pdf_points'][0]
     
-    if type(histogram_array) is str and histogram_array=='create':
-        do_pdf = False
+    pdebug('action',action)
+    
+    if action=='histogram':
         # Compute histogram
         (histogram_array, sl_buffer, histogram_buffer) \
             = prepare_memory(context, queue, order, 
                              n_hist_bins=n_hist_bins, 
                              sl_array=sl_array, 
-                             histogram_array='create', is_bivariate=is_bivariate,
+                             action=action, is_bivariate=is_bivariate,
                              verbose=verbose)    
         global_size = [n_data,1]
         buffer_list = [sl_buffer, histogram_buffer]
-    else:
-        # Compute pdf
-        do_pdf = True
-        (pdf_array, histogram_buffer, pdf_buffer) \
+    elif action=='partial_pdf':
+        # Compute partially (rows-only) kd-smoothed pdf
+        (partial_pdf_array, histogram_buffer, partial_pdf_buffer) \
             = prepare_memory(context, queue, order, 
-                             n_pdf_points=n_pdf_points, 
-                             histogram_array=histogram_array, 
-                             pdf_array='create', is_bivariate=is_bivariate,
+                             n_hist_bins=n_hist_bins,
+                             histogram_array=histogram_array,
+                             action=action, is_bivariate=is_bivariate,
                              verbose=verbose)    
-        global_size = [pdf_array.shape[0]*pdf_array.shape[1],1]
-        buffer_list = [histogram_buffer, pdf_buffer]
+        global_size = [partial_pdf_array.shape[0]*partial_pdf_array.shape[1],1]
+        buffer_list = [histogram_buffer, partial_pdf_buffer]
+    else:
+        # Compute kd-smoothed pdf
+        if is_bivariate:
+            (pdf_array, partial_pdf_buffer, pdf_buffer) \
+                = prepare_memory(context, queue, order, 
+                                 n_pdf_points=n_pdf_points, 
+                                 partial_pdf_array=partial_pdf_array, 
+                                 action=action, is_bivariate=True,
+                                 verbose=verbose)    
+            global_size = [pdf_array.shape[0]*pdf_array.shape[1],1]
+            buffer_list = [partial_pdf_buffer, pdf_buffer]
+        else:
+            (pdf_array, histogram_buffer, pdf_buffer) \
+                = prepare_memory(context, queue, order, 
+                                 n_pdf_points=n_pdf_points, 
+                                 histogram_array=histogram_array,
+                                 action=action, is_bivariate=False,
+                                 verbose=verbose)    
+            global_size = [pdf_array.shape[0],1]
+            buffer_list = [histogram_buffer, pdf_buffer]
+        
     local_size = None
     pdebug('global_size',global_size)
     # Compile the CL code
@@ -216,30 +253,36 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_st
         program = cl.Program(context, cl_kernel_source).build(options=compile_options)
     pocl.report_build_log(program, device, verbose)
     # Set the GPU kernel
-#     pdebug(compile_options)
-#     pdebug(buffer_list)
+    pdebug(compile_options)
     kernel = getattr(program,cl_kernel_fn)
     # Designate buffered arrays
     kernel.set_args(*buffer_list)
     kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
     # Do the GPU compute
     event = cl.enqueue_nd_range_kernel(queue, kernel, global_size, local_size)
+    
     # Fetch the data back from the GPU and finish
-    if do_pdf:
-        # Compute pdf
-        cl.enqueue_copy(queue, pdf_array, pdf_buffer)
-        queue.finish()
-        return pdf_array
-    else:
+    if action=='histogram':
         # Compute histogram
         cl.enqueue_copy(queue, histogram_array, histogram_buffer)
         queue.finish()   
         return histogram_array
+    elif action=='partial_pdf':
+        # Compute partial pdf
+        cl.enqueue_copy(queue, partial_pdf_array, partial_pdf_buffer)
+        queue.finish()
+        return partial_pdf_array
+    else:
+        # Compute pdf
+        cl.enqueue_copy(queue, pdf_array, pdf_buffer)
+        queue.finish()
+        return pdf_array
     
 def prepare_memory(context, queue, order, 
+                   action='histogram', is_bivariate=False, 
                    n_hist_bins=0, n_pdf_points=0,
                    sl_array=None, histogram_array=None, 
-                   pdf_array=None, is_bivariate=False,
+                   partial_pdf_array=None, pdf_array=None, 
                    verbose=False ):
     """
     Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
@@ -262,29 +305,34 @@ def prepare_memory(context, queue, order,
     COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
     COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR
 
-    if sl_array is not None:
+    if action=='histogram':
+        nx = n_hist_bins
+        if is_bivariate:
+            ny = n_hist_bins
+        else:
+            ny = 1
         sl_buffer         = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=sl_array)
-    nx = n_hist_bins
-    if is_bivariate:
-        ny = n_hist_bins
-    else:
-        ny = 1
-    if type(histogram_array) is str and histogram_array=='create':
         histogram_array   = np.zeros((nx,ny), dtype=np.uint32,order=order)
         histogram_buffer  = cl.Buffer(context, COPY_READ_WRITE, hostbuf=histogram_array)
-    else:
-        histogram_buffer  = cl.Buffer(context, COPY_READ_ONLY, hostbuf=histogram_array)
-    nx = n_pdf_points
-    if is_bivariate:
-        ny = n_pdf_points
-    else:
-        ny = 1
-    if type(pdf_array) is str and pdf_array=='create':
-        pdf_array         = np.zeros((nx,ny), dtype=np.float32,order=order)
-        pdf_buffer        = cl.Buffer(context, COPY_READ_WRITE, hostbuf=pdf_array)
-        
-    # Deduce which array and buffers to return from context
-    if pdf_array is None:
         return (histogram_array, sl_buffer, histogram_buffer) 
+    elif action=='partial_pdf':
+        nx = n_hist_bins
+        ny = n_hist_bins
+        histogram_buffer  = cl.Buffer(context, COPY_READ_ONLY, hostbuf=histogram_array)
+        partial_pdf_array = np.zeros((nx,ny), dtype=np.float32,order=order)
+        partial_pdf_buffer= cl.Buffer(context, COPY_READ_WRITE,hostbuf=partial_pdf_array)
+        return (partial_pdf_array, histogram_buffer, partial_pdf_buffer) 
     else:
-        return (pdf_array, histogram_buffer, pdf_buffer) 
+        nx = n_pdf_points
+        if is_bivariate:
+            ny = n_pdf_points
+            partial_pdf_buffer=cl.Buffer(context,COPY_READ_ONLY,hostbuf=partial_pdf_array)
+            pdf_array         = np.zeros((nx,ny), dtype=np.float32,order=order)
+            pdf_buffer        = cl.Buffer(context, COPY_READ_WRITE, hostbuf=pdf_array)
+            return (pdf_array, partial_pdf_buffer, pdf_buffer) 
+        else:
+            histogram_buffer = cl.Buffer(context, COPY_READ_ONLY, hostbuf=histogram_array)
+            pdf_array         = np.zeros((nx,1), dtype=np.float32,order=order)
+            pdf_buffer        = cl.Buffer(context, COPY_READ_WRITE, hostbuf=pdf_array)
+            return (pdf_array, histogram_buffer, pdf_buffer) 
+        

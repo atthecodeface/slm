@@ -44,7 +44,7 @@ static inline double k_sample(const double x, const double w) {
 /// @ingroup kde
 ///
 static inline double k_sample(const double x, const double w) {
-    return (1.0f-fabs(x/w));
+    return (1.0f-min(1.0,fabs(x/w)));
 }
 #endif
 
@@ -70,7 +70,7 @@ static inline double k_sample(const double x, const double w) {
 /// @ingroup kde
 ///
 static inline double k_sample(const double x, const double w) {
-    return M_PI_4*cos((M_PI_2*x)/w);
+    return M_PI_4*cos((M_PI_2*x));
 }
 #endif
 
@@ -84,7 +84,7 @@ static inline double k_sample(const double x, const double w) {
 ///
 // This is a hack: ought to be rescaled in w and renormalized given the clipping
 static inline double k_sample(const double x, const double w) {
-    return exp(-0.5f*(x/(w/2.0f))*(x/(w/2.0f))); //M_SQRT1_2*
+    return exp(-0.5f*(x/(0.1f))*(x/(0.1f))); //M_SQRT1_2*
 }
 #endif
 
@@ -120,13 +120,14 @@ __kernel void histogram_bivariate(
 }
 #endif
 
-#ifdef KERNEL_PDF_BIVARIATE
+
+#ifdef KERNEL_PDF_BIVARIATE_ROWS
 ///
 /// Kernel-density filter and reduce a 2d @p histogram_array
 ///
 ///
 ///
-/// Compiled if @p KERNEL_PDF_BIVARIATE is defined.
+/// Compiled if @p KERNEL_PDF_BIVARIATE_ROWS is defined.
 ///
 /// @param[in]     histogram_array        (uint *,   RO):
 /// @param[in]     pdf_idx                (uint,     RO):
@@ -156,12 +157,12 @@ static inline void filter_along_rows(
 
     // Set the number of histogram bins per pdf bin
     //   e.g., 2000 hist bins, 200 pdf point bins, 10 hist bins per pdf point bin
-    const uint n_bins_per_point = N_HIST_BINS/N_PDF_POINTS;
+    const uint n_bins_per_point = 1u; //N_HIST_BINS/N_PDF_POINTS;
     const uint n_bins_per_point_sqrd = n_bins_per_point*n_bins_per_point;
 
     // Figure out where we are on the coarse 2d pdf array (at the kdf center)
-    const int pdf_col = pdf_idx % N_PDF_POINTS;
-    const int pdf_row = pdf_idx / N_PDF_POINTS;
+    const int pdf_col = pdf_idx % N_HIST_BINS;
+    const int pdf_row = pdf_idx / N_HIST_BINS;
 
     // Figure out where the left & right kdf bins are on the coarse 2d pdf array
     // First right kdf-sampled pdf bin index...
@@ -175,11 +176,11 @@ static inline void filter_along_rows(
     // First right kdf-sampled pdf bin index...
     hi_col_rght_offset \
         = (uint)pdf_col_rght*n_bins_per_point
-            +(uint)pdf_row*N_PDF_POINTS*n_bins_per_point_sqrd;
+            +(uint)pdf_row*N_HIST_BINS*n_bins_per_point_sqrd;
     // ...then left kdf-sampled pdf bin index
     hi_col_left_offset \
         = (uint)pdf_col_left*n_bins_per_point
-            +(uint)pdf_row*N_PDF_POINTS*n_bins_per_point_sqrd;
+            +(uint)pdf_row*N_HIST_BINS*n_bins_per_point_sqrd;
 
     // Center of kdf bin
     k_bin_point = ((double)k_idx)*pdf_kdx;
@@ -200,7 +201,7 @@ static inline void filter_along_rows(
             *pdf_bin_accumulator
                 += select((double)0.0f,
                           k_value*(double)histogram_array[hi_col_rght],
-                          (unsigned long)isless(pdf_col_rght,(int)N_PDF_POINTS));
+                          (unsigned long)isless(pdf_col_rght,(int)N_HIST_BINS));
             *pdf_bin_accumulator
                 += select((double)0.0f,
                           k_value*(double)histogram_array[hi_col_left],
@@ -210,7 +211,7 @@ static inline void filter_along_rows(
             *k_weight_accumulator
                 += select((double)0.0f,
                           (double)k_value,
-                          (unsigned long)isless(pdf_col_rght,(int)N_PDF_POINTS));
+                          (unsigned long)isless(pdf_col_rght,(int)N_HIST_BINS));
             *k_weight_accumulator
                 += select((double)0.0f,
                           (double)k_value,
@@ -222,15 +223,15 @@ static inline void filter_along_rows(
 }
 #endif
 
-#ifdef KERNEL_PDF_BIVARIATE
+#ifdef KERNEL_PDF_BIVARIATE_COLS
 ///
 /// Kernel-density filter and reduce a 2d @p histogram_array
 ///
 ///
 ///
-/// Compiled if @p KERNEL_PDF_BIVARIATE is defined.
+/// Compiled if @p KERNEL_PDF_BIVARIATE_COLS is defined.
 ///
-/// @param[in]     histogram_array        (uint *,   RO):
+/// @param[in]     partial_pdf_array      (float *,  RO):
 /// @param[in]     pdf_idx                (uint,     RO):
 /// @param[in]     k_width                (double,   RO):
 /// @param[in]     k_idx                  (uint,     RO):
@@ -245,7 +246,7 @@ static inline void filter_along_rows(
 /// @ingroup kde
 ///
 static inline void filter_along_cols(
-        __global const uint *histogram_array,
+        __global const float *partial_pdf_array,
         const uint pdf_idx,
         const double k_width, const uint k_idx, const uint k_points,
         const double bin_dx, const double pdf_kdx,
@@ -301,11 +302,11 @@ static inline void filter_along_cols(
             //   and add to the pdf bin accumulator
             *pdf_bin_accumulator
                 += select((double)0.0f,
-                          k_value*(double)histogram_array[hi_row_dn],
+                          k_value*(double)partial_pdf_array[hi_row_dn],
                           (unsigned long)isless(pdf_row_dn,(int)N_PDF_POINTS));
             *pdf_bin_accumulator
                 += select((double)0.0f,
-                          k_value*(double)histogram_array[hi_row_up],
+                          k_value*(double)partial_pdf_array[hi_row_up],
                           (unsigned long)(isnotequal(k_idx,0)
                                   & isgreater(pdf_row_up,0)) );
             // Add the kdf weight to the kdf-integral accumulator
@@ -325,22 +326,22 @@ static inline void filter_along_cols(
 
 #endif
 
-#ifdef KERNEL_PDF_BIVARIATE
+#ifdef KERNEL_PDF_BIVARIATE_ROWS
 ///
-/// Use kernel-density estimation to map a 2d histogram into a smooth bivariate pdf.
+/// Use kernel-density estimation to map a 2d histogram into a smooth 2d pdf: rows only.
 ///
 /// Compiled if @p KERNEL_PDF_BIVARIATE is defined.
 ///
-/// @param[in]     histogram_array (uint *,  RO):
-/// @param[in,out] pdf_array       (float *, RW):
+/// @param[in]     histogram_array   (uint *,  RO):
+/// @param[in,out] partial_pdf_array (float *, RW):
 ///
 /// @returns void
 ///
 /// @ingroup kde
 ///
-__kernel void pdf_bivariate(
+__kernel void pdf_bivariate_rows(
         __global const  uint  *histogram_array,
-        __global        float *pdf_array )
+        __global        float *partial_pdf_array )
 {
     // For every pdf point...
 
@@ -359,12 +360,50 @@ __kernel void pdf_bivariate(
     // Smooth along rows (C-order, thus row-major, last (y) index changes faster)
     for (k_idx=0;k_idx<=N_KDF_PART_POINTS_Y;k_idx++) {
         filter_along_rows(histogram_array, pdf_idx,
-                          KDF_WIDTH_Y, k_idx, N_KDF_PART_POINTS_Y*2u+1u, BIN_DY, PDF_DY,
+                          KDF_WIDTH_Y, k_idx, N_KDF_PART_POINTS_Y*2u+1u, BIN_DY, BIN_DY,
                           &pdf_bin_accumulator, &k_weight_accumulator);
     }
+    // Normalize the pdf point accumulation by dividing by the kdf weight accumulation
+    //   and write to the return pdf_array element for this CL-kernel instance
+    partial_pdf_array[pdf_idx] = (float)pdf_bin_accumulator/k_weight_accumulator;
+    return;
+}
+#endif
+
+#ifdef KERNEL_PDF_BIVARIATE_COLS
+///
+/// Use kernel-density estimation to map a 2d histogram into a smooth bivariate pdf.
+///
+/// Compiled if @p KERNEL_PDF_BIVARIATE is defined.
+///
+/// @param[in]     histogram_array (uint *,  RO):
+/// @param[in,out] pdf_array       (float *, RW):
+///
+/// @returns void
+///
+/// @ingroup kde
+///
+__kernel void pdf_bivariate_cols(
+        __global const  float *partial_pdf_array,
+        __global        float *pdf_array )
+{
+    // For every pdf point...
+
+    const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+
+    // Get this pdf point's index
+    const uint pdf_idx = global_id;
+    // Create a buffer variable for the pdf bin accumulator
+    __private double pdf_bin_accumulator=0.0f;
+    // Create a buffer variable for the kdf-integral accumulator
+    __private double k_weight_accumulator=0.0f;
+    __private uint k_idx;
+
+    // Step through half kdf taking advantage of symmetry
+    //   e.g., 0...2  for 5-point kdf
     // Smooth along columns (C-order, thus row-major, first (x) index changes slower)
     for (k_idx=0;k_idx<=N_KDF_PART_POINTS_X;k_idx++) {
-        filter_along_cols(histogram_array, pdf_idx,
+        filter_along_cols(partial_pdf_array, pdf_idx,
                           KDF_WIDTH_X, k_idx, N_KDF_PART_POINTS_X*2u+1u, BIN_DX, PDF_DX,
                           &pdf_bin_accumulator, &k_weight_accumulator);
     }

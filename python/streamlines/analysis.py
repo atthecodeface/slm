@@ -298,7 +298,7 @@ class Bivariate_distribution():
         if logy_max is None:
             logy_max = logy_array[logy_array>np.finfo(np.float32).min].max()
         if mask_array is not None:
-            self.logxy_data = np.vstack([
+            logxy_data = np.vstack([
                 logx_array[  (logx_array>=logx_min) & (logx_array<=logx_max) 
                            & (logy_array>=logy_min) & (logy_array<=logy_max)
                            & (~mask_array)],
@@ -307,12 +307,13 @@ class Bivariate_distribution():
                            & (~mask_array)]
                 ]).T
         else:
-            self.logxy_data  = np.vstack([
+            logxy_data  = np.vstack([
                 logx_array[  (logx_array>=logx_min) & (logx_array<=logx_max) 
                            & (logy_array>=logy_min) & (logy_array<=logy_max)],
                 logy_array[  (logx_array>=logx_min) & (logx_array<=logx_max) 
                            & (logy_array>=logy_min) & (logy_array<=logy_max)]
                 ]).T
+        self.logxy_data = logxy_data.copy().astype(dtype=np.float32,order=order)
             
         # x,y meshgrid for sampling the bivariate pdf f(x,y)
         # For some weird reason, the numbers of points in x,y need to be complex-valued 
