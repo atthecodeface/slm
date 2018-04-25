@@ -68,7 +68,12 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     info_struct['n_kdf_part_points_x'][0] = np.uint32(np.floor(kdf_width_x/pdf_dx))//2
     info_struct['n_kdf_part_points_y'][0] = np.uint32(np.floor(kdf_width_y/pdf_dy))//2
     
-#     pdebug('\nstddev_x',stddev_x,'stddev_y',stddev_y)
+    pdebug('\n kdf_width_x',info_struct['kdf_width_x'][0])
+    pdebug('\n n_kdf_part_points_x',info_struct['n_kdf_part_points_x'][0])
+    pdebug('\n n_kdf_part_points_y',info_struct['n_kdf_part_points_y'][0])
+    pdebug('\n n_data',info_struct['n_data'][0])
+    pdebug('\n n_hist_bins/n_pdf_points',
+           info_struct['n_hist_bins'][0]//info_struct['n_pdf_points'][0])
             
     vprint(verbose,'histogram...',end='')
     # Histogram
@@ -79,7 +84,7 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
                       is_bivariate=True, verbose=verbose)
         
     vprint(verbose,'kernel filtering...',end='')
-    histogram_array = histogram_array.astype(np.float32)
+#     histogram_array = histogram_array.astype(np.float32)
 #     return histogram_array/(np.sum(histogram_array)*bin_dx*bin_dy)
     # PDF
     cl_kernel_fn = 'pdf_bivariate'
@@ -200,9 +205,10 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_st
                              histogram_array=histogram_array, 
                              pdf_array='create', is_bivariate=is_bivariate,
                              verbose=verbose)    
-        global_size = [n_pdf_points,1]
+        global_size = [pdf_array.shape[0]*pdf_array.shape[1],1]
         buffer_list = [histogram_buffer, pdf_buffer]
     local_size = None
+    pdebug('global_size',global_size)
     # Compile the CL code
     compile_options = pocl.set_compile_options(info_struct, cl_kernel_fn, job_type='kde')
     with warnings.catch_warnings():
