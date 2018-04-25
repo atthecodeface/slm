@@ -52,25 +52,25 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     x_range      = info_struct['x_range'][0]
     bin_dx       = info_struct['bin_dx'][0]
     pdf_dx       = info_struct['pdf_dx'][0]
-    stddev_x     = np.std(sl_array[:,0])
+    stddev_x     = np.std(sl_array[0,:])
     
     y_range      = info_struct['y_range'][0]
     bin_dy       = info_struct['bin_dy'][0]
     pdf_dy       = info_struct['pdf_dy'][0]
-    stddev_y      = np.std(sl_array[:,1])
+    stddev_y      = np.std(sl_array[1,:])
     
 #     tmp_sl_array = sl_array.T.copy()
 #     sl_array =tmp_sl_array
-    pdebug(sl_array.shape,sl_array.flags)
+    pdebug('bin_dy',bin_dy,'pdf_dx',pdf_dy,'ratio',pdf_dy/bin_dy)
         
     # Set up kernel filter
     # Silverman hack for now
-    kdf_width_x = 1.06*stddev_x*np.power(n_data,-0.2)*10
-    kdf_width_y = 1.06*stddev_y*np.power(n_data,-0.2)*10
-    info_struct['kdf_width_x'][0] = kdf_width_x
+    kdf_width_x = 1.06*stddev_x*np.power(n_data,-0.2)*8
+    kdf_width_y = 1.06*stddev_y*np.power(n_data,-0.2)*8
     info_struct['kdf_width_y'][0] = kdf_width_y
-    info_struct['n_kdf_part_points_x'][0] = np.uint32(np.floor(kdf_width_x/pdf_dx))//2
-    info_struct['n_kdf_part_points_y'][0] = np.uint32(np.floor(kdf_width_y/bin_dy))//2
+    info_struct['n_kdf_part_points_y'][0] = 2*(np.uint32(np.floor(kdf_width_y/bin_dy))//2)
+    info_struct['kdf_width_x'][0] = kdf_width_x
+    info_struct['n_kdf_part_points_x'][0] = 2*(np.uint32(np.floor(kdf_width_x/pdf_dx))//2)
     
     pdebug('\n kdf_width_x',info_struct['kdf_width_x'][0])
     pdebug('\n n_kdf_part_points_x',info_struct['n_kdf_part_points_x'][0])
@@ -97,6 +97,7 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
                       info_struct, action='partial_pdf',  is_bivariate=True, 
                       histogram_array=histogram_array,
                       verbose=verbose)
+#     pdebug(partial_pdf_array)
 #     return partial_pdf_array/(np.sum(partial_pdf_array)*bin_dx*bin_dy)
 
     vprint(verbose,'kernel filtering columns...',end='')
