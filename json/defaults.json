@@ -87,6 +87,7 @@
 		"marginal_distbn_kde_kernel": "epanechnikov",
 		"joint_distbn_kde_method":    "opencl",
 		"joint_distbn_kde_kernel":    "gaussian",
+		"joint_distbn_kde_bandwidth" : 0.5,
 		"n_hist_bins" :  2000,
 		"n_pdf_points" : 200,
 		
@@ -103,7 +104,6 @@
         "do_joint_distribn_usla_uslc": false,
         "do_joint_distribn_uslc_dslc": false,
 		"joint_distbn_kde_bw_method" : "scott",
-		"joint_distbn_kde_bandwidth" : 0.4,
         "joint_distbn_mode_threshold_list" : [0.9, 0.00001],
         "joint_distbn_mode2_tilt" : 3,
 		"joint_distbn_mode2_nearness_factor": 30

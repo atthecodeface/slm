@@ -1006,6 +1006,10 @@ class Plot(Core):
                  '^', color=line_colors[0],ms=12,alpha=0.8)
         [plt.plot(x_vec, pdf, color=line_colors[idx+1], alpha=line_alphas[idx+1], 
                   linestyle=line_styles[idx+1])  for idx,pdf in enumerate(pdf_list[1:])]
+        
+        axes.set_xlim(xmin=x_min*0.999, xmax=x_max*1.001)
+        axes.set_ylim(ymin=-y_max/100,ymax=y_max*1.3)
+
         try:
             x= marginal_distbn.kde['channel_threshold_x']
             y= y_max*detrended_pdf[marginal_distbn.kde['channel_threshold_i'],0] \
@@ -1013,7 +1017,8 @@ class Plot(Core):
             legend += ['transition']
             plt.plot(x,y,'v', color=line_colors[len(pdf_list)-1],ms=12,alpha=0.8)
             legend += ['threshold']
-            plt.plot([x,x],[-0.1,1.1],'--', color='blue', linewidth=3, alpha=0.7)
+            plt.plot([x,x],[-0.1,1.0*axes.get_ylim()[1]],'--', 
+                     color='blue', linewidth=3, alpha=0.7)
         except:
             self.print('Cannot plot threshold: none found')
 
@@ -1021,8 +1026,6 @@ class Plot(Core):
         axes.grid(color='gray', linestyle='dotted', linewidth=0.5, which='both')
         x_ticks = self._choose_ticks(x_min,x_max)
         plt.xticks(x_ticks,x_ticks)
-        axes.set_xlim(xmin=x_min*0.999, xmax=x_max*1.001)
-        axes.set_ylim(ymin=-y_max/100,ymax=y_max*1.3)
         axes.set_xlabel(x_label)
         axes.set_ylabel(y_label)
         with warnings.catch_warnings():
