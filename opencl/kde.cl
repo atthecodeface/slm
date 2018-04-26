@@ -85,7 +85,7 @@ static inline double k_sample(const double x, const double w) {
 ///
 // This is a hack: ought to be rescaled in w and renormalized given the clipping
 static inline double k_sample(const double x, const double w) {
-    return exp(-0.5f*(x/(w*1.0f))*(x/(w*1.0f))); //M_SQRT1_2*
+    return exp(-0.5f*(x/(w*0.5f))*(x/(w*0.5f))); //M_SQRT1_2*
 }
 #endif
 
@@ -114,8 +114,8 @@ __kernel void histogram_bivariate(
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
     const float bin_x = (sl_array[global_id][0]-X_MIN)/X_RANGE;
     const float bin_y = (sl_array[global_id][1]-Y_MIN)/Y_RANGE;
-    const uint idx_x = min(max(0u,(uint)(bin_x*(float)N_HIST_BINS)),N_HIST_BINS-1u);
-    const uint idx_y = min(max(0u,(uint)(bin_y*(float)N_HIST_BINS)),N_HIST_BINS-1u);
+    const uint idx_x = min(max(0u,(uint)(bin_x*(float)(N_HIST_BINS-1u))),N_HIST_BINS-1u);
+    const uint idx_y = min(max(0u,(uint)(bin_y*(float)(N_HIST_BINS-1u))),N_HIST_BINS-1u);
     atomic_inc(&histogram_array[idx_y+N_HIST_BINS*idx_x]);
     return;
 }
@@ -133,9 +133,8 @@ __kernel void histogram_bivariate(
 /// @param[in]     histogram_array        (uint *,   RO):
 /// @param[in]     hi_idx                 (uint,     RO):
 /// @param[in]     bin_dx                 (double,   RO):
-/// @param[in]     k_width                (double,   RO):
 /// @param[in]     k_idx                  (uint,     RO):
-/// @param[in]     k_points               (uint,     RO):
+/// @param[in]     k_width                (double,   RO):
 /// @param[in,out] pdf_bin_accumulator    (double *, RW):
 /// @param[in,out] k_weight_accumulator   (double *, RW):
 ///
@@ -215,12 +214,12 @@ __kernel void pdf_bivariate_rows(
     // Smooth along rows (C-order, thus row-major, last (y) index changes faster)
     for (k_idx=0;k_idx<=N_KDF_PART_POINTS_Y;k_idx++) {
         filter_along_rows(histogram_array, global_id, BIN_DY,
-                          k_idx, (double)(N_KDF_PART_POINTS_Y)+0.5f, //KDF_WIDTH_Y,
+                          k_idx, (double)(N_KDF_PART_POINTS_Y)+0.5f,
                           &pdf_bin_accumulator, &k_weight_accumulator);
     }
     // Normalize the pdf point accumulation by dividing by the kdf weight accumulation
     //   and write to the return pdf_array element for this CL-kernel instance
-    partial_pdf_array[global_id] = (float)pdf_bin_accumulator/k_weight_accumulator;
+    partial_pdf_array[global_id] = (float)(pdf_bin_accumulator/k_weight_accumulator);
     return;
 }
 #endif
@@ -236,11 +235,10 @@ __kernel void pdf_bivariate_rows(
 ///
 /// @param[in]     partial_pdf_array      (float *,  RO):
 /// @param[in]     pdf_idx                (uint,     RO):
-/// @param[in]     k_width                (double,   RO):
-/// @param[in]     k_idx                  (uint,     RO):
-/// @param[in]     k_points               (uint,     RO):
-/// @param[in]     bin_dx                 (double,   RO):
 /// @param[in]     pdf_kdx                (double,   RO):
+/// @param[in]     bin_dx                 (double,   RO):
+/// @param[in]     k_idx                  (uint,     RO):
+/// @param[in]     k_width                (double,   RO):
 /// @param[in,out] pdf_bin_accumulator    (double *, RW):
 /// @param[in,out] k_weight_accumulator   (double *, RW):
 ///
@@ -250,20 +248,16 @@ __kernel void pdf_bivariate_rows(
 ///
 static inline void filter_along_cols(
         __global const float *partial_pdf_array,
-        const uint pdf_idx,
-        const double k_width, const uint k_idx, const uint k_points,
-        const double bin_dx, const double pdf_kdx,
+        const uint pdf_idx, const double bin_dx,
+        const double pdf_kdx, const uint k_idx, const double k_width,
         double *pdf_bin_accumulator, double *k_weight_accumulator)
 {
-    __private double k_bin_point, k_bin_edge, k_value, k_x;
-    __private int pdf_row_up, pdf_row_dn;
-    __private uint hi_row_up, hi_row_dn,
-                   hi_col, hi_row, hi_row_dn_offset, hi_row_up_offset;
+    __private double k_value, k_x;
+    __private int hi_col, hi_row, hi_row_up, hi_row_dn;
 
     // Set the number of histogram bins per pdf bin
-    //   e.g., 2000 hist bins, 200 pdf point bins, 10 hist bins per pdf point bin
+    //   e.g., 1000 hist bins, 100 pdf point bins, 10 hist bins per pdf point bin
     const uint n_bins_per_point = N_HIST_BINS/N_PDF_POINTS;
-    const uint n_bins_per_point_sqrd = n_bins_per_point*n_bins_per_point;
 
     // Figure out where we are on the coarse 2d pdf array (at the kdf center)
     const int pdf_col = pdf_idx % N_PDF_POINTS;
@@ -271,34 +265,27 @@ static inline void filter_along_cols(
 
     // Figure out where the left & right kdf bins are on the coarse 2d pdf array
     // First right kdf-sampled pdf bin index...
-    pdf_row_dn = pdf_row+(int)k_idx;
+    const int pdf_row_dn = pdf_row+(int)k_idx;
     // ...then left kdf-sampled pdf bin index
     // NB: add one here because histogram left-indexing starts at the right edge
     //     of the bin, aka the edge of the bin to the right ie with bin index plus one
-    pdf_row_up = pdf_row-(int)k_idx+1;
+    const int pdf_row_up = pdf_row-(int)k_idx+1;
 
     // Figure out where we are on the fine 2d histogram array
     // First right kdf-sampled pdf bin index...
-    hi_row_dn_offset \
-        = (uint)pdf_col*n_bins_per_point
-            +(uint)pdf_row_dn*N_PDF_POINTS*n_bins_per_point_sqrd;
+    const int hi_row_dn_offset \
+        = (uint)(pdf_col+pdf_row_dn*N_PDF_POINTS*n_bins_per_point)*n_bins_per_point;
     // ...then left kdf-sampled pdf bin index
-    hi_row_up_offset \
-        = (uint)pdf_col*n_bins_per_point
-            +(uint)pdf_row_up*N_PDF_POINTS*n_bins_per_point_sqrd;
-
-    // Center of kdf bin
-    k_bin_point = ((double)k_idx)*pdf_kdx;
-    // Left edge of kdf bin
-    k_bin_edge = k_bin_point-pdf_kdx/2.0f;
+    const int hi_row_up_offset \
+        = (uint)(pdf_col+pdf_row_up*N_PDF_POINTS*n_bins_per_point)*n_bins_per_point;
 
     // Step through span of histogram bins for this pdf bin
-    for (hi_col=0u;hi_col<n_bins_per_point;hi_col++) {
+    for (hi_col=0u;hi_col<(int)n_bins_per_point;hi_col++) {
         // Use x-center of histogram bin as point to sample kdf
-        k_x = k_bin_edge+bin_dx*((double)hi_col+0.5f);
+        k_x = (double)hi_col+((double)k_idx)*n_bins_per_point;
         // Get the kdf weight
-        k_value = k_sample(k_x, (double)k_points);
-        for (hi_row=0u;hi_row<n_bins_per_point;hi_row++) {
+        k_value = k_sample(k_x, k_width);
+        for (hi_row=0u;hi_row<(int)n_bins_per_point;hi_row++) {
             hi_row_dn = hi_row_dn_offset+hi_row*N_HIST_BINS+hi_col;
             hi_row_up = hi_row_up_offset+hi_row*N_HIST_BINS-hi_col-1;
             // Get histogram right & left counts for this hist bin
@@ -306,22 +293,22 @@ static inline void filter_along_cols(
             *pdf_bin_accumulator
                 += select((double)0.0f,
                           k_value*(double)partial_pdf_array[hi_row_dn],
-                          (unsigned long)isless(pdf_row_dn,(int)N_PDF_POINTS));
+                          (unsigned long)isless(hi_row_dn,(int)N_HIST_BINS));
             *pdf_bin_accumulator
                 += select((double)0.0f,
                           k_value*(double)partial_pdf_array[hi_row_up],
                           (unsigned long)(isnotequal(k_idx,0)
-                                  & isgreater(pdf_row_up,0)) );
+                                        & isgreater(hi_row_up,0)) );
             // Add the kdf weight to the kdf-integral accumulator
             *k_weight_accumulator
                 += select((double)0.0f,
                           (double)k_value,
-                          (unsigned long)isless(pdf_row_dn,(int)N_PDF_POINTS));
+                          (unsigned long)isless(hi_row_dn,(int)N_HIST_BINS));
             *k_weight_accumulator
                 += select((double)0.0f,
                           (double)k_value,
                           (unsigned long)(isnotequal(k_idx,0)
-                                  & isgreater(pdf_row_up,0)) );
+                                        & isgreater(hi_row_up,0)) );
         }
     }
     return;
@@ -355,21 +342,20 @@ __kernel void pdf_bivariate_cols(
     // Create a buffer variable for the pdf bin accumulator
     __private double pdf_bin_accumulator=0.0f;
     // Create a buffer variable for the kdf-integral accumulator
-    __private double k_weight_accumulator=0.0f;
+    __private double k_weight_accumulator=1.0f;
     __private uint k_idx;
 
     // Step through half kdf taking advantage of symmetry
     //   e.g., 0...2  for 5-point kdf
     // Smooth along columns (C-order, thus row-major, first (x) index changes slower)
     for (k_idx=0;k_idx<=N_KDF_PART_POINTS_X;k_idx++) {
-        filter_along_cols(partial_pdf_array, pdf_idx,
-                          KDF_WIDTH_X, k_idx, N_KDF_PART_POINTS_X*2u+1u, BIN_DX, PDF_DX,
+        filter_along_cols(partial_pdf_array, pdf_idx, PDF_DX, BIN_DX,
+                          k_idx, (double)(N_KDF_PART_POINTS_X)+0.5f,
                           &pdf_bin_accumulator, &k_weight_accumulator);
     }
     // Normalize the pdf point accumulation by dividing by the kdf weight accumulation
     //   and write to the return pdf_array element for this CL-kernel instance
-//    pdf_array[pdf_idx] = (float)pdf_bin_accumulator/k_weight_accumulator;
-    pdf_array[pdf_idx] = (float)pdf_bin_accumulator;
+    pdf_array[pdf_idx] = (float)(pdf_bin_accumulator/k_weight_accumulator);
     return;
 }
 #endif

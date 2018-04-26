@@ -311,8 +311,12 @@ class Mapping(Core):
         mean_disk=disk(self.hillslope_length_mean_radius)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
+            self.print('median-disk filtering...', end='',flush=True)
+            sys.stdout.flush()
             hsl_median \
                = np.ma.array(median(hsl_masked,median_disk,mask=hsl_bool),mask=~hsl_bool)
+            self.print('mean-disk filtering...', end='',flush=True) 
+            sys.stdout.flush()
             hsl_median_nm = mean(hsl_median,mean_disk)
         self.hillslope_length_smoothed_array \
             = ((hsl_median_nm[self.geodata.pad_width:-self.geodata.pad_width,

@@ -48,6 +48,7 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
             cl_kernel_source += fp.read()
             
     n_data       = info_struct['n_data'][0]
+    bandwidth    = info_struct['kdf_bandwidth'][0]
     
     x_range      = info_struct['x_range'][0]
     bin_dx       = info_struct['bin_dx'][0]
@@ -65,14 +66,19 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
         
     # Set up kernel filter
     # Silverman hack for now
-    kdf_width_x = 1.06*stddev_x*np.power(n_data,-0.2)*8
-    kdf_width_y = 1.06*stddev_y*np.power(n_data,-0.2)*8
+#     kdf_width_x = 1.06*stddev_x*np.power(n_data,-0.2)*20
+#     kdf_width_y = 1.06*stddev_y*np.power(n_data,-0.2)*20
+    kdf_width_x = stddev_x*bandwidth
+    kdf_width_y = stddev_y*bandwidth
     info_struct['kdf_width_y'][0] = kdf_width_y
-    info_struct['n_kdf_part_points_y'][0] = 2*(np.uint32(np.floor(kdf_width_y/bin_dy))//2)
+    info_struct['n_kdf_part_points_y'][0]= 2*(np.uint32(np.floor(kdf_width_y/bin_dy))//2)
     info_struct['kdf_width_x'][0] = kdf_width_x
-    info_struct['n_kdf_part_points_x'][0] = 2*(np.uint32(np.floor(kdf_width_x/pdf_dx))//2)
+    info_struct['n_kdf_part_points_x'][0]= 2*(np.uint32(np.floor(kdf_width_x/bin_dx))//2)
     
+    pdebug('\n stddev_x',stddev_x)
+    pdebug('\n stddev_y',stddev_y)
     pdebug('\n kdf_width_x',info_struct['kdf_width_x'][0])
+    pdebug('\n kdf_width_y',info_struct['kdf_width_y'][0])
     pdebug('\n n_kdf_part_points_x',info_struct['n_kdf_part_points_x'][0])
     pdebug('\n n_kdf_part_points_y',info_struct['n_kdf_part_points_y'][0])
     pdebug('\n n_data',info_struct['n_data'][0])
@@ -88,8 +94,6 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
                       sl_array=sl_array, verbose=verbose)
         
     vprint(verbose,'kernel filtering rows...',end='')
-#     histogram_array = histogram_array.astype(np.float32).copy()
-#     return histogram_array/(np.sum(histogram_array)*bin_dx*bin_dy)
     # PDF
     cl_kernel_fn = 'pdf_bivariate_rows'
     partial_pdf_array \
@@ -97,7 +101,6 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
                       info_struct, action='partial_pdf',  is_bivariate=True, 
                       histogram_array=histogram_array,
                       verbose=verbose)
-#     pdebug(partial_pdf_array)
 #     return partial_pdf_array/(np.sum(partial_pdf_array)*bin_dx*bin_dy)
 
     vprint(verbose,'kernel filtering columns...',end='')
@@ -109,8 +112,6 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
                       verbose=verbose)
     # Done
     vprint(verbose,'done')
-    pdebug('\n',pdf_array)
-    pdebug('\n',np.sum(pdf_array))
     return pdf_array/(np.sum(pdf_array)*bin_dx*bin_dy)
     
 def estimate_univariate_pdf( cl_src_path, which_cl_platform, which_cl_device, 

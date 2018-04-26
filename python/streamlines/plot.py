@@ -1155,11 +1155,12 @@ class Plot(Core):
 
         # Pdfs
         kde_pdf = bivariate_distribution.kde['pdf'].copy()
-        kde_pdf = kde_pdf*np.power(y_mesh,self.joint_distbn_viz_tilt)
+#         kde_pdf = kde_pdf*np.power(y_mesh,self.joint_distbn_viz_tilt)
         kde_pdf = np.power(kde_pdf,self.joint_distbn_viz_scale)
         
         # Plot bivariate pdf - distorted for emphasis as appropriate
-        axes.pcolormesh(x_vec,y_vec,kde_pdf.T, cmap='GnBu', antialiased=True)
+        axes.pcolormesh(x_vec,y_vec,kde_pdf.T, cmap='GnBu', 
+                        antialiased=True, shading='gouraud')
         axes.contour(x_vec,y_vec, kde_pdf.T, self.joint_distbn_n_contours,
                      colors='k',linewidths=1,alpha=0.5, antialiased=True)
         
