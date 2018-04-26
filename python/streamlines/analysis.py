@@ -559,14 +559,16 @@ class Analysis(Core):
 
         if self.do_marginal_distbn_dsla:
             self.compute_marginal_distribn_dsla()
-        if self.do_marginal_distbn_dslt:
-            self.compute_marginal_distribn_dslt()
-        self.area_correction_factor   =  1/self.mpdf_dslt.kde['var']
-        self.length_correction_factor =  1/self.mpdf_dsla.kde['var']
             
-        self.trace.slt_array \
-            = self.trace.slt_array*( self.area_correction_factor
-                                           /self.length_correction_factor )
+        # No clear what the purpose of this was...
+#         if self.do_marginal_distbn_dslt:
+#             self.compute_marginal_distribn_dslt()
+#         self.area_correction_factor   =  1/self.mpdf_dslt.kde['var']
+#         self.length_correction_factor =  1/self.mpdf_dsla.kde['var']
+#             
+#         self.trace.slt_array \
+#             = self.trace.slt_array*( self.area_correction_factor
+#                                            /self.length_correction_factor )
             
         if self.do_marginal_distbn_dslt:
             self.compute_marginal_distribn_dslt()
@@ -578,7 +580,7 @@ class Analysis(Core):
             self.compute_marginal_distribn_dslc()
         if self.do_marginal_distbn_uslc:
             self.compute_marginal_distribn_uslc()
-   
+#    
         if self.do_joint_distribn_dsla_usla:
             self.compute_joint_distribn_dsla_usla()
         if self.do_joint_distribn_usla_uslt:
@@ -605,8 +607,8 @@ class Analysis(Core):
         """
         TBD
         """
-        logx_array = x_array[:,:,up_down_idx_x].copy().astype(dtype=np.float32)
-        logy_array = y_array[:,:,up_down_idx_y].copy().astype(dtype=np.float32)
+        logx_array = x_array[:,:,up_down_idx_x].astype(dtype=np.float32)
+        logy_array = y_array[:,:,up_down_idx_y].astype(dtype=np.float32)
         logx_array[logx_array>0.0] = np.log(logx_array[logx_array>0.0])
         logy_array[logy_array>0.0] = np.log(logy_array[logy_array>0.0])
         logx_array[x_array[:,:,up_down_idx_x]<=0.0] = np.finfo(np.float32).min
@@ -652,7 +654,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing marginal distribution "dsla"...')
-        x_array, y_array = self.trace.sla_array, self.trace.slc_array
+        x_array, y_array = self.trace.sla_array.copy(), self.trace.slc_array.copy(), 
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
@@ -671,7 +673,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing marginal distribution "usla"...')
-        x_array, y_array = self.trace.sla_array, self.trace.slc_array
+        x_array, y_array = self.trace.sla_array.copy(), self.trace.slc_array.copy()
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
@@ -690,7 +692,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing marginal distribution "dslt"...')
-        x_array, y_array = self.trace.slt_array, self.trace.sla_array
+        x_array, y_array = self.trace.slt_array.copy(), self.trace.sla_array.copy()
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
@@ -709,7 +711,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing marginal distribution "uslt"...')
-        x_array, y_array = self.trace.slt_array, self.trace.sla_array
+        x_array, y_array = self.trace.slt_array.copy(), self.trace.sla_array.copy()
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
@@ -728,7 +730,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing marginal distribution "dslc"...')
-        x_array, y_array = self.trace.slc_array, self.trace.sla_array
+        x_array, y_array = self.trace.slc_array.copy(), self.trace.sla_array.copy()
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
@@ -747,7 +749,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing marginal distribution "uslc"...')
-        x_array, y_array = self.trace.slc_array, self.trace.sla_array
+        x_array, y_array = self.trace.slc_array.copy(), self.trace.sla_array.copy()
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
@@ -774,8 +776,8 @@ class Analysis(Core):
         """
         TBD
         """
-        logx_array = x_array[:,:,up_down_idx_x].copy().astype(dtype=np.float32)
-        logy_array = y_array[:,:,up_down_idx_y].copy().astype(dtype=np.float32)
+        logx_array = x_array[:,:,up_down_idx_x].astype(dtype=np.float32)
+        logy_array = y_array[:,:,up_down_idx_y].astype(dtype=np.float32)
         logx_array[logx_array>0.0] = np.log(logx_array[logx_array>0.0])
         logy_array[logy_array>0.0] = np.log(logy_array[logy_array>0.0])
         logx_array[x_array[:,:,up_down_idx_x]<=0.0] = np.finfo(np.float32).min
@@ -834,7 +836,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "dsla_usla"...')
-        x_array,y_array = self.trace.sla_array,self.trace.sla_array
+        x_array,y_array = self.trace.sla_array.copy(),self.trace.sla_array.copy()
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 0,1
         (logx_min, logx_max, logy_min, logy_max) \
@@ -854,7 +856,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "dsla_dslt"...')
-        x_array,y_array = self.trace.sla_array,self.trace.slt_array
+        x_array,y_array = self.trace.sla_array.copy(),self.trace.slt_array.copy()
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
@@ -884,7 +886,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "usla_uslt"...')
-        x_array,y_array = self.trace.sla_array,self.trace.slt_array
+        x_array,y_array = self.trace.sla_array.copy(),self.trace.slt_array.copy()
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 1,1
         (logx_min, logx_max, logy_min, logy_max) \
@@ -904,7 +906,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "uslt_dslt"...',flush=True)
-        x_array,y_array = self.trace.slt_array,self.trace.slt_array
+        x_array,y_array = self.trace.slt_array.copy(),self.trace.slt_array.copy()
         up_down_idx_x, up_down_idx_y = 1,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
@@ -923,7 +925,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "dsla_dslc"...')
-        x_array,y_array = self.trace.sla_array,self.trace.slc_array
+        x_array,y_array = self.trace.sla_array.copy(),self.trace.slc_array.copy()
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
@@ -953,7 +955,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "usla_uslc"...')
-        x_array,y_array = self.trace.sla_array,self.trace.slc_array
+        x_array,y_array = self.trace.sla_array.copy(),self.trace.slc_array.copy()
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 1,1
         (logx_min, logx_max, logy_min, logy_max) \
@@ -973,7 +975,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "uslc_dslc"...',flush=True)
-        x_array,y_array = self.trace.slc_array,self.trace.slc_array
+        x_array,y_array = self.trace.slc_array.copy(),self.trace.slc_array.copy()
         up_down_idx_x, up_down_idx_y = 1,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slc_min','pdf_slc_max',

@@ -69,16 +69,20 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
 #     kdf_width_x = 1.06*stddev_x*np.power(n_data,-0.2)*20
 #     kdf_width_y = 1.06*stddev_y*np.power(n_data,-0.2)*20
     kdf_width_x = stddev_x*bandwidth*3
-    kdf_width_y = stddev_y*bandwidth*3
-    info_struct['kdf_width_y'][0] = kdf_width_y
-    info_struct['n_kdf_part_points_y'][0]= 2*(np.uint32(np.floor(kdf_width_y/bin_dy))//2)
+    kdf_width_y = stddev_y*bandwidth*3*2
     info_struct['kdf_width_x'][0] = kdf_width_x
     info_struct['n_kdf_part_points_x'][0]= 2*(np.uint32(np.floor(kdf_width_x/bin_dx))//2)
+    info_struct['kdf_width_y'][0] = kdf_width_y
+    info_struct['n_kdf_part_points_y'][0]= 2*(np.uint32(np.floor(kdf_width_y/bin_dy))//2)
     
 #     pdebug('\n stddev_x',stddev_x)
 #     pdebug('\n stddev_y',stddev_y)
 #     pdebug('\n kdf_width_x',info_struct['kdf_width_x'][0])
 #     pdebug('\n kdf_width_y',info_struct['kdf_width_y'][0])
+#     pdebug('\n x_min',info_struct['x_min'][0])
+#     pdebug('\n x_max',info_struct['x_max'][0])
+#     pdebug('\n y_min',info_struct['y_min'][0])
+#     pdebug('\n y_max',info_struct['y_max'][0])
 #     pdebug('\n n_kdf_part_points_x',info_struct['n_kdf_part_points_x'][0])
 #     pdebug('\n n_kdf_part_points_y',info_struct['n_kdf_part_points_y'][0])
 #     pdebug('\n n_data',info_struct['n_data'][0])

@@ -12,8 +12,10 @@
 /// Kernel density estimation
 ///
 
-// None of the kernel-density filters below trap for bounds exceedance |@p x|>@p w.
-// Shouldn't be necessary, but I need to check to see if it's really safe as I think.
+// All of the kernel-density filters below trap for bounds exceedance |@p x|>@p w.
+// Shouldn't be necessary, but you never know.
+// None are normalized, because each discretely sampled kd filter is integrated
+//   and normalized.
 
 #ifdef KDF_IS_TOPHAT
 ///
@@ -32,8 +34,8 @@
 /// @ingroup kde
 ///
 static inline double k_sample(const double x, const double w) {
-    return select((double)0.0f, (double)1.0f/w,
-                  (unsigned long)isless(fabs(x),w)); //0.5f; hack
+    return select((double)0.0f, (double)1.0f,
+                  (unsigned long)isless(fabs(x),w)); //0.5f/w; hack
 }
 #endif
 
@@ -58,7 +60,7 @@ static inline double k_sample(const double x, const double w) {
 /// @ingroup kde
 ///
 static inline double k_sample(const double x, const double w) {
-    return 0.75f*fmax( (1.0f-(x/w)*(x/w)), (double)0.0f);
+    return fmax( (1.0f-(x/w)*(x/w)), (double)0.0f); //0.75f*
 }
 #endif
 
@@ -71,7 +73,7 @@ static inline double k_sample(const double x, const double w) {
 /// @ingroup kde
 ///
 static inline double k_sample(const double x, const double w) {
-    return M_PI_4*fmax( cos((M_PI_2*x)), (double)0.0f);
+    return fmax( cos((M_PI_2*x)), (double)0.0f); //M_PI_4*
 }
 #endif
 

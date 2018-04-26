@@ -1038,9 +1038,9 @@ class Plot(Core):
         TBD
         """
         fig_name = 'marginal_pdf_dsla'
-        title = r'Downstreamline length distribution $f(L_{md})$'
+        title = r'Downstreamline length distribution $f(\log(L_{md}))$'
         x_label = r'Downstreamline mean length  $L_{md}$ [meters]'
-        y_label = r'Probability density  $f(L_{md})$'
+        y_label = r'Probability density  $f(\log(L_{md}))$'
         try:
             marginal_distbn = self.analysis.mpdf_dsla
         except:
@@ -1054,9 +1054,9 @@ class Plot(Core):
         TBD
         """
         fig_name = 'marginal_pdf_usla'
-        title = r'Upstreamline length distribution $f(L_{mu})$'
+        title = r'Upstreamline length distribution $f(\log(L_{mu}))$'
         x_label = r'Upstreamline mean length  $L_{mu}$ [m]'
-        y_label = r'Probability density  $f(L_{mu})$'
+        y_label = r'Probability density  $f(\log(L_{mu}))$'
         try:
             marginal_distbn = self.analysis.mpdf_usla
         except:
@@ -1070,9 +1070,9 @@ class Plot(Core):
         TBD
         """
         fig_name = 'marginal_pdf_dslt'
-        title = r'Downstreamline root equiv area distribution $f(\sqrt{A_{ed}})$'
+        title = r'Downstreamline root equiv area distribution $f(\log\sqrt{A_{ed}})$'
         x_label = r'Downstreamline root equiv area  $\sqrt{A_{ed}}$ [m]'
-        y_label = r'Probability density  $f(\sqrt{A_{ed}})$'
+        y_label = r'Probability density  $f(\log\sqrt{A_{ed}})$'
         try:
             marginal_distbn = self.analysis.mpdf_dslt
         except:
@@ -1086,9 +1086,9 @@ class Plot(Core):
         TBD
         """
         fig_name = 'marginal_pdf_uslt'
-        title = r'Upstreamline root equiv area distribution $f(\sqrt{A_{eu}})$'
+        title = r'Upstreamline root equiv area distribution $f(\log\sqrt{A_{eu}})$'
         x_label = r'Upstreamline root equiv area  $\sqrt{A_{eu}}$ [m]'
-        y_label = r'Probability density  $f(\sqrt{A_{eu}})$'
+        y_label = r'Probability density  $f(\log\sqrt{A_{eu}})$'
         try:
             marginal_distbn = self.analysis.mpdf_uslt
         except:
@@ -1102,9 +1102,9 @@ class Plot(Core):
         TBD
         """
         fig_name = 'marginal_pdf_dslc'
-        title = r'Downstreamline concentration distribution $f(C_{d})$'
+        title = r'Downstreamline concentration distribution $f(\log(C_{d}))$'
         x_label = r'Downstreamline concentration  $C_{d}$ [lines/m]'
-        y_label = r'Probability density  $f(C_{d})$'
+        y_label = r'Probability density  $f(\log(C_{d}))$'
         try:
             marginal_distbn = self.analysis.mpdf_dslc
         except:
@@ -1118,9 +1118,9 @@ class Plot(Core):
         TBD
         """
         fig_name = 'marginal_pdf_uslc'
-        title = r'Upstreamline concentration distribution $f(C_{u})'
+        title = r'Upstreamline concentration distribution $f(\log(C_{u}))'
         x_label = r'Upstreamline concentration  $C_{u}$ [lines/m]'
-        y_label = r'Probability density  $f(C_{u})$'
+        y_label = r'Probability density  $f(\log(C_{u}))$'
         try:
             marginal_distbn = self.analysis.mpdf_uslc
         except:
@@ -1285,7 +1285,7 @@ class Plot(Core):
         TBD
         """
         fig_name = 'joint_pdf_usla_uslt'
-        title = r'Upstreamline length distribution $f(L_{mu},\sqrt{A_{eu}})$ '
+        title = r'Upstreamline length distribution $f(\log(L_{mu}),\log\sqrt{A_{eu}})$ '
         x_label = r'Upstreamline mean length  $L_{mu}$ [m]'
         y_label = r'Upstreamline root equiv area  $\sqrt{A_{eu}}$ [m]'
         try:
@@ -1302,7 +1302,7 @@ class Plot(Core):
         TBD
         """
         fig_name = 'joint_pdf_dsla_dslt'
-        title = r'Downstreamline length distribution $f(L_{md},\sqrt{A_{ed}})$'
+        title = r'Downstreamline length distribution $f(\log(L_{md}),\log\sqrt{A_{ed}})$'
         x_label = r'Downstreamline mean length  $L_{md}$ [m]'
         y_label = r'Downstreamline root equiv area  $\sqrt{A_{ed}}$ [m]'
         try:
@@ -1335,7 +1335,7 @@ class Plot(Core):
         TBD
         """
         fig_name = 'joint_pdf_usla_uslc'
-        title = r'Upstreamline distribution $f(L_{mu},C_{u})$'
+        title = r'Upstreamline distribution $f(\log(L_{mu}),\log(C_{u}))$'
         x_label = r'Upstreamline mean length  $L_{mu}$ [m]'
         y_label = r'Upstreamline concentration  $C_{u}$ [lines/m]'
         try:
@@ -1352,7 +1352,7 @@ class Plot(Core):
         TBD
         """
         fig_name = 'joint_pdf_dsla_dslc'
-        title = r'Downstreamline distribution $f(L_{md},C_{d})$'
+        title = r'Downstreamline distribution $f(\log(L_{md}),\log(C_{d}))$'
         x_label = r'Downstreamline mean length  $L_{md}$ [m]'
         y_label = r'Downstreamline concentration  $C_{d}$ [lines/m]'
         try:
@@ -1369,7 +1369,7 @@ class Plot(Core):
         TBD
         """
         fig_name = 'joint_pdf_uslc_dslc'
-        title = r'Streamline concentration distribution $f(C_{u},C_{d})$'
+        title = r'Streamline concentration distribution $f(\log(C_{u}),\log(C_{d}))$'
         x_label = r'Upstreamline concentration  $C_{u}$ [lines/m]'
         y_label = r'Downstreamline concentration  $C_{d}$ [lines/m]'
         try:
