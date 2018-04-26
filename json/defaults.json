@@ -83,8 +83,8 @@
         "do_marginal_distbn_dslc":   false,
         "do_marginal_distbn_uslc":   false,
         
-		"n_hist_bins" : 2000,
-		"n_pdf_points" : 200,
+		"n_hist_bins" : 1000,
+		"n_pdf_points" : 100,
 		
 		"marginal_distbn_kde_method": "sklearn",
 		"marginal_distbn_kde_kernel": "gaussian",

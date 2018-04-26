@@ -71,13 +71,13 @@
 		"marginal_distbn_kde_method": "opencl",
 		"marginal_distbn_kde_kernel": "epanechnikov",
 		"joint_distbn_kde_method":    "opencl",
-		"joint_distbn_kde_kernel":    "epanechnikov",
-		"n_hist_bins" :  2000,
+		"joint_distbn_kde_kernel":    "gaussian",
+		"n_hist_bins" :  1000,
 		"n_pdf_points" : 100,
 		"pdf_sla_min": 1,
-		"Xpdf_sla_max": 400,
-		"pdf_slc_min": 1,
-		"Xpdf_slc_max": 50000
+		"Xpdf_sla_max": 500,
+		"pdf_slt_min": 1,
+		"pdf_slt_max": 90
 	},
 
 	"plot": {
