@@ -85,7 +85,7 @@ static inline double k_sample(const double x, const double w) {
 ///
 // This is a hack: ought to be rescaled in w and renormalized given the clipping
 static inline double k_sample(const double x, const double w) {
-    return exp(-0.5f*(x/(w*0.5f))*(x/(w*0.5f))); //M_SQRT1_2*
+    return exp(-0.5f*(x/(w*0.4f))*(x/(w*0.4f))); //M_SQRT1_2*
 }
 #endif
 
@@ -170,14 +170,16 @@ static inline void filter_along_rows(
     *pdf_bin_accumulator
         += select((double)0.0f,
                   k_value*(double)histogram_array[hi_row*N_HIST_BINS+hi_col_left],
-                  (unsigned long)(isnotequal(k_idx,0u) & isgreater(hi_col_left,0)) );
+                  (unsigned long)(isnotequal(k_idx,0u)
+                                & isgreaterequal(hi_col_left,0)) );
     // Add the kdf weight to the kdf-integral accumulator
     *k_weight_accumulator
         += select((double)0.0f,   (double)k_value,
                   (unsigned long)isless(hi_col_rght,(int)N_HIST_BINS));
     *k_weight_accumulator
         += select((double)0.0f,   (double)k_value,
-                  (unsigned long)(isnotequal(k_idx,0u) & isgreater(hi_col_left,0)) );
+                  (unsigned long)(isnotequal(k_idx,0u)
+                                & isgreaterequal(hi_col_left,0)) );
     return;
 }
 #endif
@@ -267,48 +269,48 @@ static inline void filter_along_cols(
     // First right kdf-sampled pdf bin index...
     const int pdf_row_dn = pdf_row+(int)k_idx;
     // ...then left kdf-sampled pdf bin index
-    // NB: add one here because histogram left-indexing starts at the right edge
-    //     of the bin, aka the edge of the bin to the right ie with bin index plus one
-    const int pdf_row_up = pdf_row-(int)k_idx+1;
+    const int pdf_row_up = pdf_row-(int)k_idx;
 
     // Figure out where we are on the fine 2d histogram array
     // First right kdf-sampled pdf bin index...
     const int hi_row_dn_offset \
-        = (uint)(pdf_col+pdf_row_dn*N_PDF_POINTS*n_bins_per_point)*n_bins_per_point;
+        = (uint)(pdf_col+pdf_row_dn*N_HIST_BINS)*n_bins_per_point;
     // ...then left kdf-sampled pdf bin index
     const int hi_row_up_offset \
-        = (uint)(pdf_col+pdf_row_up*N_PDF_POINTS*n_bins_per_point)*n_bins_per_point;
+        = (uint)(pdf_col+pdf_row_up*N_HIST_BINS)*n_bins_per_point;
 
-    // Step through span of histogram bins for this pdf bin
-    for (hi_col=0u;hi_col<(int)n_bins_per_point;hi_col++) {
-        // Use x-center of histogram bin as point to sample kdf
-        k_x = (double)hi_col+((double)k_idx)*n_bins_per_point;
-        // Get the kdf weight
+    // Step columnwise through all the histogram bins in this pdf bin
+    // Apply this weight repeatedly across all the rows in this hist bin
+    for (hi_row=0u;hi_row<(int)n_bins_per_point;hi_row++) {
+        // Sample point on kernel-density filter
+        k_x = (double)hi_row+((double)k_idx)*n_bins_per_point;
+        // Get the filter weight at this point
         k_value = k_sample(k_x, k_width);
-        for (hi_row=0u;hi_row<(int)n_bins_per_point;hi_row++) {
+        // Apply this weight repeatedly across all the rows in this hist bin
+        for (hi_col=0u;hi_col<(int)n_bins_per_point;hi_col++) {
             hi_row_dn = hi_row_dn_offset+hi_row*N_HIST_BINS+hi_col;
-            hi_row_up = hi_row_up_offset+hi_row*N_HIST_BINS-hi_col-1;
+            hi_row_up = hi_row_up_offset+(n_bins_per_point-1-hi_row)*N_HIST_BINS+hi_col;
             // Get histogram right & left counts for this hist bin
             //   and add to the pdf bin accumulator
             *pdf_bin_accumulator
                 += select((double)0.0f,
                           k_value*(double)partial_pdf_array[hi_row_dn],
-                          (unsigned long)isless(hi_row_dn,(int)N_HIST_BINS));
+                        (unsigned long)isless(hi_row_dn,(int)(N_HIST_BINS*N_HIST_BINS)));
             *pdf_bin_accumulator
                 += select((double)0.0f,
                           k_value*(double)partial_pdf_array[hi_row_up],
                           (unsigned long)(isnotequal(k_idx,0)
-                                        & isgreater(hi_row_up,0)) );
+                                        & isgreaterequal(hi_row_up,0)) );
             // Add the kdf weight to the kdf-integral accumulator
             *k_weight_accumulator
                 += select((double)0.0f,
                           (double)k_value,
-                          (unsigned long)isless(hi_row_dn,(int)N_HIST_BINS));
+                        (unsigned long)isless(hi_row_dn,(int)(N_HIST_BINS*N_HIST_BINS)));
             *k_weight_accumulator
                 += select((double)0.0f,
                           (double)k_value,
                           (unsigned long)(isnotequal(k_idx,0)
-                                        & isgreater(hi_row_up,0)) );
+                                        & isgreaterequal(hi_row_up,0)) );
         }
     }
     return;

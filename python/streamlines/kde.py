@@ -58,32 +58,32 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     y_range      = info_struct['y_range'][0]
     bin_dy       = info_struct['bin_dy'][0]
     pdf_dy       = info_struct['pdf_dy'][0]
-    stddev_y      = np.std(sl_array[1,:])
+    stddev_y     = np.std(sl_array[1,:])
     
 #     tmp_sl_array = sl_array.T.copy()
 #     sl_array =tmp_sl_array
-    pdebug('bin_dy',bin_dy,'pdf_dx',pdf_dy,'ratio',pdf_dy/bin_dy)
+#     pdebug('bin_dy',bin_dy,'pdf_dx',pdf_dy,'ratio',pdf_dy/bin_dy)
         
     # Set up kernel filter
     # Silverman hack for now
 #     kdf_width_x = 1.06*stddev_x*np.power(n_data,-0.2)*20
 #     kdf_width_y = 1.06*stddev_y*np.power(n_data,-0.2)*20
-    kdf_width_x = stddev_x*bandwidth
-    kdf_width_y = stddev_y*bandwidth
+    kdf_width_x = stddev_x*bandwidth*3
+    kdf_width_y = stddev_y*bandwidth*3
     info_struct['kdf_width_y'][0] = kdf_width_y
     info_struct['n_kdf_part_points_y'][0]= 2*(np.uint32(np.floor(kdf_width_y/bin_dy))//2)
     info_struct['kdf_width_x'][0] = kdf_width_x
     info_struct['n_kdf_part_points_x'][0]= 2*(np.uint32(np.floor(kdf_width_x/bin_dx))//2)
     
-    pdebug('\n stddev_x',stddev_x)
-    pdebug('\n stddev_y',stddev_y)
-    pdebug('\n kdf_width_x',info_struct['kdf_width_x'][0])
-    pdebug('\n kdf_width_y',info_struct['kdf_width_y'][0])
-    pdebug('\n n_kdf_part_points_x',info_struct['n_kdf_part_points_x'][0])
-    pdebug('\n n_kdf_part_points_y',info_struct['n_kdf_part_points_y'][0])
-    pdebug('\n n_data',info_struct['n_data'][0])
-    pdebug('\n n_hist_bins/n_pdf_points',
-           info_struct['n_hist_bins'][0]//info_struct['n_pdf_points'][0])
+#     pdebug('\n stddev_x',stddev_x)
+#     pdebug('\n stddev_y',stddev_y)
+#     pdebug('\n kdf_width_x',info_struct['kdf_width_x'][0])
+#     pdebug('\n kdf_width_y',info_struct['kdf_width_y'][0])
+#     pdebug('\n n_kdf_part_points_x',info_struct['n_kdf_part_points_x'][0])
+#     pdebug('\n n_kdf_part_points_y',info_struct['n_kdf_part_points_y'][0])
+#     pdebug('\n n_data',info_struct['n_data'][0])
+#     pdebug('\n n_hist_bins/n_pdf_points',
+#            info_struct['n_hist_bins'][0]//info_struct['n_pdf_points'][0])
             
     vprint(verbose,'histogram...',end='')
     # Histogram
@@ -202,9 +202,7 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_st
     n_hist_bins  = info_struct['n_hist_bins'][0]
     n_data       = info_struct['n_data'][0]
     n_pdf_points = info_struct['n_pdf_points'][0]
-    
-    pdebug('action',action)
-    
+        
     if action=='histogram':
         # Compute histogram
         (histogram_array, sl_buffer, histogram_buffer) \
@@ -247,7 +245,7 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_st
             buffer_list = [histogram_buffer, pdf_buffer]
         
     local_size = None
-    pdebug('global_size',global_size)
+#     pdebug('global_size',global_size)
     # Compile the CL code
     compile_options = pocl.set_compile_options(info_struct, cl_kernel_fn, job_type='kde')
     with warnings.catch_warnings():
@@ -255,7 +253,7 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_st
         program = cl.Program(context, cl_kernel_source).build(options=compile_options)
     pocl.report_build_log(program, device, verbose)
     # Set the GPU kernel
-    pdebug(compile_options)
+#     pdebug(compile_options)
     kernel = getattr(program,cl_kernel_fn)
     # Designate buffered arrays
     kernel.set_args(*buffer_list)
