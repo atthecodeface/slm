@@ -951,6 +951,8 @@ let read_geodata verbosity properties =
   let no_data_values   = Workflow.float_list_of workflow "no_data_values" in
   let roi_x_bounds     = Array.of_list (Workflow.int_list_of ~default:[min_int;min_int] workflow "roi_x_bounds") in
   let roi_y_bounds     = Array.of_list (Workflow.int_list_of ~default:[min_int;min_int] workflow "roi_y_bounds") in
+  let roi_x_bounds = if (Array.length roi_x_bounds)=0 then [|min_int;min_int|] else roi_x_bounds in
+  let roi_y_bounds = if (Array.length roi_y_bounds)=0 then [|min_int;min_int|] else roi_y_bounds in
   let filename         = filename_from_path dtm_path dtm_file in
   let basins_file      = Workflow.str_of workflow ~default:"" "basins_file" in
   let basins           = Workflow.int_list_of workflow ~default:[] "basins" in
