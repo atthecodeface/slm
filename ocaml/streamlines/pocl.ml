@@ -299,17 +299,16 @@ let kernel_set_arg_buffer t kernel index buffer =
   pv_verbose t  (fun _ -> Printf.printf "Set arg %d to buffer of size %d\n%!" index _len);
   Kernel.set_arg kernel index (Ctypes.sizeof Owl_opencl.G.cl_mem) _buffer
 
-(**  [enqueue_kernel t kernel global_work_size]
+(**  [enqueue_kernel t kernel ?local_size global_work_size]
 
   Enqueue a kernel with a specified work size, to the queue of the {!type:Pocl.t}.
 
-    @return event indicating completion of the kernel
+  @return event indicating completion of the kernel
 
  *)
-let enqueue_kernel t kernel global_work_size =
-(*Kernel.enqueue_ndrange ?(wait_for=[]) ?(global_work_ofs=[]) ?(local_work_size=[]) cmdq kernel work_dim global_work_size =*)
+let enqueue_kernel t kernel ?local_work_size:(local_work_size=[]) global_work_size =
   let work_dim = List.length global_work_size in
-  let event = Kernel.enqueue_ndrange (cl_queue t) kernel work_dim global_work_size in
+  let event = Kernel.enqueue_ndrange ~local_work_size (cl_queue t) kernel work_dim global_work_size in
   event
 
 (**  [event_wait t event]
@@ -448,6 +447,7 @@ let rebuild_info_struct pocl (data:t_core_data) info_struct =
   Info.set_float32 info_struct "pad_width_pp5"                 ((float data.pad_width) +. 0.5);
 
   Info.set_float32 info_struct "gpu_memory_limit_pc"           s_props.gpu_memory_limit_pc;
+  Info.set_uint    info_struct "n_work_items"                  s_props.n_work_items;
 
   Info.set_uint info_struct "nx"                               data.roi_nx;
   Info.set_uint info_struct "ny"                               data.roi_ny;

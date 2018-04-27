@@ -33,10 +33,10 @@ to create the OpenCL compiler '#define' options.
 module Info =
 struct
 
-  (** [Bad_value why] exception *)
+  (**  [Bad_value why] exception *)
   exception Bad_value of string
 
-  (** [t_value] Variant type to handle the values potentially required
+  (**  [t_value] Variant type to handle the values potentially required
   to be passed to OpenCL - ths info struct is used to generate the
   compiler options
 
@@ -49,11 +49,11 @@ struct
     | Uint32  of int32
     | Float32 of float
 
-  (** [t_named_value] - A named value that is the basic element of the Info structure
+  (**  [t_named_value] - A named value that is the basic element of the Info structure
     *)
   type t_named_value = string * t_value
 
-  (**  t - structure type of an Info module, just a list of named values *)
+  (**  [t] - structure type of an Info module, just a list of named values *)
   type t = {
       mutable info : t_named_value list;
     }
@@ -194,7 +194,7 @@ struct
   let fold_left f acc t =
     List.fold_left f acc t.info
 
-  (**  display
+  (**  [display t]
 
     Print out the info block contents prettily for debug, for example
 

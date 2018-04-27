@@ -166,66 +166,52 @@ let parse_arguments _ =
   let my_usage = Printf.sprintf "Usage: %s [OPTION]\nPlots something\nOptions:" executable in
   let verbosity = ref Properties.PV_Quiet in
   let filename = ref "" in
+  let json = ref "" in
+  let jsons = ref [] in
   let set_verbose s = verbosity := Properties.pv_of_int (verbosity_of_string s) in
-  let bool_param x = Arg.String (fun s -> x := Some (str2bool s)) in
-  let do_reload_state = ref None in
-  let do_geodata = ref None in
-  let do_preprocess = ref None in
-  let do_condition = ref None in
-  let do_trace = ref None in
-  let do_analysis = ref None in
-  let do_mapping = ref None in
-  let do_plot = ref None in
-  let do_save_state = ref None in
-  let do_export = ref None in
+  let set_state_json_bool x s =
+    jsons := (Globals.sfmt "{\"state\":{\"%s\":%b}}" x (str2bool s)) :: !jsons
+  in
+  let bool_json_param x = Arg.String (fun s -> set_state_json_bool x s) in
   let open Arg in
   let options =
     [ ("--verbose", String set_verbose, "verbose mode");
       ("-v",        String set_verbose, "verbose mode");
       ("--file",    Set_string filename, "import parameters file");
       ("-f",        Set_string filename, "import parameters file");
-      ("-r",        (bool_param do_reload_state), "reload previous runtime state from files");
-      ("-g",        (bool_param do_geodata),      "read geodata files (DTM, basins)");
-      ("-e",        (bool_param do_preprocess),   "perform preprocessing (optionally do conditioning; compute gradients)");
-      ("-c",        (bool_param do_condition),    "condition DTRM for best tracing (fix loops and blockages)");
-      ("-t",        (bool_param do_trace),        "perform streamline tracing");
-      ("-a",        (bool_param do_analysis),     "analyze streamline patterns, distributions");
-      ("-m",        (bool_param do_mapping),      "map channels, midlines");
-      ("-p",        (bool_param do_plot),         "carry out all plotting set in parameters files");
-      ("-s",        (bool_param do_save_state),   "save runtime state to files at completion");
-      ("-x",        (bool_param do_export),       "export figures to files");
+      ("--json",    Set_string json,     "json settings");
+      ("-r",        (bool_json_param "do_reload_state"), "reload previous runtime state from files");
+      ("-g",        (bool_json_param "do_geodata"),      "read geodata files (DTM, basins)");
+      ("-e",        (bool_json_param "do_preprocess"),   "perform preprocessing (optionally do conditioning; compute gradients)");
+      ("-c",        (bool_json_param "do_condition"),    "condition DTRM for best tracing (fix loops and blockages)");
+      ("-t",        (bool_json_param "do_trace"),        "perform streamline tracing");
+      ("-a",        (bool_json_param "do_analysis"),     "analyze streamline patterns, distributions");
+      ("-m",        (bool_json_param "do_mapping"),      "map channels, midlines");
+      ("-p",        (bool_json_param "do_plot"),         "carry out all plotting set in parameters files");
+      ("-s",        (bool_json_param "do_save_state"),   "save runtime state to files at completion");
+      ("-x",        (bool_json_param "do_export"),       "export figures to files");
     ]
   in
   let anon _ = raise (Arg.Bad "no arguments are supported") in
   parse (align options) anon my_usage;
+  let open Properties in
+  pv_if !verbosity PV_Verbose (fun _ -> set_state_json_bool "verbose" "true");
+  pv_if !verbosity PV_Noisy   (fun _ -> set_state_json_bool "noisy"   "true");
+  pv_if !verbosity PV_Debug   (fun _ -> set_state_json_bool "debug"   "true");
   if !filename = "" then raise (Arg.Bad "parameters filename MUST be supplied (with -f for example)");
-  let cmdline_overrides : Properties.t_cmdline_overrides = {
-    verbosity = !verbosity;
-    do_reload_state = !do_reload_state;
-    do_geodata      = !do_geodata;
-    do_preprocess   = !do_preprocess;
-    do_condition    = !do_condition;
-    do_trace        = !do_trace;
-    do_analysis     = !do_analysis;
-    do_mapping      = !do_mapping;
-    do_plot         = !do_plot;
-    do_save_state   = !do_save_state;
-    do_export       = !do_export;
-    }
-  in
-  (!filename, cmdline_overrides)
+  (!filename, (!json)::(!jsons))
 
-(** [process json_dir parameters_filename cmdline_overrides] 
+(** [process json_dir parameters_filename json cmdline_overrides] 
 
     Read in the properties and set up the workflows, then perform the
     workflow stages required.
 
 *)
-let process json_dir parameters_filename cmdline_overrides =
+let process json_dir parameters_filename jsons =
   (* Create workflow objects and fill out properties *)
   let props = Properties.read_properties [ ([json_dir], "defaults.json");
                                            ([json_dir], parameters_filename);
-                ] cmdline_overrides in
+                ] jsons in
   let data        = Core.create props in
   let pocl        = Pocl.create props in
   let geodata     = Geodata.create props in
