@@ -8,14 +8,10 @@
 /// Functions used frequently by kernels
 ///
 
-#ifdef C_ORDER
 /// Bilinearly interpolate a velocity vector (choice of row-major or column-major arrays).
 ///
 /// Perform a fast, simple bilinear interpolation at arbitrary position vector
-/// from regular grid of velocity vectors in global uv_array with ordering type
-/// set by macro definitions C_ORDER or F_ORDER.
-///
-/// ifdef C_ORDER: Assumes a C-order, row-major, last-index-fastest array type.
+/// from regular grid of velocity vectors in global uv_array.
 ///
 /// @param[in] vec      (float2 *, RO): real-valued vector position (x,y) onto which to
 ///                                     interpolate (u,v)
@@ -51,8 +47,6 @@ static float2 speed_interpolator(float2 vec, __global const float2 *uv_array)
 /// Compute the array index of the padded grid pixel pointed to by
 /// a float2 grid position vector (choice of row-major or column-major arrays).
 ///
-/// ifdef C_ORDER: Assumes a C-order, row-major, last-index-fastest array type.
-///
 /// @param[in]  vec (float2 *, RO): real-valued vector position (x,y)
 ///
 /// @returns  padded grid array index at position vec (x,y)
@@ -63,61 +57,6 @@ static inline uint get_array_idx(float2 vec) {
     return          ( min( NY_PADDED-1, (uint)(max(0.0f, vec[1]+PAD_WIDTH_PP5)) )
            +NY_PADDED*min( NX_PADDED-1, (uint)(max(0.0f, vec[0]+PAD_WIDTH_PP5)) ) );
 }
-#endif
-
-#ifdef F_ORDER
-/// Bilinearly interpolate a velocity vector (choice of row-major or column-major arrays).
-///
-/// ifdef F_ORDER: Assumes a Fortran-order, column-major, first-index-fastest array type.
-///
-/// @param[in] vec      (float2 *, RO): real-valued vector position (x,y) onto which to
-///                                     interpolate (u,v)
-/// @param[in] uv_array (float2 *, RO): gridded velocity vector components (u,v)
-///
-/// @returns  normalized velocity vector (u,v) at position vec (x,y)
-///
-/// @ingroup utilities
-///
-static float2 speed_interpolator(float2 vec,
-                                __global const float2 *uv_array)
-{
-    const uint x_lft = (uint)(max(0.0f, vec[0]+PAD_WIDTH_PP5));
-    const uint y_dwn = (uint)(max(0.0f, vec[1]+PAD_WIDTH_PP5));
-    const uint x_rgt = min( NX_PADDED-1, x_lft+1u );
-    const uint y_upp = min( NY_PADDED-1, y_dwn+1u );
-
-    // Get the fractional displacement of the sample point from the down-left vertex
-    const float rx_weight = vec[0]-(float)x_lft+(float)PAD_WIDTH;
-    const float lx_weight = 1.0f-rx_weight;
-    const float uy_weight = vec[1]-(float)y_dwn+(float)PAD_WIDTH;
-    const float dy_weight = 1.0f-uy_weight;
-
-    // Use to weight the four corner values...
-    const float2 uv_dwn = uv_array[x_lft+NX_PADDED*y_dwn]*lx_weight
-                        + uv_array[x_rgt+NX_PADDED*y_dwn]*rx_weight;
-    const float2 uv_upp = uv_array[x_lft+NX_PADDED*y_upp]*lx_weight
-                        + uv_array[x_rgt+NX_PADDED*y_upp]*rx_weight;
-    // Returns:
-    //    interpolated 2d unit speed vector:
-    return fast_normalize(uv_dwn*dy_weight+uv_upp*uy_weight);
-}
-
-/// Compute the array index of the padded grid pixel pointed to by
-/// a float2 grid position vector (choice of row-major or column-major arrays).
-///
-/// ifdef F_ORDER: Assumes a Fortran-order, column-major, first-index-fastest array type.
-///
-/// @param[in]  vec (float2 *, RO): real-valued vector position (x,y)
-///
-/// @returns  padded grid array index at position vec (x,y)
-///
-/// @ingroup utilities
-///
-static inline uint get_array_idx(float2 vec) {
-    return          ( min( NX_PADDED-1, (uint)(max(0.0f, vec[0]+PAD_WIDTH_PP5)) )
-           +NX_PADDED*min( NY_PADDED-1, (uint)(max(0.0f, vec[1]+PAD_WIDTH_PP5)) ) );
-}
-#endif
 
 /// Squish a float vector into a byte vector for O(<1 pixel) trajectory steps
 /// Achieved through scaling by TRAJECTORY_RESOLUTION, e.g. x128,

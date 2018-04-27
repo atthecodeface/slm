@@ -123,11 +123,11 @@ class Geodata(Core):
         # Generate roi array and x,y index vectors now because we'll need them later
         self.roi_array = np.zeros((self.roi_x_bounds[1]-self.roi_x_bounds[0],
                                    self.roi_y_bounds[1]-self.roi_y_bounds[0]),
-                                   dtype=np.float32, order=self.state.array_order)
+                                   dtype=np.float32)
         self.roi_array = (np.flipud(self.dtm_array)[
                                         self.roi_y_bounds[0]:self.roi_y_bounds[1],
                                         self.roi_x_bounds[0]:self.roi_x_bounds[1]]
-                                        ).T.copy(order=self.state.array_order)
+                                        ).T.copy()
         # Remember that np.array range extractions exclude last cell 
         #   such that self.roi_x_bounds[1]-1 is last x cell index
         self.x_roi_n_pixel_centers = np.linspace(self.roi_x_bounds[0]+0.5,
@@ -237,11 +237,9 @@ class Geodata(Core):
                                             (int(self.pad_width),int(self.pad_width)), 
                                             'constant',constant_values=(True,True))
         self.basin_mask_array \
-            = basin_mask_array.copy().astype(dtype=np.bool8,
-                                             order=self.state.array_order)
+            = basin_mask_array.copy().astype(dtype=np.bool8)
         self.basin_fatmask_array \
-            = basin_fatmask_array.copy().astype(dtype=np.bool8, 
-                                                order=self.state.array_order)
+            = basin_fatmask_array.copy().astype(dtype=np.bool8)
                  
     def read_geotiff_file(self, path, filename):
         """

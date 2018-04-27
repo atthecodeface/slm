@@ -55,12 +55,10 @@ def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_dic
     pad = info_dict['pad_width']
     is_midslope = info_dict['is_midslope']
     pixel_size = info_dict['pixel_size']
-    order = info_dict['array_order']
     flag = is_midslope
     seed_point_array \
-        = pick_seeds(mask=mask_array, map=mapping_array, flag=flag, order=order, pad=pad)
-    if (   ((order=='F') and (seed_point_array.shape[1]!=traj_length_array.shape[0]))
-        or ((order=='C') and (seed_point_array.shape[0]!=traj_length_array.shape[0])) ):
+        = pick_seeds(mask=mask_array, map=mapping_array, flag=flag, pad=pad)
+    if ( seed_point_array.shape[0]!=traj_length_array.shape[0] ):
         print('\nMismatched midslope point arrays: ',
               seed_point_array.shape,traj_length_array.shape)
     # Do integrations on the GPU
@@ -100,17 +98,13 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     """
         
     # Prepare memory, buffers 
-    order = info_dict['array_order']
     (seed_point_buffer, uv_buffer, mask_buffer, 
      mapping_buffer, label_buffer, traj_length_buffer) \
-        = prepare_memory(context, queue, order, 
+        = prepare_memory(context, queue,
                          seed_point_array, mask_array, u_array,v_array, 
                          mapping_array, label_array, traj_length_array, verbose)    
     # Specify this integration job's parameters
-    if order=='F':
-        global_size = [seed_point_array.shape[1],1]
-    else:
-        global_size = [seed_point_array.shape[0],1]
+    global_size = [seed_point_array.shape[0],1]
     local_size = None
     # Compile the CL code
     compile_options = pocl.set_compile_options(info_dict, cl_kernel_fn, downup_sign=1)
@@ -132,7 +126,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     
     queue.finish()
     
-def prepare_memory(context, queue, order, seed_point_array, mask_array, u_array,v_array, 
+def prepare_memory(context, queue, seed_point_array, mask_array, u_array,v_array, 
                    mapping_array, label_array, traj_length_array, verbose):
     """
     Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
@@ -140,7 +134,6 @@ def prepare_memory(context, queue, order, seed_point_array, mask_array, u_array,
     Args:
         context (pyopencl.Context):
         queue (pyopencl.CommandQueue):
-        order (str):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
@@ -157,12 +150,7 @@ def prepare_memory(context, queue, order, seed_point_array, mask_array, u_array,
             mapping_buffer, label_buffer, traj_length_buffer
     """
     # Buffer for mask, (u,v) velocity array and more 
-    if order=='F':
-        uv_array = np.stack((u_array,v_array)).copy().astype(dtype=np.float32,
-                                                             order=order)
-    else:
-        uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32,
-                                                                    order=order)
+    uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32)
      # Buffers to GPU memory
     COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
     COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR

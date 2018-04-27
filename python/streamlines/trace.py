@@ -107,21 +107,15 @@ class Trace(Core):
         self.print('Generating seed points...', end='',flush=True)
         mask = self.geodata.basin_mask_array
         pad = self.geodata.pad_width
-        if self.state.array_order=='F':
-            self.seed_point_array \
-                = ((np.argwhere(~mask).astype(np.float32) - pad)
-                   ).T.copy(order='F')
-        else:
-            self.seed_point_array \
-                = ((np.argwhere(~mask).astype(np.float32) - pad)
-                   ).copy(order='C')
+        self.seed_point_array \
+            = ((np.argwhere(~mask).astype(np.float32) - pad)
+               ).copy()
         self.n_seed_points = self.seed_point_array.shape[0]
         pad_length = (np.uint32(np.round(
             self.n_seed_points/self.state.n_work_items+0.5))*self.state.n_work_items
                       -self.n_seed_points)
         if pad_length>0:
-            padding_array = -np.ones([pad_length,2],
-                                     order=self.state.array_order,dtype=np.float32)
+            padding_array = -np.ones([pad_length,2], dtype=np.float32)
             self.seed_point_array = np.concatenate((self.seed_point_array,padding_array))
             self.print('padding for {0} CL work items/group: {1}->{2}...'
                        .format(self.state.n_work_items,
@@ -156,9 +150,8 @@ class Trace(Core):
         subpixel_seed_span = 1.0-1.0/np.float32(self.subpixel_seed_point_density)
         subpixel_seed_step \
             = subpixel_seed_span/(np.float32(self.subpixel_seed_point_density)-1.0 
-                               if self.subpixel_seed_point_density>1 else 1.0)
+                                  if self.subpixel_seed_point_density>1 else 1.0)
         info_dict = {
-            'array_order' :         self.state.array_order,
             'n_seed_points' :       np.uint32(self.n_seed_points),
             'downup_sign' :         np.float32(np.nan),
             'gpu_memory_limit_pc' :        np.uint32(self.state.gpu_memory_limit_pc),

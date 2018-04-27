@@ -55,10 +55,9 @@ def segment_channels( cl_src_path, which_cl_platform, which_cl_device, info_dict
     #    /or/ if a major confluence is reached, only keeping going if dominant
     pad = info_dict['pad_width']
     is_channelhead = info_dict['is_channelhead']
-    order = info_dict['array_order']
     seed_point_array \
         = pick_seeds(mask=mask_array, map=mapping_array, flag=is_channelhead, 
-                     order=order, pad=pad)
+                     pad=pad)
     # Do integrations on the GPU
     cl_kernel_fn = 'segment_downchannels'
     gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
@@ -116,10 +115,9 @@ def segment_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_di
     #    /or/ if a major confluence is reached, only keeping going if dominant
     pad            = info_dict['pad_width']
     is_channelhead = info_dict['is_channelhead']
-    order          = info_dict['array_order']
     flag = is_channelhead
     seed_point_array \
-        = pick_seeds(mask=mask_array, map=~mapping_array, flag=flag, order=order, pad=pad)
+        = pick_seeds(mask=mask_array, map=~mapping_array, flag=flag, pad=pad)
     # Do integrations on the GPU
     cl_kernel_fn = 'segment_hillslopes'
     gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
@@ -170,13 +168,11 @@ def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dic
     is_majorconfluence = info_dict['is_majorconfluence']
     is_thinchannel     = info_dict['is_thinchannel']
     is_leftflank       = info_dict['is_leftflank']
-    order              = info_dict['array_order']
     flag = is_channelhead | is_majorconfluence
     seed_point_array \
-        = pick_seeds(mask=mask_array, map=mapping_array, flag=flag, order=order, pad=pad)
+        = pick_seeds(mask=mask_array, map=mapping_array, flag=flag, pad=pad)
     # Do integrations on the GPU
-    if (    (order=='F' and seed_point_array.shape[1]>0)
-         or (order=='C' and seed_point_array.shape[0]>0) ):
+    if ( seed_point_array.shape[0]>0 ):
         cl_kernel_fn = 'subsegment_channel_edges'
         gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
                     seed_point_array, mask_array, u_array,v_array, 
@@ -185,7 +181,7 @@ def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dic
     # Trace downstream from all non-left-flank hillslope pixels
     flag = is_leftflank | is_thinchannel
     seed_point_array \
-        = pick_seeds(mask=mask_array, map=~mapping_array, flag=flag, order=order,pad=pad)
+        = pick_seeds(mask=mask_array, map=~mapping_array, flag=flag, pad=pad)
     # Do integrations on the GPU
     cl_kernel_fn = 'subsegment_flanks'
     gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, info_dict, 
@@ -223,17 +219,13 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     """
         
     # Prepare memory, buffers 
-    order = info_dict['array_order']
     (seed_point_buffer, uv_buffer, mask_buffer, 
      mapping_buffer, count_buffer, link_buffer, label_buffer) \
-        = prepare_memory(context, queue, order, 
+        = prepare_memory(context, queue, 
                          seed_point_array, mask_array, u_array,v_array, 
                          mapping_array, count_array, link_array, label_array, verbose)    
     # Specify this integration job's parameters
-    if order=='F':
-        global_size = [seed_point_array.shape[1],1]
-    else:
-        global_size = [seed_point_array.shape[0],1]
+    global_size = [seed_point_array.shape[0],1]
     local_size = None
     # Compile the CL code
     compile_options = pocl.set_compile_options(info_dict, cl_kernel_fn, downup_sign=1)
@@ -256,7 +248,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     
     queue.finish()   
     
-def prepare_memory(context,queue, order, seed_point_array, mask_array, u_array,v_array, 
+def prepare_memory(context,queue, seed_point_array, mask_array, u_array,v_array, 
                    mapping_array, count_array, link_array, label_array, verbose):
     """
     Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
@@ -264,7 +256,6 @@ def prepare_memory(context,queue, order, seed_point_array, mask_array, u_array,v
     Args:
         context (pyopencl.Context):
         queue (pyopencl.CommandQueue):
-        order (str):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
@@ -282,12 +273,7 @@ def prepare_memory(context,queue, order, seed_point_array, mask_array, u_array,v
             mapping_buffer, count_buffer, link_buffer, label_buffer
     """
     # Buffer for mask, (u,v) velocity array and more 
-    if order=='F':
-        uv_array = np.stack((u_array,v_array)).copy().astype(dtype=np.float32,
-                                                             order=order)
-    else:
-        uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32,
-                                                                    order=order)
+    uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32)
      # Buffers to GPU memory
     COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
     COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR

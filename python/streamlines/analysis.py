@@ -29,7 +29,6 @@ class Univariate_distribution():
                  n_hist_bins=2000, n_pdf_points=200, 
                  search_cdf_min=0.95,
                  logx_min=None, logy_min=None, logx_max=None, logy_max=None,
-                 order='C',
                  cl_src_path=None, cl_platform=None, cl_device=None,
                  verbose=False):
         if logx_min is None:
@@ -84,7 +83,6 @@ class Univariate_distribution():
         self.search_cdf_min = search_cdf_min
         
         self.pixel_size = pixel_size
-        self.array_order = order
         self.cl_src_path = cl_src_path
         self.cl_platform = cl_platform
         self.cl_device = cl_device
@@ -153,7 +151,6 @@ class Univariate_distribution():
         bin_dx = x_range/self.n_hist_bins
         pdf_dx = x_range/self.n_pdf_points
         self.info_dict = {
-            'array_order' :   self.array_order,
             'kdf_bandwidth' : np.float32(self.bandwidth),
             'kdf_kernel' :    kernel,
             'n_data' :        np.uint32(self.n_data),
@@ -265,7 +262,6 @@ class Bivariate_distribution():
                  pixel_size=None, 
                  method='sklearn', n_hist_bins=2000, n_pdf_points=200, 
                  logx_min=None, logy_min=None, logx_max=None, logy_max=None,
-                 order='C',
                  cl_src_path=None, cl_platform=None, cl_device=None,
                  verbose=False):
         self.logx_data = logx_array
@@ -294,7 +290,7 @@ class Bivariate_distribution():
                 logy_array[  (logx_array>=logx_min) & (logx_array<=logx_max) 
                            & (logy_array>=logy_min) & (logy_array<=logy_max)]
                 ]).T
-        self.logxy_data = logxy_data.copy().astype(dtype=np.float32,order=order)
+        self.logxy_data = logxy_data.copy().astype(dtype=np.float32)
             
         # x,y meshgrid for sampling the bivariate pdf f(x,y)
         # For some weird reason, the numbers of points in x,y need to be complex-valued 
@@ -336,7 +332,6 @@ class Bivariate_distribution():
         self.mode_cluster_ij_list = [None,None]
         
         self.pixel_size = pixel_size
-        self.array_order = order
         self.cl_src_path = cl_src_path
         self.cl_platform = cl_platform
         self.cl_device = cl_device
@@ -381,7 +376,6 @@ class Bivariate_distribution():
         
 
         self.info_dict = {
-            'array_order' :   self.array_order,
             'kdf_bandwidth' : np.float32(self.bandwidth),
             'kdf_kernel' :    kernel,
             'n_data' :        np.uint32(self.n_data),
@@ -589,7 +583,6 @@ class Analysis(Core):
                                             logx_min=logx_min, logy_min=logy_min, 
                                             logx_max=logx_max, logy_max=logy_max,
                                             search_cdf_min = self.search_cdf_min,
-                                            order=self.state.array_order,
                                             cl_src_path=self.state.cl_src_path, 
                                             cl_platform=self.state.cl_platform, 
                                             cl_device=self.state.cl_device,
@@ -759,7 +752,6 @@ class Analysis(Core):
                                             n_pdf_points=n_pdf_points,
                                             logx_min=logx_min, logy_min=logy_min, 
                                             logx_max=logx_max, logy_max=logy_max,
-                                            order=self.state.array_order,
                                             cl_src_path=self.state.cl_src_path, 
                                             cl_platform=self.state.cl_platform, 
                                             cl_device=self.state.cl_device,

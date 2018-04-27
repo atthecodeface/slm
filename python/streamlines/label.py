@@ -52,10 +52,9 @@ def label_confluences( cl_src_path, which_cl_platform, which_cl_device, info_dic
     # Check all thin channel pixels
     pad = info_dict['pad_width']
     is_thinchannel = info_dict['is_thinchannel']
-    order = info_dict['array_order']
     seed_point_array \
         = pick_seeds(mask=mask_array, map=mapping_array, flag=is_thinchannel, 
-                     order=order, pad=pad)
+                     pad=pad)
     # Do integrations on the GPU
     cl_kernel_fn = 'label_confluences'
     gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
@@ -91,17 +90,13 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     """
         
     # Prepare memory, buffers 
-    order = info_dict['array_order']
     (seed_point_buffer, uv_buffer, mask_buffer, 
      slt_buffer, mapping_buffer, count_buffer, link_buffer) \
-        = prepare_memory(context, queue, order, 
+        = prepare_memory(context, queue,
                          seed_point_array, mask_array, u_array,v_array, 
                          slt_array, mapping_array, count_array, link_array, verbose)    
     # Specify this integration job's parameters
-    if order=='F':
-        global_size = [seed_point_array.shape[1],1]
-    else:
-        global_size = [seed_point_array.shape[0],1]
+    global_size = [seed_point_array.shape[0],1]
     local_size = None
     # Compile the CL code
     compile_options = pocl.set_compile_options(info_dict, cl_kernel_fn, downup_sign=1)
@@ -125,7 +120,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     
     queue.finish()   
     
-def prepare_memory(context,queue, order, seed_point_array, mask_array, u_array,v_array, 
+def prepare_memory(context,queue, seed_point_array, mask_array, u_array,v_array, 
                    slt_array, mapping_array, count_array, link_array, verbose):
     """
     Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
@@ -133,7 +128,6 @@ def prepare_memory(context,queue, order, seed_point_array, mask_array, u_array,v
     Args:
         context (pyopencl.Context):
         queue (pyopencl.CommandQueue):
-        order (str):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
@@ -151,13 +145,8 @@ def prepare_memory(context,queue, order, seed_point_array, mask_array, u_array,v
             slt_buffer, mapping_buffer, count_buffer, link_buffer
     """
     # Buffer for mask, (u,v) velocity array and more 
-    if order=='F':
-        uv_array = np.stack((u_array,v_array)).copy().astype(dtype=np.float32,
-                                                             order=order)
-    else:
-        uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32,
-                                                                    order=order)
-    tmp_slt_array = slt_array[:,:,0].copy().astype(dtype=np.float32,order=order)
+    uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32)
+    tmp_slt_array = slt_array[:,:,0].copy().astype(dtype=np.float32)
      # Buffers to GPU memory
     COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
     COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR

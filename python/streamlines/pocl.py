@@ -139,7 +139,6 @@ def set_compile_options(info_dict, kernel_def, downup_sign=1,
     if job_type=='kde':
         return [
             '-D','KERNEL_{}'.format(kernel_def.upper()),
-            '-D','{}_ORDER'.format(info_dict['array_order']),
             '-D','KDF_BANDWIDTH={}f'.format(info_dict['kdf_bandwidth']),
             '-D','KDF_IS_{}'.format(info_dict['kdf_kernel'].upper()),
             '-D','N_DATA={}u'.format(info_dict['n_data']),
@@ -164,7 +163,6 @@ def set_compile_options(info_dict, kernel_def, downup_sign=1,
         return [
         '-D','KERNEL_{}'.format(kernel_def.upper()),
         '-D','N_SEED_POINTS={}u'.format(info_dict['n_seed_points']),
-        '-D','{}_ORDER'.format(info_dict['array_order']),
         '-D','DOWNUP_SIGN={}'.format(downup_sign),
         '-D','INTEGRATOR_STEP_FACTOR={}f'.format( 
                                             info_dict['integrator_step_factor']),

@@ -83,11 +83,7 @@ def integrate_trajectories(
     for cl_file in cl_files:
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
-    order = info_dict['array_order']
-    if order=='F':
-        n_padded_seed_points = seed_point_array.shape[1]
-    else:
-        n_padded_seed_points = seed_point_array.shape[0]
+    n_padded_seed_points = seed_point_array.shape[0]
 
     # Chunkification
     gpu_traj_memory_limit = (device.get_info(cl.device_info.GLOBAL_MEM_SIZE) 
@@ -113,7 +109,7 @@ def integrate_trajectories(
                                                                  'INTEGRATE_TRAJECTORY'))
     # Do integrations on the GPU
     (streamline_arrays_list, traj_nsteps_array, traj_length_array,
-        rtn_slc_array, rtn_slt_array, rtn_sla_array) \
+     rtn_slc_array, rtn_slt_array, rtn_sla_array) \
         = gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
                                      info_dict, trace_do_chunks, chunk_size, 
                                      seed_point_array, mask_array, u_array, v_array,  
@@ -154,11 +150,7 @@ def choose_chunks(seed_point_array, info_dict, n_chunks_required,
         list, int,
             trace_do_chunks, chunk_size
     """
-    order = info_dict['array_order']
-    if order=='F':
-        n_global = seed_point_array.shape[1]
-    else:
-        n_global = seed_point_array.shape[0]
+    n_global = seed_point_array.shape[0]
     n_chunks = n_chunks_required    
     chunk_size = int(np.round(n_global/n_chunks))
     chunk_list = [[chunk_idx,chunk,min(n_global,chunk+chunk_size)-chunk] 
@@ -217,19 +209,18 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
         
     # Prepare memory, buffers 
     streamline_arrays_list = [[],[]]
-    order = info_dict['array_order']
     (traj_nsteps_array, traj_length_array, 
      chunk_trajcs_array, chunk_nsteps_array, chunk_length_array, 
      slc_array, slt_array, 
      seed_point_buffer, uv_buffer, mask_buffer, 
      chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer, 
      slc_buffer, slt_buffer) \
-        = prepare_memory(context, queue, order, chunk_size, info_dict['max_n_steps'],
+        = prepare_memory(context, queue, chunk_size, info_dict['max_n_steps'],
                         seed_point_array, mask_array, u_array, v_array,  verbose)
     roi_nxy = slc_array.shape
-    rtn_slc_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.uint32, order=order)
-    rtn_slt_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32, order=order)
-    rtn_sla_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32, order=order)
+    rtn_slc_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.uint32)
+    rtn_slt_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
+    rtn_sla_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
     
     # Downstream and upstream passes aka streamline integrations from
     #   chunks of seed points aka subsets of the total set
@@ -340,7 +331,7 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
     return (streamline_arrays_list[0:n], traj_nsteps_array[0:n], traj_length_array[0:n], 
             slc, slt, sla)
 
-def prepare_memory(context, queue, order, chunk_size, max_traj_length, 
+def prepare_memory(context, queue, chunk_size, max_traj_length, 
                    seed_point_array, mask_array, u_array, v_array,  verbose):
     """
     Create Numpy array and PyOpenCL buffers to allow CPU-GPU data transfer.
@@ -348,7 +339,6 @@ def prepare_memory(context, queue, order, chunk_size, max_traj_length,
     Args:
         context (pyopencl.Context):
         queue (pyopencl.CommandQueue):
-        order (str):
         chunk_size (int):
         max_traj_length (int):
         seed_point_array (numpy.ndarray):
@@ -371,16 +361,10 @@ def prepare_memory(context, queue, order, chunk_size, max_traj_length,
     # PyOpenCL array for seed points
     # Buffer for mask, (u,v) velocity array and more
     roi_nxy = mask_array.shape
-    if order=='F':
-        n_padded_seed_points = seed_point_array.shape[1]
-        uv_array = np.stack((u_array,v_array)).copy().astype(dtype=np.float32,
-                                                             order=order)
-    else:
-        n_padded_seed_points = seed_point_array.shape[0]
-        uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32,
-                                                                    order=order)
-    slc_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32, order=order)
-    slt_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32, order=order)
+    n_padded_seed_points = seed_point_array.shape[0]
+    uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32)
+    slc_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32)
+    slt_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32)
     traj_nsteps_array  = np.zeros([n_padded_seed_points,2], dtype=np.uint16)
     traj_length_array  = np.zeros([n_padded_seed_points,2], dtype=np.float32)
 

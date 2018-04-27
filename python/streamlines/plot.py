@@ -676,22 +676,13 @@ class Plot(Core):
             trajectory = np.concatenate((np.array([[0,0]],dtype=np.float32),
                         streamline_arrays_list[idx_list[sidx]].astype(np.float32)
                                     /np.float32(self.trace.trajectory_resolution)))
-            if self.state.array_order=='F':
-                seed_point = self.trace.seed_point_array[:,idx_list[sidx]]
-                x_vec = ( self.geodata.roi_x_origin
-                          + np.cumsum(trajectory.T[0])
-                          + seed_point[0] )
-                y_vec = ( self.geodata.roi_y_origin
-                          + np.cumsum(trajectory.T[1])
-                          + seed_point[1] )
-            else:
-                seed_point = self.trace.seed_point_array[idx_list[sidx],:]
-                x_vec = ( self.geodata.roi_x_origin
-                          + np.cumsum(trajectory.T[0])
-                          + seed_point[0] )
-                y_vec = ( self.geodata.roi_y_origin
-                          + np.cumsum(trajectory.T[1])
-                          + seed_point[1] )
+            seed_point = self.trace.seed_point_array[idx_list[sidx],:]
+            x_vec = ( self.geodata.roi_x_origin
+                      + np.cumsum(trajectory.T[0])
+                      + seed_point[0] )
+            y_vec = ( self.geodata.roi_y_origin
+                      + np.cumsum(trajectory.T[1])
+                      + seed_point[1] )
 
             axes.plot(x_vec,y_vec,
                       marker, 
@@ -882,12 +873,8 @@ class Plot(Core):
             size = self.seed_point_marker_size
             color = self.seed_point_marker_color
         
-        if self.state.array_order=='F':
-            x = self.trace.seed_point_array[0,:]+self.geodata.roi_x_origin
-            y = self.trace.seed_point_array[1,:]+self.geodata.roi_y_origin
-        else:
-            x = self.trace.seed_point_array[:,0]+self.geodata.roi_x_origin
-            y = self.trace.seed_point_array[:,1]+self.geodata.roi_y_origin
+        x = self.trace.seed_point_array[:,0]+self.geodata.roi_x_origin
+        y = self.trace.seed_point_array[:,1]+self.geodata.roi_y_origin
         axes.plot(x, y,
                 marker, 
                 ms=size, 

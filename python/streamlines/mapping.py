@@ -105,8 +105,7 @@ class Mapping(Core):
     def map_channels(self):
         self.print('Channels...',end='')  
         jpdf = self.analysis.jpdf_dsla_dslt
-        self.mapping_array = np.zeros(self.trace.slt_array[:,:,0].shape, 
-                                      dtype=np.uint32, order=self.state.array_order)
+        self.mapping_array = np.zeros(self.trace.slt_array[:,:,0].shape, dtype=np.uint32)
         self.mapping_array[jpdf.mode_cluster_ij_list[1][:,0],
                            jpdf.mode_cluster_ij_list[1][:,1]] = self.trace.is_channel
 #         if self.mask_array is not None:
@@ -127,8 +126,7 @@ class Mapping(Core):
         self.print('Thinning channels...',end='')  
         is_channel = self.trace.is_channel
         is_interchannel = self.trace.is_interchannel
-        channel_array = np.zeros(self.mapping_array.shape, dtype=np.bool, 
-                                 order=self.state.array_order)
+        channel_array = np.zeros(self.mapping_array.shape, dtype=np.bool)
         channel_array[  ((self.mapping_array & is_channel)==is_channel)
                       | ((self.mapping_array & is_interchannel)==is_interchannel)
                      ] = True
@@ -148,10 +146,8 @@ class Mapping(Core):
                 )
         
     def count_downchannels(self):
-        self.count_array = np.zeros(self.mapping_array.shape, 
-                                   dtype=np.uint32, order=self.state.array_order)
-        self.link_array = np.zeros(self.mapping_array.shape, 
-                                   dtype=np.uint32, order=self.state.array_order)
+        self.count_array = np.zeros(self.mapping_array.shape,dtype=np.uint32)
+        self.link_array  = np.zeros(self.mapping_array.shape, dtype=np.uint32)
         countlink.count_downchannels(
                             self.state.cl_src_path, self.state.cl_platform,
                             self.state.cl_device, 
@@ -185,8 +181,7 @@ class Mapping(Core):
                 )
 
     def segment_downchannels(self):
-        self.label_array = np.zeros(self.mapping_array.shape, 
-                                    dtype=np.uint32, order=self.state.array_order)
+        self.label_array = np.zeros(self.mapping_array.shape, dtype=np.uint32)
         self.n_segments \
             = segment.segment_channels(
                     self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
@@ -197,8 +192,7 @@ class Mapping(Core):
                     self.state.verbose 
                     )
         # Save the channel-only segment labeling for now
-        self.channel_label_array = self.label_array.copy().astype(np.uint32, 
-                                                        order=self.state.array_order)
+        self.channel_label_array = self.label_array.copy().astype(np.uint32)
         is_majorconfluence = self.trace.is_majorconfluence
 #         pdebug('Major confluences',self.label_array[(~self.geodata.basin_mask_array) 
 #                  & ((self.mapping_array & is_majorconfluence)==is_majorconfluence)])
@@ -235,8 +229,7 @@ class Mapping(Core):
                 self.channel_label_array,self.link_array,self.label_array,
                 self.state.verbose 
                 )
-        self.label_array = self.label_array.astype(dtype=np.int32, 
-                                                   order=self.state.array_order)
+        self.label_array = self.label_array.astype(dtype=np.int32)
         self.label_array[self.label_array<0] \
             = -(self.label_array[self.label_array<0] + self.trace.left_flank_addition)
         is_leftflank = self.trace.is_leftflank
@@ -258,10 +251,9 @@ class Mapping(Core):
     def measure_hillslope_lengths(self):
         traj_label_array = (self.label_array[
                                 (self.mapping_array&self.trace.is_midslope)>0
-                    ].astype(np.int32)).ravel().copy(order=self.state.array_order)
+                    ].astype(np.int32)).ravel().copy()
 #         pdebug('traj_label_array',traj_label_array.shape,traj_label_array)
-        traj_length_array= 0.0*traj_label_array.copy().astype(dtype=np.float32,
-                                                        order=self.state.array_order)
+        traj_length_array= 0.0*traj_label_array.copy().astype(dtype=np.float32)
         
         lengths.hillslope_lengths(
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
@@ -274,8 +266,7 @@ class Mapping(Core):
                 )
         unique_labels = np.unique(traj_label_array)
         self.hillslope_labels \
-            = unique_labels[unique_labels!=0].astype(np.int32,
-                                                     order=self.state.array_order)
+            = unique_labels[unique_labels!=0].astype(np.int32)
         df  = pd.DataFrame(np.zeros((traj_length_array.shape[0],), 
                                     dtype=[('label', np.int32), ('length', np.float32)]))
         df['label']  = traj_label_array
@@ -291,8 +282,7 @@ class Mapping(Core):
         stats_df.set_index('label',inplace=True)
         self.hillslope_stats_df = stats_df
         
-        self.hillslope_length_array = np.zeros_like(self.label_array,
-                                    dtype=np.float32,order=self.state.array_order)
+        self.hillslope_length_array = np.zeros_like(self.label_array, dtype=np.float32)
         for idx,row in stats_df.iterrows():     
             self.hillslope_length_array[self.label_array==idx] = row['mean [m]']
 

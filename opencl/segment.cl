@@ -191,17 +191,10 @@ __kernel void subsegment_channel_edges(
     // Even if this pixel is masked, we still need to try to subsegment
     while (prev_idx!=idx) {
 
-#ifdef F_ORDER
-        prev_x = prev_idx%NX_PADDED;
-        prev_y = prev_idx/NX_PADDED;
-        x =  idx%NX_PADDED;
-        y =  idx/NX_PADDED;
-#else
         prev_x = prev_idx/NY_PADDED;
         prev_y = prev_idx%NY_PADDED;
         x =  idx/NY_PADDED;
         y =  idx%NY_PADDED;
-#endif
         dx = (char)(x-prev_x);
         dy = (char)(y-prev_y);
 
@@ -214,11 +207,7 @@ __kernel void subsegment_channel_edges(
             rotated_dy = rotated_dy/clamp((char)abs(rotated_dy),(char)1,(char)2);
             dx = rotated_dx;
             dy = rotated_dy;
-#ifdef F_ORDER
-            left_idx = (prev_x+rotated_dx) + (prev_y+rotated_dy)*NX_PADDED;
-#else
             left_idx = (prev_x+rotated_dx)*NY_PADDED + (prev_y+rotated_dy);
-#endif
             if (!mask_array[left_idx] && label_array[left_idx]==segment_label) {
                 if ((mapping_array[left_idx]) & IS_THINCHANNEL) {
                     if (n_turns>1) {

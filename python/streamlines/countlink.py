@@ -56,12 +56,11 @@ def count_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_di
     pad            = info_dict['pad_width']
     is_channelhead = info_dict['is_channelhead']
     is_thinchannel = info_dict['is_thinchannel']
-    order          = info_dict['array_order']
     mapping_array[(mapping_array&is_thinchannel)==is_thinchannel] \
         = mapping_array[(mapping_array&is_thinchannel)==is_thinchannel]^is_thinchannel
     seed_point_array \
         = pick_seeds(mask=mask_array, map=mapping_array, flag=is_channelhead, 
-                     order=order, pad=pad)
+                     pad=pad)
     # Do integrations on the GPU
     cl_kernel_fn = 'count_downchannels'
     gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
@@ -108,13 +107,12 @@ def flag_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_dic
     pad            = info_dict['pad_width']
     is_channelhead = info_dict['is_channelhead']
     is_thinchannel = info_dict['is_thinchannel']
-    order          = info_dict['array_order']
     mapping_array[(mapping_array&is_thinchannel)==is_thinchannel] \
         = mapping_array[(mapping_array&is_thinchannel)==is_thinchannel]^is_thinchannel
     count_array *= 0
     seed_point_array \
         = pick_seeds(mask=mask_array, map=mapping_array, flag=is_channelhead, 
-                     order=order, pad=pad)                           
+                     pad=pad)                           
     # Do integrations on the GPU
     cl_kernel_fn = 'flag_downchannels'
     gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
@@ -160,10 +158,9 @@ def link_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_dict,
     # Generate a list (array) of seed points from all non-thin-channel pixels
     pad            = info_dict['pad_width']
     is_thinchannel = info_dict['is_thinchannel']
-    order          = info_dict['array_order']
     seed_point_array \
         = pick_seeds(mask=mask_array, map=~mapping_array, flag=is_thinchannel, 
-                     order=order, pad=pad)                           
+                     pad=pad)                           
     # Do integrations on the GPU
     cl_kernel_fn = 'link_hillslopes'
     gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
@@ -197,16 +194,12 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
         
     """
     # Prepare memory, buffers 
-    order = info_dict['array_order']
     (seed_point_buffer, uv_buffer, mask_buffer,
      mapping_buffer, count_buffer, link_buffer) \
-        = prepare_memory(context, queue, order, seed_point_array, mask_array, 
+        = prepare_memory(context, queue, seed_point_array, mask_array, 
                          u_array,v_array, mapping_array,count_array,link_array, verbose)    
     # Specify this integration job's parameters
-    if order=='F':
-        global_size = [seed_point_array.shape[1],1]
-    else:
-        global_size = [seed_point_array.shape[0],1]
+    global_size = [seed_point_array.shape[0],1]
     local_size = None
     # Compile the CL code
     compile_options = pocl.set_compile_options(info_dict, cl_kernel_fn, downup_sign=1)
@@ -230,7 +223,7 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
     
     queue.finish()   
     
-def prepare_memory(context, queue, order,
+def prepare_memory(context, queue,
                     seed_point_array, mask_array, u_array,v_array, 
                     mapping_array, count_array, link_array, verbose):
     """
@@ -239,7 +232,6 @@ def prepare_memory(context, queue, order,
     Args:
         context (pyopencl.Context):
         queue (pyopencl.CommandQueue):
-        order (str):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
@@ -256,12 +248,7 @@ def prepare_memory(context, queue, order,
             mapping_buffer, count_buffer, link_buffer
     """
     # Buffer for mask, (u,v) velocity array and more 
-    if order=='F':
-        uv_array = np.stack((u_array,v_array)).copy().astype(dtype=np.float32,
-                                                             order=order)
-    else:
-        uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32,
-                                                                    order=order)
+    uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32)
      # Buffers to GPU memory
     COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
     COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR

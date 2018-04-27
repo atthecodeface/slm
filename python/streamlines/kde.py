@@ -202,7 +202,6 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_di
     """
         
     # Prepare memory, buffers 
-    order        = info_dict['array_order']
     n_hist_bins  = info_dict['n_hist_bins']
     n_data       = info_dict['n_data']
     n_pdf_points = info_dict['n_pdf_points']
@@ -210,7 +209,7 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_di
     if action=='histogram':
         # Compute histogram
         (histogram_array, sl_buffer, histogram_buffer) \
-            = prepare_memory(context, queue, order, 
+            = prepare_memory(context, queue, 
                              n_hist_bins=n_hist_bins, 
                              sl_array=sl_array, 
                              action=action, is_bivariate=is_bivariate,
@@ -220,7 +219,7 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_di
     elif action=='partial_pdf':
         # Compute partially (rows-only) kd-smoothed pdf
         (partial_pdf_array, histogram_buffer, partial_pdf_buffer) \
-            = prepare_memory(context, queue, order, 
+            = prepare_memory(context, queue, 
                              n_hist_bins=n_hist_bins,
                              histogram_array=histogram_array,
                              action=action, is_bivariate=is_bivariate,
@@ -231,7 +230,7 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_di
         # Compute kd-smoothed pdf
         if is_bivariate:
             (pdf_array, partial_pdf_buffer, pdf_buffer) \
-                = prepare_memory(context, queue, order, 
+                = prepare_memory(context, queue, 
                                  n_pdf_points=n_pdf_points, 
                                  partial_pdf_array=partial_pdf_array, 
                                  action=action, is_bivariate=True,
@@ -240,7 +239,7 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_di
             buffer_list = [partial_pdf_buffer, pdf_buffer]
         else:
             (pdf_array, histogram_buffer, pdf_buffer) \
-                = prepare_memory(context, queue, order, 
+                = prepare_memory(context, queue, 
                                  n_pdf_points=n_pdf_points, 
                                  histogram_array=histogram_array,
                                  action=action, is_bivariate=False,
@@ -282,7 +281,7 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_di
         queue.finish()
         return pdf_array
     
-def prepare_memory(context, queue, order, 
+def prepare_memory(context, queue, 
                    action='histogram', is_bivariate=False, 
                    n_hist_bins=0, n_pdf_points=0,
                    sl_array=None, histogram_array=None, 
@@ -294,7 +293,6 @@ def prepare_memory(context, queue, order,
     Args:
         context (pyopencl.Context):
         queue (pyopencl.CommandQueue):
-        order (str):
         n_bins (int):
         sl_array (numpy.ndarray):
         histogram_array (numpy.ndarray):
@@ -316,14 +314,14 @@ def prepare_memory(context, queue, order,
         else:
             ny = 1
         sl_buffer         = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=sl_array)
-        histogram_array   = np.zeros((nx,ny), dtype=np.uint32,order=order)
+        histogram_array   = np.zeros((nx,ny), dtype=np.uint32)
         histogram_buffer  = cl.Buffer(context, COPY_READ_WRITE, hostbuf=histogram_array)
         return (histogram_array, sl_buffer, histogram_buffer) 
     elif action=='partial_pdf':
         nx = n_hist_bins
         ny = n_hist_bins
         histogram_buffer  = cl.Buffer(context, COPY_READ_ONLY, hostbuf=histogram_array)
-        partial_pdf_array = np.zeros((nx,ny), dtype=np.float32,order=order)
+        partial_pdf_array = np.zeros((nx,ny), dtype=np.float32)
         partial_pdf_buffer= cl.Buffer(context, COPY_READ_WRITE,hostbuf=partial_pdf_array)
         return (partial_pdf_array, histogram_buffer, partial_pdf_buffer) 
     else:
@@ -331,12 +329,12 @@ def prepare_memory(context, queue, order,
         if is_bivariate:
             ny = n_pdf_points
             partial_pdf_buffer=cl.Buffer(context,COPY_READ_ONLY,hostbuf=partial_pdf_array)
-            pdf_array         = np.zeros((nx,ny), dtype=np.float32,order=order)
+            pdf_array         = np.zeros((nx,ny), dtype=np.float32)
             pdf_buffer        = cl.Buffer(context, COPY_READ_WRITE, hostbuf=pdf_array)
             return (pdf_array, partial_pdf_buffer, pdf_buffer) 
         else:
             histogram_buffer = cl.Buffer(context, COPY_READ_ONLY, hostbuf=histogram_array)
-            pdf_array         = np.zeros((nx,1), dtype=np.float32,order=order)
+            pdf_array         = np.zeros((nx,1), dtype=np.float32)
             pdf_buffer        = cl.Buffer(context, COPY_READ_WRITE, hostbuf=pdf_array)
             return (pdf_array, histogram_buffer, pdf_buffer) 
         

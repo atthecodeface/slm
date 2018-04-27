@@ -50,13 +50,11 @@ def connect_channel_pixels(
     # Generate a list (array) of seed points from the set of channel pixels
     pad = info_dict['pad_width']
     is_channel = info_dict['is_channel']
-    order = info_dict['array_order']
     
     # Trace downstream from all channel pixels
     seed_point_array \
-        = pick_seeds(map=mapping_array, flag=is_channel, order=order, pad=pad)
-    if (   (order=='F' and seed_point_array.shape[1]==0) 
-        or (order=='C' and seed_point_array.shape[0]==0) ):
+        = pick_seeds(map=mapping_array, flag=is_channel, pad=pad)
+    if ( seed_point_array.shape[0]==0 ):
         vprint(verbose,'no channel pixels found...exiting')
         return
     # Do integrations on the GPU
@@ -102,12 +100,11 @@ def map_channel_heads(
     is_channel     = info_dict['is_channel']
     is_thinchannel = info_dict['is_thinchannel']
     is_channelhead = info_dict['is_channelhead']
-    order = info_dict['array_order']
     mapping_array[(mapping_array&is_thinchannel)==is_thinchannel] |= is_channelhead
         
     # Trace downstream from all non-masked pixels
     seed_point_array \
-        = pick_seeds(mask=mask_array, flag=is_channel, order=order, pad=pad)
+        = pick_seeds(mask=mask_array, flag=is_channel, pad=pad)
     # Do integrations on the GPU
     cl_kernel_fn = 'map_channel_heads'
     gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
@@ -116,7 +113,7 @@ def map_channel_heads(
     # Trace downstream from all provisional channel head pixels
     seed_point_array \
         = pick_seeds(mask=mask_array, map=mapping_array, flag=is_channelhead, 
-                     order=order, pad=pad)
+                     pad=pad)
     # Do integrations on the GPU
     cl_kernel_fn = 'prune_channel_heads'
     gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
@@ -148,15 +145,11 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
     """
         
     # Prepare memory, buffers 
-    order = info_dict['array_order']
     (seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer) \
-        = prepare_memory(context, queue, order, seed_point_array, mask_array, 
+        = prepare_memory(context, queue, seed_point_array, mask_array, 
                          u_array,v_array, mapping_array, verbose)    
     # Specify this integration job's parameters
-    if order=='F':
-        global_size = [seed_point_array.shape[1],1]
-    else:
-        global_size = [seed_point_array.shape[0],1]
+    global_size = [seed_point_array.shape[0],1]
     local_size = None
     # Compile the CL code
     compile_options = pocl.set_compile_options(info_dict, cl_kernel_fn, downup_sign=1)
@@ -176,7 +169,7 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
     cl.enqueue_copy(queue, mapping_array, mapping_buffer)
     queue.finish()   
     
-def prepare_memory(context, queue, order,
+def prepare_memory(context, queue,
                   seed_point_array, mask_array, u_array,v_array, mapping_array, verbose):
     """
     Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
@@ -184,7 +177,6 @@ def prepare_memory(context, queue, order,
     Args:
         context (pyopencl.Context):
         queue (pyopencl.CommandQueue):
-        order (str):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
@@ -197,12 +189,7 @@ def prepare_memory(context, queue, order,
             seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer
     """
     # Buffer for mask, (u,v) velocity array and more
-    if order=='F':
-        uv_array = np.stack((u_array,v_array)).copy().astype(dtype=np.float32,
-                                                             order=order)
-    else:
-        uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32,
-                                                                    order=order)
+    uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32)
     # Buffers to GPU memory
     COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
     COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR
