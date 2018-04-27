@@ -64,6 +64,7 @@ static inline bool runge_kutta_step_record(float *dt, float  *dl, float *l_traje
     *idx = get_array_idx(*next_vec);
     if (*dl<(INTEGRATION_HALT_THRESHOLD)) {
         update_record_trajectory(*dl,l_trajectory,*vec,*prev_vec,n_steps,trajectory_vec);
+//        printf("runge_kutta_step_record: stuck\n");
         return true;
     }
     *dt = select( fmin(DT_MAX,(ADJUSTED_MAX_ERROR*(*dt))/(step_error)), DT_MAX,
@@ -174,6 +175,7 @@ static inline bool runge_kutta_step_write_sl_data(
     if (*dl<(INTEGRATION_HALT_THRESHOLD)) {
         update_trajectory_write_sl_data(*dl,l_trajectory,*vec,*prev_vec,n_steps,
                                         idx, prev_idx, mask_array, slt_array, slc_array);
+//        printf("runge_kutta_step_write_sl_data: stuck @ %d\n",*idx);
         return true;
     }
     *dt = select( fmin(DT_MAX,(ADJUSTED_MAX_ERROR*(*dt))/(step_error)), DT_MAX,

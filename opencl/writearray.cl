@@ -72,7 +72,7 @@ static inline void check_atomic_write_sl_data(const uint idx, uint *prev_idx,
                                               const bool mask_flag,
                                               __global uint *slt, __global uint *slc,
                                               const float l_trajectory) {
-    if (!mask_flag) {
+    if (idx<(NX_PADDED*NY_PADDED) && !mask_flag) {
         // Add streamline length-so-far to total slt for this pixel
         //   - rounding up to & casting as 32bit int
         // There may be issues for short trajectories as a result.

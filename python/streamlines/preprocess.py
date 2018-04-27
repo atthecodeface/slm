@@ -65,7 +65,9 @@ def normalize_velocity_field(u_array,v_array,speed_array):
     """
     Normalize 'flow velocity' field into unit vector field.
     """
-    return u_array/speed_array, v_array/speed_array
+    u_array[speed_array>0.0] /= speed_array[speed_array>0.0]
+    v_array[speed_array>0.0] /= speed_array[speed_array>0.0]
+    return u_array, v_array
 
 # @njit(cache=False)
 def unnormalize_velocity_field(u_array,v_array,speed_array):

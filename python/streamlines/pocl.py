@@ -163,6 +163,7 @@ def set_compile_options(info_struct, kernel_def, downup_sign=1,
     else:
         return [
         '-D','KERNEL_{}'.format(kernel_def.upper()),
+        '-D','N_SEED_POINTS={}u'.format(info_struct['n_seed_points'][0]),
         '-D','{}_ORDER'.format(info_struct['array_order'][0]),
         '-D','DOWNUP_SIGN={}'.format(downup_sign),
         '-D','INTEGRATOR_STEP_FACTOR={}f'.format( 

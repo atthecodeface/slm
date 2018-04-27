@@ -27,26 +27,6 @@
                         | (initial_rng_state<< 8)&0xff0000 \
                         | (initial_rng_state<<24)&0xff000000;
 
-
-
-///
-/// Initialize the Lehmer random number generator
-///
-/// Macro to scramble the initial RNG state to reduce correlation of
-///    neighboring streamline jitters
-///
-/// @param[out] initial_rng_state: RNG state and variate
-/// @param[in] seed_idx:           RNG seed
-///
-#define INITIALIZE_RNG(initial_rng_state,seed_idx) \
-    initial_rng_state = seed_idx; \
-    /*initial_rng_state = i+(j+seed_idx);*/ \
-    /*initial_rng_state = i+(j+seed_idx*SUBPIXEL_SEED_POINT_DENSITY)\
-     * *SUBPIXEL_SEED_POINT_DENSITY;*/ \
-    BYTE_REVERSAL(initial_rng_state); \
-    lehmer_rand_uint(&initial_rng_state); \
-    BYTE_REVERSAL(initial_rng_state);
-
 #ifdef KERNEL_INTEGRATE_TRAJECTORY
 ///
 /// GPU kernel that drives streamline integration from seed positions
@@ -108,11 +88,15 @@ __kernel void integrate_trajectory( __global const float2 *seed_point_array,
         printf("On GPU/OpenCL device: #workitems=%d  #workgroups=%d\n",
                 get_local_size(0u), get_num_groups(0u));
     }
+    if (seed_idx>=N_SEED_POINTS) {
+        // This is a padded seed, so let's bail
+        return;
+    }
 
     // Trace a "smooth" streamline from the seed point coordinate
     trajectory_record( uv_array, mask_array, traj_nsteps_array, traj_length_array,
                        trajectory_vec, global_id, seed_idx,
-                       seed_point_array[seed_idx]);
+                       seed_point_array[seed_idx] );
 
     // Trace a set of streamlines from a grid of sub-pixel positions centered
     //    on the seed point
@@ -120,7 +104,11 @@ __kernel void integrate_trajectory( __global const float2 *seed_point_array,
     //   [was: using the sum of the current pixel index and the sub-pixel index]
     //   using the current pixel index ("seed_idx")
     //   byte-reversed per GJS suggestion
-    INITIALIZE_RNG(initial_rng_state, seed_idx);
+    initial_rng_state = seed_idx;
+    BYTE_REVERSAL(initial_rng_state);
+    lehmer_rand_uint(&initial_rng_state);
+    BYTE_REVERSAL(initial_rng_state);
+
     for (j=0u;j<SUBPIXEL_SEED_POINT_DENSITY;j++) {
         for (i=0u;i<SUBPIXEL_SEED_POINT_DENSITY;i++){
             // Trace a jittered streamline from a sub-pixel-offset first point

@@ -7,7 +7,6 @@ Map and graph plotting
 #  data=data obj dict
 #  cax=fig.add_axes to add custom color bar; cax=cax in fig.colorbar
 #  color map range: vmin, vmax; also norm
-#  viridis or terrain as cmap options (v is perceptually uniform)
 #  Use fig, (axes1,axes2) =  to access multiple axes 
 #  CartoPy
 #  mpl_toolkits.axes_grid1
@@ -161,6 +160,8 @@ class Plot(Core):
             self.plot_maps()
         if self.do_plot_distributions:
             self.plot_distributions()
+            self.plot_hillslope_distributions()
+
         self.print('**Plot all end**\n')  
         
     def plot_maps(self):
@@ -189,8 +190,6 @@ class Plot(Core):
             self.plot_hillslope_lengths()
         if self.do_plot_hillslope_lengths_contoured:
             self.plot_hillslope_lengths_contoured()
-        if self.do_plot_hillslope_distributions:
-            self.plot_hillslope_distributions()
         self.print('...done')
             
     def plot_dtm_shaded_relief(self):

@@ -84,14 +84,14 @@ def integrate_trajectories(
             cl_kernel_source += fp.read()
     order = info_struct['array_order'][0]
     if order=='F':
-        n_seed_points = seed_point_array.shape[1]
+        n_padded_seed_points = seed_point_array.shape[1]
     else:
-        n_seed_points = seed_point_array.shape[0]
+        n_padded_seed_points = seed_point_array.shape[0]
 
     # Chunkification
     gpu_traj_memory_limit = (device.get_info(cl.device_info.GLOBAL_MEM_SIZE) 
                              *info_struct['gpu_memory_limit_pc'][0])//100
-    full_traj_memory_request = (n_seed_points*np.dtype(np.uint8).itemsize
+    full_traj_memory_request = (n_padded_seed_points*np.dtype(np.uint8).itemsize
                                 *info_struct['max_n_steps'][0]*2)
     n_chunks_required = max(1,int(np.ceil(
                         full_traj_memory_request/gpu_traj_memory_limit)) )
@@ -159,7 +159,7 @@ def choose_chunks(seed_point_array, info_struct, n_chunks_required,
     else:
         n_global = seed_point_array.shape[0]
     n_chunks = n_chunks_required    
-    chunk_size = int(np.round(n_global/n_chunks+0.5))
+    chunk_size = int(np.round(n_global/n_chunks))
     chunk_list = [[chunk_idx,chunk,min(n_global,chunk+chunk_size)-chunk] 
                    for chunk_idx,chunk in enumerate(range(0,n_global,chunk_size))]
     trace_do_list = [[do_trace_downstream, 'Downstream:', 0, np.float32(+1.0)]] \
@@ -241,7 +241,9 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
 
         # Specify this integration job's parameters
         global_size = [n_chunk_seeds,1]
-        local_size = None
+        vprint(verbose,
+               'Seed point buffer size = {}*8 bytes'.format(seed_point_buffer.size/8))
+        local_size = [info_struct['n_work_items'],1]
         info_struct['downup_sign'] = downup_sign
         info_struct['seeds_chunk_offset'] = seeds_chunk_offset
         
@@ -266,7 +268,8 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
         
         # Trace the streamlines on the GPU
         event = cl.enqueue_nd_range_kernel(queue, kernel, global_size, local_size)
-        event.wait()
+#         event.wait()
+        queue.finish()
         
         # Calculate the time it took to execute the kernel
         elapsed = 1e-9*(event.profile.end - event.profile.start)  
@@ -276,10 +279,14 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
         
         # Copy GPU-computed results back to CPU
         cl.enqueue_copy(queue, chunk_trajcs_array, chunk_trajcs_buffer)
+        queue.finish()   
         cl.enqueue_copy(queue, chunk_nsteps_array, chunk_nsteps_buffer)
+        queue.finish()   
         cl.enqueue_copy(queue, chunk_length_array, chunk_length_buffer)
+        queue.finish()   
         # Copy back the streamline length, distance density grid
         cl.enqueue_copy(queue, slc_array, slc_buffer)
+        queue.finish()   
         cl.enqueue_copy(queue, slt_array, slt_buffer)
         queue.finish()   
                 
@@ -308,10 +315,10 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
         slc_array.fill(0)
         slt_array.fill(0.0)
         cl.enqueue_copy(queue, slc_buffer,slc_array)
+        queue.finish()   
         cl.enqueue_copy(queue, slt_buffer,slt_array)
+        queue.finish()   
 
-    # Make absolutely sure we have all the data back from the GPU
-    queue.finish()   
     # Compute average streamline lengths (sla) from total lengths (slt) and counts (slc)
     # Shorthand
     (slc,sla,slt) = (rtn_slc_array,rtn_sla_array,rtn_slt_array)
@@ -328,7 +335,8 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
     vprint(verbose,'Streamlines actual array allocation:  size={}'.format(state.neatly(
         np.sum(traj_nsteps_array[:,:])*np.dtype(chunk_trajcs_array.dtype).itemsize)))
    
-    return (streamline_arrays_list, traj_nsteps_array, traj_length_array,
+    n = info_struct['n_seed_points'][0]
+    return (streamline_arrays_list[0:n], traj_nsteps_array[0:n], traj_length_array[0:n], 
             slc, slt, sla)
 
 def prepare_memory(context, queue, order, chunk_size, max_traj_length, 
@@ -363,17 +371,17 @@ def prepare_memory(context, queue, order, chunk_size, max_traj_length,
     # Buffer for mask, (u,v) velocity array and more
     roi_nxy = mask_array.shape
     if order=='F':
-        n_seed_points = seed_point_array.shape[1]
+        n_padded_seed_points = seed_point_array.shape[1]
         uv_array = np.stack((u_array,v_array)).copy().astype(dtype=np.float32,
                                                              order=order)
     else:
-        n_seed_points = seed_point_array.shape[0]
+        n_padded_seed_points = seed_point_array.shape[0]
         uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32,
                                                                     order=order)
     slc_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32, order=order)
     slt_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32, order=order)
-    traj_nsteps_array  = np.zeros([n_seed_points,2], dtype=np.uint16)
-    traj_length_array  = np.zeros([n_seed_points,2], dtype=np.float32)
+    traj_nsteps_array  = np.zeros([n_padded_seed_points,2], dtype=np.uint16)
+    traj_length_array  = np.zeros([n_padded_seed_points,2], dtype=np.float32)
 
     # Chunk-sized temporary arrays
     # Use "bag o' bytes" buffer for huge trajectories array. Write (by GPU) only.
@@ -398,10 +406,10 @@ def prepare_memory(context, queue, order, chunk_size, max_traj_length,
            'uv =', uv_array.shape, '\n',
            'slx-type = ',slc_array.shape)
     vprint(verbose,'Streamlines virtual array allocation:  ',
-                 '   dims={0}'.format((n_seed_points,
-                                       chunk_trajcs_array.shape[1],2)), 
+                 '   dims={0}'.format(
+                     (n_padded_seed_points, chunk_trajcs_array.shape[1],2)), 
                  '  size={}'.format(state.neatly(
-                     n_seed_points*chunk_trajcs_array.shape[1]*2
+                     n_padded_seed_points*chunk_trajcs_array.shape[1]*2
                         *np.dtype(chunk_trajcs_array.dtype).itemsize)))
     vprint(verbose,'Streamlines array allocation per chunk:',
                      '   dims={0}'.format(chunk_trajcs_array.shape), 

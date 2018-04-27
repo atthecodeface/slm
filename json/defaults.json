@@ -6,6 +6,7 @@
 		"cl_platform" : 0,
 		"cl_device" : 2,
 		"gpu_memory_limit_pc" : 90,
+		"n_work_items" : 64,
 		"array_order" : "C",
 		
 		"do_geodata" : true,	

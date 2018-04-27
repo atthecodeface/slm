@@ -28,7 +28,9 @@
 		"no_data_values" : [-99999,0],
 		"roi_x_bounds" : [],
 		"roi_y_bounds" : [],
-		"FULLroi_x_bounds" : [0,921],
+		"TSTroi_x_bounds" : [400,450],
+		"TSTroi_y_bounds" : [300,350],
+		"FULLroi_x_bounds" : [0,920],
 		"FULLroi_y_bounds" : [0,859]
 	},
 	
@@ -39,6 +41,7 @@
 	},
 
 	"analysis": {
+		"joint_distbn_kde_bandwidth" : 0.25,
 		"pdf_sla_min": 1,
 		"Xpdf_sla_max": 300,
 		"pdf_slc_min": 1,

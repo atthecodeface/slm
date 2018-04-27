@@ -86,7 +86,7 @@ static inline void compute_step_vec_jittered(const float dt,
                                              const __global float2 *uv_array,
                                              uint *rng_state,
                                              float2 *dxy1_vec, float2 *dxy2_vec,
-                                             float2 *uv1_vec, float2 *uv2_vec,
+                                             float2 *uv1_vec,  float2 *uv2_vec,
                                              const float2 vec, float2 *next_vec,
                                              uint *idx) {
     // Calculate RK2 next pt vector and approx into a fixed-point-res vector.

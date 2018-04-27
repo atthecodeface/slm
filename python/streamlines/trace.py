@@ -104,7 +104,7 @@ class Trace(Core):
             self.seed_point_array (numpy.ndarray):
         
         """    
-        self.print('Generating seed points')
+        self.print('Generating seed points...', end='',flush=True)
         mask = self.geodata.basin_mask_array
         pad = self.geodata.pad_width
         if self.state.array_order=='F':
@@ -115,7 +115,18 @@ class Trace(Core):
             self.seed_point_array \
                 = ((np.argwhere(~mask).astype(np.float32) - pad)
                    ).copy(order='C')
-        self.print('...done',flush=True)
+        self.n_seed_points = self.seed_point_array.shape[0]
+        pad_length = (np.uint32(np.round(
+            self.n_seed_points/self.state.n_work_items+0.5))*self.state.n_work_items
+                      -self.n_seed_points)
+        padding_array = -np.ones([pad_length,2],
+                                 order=self.state.array_order,dtype=np.float32)
+        self.seed_point_array = np.concatenate((self.seed_point_array,padding_array))
+        self.print('padding for {0} CL work items/group: {1}->{2}...'
+                   .format(self.state.n_work_items,
+                           self.n_seed_points, self.seed_point_array.shape[0]),
+                                        end='',flush=True)
+        self.print('done',flush=True)
 
     def build_info_struct(self):
         """
@@ -137,8 +148,10 @@ class Trace(Core):
 
         info_dtype = np.dtype([
                 ('array_order', 'U1'),
+                ('n_seed_points', np.uint32),
                 ('downup_sign', np.float32),
                 ('gpu_memory_limit_pc', np.uint32),
+                ('n_work_items', np.uint32),
                 ('integrator_step_factor', np.float32),
                 ('max_integration_step_error', np.float32),
                 ('adjusted_max_error', np.float32),
@@ -190,12 +203,15 @@ class Trace(Core):
         nyf = np.float32(self.geodata.roi_ny)
         dt_max = min(min(1.0/nxf,1.0/nyf),0.1)
         subpixel_seed_span = 1.0-1.0/np.float32(self.subpixel_seed_point_density)
-        subpixel_seed_step = subpixel_seed_span/(np.float32(self.subpixel_seed_point_density)-1.0 
+        subpixel_seed_step \
+            = subpixel_seed_span/(np.float32(self.subpixel_seed_point_density)-1.0 
                                if self.subpixel_seed_point_density>1 else 1.0)
         return np.array([(
             np.string_(self.state.array_order),
+            np.uint32(self.n_seed_points),
             np.float32(np.nan),
-            np.int32(self.state.gpu_memory_limit_pc),
+            np.uint32(self.state.gpu_memory_limit_pc),
+            np.uint32(self.state.n_work_items),
             np.float32(self.integrator_step_factor),
             np.float32(self.max_integration_step_error),
             np.float32(0.85*np.sqrt((self.max_integration_step_error))),

@@ -118,30 +118,31 @@ static inline void trajectory_jittered( __global const float2 *uv_array,
     __private float l_trajectory=0.0f, dl=0.0f, dt=DT_MAX;
     __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
                      vec=current_seed_point_vec, prev_vec, next_vec;
-    // Start by recording the seed point
     prev_vec = vec;
+    // Start by recording the seed point
     idx = get_array_idx(vec);
-    if (mask_array[idx]) return;
-    atomic_write_sl_data(&slt_array[idx], &slc_array[idx], l_trajectory);
+    if (!mask_array[idx])
+        atomic_write_sl_data(&slt_array[idx], &slc_array[idx], l_trajectory);
     // Loop downstream until the pixel is masked, i.e., we've exited the basin or grid,
     //   or if the streamline is too long (in l_trajectory or n_steps)
-    while (!mask_array[idx] && (l_trajectory<MAX_LENGTH && n_steps<(MAX_N_STEPS-1))) {
+    while (idx<(NX_PADDED*NY_PADDED) && !mask_array[idx]
+                        && (l_trajectory<MAX_LENGTH && n_steps<(MAX_N_STEPS-1))) {
         compute_step_vec_jittered(dt, uv_array, &rng_state, &dxy1_vec, &dxy2_vec,
                                   &uv1_vec, &uv2_vec, vec, &next_vec, &idx);
-        if (!mask_array[idx]) {
-            if (runge_kutta_step_write_sl_data(&dt, &dl, &l_trajectory,
-                                               &dxy1_vec, &dxy2_vec,
-                                               &vec, &prev_vec, next_vec,
-                                               &n_steps, &idx, &prev_idx,
-                                               mask_array, slt_array, slc_array))
+        if (idx<(NX_PADDED*NY_PADDED)) {
+            if (!mask_array[idx])
+                if (runge_kutta_step_write_sl_data(&dt, &dl, &l_trajectory,
+                                                   &dxy1_vec, &dxy2_vec,
+                                                   &vec, &prev_vec, next_vec,
+                                                   &n_steps, &idx, &prev_idx,
+                                                   mask_array, slt_array, slc_array))
+                                          break;
+            } else {
+                euler_step_write_sl_data(&dt, &dl, &l_trajectory, uv1_vec,
+                                         &vec, prev_vec, &n_steps, &idx, &prev_idx,
+                                         mask_array, slt_array, slc_array);
                 break;
-        } else {
-            euler_step_write_sl_data(&dt, &dl, &l_trajectory, uv1_vec,
-                                     &vec, prev_vec, &n_steps, &idx, &prev_idx,
-                                     mask_array, slt_array, slc_array);
-            break;
-        }
-
+            }
     }
     return;
 }

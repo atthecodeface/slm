@@ -27,8 +27,8 @@
 ///
 static float2 speed_interpolator(float2 vec, __global const float2 *uv_array)
 {
-    const uint x_lft = (uint)(max(0.0f, vec[0]+PAD_WIDTH_PP5));
-    const uint y_dwn = (uint)(max(0.0f, vec[1]+PAD_WIDTH_PP5));
+    const uint x_lft = min( NX_PADDED-1, (uint)(max(0.0f, vec[0]+PAD_WIDTH_PP5)));
+    const uint y_dwn = min( NY_PADDED-1, (uint)(max(0.0f, vec[1]+PAD_WIDTH_PP5)));
     const uint x_rgt = min( NX_PADDED-1, x_lft+1u );
     const uint y_upp = min( NY_PADDED-1, y_dwn+1u );
 
