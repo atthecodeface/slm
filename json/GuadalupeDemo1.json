@@ -40,7 +40,7 @@
 	},
 
 	"analysis": {
-		"joint_distbn_kde_bandwidth" : 0.5,
+		"joint_distbn_kde_bandwidth" : 1.0,
 		"pdf_sla_min": 1,
 		"Xpdf_sla_max": 1000,
 		"pdf_slc_min": 1,

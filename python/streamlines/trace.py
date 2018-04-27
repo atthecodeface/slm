@@ -119,13 +119,16 @@ class Trace(Core):
         pad_length = (np.uint32(np.round(
             self.n_seed_points/self.state.n_work_items+0.5))*self.state.n_work_items
                       -self.n_seed_points)
-        padding_array = -np.ones([pad_length,2],
-                                 order=self.state.array_order,dtype=np.float32)
-        self.seed_point_array = np.concatenate((self.seed_point_array,padding_array))
-        self.print('padding for {0} CL work items/group: {1}->{2}...'
-                   .format(self.state.n_work_items,
-                           self.n_seed_points, self.seed_point_array.shape[0]),
-                                        end='',flush=True)
+        if pad_length>0:
+            padding_array = -np.ones([pad_length,2],
+                                     order=self.state.array_order,dtype=np.float32)
+            self.seed_point_array = np.concatenate((self.seed_point_array,padding_array))
+            self.print('padding for {0} CL work items/group: {1}->{2}...'
+                       .format(self.state.n_work_items,
+                               self.n_seed_points, self.seed_point_array.shape[0]),
+                                            end='',flush=True)
+        else:
+            self.print('no padding needed...', end='',flush=True)
         self.print('done',flush=True)
 
     def build_info_struct(self):

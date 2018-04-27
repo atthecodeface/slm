@@ -58,16 +58,17 @@ def set_speed_field(u_array,v_array):
     """
     Convert 'flow velocity' field into equivalent 'flow speed' field.
     """
-    return np.hypot(u_array,v_array)
+    speed_array = np.hypot(u_array,v_array)
+    speed_array[(~np.isfinite(speed_array)) | (speed_array==0.0)]=1.0
+    return speed_array
+
 
 # @njit(cache=False)
 def normalize_velocity_field(u_array,v_array,speed_array):
     """
     Normalize 'flow velocity' field into unit vector field.
     """
-    u_array[speed_array>0.0] /= speed_array[speed_array>0.0]
-    v_array[speed_array>0.0] /= speed_array[speed_array>0.0]
-    return u_array, v_array
+    return u_array/speed_array, v_array/speed_array
 
 # @njit(cache=False)
 def unnormalize_velocity_field(u_array,v_array,speed_array):
