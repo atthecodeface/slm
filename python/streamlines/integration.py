@@ -153,8 +153,21 @@ def choose_chunks(seed_point_array, info_dict, n_chunks_required,
     n_global = seed_point_array.shape[0]
     n_chunks = n_chunks_required    
     chunk_size = int(np.round(n_global/n_chunks))
+    pdebug('chunk_size',chunk_size)
+    n_work_items = info_dict['n_work_items']
+    pad_length = np.uint32(np.round(chunk_size/n_work_items+0.5))*n_work_items-chunk_size
+    if pad_length>0:
+        padding_array = -np.ones([pad_length,2], dtype=np.float32)
+        vprint(verbose,'Chunk size adjustment for {0} CL work items/group: {1}->{2}...'
+             .format(n_work_items, chunk_size, chunk_size+pad_length))
+    chunk_size += pad_length
     chunk_list = [[chunk_idx,chunk,min(n_global,chunk+chunk_size)-chunk] 
                    for chunk_idx,chunk in enumerate(range(0,n_global,chunk_size))]
+
+    n_global += pad_length*n_chunks
+    chunk_size = int(np.round(n_global/n_chunks))
+    pdebug('chunk_size',chunk_size)
+
     trace_do_list = [[do_trace_downstream, 'Downstream:', 0, np.float32(+1.0)]] \
                   + [[do_trace_upstream,   'Upstream:  ', 1, np.float32(-1.0)]]
     trace_do_chunks = [td+chunk for td in trace_do_list for chunk in chunk_list]
