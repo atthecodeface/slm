@@ -199,6 +199,21 @@ struct
     let json = Json.from_file (Globals.filename_from_path path leaf) in
     t.jsons <- t.jsons @ [json]
 
+  (** [read_string t str] 
+    
+    Add new JSON from a tring, whose contents
+    override those of earlier JSON files supplied. Any property not
+    specified by the new JSON text, though, is fetched from the
+    previous files.
+
+  *)
+  let read_string t str =
+    Printf.printf "json %s\n" str;
+    if str<>"" then (
+      let json = Json.from_string str in
+      t.jsons <- t.jsons @ [json]
+    )
+
   (** [iter_jsons t f]
 
     Iterate over all the JSONs, applying f to each, with later
@@ -557,33 +572,6 @@ end
 (**  Geodata exception *)
 exception Geodata of string
 
-(**  t_cmdline_overrides
-
-  Structure containing command line settings, which can override the
-  properties from the JSON files.
-
-  If the options are 'None' then there is no override; else it is
-  'Some <value>', and the value should override that from the JSON
-  properties.
-
-  This structure is filled out in streamlines.ml, and used in read_state
-
- *)
-type t_cmdline_overrides = {
-    verbosity : t_verbosity;
-    do_reload_state :    bool option;
-    do_geodata :         bool option;
-    do_preprocess :      bool option;
-    do_condition :       bool option;
-    do_trace :           bool option;
-(*    do_postprocess :     bool option;*)
-    do_analysis :        bool option;
-    do_mapping :         bool option;
-    do_plot :            bool option;
-    do_save_state :      bool option;
-    do_export :          bool option;
-  }
-
 (**  t_props_state
 
   Properties for the 'toplevel', which is specified in the 'state'
@@ -600,6 +588,7 @@ type t_props_state = {
     cl_platform :        int;
     cl_device :          int;
     gpu_memory_limit_pc: float;
+    n_work_items :       int;
     array_order :        string;
     do_geodata :         bool;
     do_preprocess :      bool;
@@ -866,29 +855,30 @@ let verbosity_from_properties properties verbosity =
     Read the properties of 'state'
 
  *)
-let read_state properties (cmdline_overrides:t_cmdline_overrides) =
+let read_state properties =
   let properties =          Workflow.create properties "state" in
   let verbose =             Workflow.bool_of  properties ~default:true "verbose" in
   let debug =               Workflow.bool_of  properties ~default:true "debug" in
   let noisy =               Workflow.bool_of  properties ~default:true "noisy" in
-  let cl_platform =         Workflow.int_of  properties ~default:0 "cl_platform" in
-  let cl_device =           Workflow.int_of  properties ~default:0 "cl_device" in
-  let gpu_memory_limit_pc = Workflow.float_of  properties ~default:50. "gpu_memory_limit_pc" in
-  let array_order                  = Workflow.str_of      properties ~default:"C"  "array_order" in
+  let cl_platform =         Workflow.int_of   properties ~default:0 "cl_platform" in
+  let cl_device =           Workflow.int_of   properties ~default:0 "cl_device" in
+  let gpu_memory_limit_pc = Workflow.float_of properties ~default:50. "gpu_memory_limit_pc" in
+  let n_work_items =        Workflow.int_of   properties ~default:32 "n_work_items" in
+  let array_order         = "C" in
   let do_rw_savez =         Workflow.bool_of  properties ~default:true "do_rw_savez" in
   let do_rw_hdf5 =          Workflow.bool_of  properties ~default:true "do_rw_hdf5" in
 
-  let do_reload_state =     Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_reload_state  "do_reload_state" in
-  let do_geodata =          Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_geodata       "do_geodata" in
-  let do_preprocess =       Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_preprocess    "do_preprocess" in
-  let do_condition =        Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_condition     "do_condition" in
-  let do_trace =            Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_trace         "do_trace" in
-  let do_postprocess =      Workflow.bool_of  properties ~default:true (*?override:cmdline_overrides.do_postprocess*)   "do_postprocess" in
-  let do_analysis =         Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_analysis      "do_analysis" in
-  let do_mapping =          Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_mapping       "do_mapping" in
-  let do_plot =             Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_plot          "do_plot" in
-  let do_save_state =       Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_save_state    "do_save_state" in
-  let do_export =           Workflow.bool_of  properties ~default:true ?override:cmdline_overrides.do_export        "do_export" in
+  let do_reload_state =     Workflow.bool_of  properties ~default:true "do_reload_state" in
+  let do_geodata =          Workflow.bool_of  properties ~default:true "do_geodata" in
+  let do_preprocess =       Workflow.bool_of  properties ~default:true "do_preprocess" in
+  let do_condition =        Workflow.bool_of  properties ~default:true "do_condition" in
+  let do_trace =            Workflow.bool_of  properties ~default:true "do_trace" in
+  let do_postprocess =      Workflow.bool_of  properties ~default:true "do_postprocess" in
+  let do_analysis =         Workflow.bool_of  properties ~default:true "do_analysis" in
+  let do_mapping =          Workflow.bool_of  properties ~default:true "do_mapping" in
+  let do_plot =             Workflow.bool_of  properties ~default:true "do_plot" in
+  let do_save_state =       Workflow.bool_of  properties ~default:true "do_save_state" in
+  let do_export =           Workflow.bool_of  properties ~default:true "do_export" in
   let verbosity =           verbosity_from_properties properties PV_Info in
 
   let props = {
@@ -899,6 +889,7 @@ let read_state properties (cmdline_overrides:t_cmdline_overrides) =
       cl_platform;
       cl_device;
       gpu_memory_limit_pc;
+      n_work_items;
       array_order;
       do_geodata;
       do_preprocess;
@@ -960,6 +951,8 @@ let read_geodata verbosity properties =
   let no_data_values   = Workflow.float_list_of workflow "no_data_values" in
   let roi_x_bounds     = Array.of_list (Workflow.int_list_of ~default:[min_int;min_int] workflow "roi_x_bounds") in
   let roi_y_bounds     = Array.of_list (Workflow.int_list_of ~default:[min_int;min_int] workflow "roi_y_bounds") in
+  let roi_x_bounds = if (Array.length roi_x_bounds)=0 then [|min_int;min_int|] else roi_x_bounds in
+  let roi_y_bounds = if (Array.length roi_y_bounds)=0 then [|min_int;min_int|] else roi_y_bounds in
   let filename         = filename_from_path dtm_path dtm_file in
   let basins_file      = Workflow.str_of workflow ~default:"" "basins_file" in
   let basins           = Workflow.int_list_of workflow ~default:[] "basins" in
@@ -1322,16 +1315,16 @@ let read_plot verbosity properties =
     } in
   props
 
-(**  [read_properties file_path_list cmdline_overrides]
+(**  [read_properties file_path_list jsons]
 
-  Read properties from a list of JSON files, and incorporate overrides
-  from the command line
+  Read properties from a list of JSON files, and json strings
 
  *)
-let read_properties file_path_list cmdline_overrides =
+let read_properties file_path_list jsons =
   let props = Properties.create () in
   List.iter (fun (path,filename) -> Properties.read_json props path filename) file_path_list;
-  let (state, verbosity) = read_state props cmdline_overrides in
+  List.iter (fun json_str -> Properties.read_string props json_str) jsons;
+  let (state, verbosity) = read_state props in
   let pocl       = read_pocl       verbosity props in
   let geodata    = read_geodata    verbosity props in
   let preprocess = read_preprocess verbosity props in

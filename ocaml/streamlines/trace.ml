@@ -67,7 +67,7 @@ let pv_verbose t = Workflow.pv_verbose t.props.workflow
 
 (** {1 Seed functions} *)
 
-(**  create_seeds
+(**  [create_seeds t data]
 
   Generate an N by 2 matrix, of seed vectors for every unmasked ROI (x,y) (in unpadded coordinates)
 
@@ -130,6 +130,8 @@ let process t pocl data =
   Workflow.workflow_start t.props.workflow;
   let seeds = create_seeds t data in
   data.seeds <- seeds;
+  let (num_seeds,_) = ODM.shape seeds in
+  Info.set data.info "n_seed_points" (Info.Int num_seeds);
   let result = trace_streamlines t pocl data seeds in
   Workflow.workflow_end t.props.workflow;
   result

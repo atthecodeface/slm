@@ -174,7 +174,6 @@ let write_only      pocl = Pocl.buffer_of_array pocl false true
  *)
 let memory_create_buffers pocl data seeds chunk_size =
   let max_traj_length = Info.int_of data.info "max_n_steps" in
-  let (num_seeds,_) = ODM.shape seeds in
   let roi_nx = data.pad_width*2+data.roi_nx in
   let roi_ny = data.pad_width*2+data.roi_ny in
 
@@ -213,6 +212,7 @@ let memory_create_buffers pocl data seeds chunk_size =
     let (x,y) = ODM.shape chunk_slc_array in
     Printf.printf "chunk slc-type = %d,%d\n" x y;
     let (x,y) = ODM.shape chunk_trajcs_array in
+    let (num_seeds,_) = ODM.shape seeds in
     Printf.printf "Streamlines virtual array allocation: %d,%d size %d\n" num_seeds y (num_seeds*y*max_traj_length*2);
     Printf.printf "Streamlines array allocation per chunk: %d,%d size %d\n%!" x y (ODM.size_in_bytes chunk_trajcs_array)
   in
@@ -307,8 +307,9 @@ let gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_sour
     pv_verbose data.properties.trace (fun _ -> show_chunk t);
 
     (* Specify this integration job's parameters and compile *)
-    let global_size = [t.num_seeds; 1] in
     let info = data.info in
+    let global_size     = [t.num_seeds; 1] in
+    let local_work_size = [Info.int_of info "n_work_items"; 1] in
     Info.set info "downup_sign" (Info.Float32 t.downup_sign);
     Info.set info "seeds_chunk_offset" (Info.Int t.seed_offset);
     let compile_options = Pocl.compile_options pocl data info "INTEGRATE_TRAJECTORY" in
@@ -327,7 +328,9 @@ let gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_sour
     Pocl.kernel_set_arg_buffer pocl kernel 6 memory.chunk_slc_buffer;
     Pocl.kernel_set_arg_buffer pocl kernel 7 memory.chunk_slt_buffer;
 
-    let event = Pocl.enqueue_kernel pocl kernel global_size in
+    let int_list_str l = (List.fold_left (fun acc d -> acc ^ (sfmt "%d; " d)) "[" l) ^ "]" in
+    pv_debug data.properties.trace (fun _ -> Printf.printf "Work sizes global %s local %s\n%!" (int_list_str global_size) (int_list_str local_work_size));
+    let event = Pocl.enqueue_kernel pocl kernel ~local_work_size global_size in
     Pocl.event_wait pocl event;
     let elapsed = Owl_enhance.event__get_duration event in
     let elapsed = (Int64.to_float elapsed) *. 1E-9 in
