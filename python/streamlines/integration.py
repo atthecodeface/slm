@@ -27,7 +27,7 @@ import warnings
 pdebug = print
 
 def integrate_trajectories( 
-        cl_src_path, which_cl_platform, which_cl_device, info_struct, 
+        cl_src_path, which_cl_platform, which_cl_device, info_dict, 
         seed_point_array, mask_array, u_array, v_array,  
         do_trace_downstream, do_trace_upstream, verbose
      ):
@@ -41,7 +41,7 @@ def integrate_trajectories(
     object variables. 
     
     Workflow parameters are transferred here bundled in the Numpy structure array 
-    info_struct, which is parsed as well as passed on to gpu_integrate_trajectories.
+    info_dict, which is parsed as well as passed on to gpu_integrate_trajectories.
     
     The tasks undertaken by this function are to:
        1) prepare the OpenCL context, device and kernel source string
@@ -54,7 +54,7 @@ def integrate_trajectories(
         cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
-        info_struct (numpy.ndarray):
+        info_dict (numpy.ndarray):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
@@ -70,6 +70,7 @@ def integrate_trajectories(
         slc_array, slt_array, sla_array
     """
     vprint(verbose,'Integrating streamlines'+'...')
+    pdebug(info_dict)
 
     # Prepare CL essentials
     platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
@@ -82,7 +83,7 @@ def integrate_trajectories(
     for cl_file in cl_files:
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
-    order = info_struct['array_order'][0]
+    order = info_dict['array_order']
     if order=='F':
         n_padded_seed_points = seed_point_array.shape[1]
     else:
@@ -90,9 +91,9 @@ def integrate_trajectories(
 
     # Chunkification
     gpu_traj_memory_limit = (device.get_info(cl.device_info.GLOBAL_MEM_SIZE) 
-                             *info_struct['gpu_memory_limit_pc'][0])//100
+                             *info_dict['gpu_memory_limit_pc'])//100
     full_traj_memory_request = (n_padded_seed_points*np.dtype(np.uint8).itemsize
-                                *info_struct['max_n_steps'][0]*2)
+                                *info_dict['max_n_steps']*2)
     n_chunks_required = max(1,int(np.ceil(
                         full_traj_memory_request/gpu_traj_memory_limit)) )
     
@@ -106,19 +107,19 @@ def integrate_trajectories(
     vprint(verbose,' => {}'.format('no need to chunkify' if n_chunks_required==1
                     else 'need to split into {} chunks'.format(n_chunks_required) ))
     trace_do_chunks,chunk_size \
-        = choose_chunks(seed_point_array,info_struct,n_chunks_required,
+        = choose_chunks(seed_point_array,info_dict,n_chunks_required,
                         do_trace_downstream,do_trace_upstream,verbose)
-    vprint(verbose,'Compile options:\n',pocl.set_compile_options(info_struct,
+    vprint(verbose,'Compile options:\n',pocl.set_compile_options(info_dict,
                                                                  'INTEGRATE_TRAJECTORY'))
     # Do integrations on the GPU
     (streamline_arrays_list, traj_nsteps_array, traj_length_array,
         rtn_slc_array, rtn_slt_array, rtn_sla_array) \
         = gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
-                                     info_struct, trace_do_chunks, chunk_size, 
+                                     info_dict, trace_do_chunks, chunk_size, 
                                      seed_point_array, mask_array, u_array, v_array,  
                                      verbose)
     # Streamline stats
-    pixel_size = info_struct['pixel_size'][0]
+    pixel_size = info_dict['pixel_size']
     traj_stats_df = compute_stats(traj_length_array,traj_nsteps_array,pixel_size,verbose)
     dds =  traj_stats_df['ds']['downstream','mean']
     uds =  traj_stats_df['ds']['upstream','mean']
@@ -135,7 +136,7 @@ def integrate_trajectories(
     return (streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df,
             rtn_slc_array, rtn_slt_array, rtn_sla_array)
 
-def choose_chunks(seed_point_array, info_struct, n_chunks_required,
+def choose_chunks(seed_point_array, info_dict, n_chunks_required,
                   do_trace_downstream, do_trace_upstream, verbose):
     """
     Compute lists of parameters needed to carry out GPU/OpenCL device computations
@@ -143,7 +144,7 @@ def choose_chunks(seed_point_array, info_struct, n_chunks_required,
     
     Args:
         seed_point_array (numpy.ndarray):
-        info_struct (numpy.ndarray):
+        info_dict (numpy.ndarray):
         n_chunks_required (int):
         do_trace_downstream (bool):  
         do_trace_upstream (bool):  
@@ -153,7 +154,7 @@ def choose_chunks(seed_point_array, info_struct, n_chunks_required,
         list, int,
             trace_do_chunks, chunk_size
     """
-    order = info_struct['array_order'][0]
+    order = info_dict['array_order']
     if order=='F':
         n_global = seed_point_array.shape[1]
     else:
@@ -174,7 +175,7 @@ def choose_chunks(seed_point_array, info_struct, n_chunks_required,
     return trace_do_chunks, chunk_size
 
 def gpu_integrate_trajectories(device, context, queue, cl_kernel_source, 
-                               info_struct, trace_do_chunks, chunk_size, 
+                               info_dict, trace_do_chunks, chunk_size, 
                                seed_point_array, mask_array, u_array, v_array, verbose):
     """
     Carry out GPU/OpenCL device computations in chunks.
@@ -199,7 +200,7 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
         context (pyopencl.Context):
         queue (pyopencl.CommandQueue):
         cl_kernel_source (str):
-        info_struct (numpy.ndarray):
+        info_dict (numpy.ndarray):
         trace_do_chunks (list):
         chunk_size (int):
         seed_point_array (numpy.ndarray):
@@ -216,14 +217,14 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
         
     # Prepare memory, buffers 
     streamline_arrays_list = [[],[]]
-    order = info_struct['array_order'][0]
+    order = info_dict['array_order']
     (traj_nsteps_array, traj_length_array, 
      chunk_trajcs_array, chunk_nsteps_array, chunk_length_array, 
      slc_array, slt_array, 
      seed_point_buffer, uv_buffer, mask_buffer, 
      chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer, 
      slc_buffer, slt_buffer) \
-        = prepare_memory(context, queue, order, chunk_size, info_struct['max_n_steps'][0],
+        = prepare_memory(context, queue, order, chunk_size, info_dict['max_n_steps'],
                         seed_point_array, mask_array, u_array, v_array,  verbose)
     roi_nxy = slc_array.shape
     rtn_slc_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.uint32, order=order)
@@ -243,14 +244,14 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
         global_size = [n_chunk_seeds,1]
         vprint(verbose,
                'Seed point buffer size = {}*8 bytes'.format(seed_point_buffer.size/8))
-        local_size = [info_struct['n_work_items'],1]
-        info_struct['downup_sign'] = downup_sign
-        info_struct['seeds_chunk_offset'] = seeds_chunk_offset
+        local_size = [info_dict['n_work_items'],1]
+        info_dict['downup_sign'] = downup_sign
+        info_dict['seeds_chunk_offset'] = seeds_chunk_offset
         
         ##################################
         
         # Compile the CL code
-        compile_options = pocl.set_compile_options(info_struct, 'INTEGRATE_TRAJECTORY', 
+        compile_options = pocl.set_compile_options(info_dict, 'INTEGRATE_TRAJECTORY', 
                                                    downup_sign=downup_sign)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -327,7 +328,7 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
     # sla: sum of line lengths / count of lines
     sla[slc==0] = 0.0
     sla[slc>0]  = slt[slc>0]/slc[slc>0]
-    slt[slc>0]  = slt[slc>0]/info_struct['subpixel_seed_point_density']**2
+    slt[slc>0]  = slt[slc>0]/info_dict['subpixel_seed_point_density']**2
     
     vprint(verbose,'Building streamlines compressed array')
     for downup_idx in [0,1]:
@@ -335,7 +336,7 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
     vprint(verbose,'Streamlines actual array allocation:  size={}'.format(state.neatly(
         np.sum(traj_nsteps_array[:,:])*np.dtype(chunk_trajcs_array.dtype).itemsize)))
    
-    n = info_struct['n_seed_points'][0]
+    n = info_dict['n_seed_points']
     return (streamline_arrays_list[0:n], traj_nsteps_array[0:n], traj_length_array[0:n], 
             slc, slt, sla)
 

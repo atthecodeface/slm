@@ -20,7 +20,7 @@ __all__ = ['connect_channel_pixels','map_channel_heads',
 pdebug = print
 
 def connect_channel_pixels( 
-        cl_src_path, which_cl_platform, which_cl_device, info_struct, 
+        cl_src_path, which_cl_platform, which_cl_device, info_dict, 
         mask_array, u_array, v_array, mapping_array, verbose ):
     """
     Connect missing links between channel pixels.
@@ -29,7 +29,7 @@ def connect_channel_pixels(
         cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
-        info_struct (numpy.ndarray):
+        info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
         v_array (numpy.ndarray):
@@ -48,9 +48,9 @@ def connect_channel_pixels(
             cl_kernel_source += fp.read()
             
     # Generate a list (array) of seed points from the set of channel pixels
-    pad = info_struct['pad_width'][0]
-    is_channel = info_struct['is_channel'][0]
-    order = info_struct['array_order'][0]
+    pad = info_dict['pad_width']
+    is_channel = info_dict['is_channel']
+    order = info_dict['array_order']
     
     # Trace downstream from all channel pixels
     seed_point_array \
@@ -61,14 +61,14 @@ def connect_channel_pixels(
         return
     # Do integrations on the GPU
     cl_kernel_fn = 'connect_channels'
-    gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_struct, 
+    gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict, 
                  seed_point_array, mask_array, u_array,v_array, mapping_array, verbose)
     
     # Done
     vprint(verbose,'done')  
 
 def map_channel_heads( 
-        cl_src_path, which_cl_platform, which_cl_device, info_struct, 
+        cl_src_path, which_cl_platform, which_cl_device, info_dict, 
         mask_array, u_array, v_array, mapping_array, verbose ):
     """
     Find channel head pixels.
@@ -77,7 +77,7 @@ def map_channel_heads(
         cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
-        info_struct (numpy.ndarray):
+        info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
         v_array (numpy.ndarray):
@@ -96,13 +96,13 @@ def map_channel_heads(
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
 
-    pad = info_struct['pad_width'][0]
+    pad = info_dict['pad_width']
     # Pre-designate every channel pixel as a channel head
     #   - and expect to eliminate all non-heads during the GPU compute
-    is_channel     = info_struct['is_channel'][0]
-    is_thinchannel = info_struct['is_thinchannel'][0]
-    is_channelhead = info_struct['is_channelhead'][0]
-    order = info_struct['array_order'][0]
+    is_channel     = info_dict['is_channel']
+    is_thinchannel = info_dict['is_thinchannel']
+    is_channelhead = info_dict['is_channelhead']
+    order = info_dict['array_order']
     mapping_array[(mapping_array&is_thinchannel)==is_thinchannel] |= is_channelhead
         
     # Trace downstream from all non-masked pixels
@@ -110,7 +110,7 @@ def map_channel_heads(
         = pick_seeds(mask=mask_array, flag=is_channel, order=order, pad=pad)
     # Do integrations on the GPU
     cl_kernel_fn = 'map_channel_heads'
-    gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_struct, 
+    gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
                  seed_point_array, mask_array, u_array,v_array, mapping_array, verbose)
     
     # Trace downstream from all provisional channel head pixels
@@ -119,14 +119,14 @@ def map_channel_heads(
                      order=order, pad=pad)
     # Do integrations on the GPU
     cl_kernel_fn = 'prune_channel_heads'
-    gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_struct, 
+    gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
                  seed_point_array, mask_array, u_array,v_array, mapping_array, verbose)
     
     # Done
     vprint(verbose,'done')  
     
 
-def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_struct, 
+def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict, 
                 seed_point_array, mask_array, u_array,v_array, mapping_array, verbose):
     """
     Carry out GPU computation.
@@ -137,7 +137,7 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_struct
         queue (pyopencl.CommandQueue):
         cl_kernel_source (str):
         cl_kernel_fn (str):
-        info_struct (numpy.ndarray):
+        info_dict (numpy.ndarray):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
@@ -148,7 +148,7 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_struct
     """
         
     # Prepare memory, buffers 
-    order = info_struct['array_order'][0]
+    order = info_dict['array_order']
     (seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer) \
         = prepare_memory(context, queue, order, seed_point_array, mask_array, 
                          u_array,v_array, mapping_array, verbose)    
@@ -159,7 +159,7 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_struct
         global_size = [seed_point_array.shape[0],1]
     local_size = None
     # Compile the CL code
-    compile_options = pocl.set_compile_options(info_struct, cl_kernel_fn, downup_sign=1)
+    compile_options = pocl.set_compile_options(info_dict, cl_kernel_fn, downup_sign=1)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         program = cl.Program(context, cl_kernel_source).build(options=compile_options)

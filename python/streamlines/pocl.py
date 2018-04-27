@@ -118,13 +118,13 @@ def make_cl_dtype(device,name,dtype):
     processed_dtype, c_decl = cltools.match_dtype_to_c_struct(device, name, dtype)
     return processed_dtype, cltools.get_or_register_dtype(name, processed_dtype), c_decl
 
-def set_compile_options(info_struct, kernel_def, downup_sign=1,
+def set_compile_options(info_dict, kernel_def, downup_sign=1,
                         job_type='integration'):
     """
     Convert the info struct into a list of '-D' compiler macros.
     
     Args:
-        info_struct (numpy.ndarray): container for myriad parameters controlling
+        info_dict (numpy.ndarray): container for myriad parameters controlling
             trace() and mapping() workflow and corresponding GPU/OpenCL device operation
         kernel_def (str): name of the kernel in the program source string; 
             is used by #ifdef kernel-wrapper commands in the OpenCL codes
@@ -139,85 +139,85 @@ def set_compile_options(info_struct, kernel_def, downup_sign=1,
     if job_type=='kde':
         return [
             '-D','KERNEL_{}'.format(kernel_def.upper()),
-            '-D','{}_ORDER'.format(info_struct['array_order'][0]),
-            '-D','KDF_BANDWIDTH={}f'.format(info_struct['kdf_bandwidth'][0]),
-            '-D','KDF_IS_{}'.format(info_struct['kdf_kernel'][0].upper()),
-            '-D','N_DATA={}u'.format(info_struct['n_data'][0]),
-            '-D','N_HIST_BINS={}u'.format(info_struct['n_hist_bins'][0]),
-            '-D','N_PDF_POINTS={}u'.format(info_struct['n_pdf_points'][0]),
-            '-D','X_MIN={}f'.format(info_struct['x_min'][0]),
-            '-D','X_MAX={}f'.format(info_struct['x_max'][0]),
-            '-D','X_RANGE={}f'.format(info_struct['x_range'][0]),
-            '-D','BIN_DX={}f'.format(info_struct['bin_dx'][0]),
-            '-D','PDF_DX={}f'.format(info_struct['pdf_dx'][0]),
-            '-D','KDF_WIDTH_X={}f'.format(info_struct['kdf_width_x'][0]),
-            '-D','N_KDF_PART_POINTS_X={}u'.format(info_struct['n_kdf_part_points_x'][0]),
-            '-D','Y_MIN={}f'.format(info_struct['y_min'][0]),
-            '-D','Y_MAX={}f'.format(info_struct['y_max'][0]),
-            '-D','Y_RANGE={}f'.format(info_struct['y_range'][0]),
-            '-D','BIN_DY={}f'.format(info_struct['bin_dy'][0]),
-            '-D','PDF_DY={}f'.format(info_struct['pdf_dy'][0]),
-            '-D','KDF_WIDTH_Y={}f'.format(info_struct['kdf_width_y'][0]),
-            '-D','N_KDF_PART_POINTS_Y={}u'.format(info_struct['n_kdf_part_points_y'][0])
+            '-D','{}_ORDER'.format(info_dict['array_order']),
+            '-D','KDF_BANDWIDTH={}f'.format(info_dict['kdf_bandwidth']),
+            '-D','KDF_IS_{}'.format(info_dict['kdf_kernel'].upper()),
+            '-D','N_DATA={}u'.format(info_dict['n_data']),
+            '-D','N_HIST_BINS={}u'.format(info_dict['n_hist_bins']),
+            '-D','N_PDF_POINTS={}u'.format(info_dict['n_pdf_points']),
+            '-D','X_MIN={}f'.format(info_dict['x_min']),
+            '-D','X_MAX={}f'.format(info_dict['x_max']),
+            '-D','X_RANGE={}f'.format(info_dict['x_range']),
+            '-D','BIN_DX={}f'.format(info_dict['bin_dx']),
+            '-D','PDF_DX={}f'.format(info_dict['pdf_dx']),
+            '-D','KDF_WIDTH_X={}f'.format(info_dict['kdf_width_x']),
+            '-D','N_KDF_PART_POINTS_X={}u'.format(info_dict['n_kdf_part_points_x']),
+            '-D','Y_MIN={}f'.format(info_dict['y_min']),
+            '-D','Y_MAX={}f'.format(info_dict['y_max']),
+            '-D','Y_RANGE={}f'.format(info_dict['y_range']),
+            '-D','BIN_DY={}f'.format(info_dict['bin_dy']),
+            '-D','PDF_DY={}f'.format(info_dict['pdf_dy']),
+            '-D','KDF_WIDTH_Y={}f'.format(info_dict['kdf_width_y']),
+            '-D','N_KDF_PART_POINTS_Y={}u'.format(info_dict['n_kdf_part_points_y'])
         ]
     else:
         return [
         '-D','KERNEL_{}'.format(kernel_def.upper()),
-        '-D','N_SEED_POINTS={}u'.format(info_struct['n_seed_points'][0]),
-        '-D','{}_ORDER'.format(info_struct['array_order'][0]),
+        '-D','N_SEED_POINTS={}u'.format(info_dict['n_seed_points']),
+        '-D','{}_ORDER'.format(info_dict['array_order']),
         '-D','DOWNUP_SIGN={}'.format(downup_sign),
         '-D','INTEGRATOR_STEP_FACTOR={}f'.format( 
-                                            info_struct['integrator_step_factor'][0]),
+                                            info_dict['integrator_step_factor']),
         '-D','MAX_INTEGRATION_STEP_ERROR={}f'.format(
-                                info_struct['max_integration_step_error'][0]),
-        '-D','ADJUSTED_MAX_ERROR={}f'.format( info_struct['adjusted_max_error'][0]),
-        '-D','MAX_LENGTH={}f'.format(info_struct['max_length'][0]),
-        '-D','PIXEL_SIZE={}f'.format(info_struct['pixel_size'][0]),
+                                info_dict['max_integration_step_error']),
+        '-D','ADJUSTED_MAX_ERROR={}f'.format( info_dict['adjusted_max_error']),
+        '-D','MAX_LENGTH={}f'.format(info_dict['max_length']),
+        '-D','PIXEL_SIZE={}f'.format(info_dict['pixel_size']),
         '-D','INTEGRATION_HALT_THRESHOLD={}f'.format(
-                                info_struct['integration_halt_threshold'][0]),
-        '-D','PAD_WIDTH={}u'.format(info_struct['pad_width'][0]),
-        '-D','PAD_WIDTH_PP5={}f'.format(info_struct['pad_width_pp5'][0]),
-        '-D','NX={}u'.format(info_struct['nx'][0]),
-        '-D','NY={}u'.format(info_struct['ny'][0]),
-        '-D','NXF={}f'.format(info_struct['nxf'][0]),
-        '-D','NYF={}f'.format(info_struct['nyf'][0]),
-        '-D','NX_PADDED={}u'.format(info_struct['nx_padded'][0]),
-        '-D','NY_PADDED={}u'.format(info_struct['ny_padded'][0]),
-        '-D','X_MAX={}f'.format(info_struct['x_max'][0]),
-        '-D','Y_MAX={}f'.format(info_struct['y_max'][0]),
-        '-D','GRID_SCALE={}f'.format(info_struct['grid_scale'][0]),
-        '-D','COMBO_FACTOR={}f'.format(info_struct['combo_factor'][0]*downup_sign),
-        '-D','DT_MAX={}f'.format(info_struct['dt_max'][0]),
-        '-D','MAX_N_STEPS={}u'.format(info_struct['max_n_steps'][0]),
-        '-D','TRAJECTORY_RESOLUTION={}u'.format(info_struct['trajectory_resolution'][0]),
-        '-D','SEEDS_CHUNK_OFFSET={}u'.format(info_struct['seeds_chunk_offset'][0]),
+                                info_dict['integration_halt_threshold']),
+        '-D','PAD_WIDTH={}u'.format(info_dict['pad_width']),
+        '-D','PAD_WIDTH_PP5={}f'.format(info_dict['pad_width_pp5']),
+        '-D','NX={}u'.format(info_dict['nx']),
+        '-D','NY={}u'.format(info_dict['ny']),
+        '-D','NXF={}f'.format(info_dict['nxf']),
+        '-D','NYF={}f'.format(info_dict['nyf']),
+        '-D','NX_PADDED={}u'.format(info_dict['nx_padded']),
+        '-D','NY_PADDED={}u'.format(info_dict['ny_padded']),
+        '-D','X_MAX={}f'.format(info_dict['x_max']),
+        '-D','Y_MAX={}f'.format(info_dict['y_max']),
+        '-D','GRID_SCALE={}f'.format(info_dict['grid_scale']),
+        '-D','COMBO_FACTOR={}f'.format(info_dict['combo_factor']*downup_sign),
+        '-D','DT_MAX={}f'.format(info_dict['dt_max']),
+        '-D','MAX_N_STEPS={}u'.format(info_dict['max_n_steps']),
+        '-D','TRAJECTORY_RESOLUTION={}u'.format(info_dict['trajectory_resolution']),
+        '-D','SEEDS_CHUNK_OFFSET={}u'.format(info_dict['seeds_chunk_offset']),
         '-D','SUBPIXEL_SEED_POINT_DENSITY={}u'.format(
-                                        info_struct['subpixel_seed_point_density'][0]),
+                                        info_dict['subpixel_seed_point_density']),
         '-D','SUBPIXEL_SEED_HALFSPAN={}f'.format(
-                                        info_struct['subpixel_seed_halfspan'][0]),
-        '-D','SUBPIXEL_SEED_STEP={}f'.format(info_struct['subpixel_seed_step'][0]),
-        '-D','JITTER_MAGNITUDE={}f'.format(info_struct['jitter_magnitude'][0]),
+                                        info_dict['subpixel_seed_halfspan']),
+        '-D','SUBPIXEL_SEED_STEP={}f'.format(info_dict['subpixel_seed_step']),
+        '-D','JITTER_MAGNITUDE={}f'.format(info_dict['jitter_magnitude']),
         '-D','INTERCHANNEL_MAX_N_STEPS={}u'.format(
-                                             info_struct['interchannel_max_n_steps'][0]),
+                                             info_dict['interchannel_max_n_steps']),
         '-D','SEGMENTATION_THRESHOLD={}u'.format(
-                                            info_struct['segmentation_threshold'][0]),
-        '-D','LEFT_FLANK_ADDITION={}u'.format(info_struct['left_flank_addition'][0]),
-        '-D','IS_CHANNEL={}u'.format(info_struct['is_channel'][0]),
-        '-D','IS_THINCHANNEL={}u'.format(info_struct['is_thinchannel'][0]),
-        '-D','IS_INTERCHANNEL={}u'.format(info_struct['is_interchannel'][0]),
-        '-D','IS_CHANNELHEAD={}u'.format(info_struct['is_channelhead'][0]),
-        '-D','IS_CHANNELTAIL={}u'.format(info_struct['is_channeltail'][0]),
-        '-D','IS_MAJORCONFLUENCE={}u'.format(info_struct['is_majorconfluence'][0]),
-        '-D','IS_MINORCONFLUENCE={}u'.format(info_struct['is_minorconfluence'][0]),
-        '-D','IS_MAJORINFLOW={}u'.format(info_struct['is_majorinflow'][0]),
-        '-D','IS_MINORINFLOW={}u'.format(info_struct['is_minorinflow'][0]),
-        '-D','IS_LEFTFLANK={}u'.format(info_struct['is_leftflank'][0]),
-        '-D','IS_RIGHTFLANK={}u'.format(info_struct['is_rightflank'][0]),
-        '-D','IS_MIDSLOPE={}u'.format(info_struct['is_midslope'][0]),
-        '-D','IS_RIDGE={}u'.format(info_struct['is_ridge'][0]),
-        '-D','IS_STUCK={}u'.format(info_struct['is_stuck'][0]),
-        '-D','IS_LOOP={}u'.format(info_struct['is_loop'][0]),
-        '-D','IS_BLOCKAGE={}u'.format(info_struct['is_blockage'][0])
+                                            info_dict['segmentation_threshold']),
+        '-D','LEFT_FLANK_ADDITION={}u'.format(info_dict['left_flank_addition']),
+        '-D','IS_CHANNEL={}u'.format(info_dict['is_channel']),
+        '-D','IS_THINCHANNEL={}u'.format(info_dict['is_thinchannel']),
+        '-D','IS_INTERCHANNEL={}u'.format(info_dict['is_interchannel']),
+        '-D','IS_CHANNELHEAD={}u'.format(info_dict['is_channelhead']),
+        '-D','IS_CHANNELTAIL={}u'.format(info_dict['is_channeltail']),
+        '-D','IS_MAJORCONFLUENCE={}u'.format(info_dict['is_majorconfluence']),
+        '-D','IS_MINORCONFLUENCE={}u'.format(info_dict['is_minorconfluence']),
+        '-D','IS_MAJORINFLOW={}u'.format(info_dict['is_majorinflow']),
+        '-D','IS_MINORINFLOW={}u'.format(info_dict['is_minorinflow']),
+        '-D','IS_LEFTFLANK={}u'.format(info_dict['is_leftflank']),
+        '-D','IS_RIGHTFLANK={}u'.format(info_dict['is_rightflank']),
+        '-D','IS_MIDSLOPE={}u'.format(info_dict['is_midslope']),
+        '-D','IS_RIDGE={}u'.format(info_dict['is_ridge']),
+        '-D','IS_STUCK={}u'.format(info_dict['is_stuck']),
+        '-D','IS_LOOP={}u'.format(info_dict['is_loop']),
+        '-D','IS_BLOCKAGE={}u'.format(info_dict['is_blockage'])
         ]
 
 def report_kernel_info(device,kernel,verbose):

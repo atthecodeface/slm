@@ -19,7 +19,7 @@ __all__ = ['count_downchannels','flag_downchannels','link_hillslopes',
 
 pdebug = print
 
-def count_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_struct, 
+def count_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
                         mask_array, u_array, v_array, 
                         mapping_array, count_array, link_array, verbose ):
         
@@ -30,7 +30,7 @@ def count_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_st
         cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
-        info_struct (numpy.ndarray):
+        info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
         v_array (numpy.ndarray):
@@ -53,10 +53,10 @@ def count_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_st
             cl_kernel_source += fp.read()
             
     # Generate a list (array) of seed points from the set of channel heads
-    pad            = info_struct['pad_width'][0]
-    is_channelhead = info_struct['is_channelhead'][0]
-    is_thinchannel = info_struct['is_thinchannel'][0]
-    order          = info_struct['array_order'][0]
+    pad            = info_dict['pad_width']
+    is_channelhead = info_dict['is_channelhead']
+    is_thinchannel = info_dict['is_thinchannel']
+    order          = info_dict['array_order']
     mapping_array[(mapping_array&is_thinchannel)==is_thinchannel] \
         = mapping_array[(mapping_array&is_thinchannel)==is_thinchannel]^is_thinchannel
     seed_point_array \
@@ -64,14 +64,14 @@ def count_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_st
                      order=order, pad=pad)
     # Do integrations on the GPU
     cl_kernel_fn = 'count_downchannels'
-    gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_struct, 
+    gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
                  seed_point_array, mask_array, u_array,v_array, 
                  mapping_array, count_array, link_array, verbose)
     
     # Done
     vprint(verbose,'done')  
 
-def flag_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_struct, 
+def flag_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
                        mask_array, u_array, v_array, 
                        mapping_array, count_array, link_array, verbose ):
         
@@ -82,7 +82,7 @@ def flag_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_str
         cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
-        info_struct (numpy.ndarray):
+        info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
         v_array (numpy.ndarray):
@@ -105,10 +105,10 @@ def flag_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_str
             cl_kernel_source += fp.read()
             
     # Generate a list (array) of seed points from the set of channel heads
-    pad            = info_struct['pad_width'][0]
-    is_channelhead = info_struct['is_channelhead'][0]
-    is_thinchannel = info_struct['is_thinchannel'][0]
-    order          = info_struct['array_order'][0]
+    pad            = info_dict['pad_width']
+    is_channelhead = info_dict['is_channelhead']
+    is_thinchannel = info_dict['is_thinchannel']
+    order          = info_dict['array_order']
     mapping_array[(mapping_array&is_thinchannel)==is_thinchannel] \
         = mapping_array[(mapping_array&is_thinchannel)==is_thinchannel]^is_thinchannel
     count_array *= 0
@@ -117,14 +117,14 @@ def flag_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_str
                      order=order, pad=pad)                           
     # Do integrations on the GPU
     cl_kernel_fn = 'flag_downchannels'
-    gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_struct, 
+    gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
                  seed_point_array, mask_array, u_array,v_array, 
                  mapping_array, count_array, link_array, verbose)
     
     # Done
     vprint(verbose,'done')  
 
-def link_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_struct, 
+def link_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
                      mask_array, u_array, v_array, 
                      mapping_array, count_array, link_array, verbose ):
         
@@ -135,7 +135,7 @@ def link_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_struc
         cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
-        info_struct (numpy.ndarray):
+        info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
         v_array (numpy.ndarray):
@@ -158,22 +158,22 @@ def link_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_struc
             cl_kernel_source += fp.read()
             
     # Generate a list (array) of seed points from all non-thin-channel pixels
-    pad            = info_struct['pad_width'][0]
-    is_thinchannel = info_struct['is_thinchannel'][0]
-    order          = info_struct['array_order'][0]
+    pad            = info_dict['pad_width']
+    is_thinchannel = info_dict['is_thinchannel']
+    order          = info_dict['array_order']
     seed_point_array \
         = pick_seeds(mask=mask_array, map=~mapping_array, flag=is_thinchannel, 
                      order=order, pad=pad)                           
     # Do integrations on the GPU
     cl_kernel_fn = 'link_hillslopes'
-    gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_struct, 
+    gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
                  seed_point_array, mask_array, u_array,v_array, 
                  mapping_array, count_array, link_array, verbose)
     
     # Done
     vprint(verbose,'done')  
     
-def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_struct, 
+def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict, 
                      seed_point_array, mask_array, u_array,v_array, 
                      mapping_array, count_array, link_array, verbose):
     """
@@ -185,7 +185,7 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_struct
         queue (pyopencl.CommandQueue):
         cl_kernel_source (str):
         cl_kernel_fn (str):
-        info_struct (numpy.ndarray):
+        info_dict (numpy.ndarray):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
@@ -197,7 +197,7 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_struct
         
     """
     # Prepare memory, buffers 
-    order = info_struct['array_order'][0]
+    order = info_dict['array_order']
     (seed_point_buffer, uv_buffer, mask_buffer,
      mapping_buffer, count_buffer, link_buffer) \
         = prepare_memory(context, queue, order, seed_point_array, mask_array, 
@@ -209,7 +209,7 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_struct
         global_size = [seed_point_array.shape[0],1]
     local_size = None
     # Compile the CL code
-    compile_options = pocl.set_compile_options(info_struct, cl_kernel_fn, downup_sign=1)
+    compile_options = pocl.set_compile_options(info_dict, cl_kernel_fn, downup_sign=1)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         program = cl.Program(context, cl_kernel_source).build(options=compile_options)

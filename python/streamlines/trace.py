@@ -131,12 +131,12 @@ class Trace(Core):
             self.print('no padding needed...', end='',flush=True)
         self.print('done',flush=True)
 
-    def build_info_struct(self):
+    def build_info_dict(self):
         """
         TBD.
     
         Returns:
-            numpy.ndarray: info_struct
+            numpy.ndarray: info_dict
         """
 
         if self.max_length==np.float32(0.0):
@@ -148,59 +148,7 @@ class Trace(Core):
             interchannel_max_n_steps = max_n_steps
         else:
             interchannel_max_n_steps = self.interchannel_max_n_steps
-
-        info_dtype = np.dtype([
-                ('array_order', 'U1'),
-                ('n_seed_points', np.uint32),
-                ('downup_sign', np.float32),
-                ('gpu_memory_limit_pc', np.uint32),
-                ('n_work_items', np.uint32),
-                ('integrator_step_factor', np.float32),
-                ('max_integration_step_error', np.float32),
-                ('adjusted_max_error', np.float32),
-                ('max_length', np.float32),
-                ('pixel_size', np.float32),
-                ('integration_halt_threshold', np.float32),
-                ('pad_width', np.uint32),
-                ('pad_width_pp5', np.float32),
-                ('nx', np.uint32),
-                ('ny', np.uint32),
-                ('nxf', np.float32),
-                ('nyf', np.float32),
-                ('nx_padded', np.uint32),
-                ('ny_padded', np.uint32),
-                ('x_max', np.float32),
-                ('y_max', np.float32),
-                ('grid_scale', np.float32),
-                ('combo_factor', np.float32),
-                ('dt_max', np.float32),
-                ('max_n_steps', np.uint32),
-                ('trajectory_resolution', np.uint32),
-                ('seeds_chunk_offset', np.uint32),
-                ('subpixel_seed_point_density', np.uint32),
-                ('subpixel_seed_halfspan', np.float32),
-                ('subpixel_seed_step', np.float32),
-                ('jitter_magnitude', np.float32),
-                ('interchannel_max_n_steps', np.uint32),
-                ('segmentation_threshold', np.uint32),
-                ('left_flank_addition', np.uint32),
-                ('is_channel', np.uint32),
-                ('is_thinchannel', np.uint32),
-                ('is_interchannel', np.uint32),
-                ('is_channelhead', np.uint32),
-                ('is_channeltail', np.uint32),
-                ('is_majorconfluence', np.uint32),
-                ('is_minorconfluence', np.uint32),
-                ('is_majorinflow', np.uint32),
-                ('is_minorinflow', np.uint32),
-                ('is_leftflank', np.uint32),
-                ('is_rightflank', np.uint32),
-                ('is_midslope', np.uint32),
-                ('is_ridge', np.uint32),
-                ('is_stuck', np.uint32),
-                ('is_loop', np.uint32),
-                ('is_blockage', np.uint32)
-            ])          
+         
         grid_scale = np.sqrt(np.float32(self.geodata.roi_nx*self.geodata.roi_ny))
         nxf = np.float32(self.geodata.roi_nx)
         nyf = np.float32(self.geodata.roi_ny)
@@ -209,58 +157,60 @@ class Trace(Core):
         subpixel_seed_step \
             = subpixel_seed_span/(np.float32(self.subpixel_seed_point_density)-1.0 
                                if self.subpixel_seed_point_density>1 else 1.0)
-        return np.array([(
-            np.string_(self.state.array_order),
-            np.uint32(self.n_seed_points),
-            np.float32(np.nan),
-            np.uint32(self.state.gpu_memory_limit_pc),
-            np.uint32(self.state.n_work_items),
-            np.float32(self.integrator_step_factor),
-            np.float32(self.max_integration_step_error),
-            np.float32(0.85*np.sqrt((self.max_integration_step_error))),
-            np.float32(max_length/self.geodata.roi_pixel_size),
-            np.float32(self.geodata.roi_pixel_size),
-            np.float32(self.integration_halt_threshold),
-            np.uint32(self.geodata.pad_width),
-            np.float32(self.geodata.pad_width)+0.5,
-            np.uint32(self.geodata.roi_nx),
-            np.uint32(self.geodata.roi_ny),
-            np.float32(nxf),
-            np.float32(nyf),
-            np.uint32(self.geodata.roi_nx+2*self.geodata.pad_width),
-            np.uint32(self.geodata.roi_ny+2*self.geodata.pad_width),
-            np.float32(nxf-0.5),
-            np.float32(nyf-0.5),
-            np.float32(grid_scale),
-            np.float32(grid_scale*self.integrator_step_factor),
-            np.float32(dt_max),
-            np.uint32(max_n_steps),
-            np.uint32(self.trajectory_resolution),
-            np.uint32(0),
-            np.uint32(self.subpixel_seed_point_density),
-            np.float32(subpixel_seed_span/2.0),
-            np.float32(subpixel_seed_step),
-            np.float32(self.jitter_magnitude),
-            np.uint32(interchannel_max_n_steps),
-            np.uint32(self.segmentation_threshold),
-            np.uint32(self.left_flank_addition),
-            np.uint32(self.is_channel),
-            np.uint32(self.is_thinchannel),
-            np.uint32(self.is_interchannel),
-            np.uint32(self.is_channelhead),
-            np.uint32(self.is_channeltail),
-            np.uint32(self.is_majorconfluence),
-            np.uint32(self.is_minorconfluence),
-            np.uint32(self.is_majorinflow),
-            np.uint32(self.is_minorinflow),
-            np.uint32(self.is_leftflank),
-            np.uint32(self.is_rightflank),
-            np.uint32(self.is_midslope),
-            np.uint32(self.is_ridge),
-            np.uint32(self.is_stuck),
-            np.uint32(self.is_loop),
-            np.uint32(self.is_blockage)
-        )], dtype = info_dtype)
+        info_dict = {
+            'array_order' :         self.state.array_order,
+            'n_seed_points' :       np.uint32(self.n_seed_points),
+            'downup_sign' :         np.float32(np.nan),
+            'gpu_memory_limit_pc' :        np.uint32(self.state.gpu_memory_limit_pc),
+            'n_work_items' :               np.uint32(self.state.n_work_items),
+            'integrator_step_factor' :     np.float32(self.integrator_step_factor),
+            'max_integration_step_error' : np.float32(self.max_integration_step_error),
+            'adjusted_max_error' :         np.float32(0.85*np.sqrt(
+                                                      self.max_integration_step_error)),
+            'max_length' :   np.float32(max_length/self.geodata.roi_pixel_size),
+            'pixel_size' :   np.float32(self.geodata.roi_pixel_size),
+            'integration_halt_threshold' : np.float32(self.integration_halt_threshold),
+            'pad_width' :    np.uint32(self.geodata.pad_width),
+            'pad_width_pp5': np.float32(self.geodata.pad_width)+0.5,
+            'nx' :           np.uint32(self.geodata.roi_nx),
+            'ny' :           np.uint32(self.geodata.roi_ny),
+            'nxf' :          np.float32(nxf),
+            'nyf' :          np.float32(nyf),
+            'nx_padded' :    np.uint32(self.geodata.roi_nx+2*self.geodata.pad_width),
+            'ny_padded' :    np.uint32(self.geodata.roi_ny+2*self.geodata.pad_width),
+            'x_max' :        np.float32(nxf-0.5),
+            'y_max' :        np.float32(nyf-0.5),
+            'grid_scale' :   np.float32(grid_scale),
+            'combo_factor' : np.float32(grid_scale*self.integrator_step_factor),
+            'dt_max' :       np.float32(dt_max),
+            'max_n_steps' :  np.uint32(max_n_steps),
+            'trajectory_resolution' :    np.uint32(self.trajectory_resolution),
+            'seeds_chunk_offset' :       np.uint32(0),
+            'subpixel_seed_point_density' : np.uint32(self.subpixel_seed_point_density),
+            'subpixel_seed_halfspan' :   np.float32(subpixel_seed_span/2.0),
+            'subpixel_seed_step' :       np.float32(subpixel_seed_step),
+            'jitter_magnitude' :         np.float32(self.jitter_magnitude),
+            'interchannel_max_n_steps' : np.uint32(interchannel_max_n_steps),
+            'segmentation_threshold' :   np.uint32(self.segmentation_threshold),
+            'left_flank_addition': np.uint32(self.left_flank_addition),
+            'is_channel' :         np.uint32(self.is_channel),
+            'is_thinchannel' :     np.uint32(self.is_thinchannel),
+            'is_interchannel' :    np.uint32(self.is_interchannel),
+            'is_channelhead' :     np.uint32(self.is_channelhead),
+            'is_channeltail' :     np.uint32(self.is_channeltail),
+            'is_majorconfluence' : np.uint32(self.is_majorconfluence),
+            'is_minorconfluence' : np.uint32(self.is_minorconfluence),
+            'is_majorinflow' :     np.uint32(self.is_majorinflow),
+            'is_minorinflow' :     np.uint32(self.is_minorinflow),
+            'is_leftflank' :       np.uint32(self.is_leftflank),
+            'is_rightflank' :      np.uint32(self.is_rightflank),
+            'is_midslope' :        np.uint32(self.is_midslope),
+            'is_ridge' :           np.uint32(self.is_ridge),
+            'is_stuck' :           np.uint32(self.is_stuck),
+            'is_loop' :            np.uint32(self.is_loop),
+            'is_blockage' :        np.uint32(self.is_blockage)
+        }
+        return info_dict
 
     def trace_streamlines(self):
         """
@@ -277,7 +227,7 @@ class Trace(Core):
          self.slc_array, self.slt_array, self.sla_array) \
             = integrate_trajectories(
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
-                self.build_info_struct(),
+                self.build_info_dict(),
                 self.seed_point_array, 
                 self.geodata.basin_mask_array,
                 self.preprocess.u_array,self.preprocess.v_array,

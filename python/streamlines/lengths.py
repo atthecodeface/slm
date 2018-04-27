@@ -16,7 +16,7 @@ __all__ = ['hillslope_lengths','gpu_compute','prepare_memory']
 
 pdebug = print
 
-def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_struct, 
+def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
                        mask_array, u_array, v_array,
                        mapping_array, label_array, traj_length_array, verbose ):
         
@@ -27,7 +27,7 @@ def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_str
         cl_src_path (str):
         which_cl_platform (int):
         which_cl_device   (int):
-        info_struct (numpy.ndarray):
+        info_dict (numpy.ndarray):
         mask_array  (numpy.ndarray):
         u_array (numpy.ndarray):
         v_array (numpy.ndarray):
@@ -52,10 +52,10 @@ def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_str
     # Trace downstream from midslope pixels to thin channel pixels, 
     #   measuring streamline distance; double and scale by pixel width 
     #   to estimate hillslope length for that midslope pixel
-    pad = info_struct['pad_width'][0]
-    is_midslope = info_struct['is_midslope'][0]
-    pixel_size = info_struct['pixel_size'][0]
-    order = info_struct['array_order'][0]
+    pad = info_dict['pad_width']
+    is_midslope = info_dict['is_midslope']
+    pixel_size = info_dict['pixel_size']
+    order = info_dict['array_order']
     flag = is_midslope
     seed_point_array \
         = pick_seeds(mask=mask_array, map=mapping_array, flag=flag, order=order, pad=pad)
@@ -65,7 +65,7 @@ def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_str
               seed_point_array.shape,traj_length_array.shape)
     # Do integrations on the GPU
     cl_kernel_fn = 'hillslope_lengths'
-    gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_struct, 
+    gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
                 seed_point_array, mask_array, u_array,v_array, 
                 mapping_array, label_array, traj_length_array, verbose)
     
@@ -75,7 +75,7 @@ def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_str
     vprint(verbose,'done')  
     
     
-def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_struct, 
+def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
                 seed_point_array, mask_array, u_array, v_array, 
                 mapping_array, label_array, traj_length_array, verbose):
     """
@@ -87,7 +87,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_stru
         queue (pyopencl.CommandQueue):
         cl_kernel_source (str):
         cl_kernel_fn (str):
-        info_struct (numpy.ndarray):
+        info_dict (numpy.ndarray):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
@@ -100,7 +100,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_stru
     """
         
     # Prepare memory, buffers 
-    order = info_struct['array_order'][0]
+    order = info_dict['array_order']
     (seed_point_buffer, uv_buffer, mask_buffer, 
      mapping_buffer, label_buffer, traj_length_buffer) \
         = prepare_memory(context, queue, order, 
@@ -113,7 +113,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_stru
         global_size = [seed_point_array.shape[0],1]
     local_size = None
     # Compile the CL code
-    compile_options = pocl.set_compile_options(info_struct, cl_kernel_fn, downup_sign=1)
+    compile_options = pocl.set_compile_options(info_dict, cl_kernel_fn, downup_sign=1)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         program = cl.Program(context, cl_kernel_source).build(options=compile_options)

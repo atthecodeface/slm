@@ -89,26 +89,7 @@ class Univariate_distribution():
         self.cl_platform = cl_platform
         self.cl_device = cl_device
         
-        self.info_dtype = np.dtype([    ('array_order', 'U1'),
-                                        ('kdf_bandwidth', np.float32),
-                                        ('kdf_kernel', 'U20'),
-                                        ('n_data', np.uint32),
-                                        ('n_hist_bins', np.uint32),
-                                        ('n_pdf_points', np.uint32),
-                                        ('x_min', np.float32),
-                                        ('x_max', np.float32),
-                                        ('x_range', np.float32),
-                                        ('bin_dx', np.float32),
-                                        ('pdf_dx', np.float32),
-                                        ('kdf_width_x', np.float32),
-                                        ('n_kdf_part_points_x', np.uint32),
-                                        ('y_min', np.float32),
-                                        ('y_max', np.float32),
-                                        ('y_range', np.float32),
-                                        ('bin_dy', np.float32),
-                                        ('pdf_dy', np.float32),
-                                        ('kdf_width_y', np.float32),
-                                        ('n_kdf_part_points_y', np.uint32)  ])          
+        self.info_dict = {}       
              
         self.verbose = verbose
 
@@ -171,32 +152,32 @@ class Univariate_distribution():
         x_range = self.logx_max-self.logx_min;
         bin_dx = x_range/self.n_hist_bins
         pdf_dx = x_range/self.n_pdf_points
-        self.info_struct \
-            = np.array([(np.string_(self.array_order),       # order
-                         np.float32(self.bandwidth),         # kdf_bandwidth
-                         np.string_(kernel),                 # kdf_code
-                         np.uint32(self.n_data),             # n_data
-                         np.uint32(self.n_hist_bins),        # n_hist_bins
-                         np.uint32(self.n_pdf_points),       # n_pdf_points
-                         np.float32(self.logx_min),          # x_min
-                         np.float32(self.logx_max),          # x_max
-                         np.float32(x_range),                # x_range
-                         np.float32(bin_dx),                 # bin_dx
-                         np.float32(pdf_dx),                 # pdf_dx
-                         np.float32(0.0),                    # kdf_width_x
-                         np.uint32(0),                       # n_kdf_part_points_x
-                         np.float32(0.0),                    # y_min
-                         np.float32(1.0),                    # y_max
-                         np.float32(1.0),                    # y_range
-                         np.float32(1.0/2000),               # bin_dy
-                         np.float32(1.0/200),                # pdf_dy
-                         np.float32(0.0),                    # kdf_width_y
-                         np.uint32(0)                        # n_kdf_part_points_y
-                         )], dtype = self.info_dtype)
+        self.info_dict = {
+            'array_order' :   self.array_order,
+            'kdf_bandwidth' : np.float32(self.bandwidth),
+            'kdf_kernel' :    kernel,
+            'n_data' :        np.uint32(self.n_data),
+            'n_hist_bins' :   np.uint32(self.n_hist_bins),
+            'n_pdf_points' :  np.uint32(self.n_pdf_points),
+            'x_min' :         np.float32(self.logx_min),
+            'x_max' :         np.float32(self.logx_max),
+            'x_range' :       np.float32(x_range),
+            'bin_dx' :        np.float32(bin_dx),
+            'pdf_dx' :        np.float32(pdf_dx),
+            'kdf_width_x' :   np.float32(0.0),
+            'n_kdf_part_points_x' : np.uint32(0),
+            'y_min' :         np.float32(0.0),
+            'y_max' :         np.float32(1.0),
+            'y_range' :       np.float32(1.0),
+            'bin_dy' :        np.float32(1.0/2000),
+            'pdf_dy' :        np.float32(1.0/200),
+            'kdf_width_y' :         np.float32(0.0),
+            'n_kdf_part_points_y' : np.uint32(0)
+        }
         self.kde['pdf'] = kde.estimate_univariate_pdf(self.cl_src_path, 
                                                         self.cl_platform, 
                                                         self.cl_device, 
-                                                        self.info_struct,
+                                                        self.info_dict,
                                                         self.logx_data, 
                                                         self.verbose)
         self.kde['cdf'] = np.cumsum(self.kde['pdf'])*bin_dx
@@ -360,26 +341,7 @@ class Bivariate_distribution():
         self.cl_platform = cl_platform
         self.cl_device = cl_device
         
-        self.info_dtype = np.dtype([    ('array_order', 'U1'),
-                                        ('kdf_bandwidth', np.float32),
-                                        ('kdf_kernel', 'U20'),
-                                        ('n_data', np.uint32),
-                                        ('n_hist_bins', np.uint32),
-                                        ('n_pdf_points', np.uint32),
-                                        ('x_min', np.float32),
-                                        ('x_max', np.float32),
-                                        ('x_range', np.float32),
-                                        ('bin_dx', np.float32),
-                                        ('pdf_dx', np.float32),
-                                        ('kdf_width_x', np.float32),
-                                        ('n_kdf_part_points_x', np.uint32),
-                                        ('y_min', np.float32),
-                                        ('y_max', np.float32),
-                                        ('y_range', np.float32),
-                                        ('bin_dy', np.float32),
-                                        ('pdf_dy', np.float32),
-                                        ('kdf_width_y', np.float32),
-                                        ('n_kdf_part_points_y', np.uint32)  ])          
+        self.info_dict = {}      
              
         self.verbose = verbose
 
@@ -417,37 +379,33 @@ class Bivariate_distribution():
         bin_dy = y_range/self.n_hist_bins
         pdf_dy = y_range/self.n_pdf_points
         
-#         pdebug(x_range, y_range, self.logx_min, self.logx_max,
-#                self.logy_min, self.logy_max)
-#         pdebug(self.logx_data.shape)
-#         pdebug(self.logy_data.shape)
-#         pdebug(self.logxy_data.shape)
-        self.info_struct \
-            = np.array([(np.string_(self.array_order),       # order
-                         np.float32(self.bandwidth),         # kdf_bandwidth
-                         np.string_(kernel),                 # kdf_code
-                         np.uint32(self.n_data),             # n_data
-                         np.uint32(self.n_hist_bins),        # n_hist_bins
-                         np.uint32(self.n_pdf_points),       # n_pdf_points
-                         np.float32(self.logx_min),          # x_min
-                         np.float32(self.logx_max),          # x_max
-                         np.float32(x_range),                # x_range
-                         np.float32(bin_dx),                 # bin_dx
-                         np.float32(pdf_dx),                 # pdf_dx
-                         np.float32(0.0),                    # kdf_width_x
-                         np.uint32(0),                       # n_kdf_part_points_x
-                         np.float32(self.logy_min),          # y_min
-                         np.float32(self.logy_max),          # y_max
-                         np.float32(y_range),                # y_range
-                         np.float32(bin_dy),                 # bin_dy
-                         np.float32(pdf_dy),                 # pdf_dy
-                         np.float32(0.0),                    # kdf_width_y
-                         np.uint32(0)                        # n_kdf_part_points_y
-                         )], dtype = self.info_dtype)
+
+        self.info_dict = {
+            'array_order' :   self.array_order,
+            'kdf_bandwidth' : np.float32(self.bandwidth),
+            'kdf_kernel' :    kernel,
+            'n_data' :        np.uint32(self.n_data),
+            'n_hist_bins' :   np.uint32(self.n_hist_bins),
+            'n_pdf_points' :  np.uint32(self.n_pdf_points),
+            'x_min' :         np.float32(self.logx_min),
+            'x_max' :         np.float32(self.logx_max),
+            'x_range' :       np.float32(x_range),
+            'bin_dx' :        np.float32(bin_dx),
+            'pdf_dx' :        np.float32(pdf_dx),
+            'kdf_width_x' :   np.float32(0.0),
+            'n_kdf_part_points_x' : np.uint32(0),
+            'y_min' :         np.float32(self.logy_min),
+            'y_max' :         np.float32(self.logy_max),
+            'y_range' :       np.float32(y_range),
+            'bin_dy' :        np.float32(bin_dy),
+            'pdf_dy' :        np.float32(pdf_dy),
+            'kdf_width_y' :         np.float32(0.0),
+            'n_kdf_part_points_y' : np.uint32(0)
+        }
         self.kde['pdf'] = kde.estimate_bivariate_pdf(   self.cl_src_path, 
                                                         self.cl_platform, 
                                                         self.cl_device, 
-                                                        self.info_struct,
+                                                        self.info_dict,
                                                         self.logxy_data, 
                                                         self.verbose  )
         self.kde['cdf'] = np.cumsum(self.kde['pdf'])*bin_dx
