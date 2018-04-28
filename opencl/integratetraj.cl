@@ -61,7 +61,6 @@ __kernel void integrate_trajectory( __global const float2 *seed_point_array,
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u),
                seed_idx = (SEEDS_CHUNK_OFFSET)+global_id,
                trajectory_index = global_id*(MAX_N_STEPS);
-    const float2 current_seed_point_vec = seed_point_array[seed_idx];
     __global char2 *trajectory_vec = &trajectories_array[trajectory_index];
 
     // Report how kernel instances are distributed

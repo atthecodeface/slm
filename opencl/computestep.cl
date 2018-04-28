@@ -64,7 +64,7 @@ static inline void compute_step_vec(const float dt,
 /// The [0,1) uniform variates are scaled by JITTER_MAGNITUDE before addition
 ///   to the unit flow vectors.
 ///
-/// Compiled if KERNEL_INTEGRATE_TRAJECTORY and IS_RNG_AVAILABLE is defined.
+/// Compiled if KERNEL_INTEGRATE_FIELDS and IS_RNG_AVAILABLE is defined.
 ///
 /// @param[in]      dt: delta time step
 /// @param[in]      uv_array  (float *,  RO): gridded velocity vector components (u,v)
