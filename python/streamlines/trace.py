@@ -217,8 +217,7 @@ class Trace(Core):
         Returns:
             list, numpy.ndarray, numpy.ndarray, pandas.DataFrame,
             numpy.ndarray, numpy.ndarray, numpy.ndarray: 
-            streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df,
-            slc_array, slt_array, sla_array
+            streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df
         """
         (self.streamline_arrays_list,
          self.traj_nsteps_array, self.traj_length_array, self.traj_stats_df) \
@@ -240,7 +239,6 @@ class Trace(Core):
         Returns:
             list, numpy.ndarray, numpy.ndarray, pandas.DataFrame,
             numpy.ndarray, numpy.ndarray, numpy.ndarray: 
-            streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df,
             slc_array, slt_array, sla_array
         """
         (self.slc_array, self.slt_array, self.sla_array) \

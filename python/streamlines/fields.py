@@ -83,32 +83,33 @@ def integrate_fields(
             cl_kernel_source += fp.read()
     n_padded_seed_points = info_dict['n_padded_seed_points']
 
-    # Chunkification
+    # Memory check - not really needed 
     gpu_traj_memory_limit = (device.get_info(cl.device_info.GLOBAL_MEM_SIZE) 
                              *info_dict['gpu_memory_limit_pc'])//100
-    full_traj_memory_request = (n_padded_seed_points*np.dtype(np.uint8).itemsize
-                                *info_dict['max_n_steps']*2)
-    n_chunks_required = max(1,int(np.ceil(
-                        full_traj_memory_request/gpu_traj_memory_limit)) )
-    
-#     pocl.report_device_info(which_cl_platform,which_cl_device, platform, device, verbose)
-    
+    full_traj_memory_request = (mask_array.shape[0]*mask_array.shape[1]
+                                *np.dtype(np.float32).itemsize*2*3)    
     vprint(verbose,
            'GPU/OpenCL device global memory limit for streamline trajectories: {}' 
               .format(state.neatly(gpu_traj_memory_limit)))
     vprint(verbose,'GPU/OpenCL device memory required for streamline trajectories {}'
               .format(state.neatly(full_traj_memory_request)), end='')
-    vprint(verbose,' => {}'.format('no need to chunkify' if n_chunks_required==1
-                    else 'need to split into {} chunks'.format(n_chunks_required) ))
-    trace_do_chunks,chunk_size \
-        = choose_chunks(seed_point_array,info_dict,n_chunks_required,
-                        do_trace_downstream,do_trace_upstream,verbose)
+    
+    # 
+    n_global = info_dict['n_padded_seed_points']
+    n_work_items = info_dict['n_work_items']
+    pad_length = np.uint32(np.round(n_global/n_work_items+0.5))*n_work_items-n_global
+    if pad_length>0:
+        padding_array = -np.ones([pad_length,2], dtype=np.float32)
+        vprint(verbose,'Chunk size adjustment for {0} CL work items/group: {1}->{2}...'
+             .format(n_work_items, n_global, n_global+pad_length))
+    n_global += pad_length*1
+    
     vprint(verbose,'Compile options:\n',pocl.set_compile_options(info_dict,
                                                                  'INTEGRATE_FIELDS'))
     # Do integrations on the GPU
     (rtn_slc_array, rtn_slt_array, rtn_sla_array) \
         = gpu_integrate(device, context, queue, cl_kernel_source,
-                         info_dict, trace_do_chunks, chunk_size, 
+                         info_dict, n_global,
                          seed_point_array, mask_array, u_array, v_array,  
                          verbose)
     # Streamline stats
@@ -127,53 +128,10 @@ def integrate_fields(
     vprint(verbose,'...done')
     return (rtn_slc_array, rtn_slt_array, rtn_sla_array)
 
-def choose_chunks(seed_point_array, info_dict, n_chunks_required,
-                  do_trace_downstream, do_trace_upstream, verbose):
-    """
-    Compute lists of parameters needed to carry out GPU/OpenCL device computations
-    in chunks.
-    
-    Args:
-        seed_point_array (numpy.ndarray):
-        info_dict (numpy.ndarray):
-        n_chunks_required (int):
-        do_trace_downstream (bool):  
-        do_trace_upstream (bool):  
-        verbose (bool):  
-        
-    Returns: 
-        list, int,
-            trace_do_chunks, chunk_size
-    """
-    n_global = info_dict['n_padded_seed_points']
-    n_chunks = n_chunks_required    
-    chunk_size = int(np.round(n_global/n_chunks))
-    n_work_items = info_dict['n_work_items']
-    pad_length = np.uint32(np.round(chunk_size/n_work_items+0.5))*n_work_items-chunk_size
-    if pad_length>0:
-        padding_array = -np.ones([pad_length,2], dtype=np.float32)
-        vprint(verbose,'Chunk size adjustment for {0} CL work items/group: {1}->{2}...'
-             .format(n_work_items, chunk_size, chunk_size+pad_length))
-    chunk_size += pad_length
-    chunk_list = [[chunk_idx,chunk,min(n_global,chunk+chunk_size)-chunk] 
-                   for chunk_idx,chunk in enumerate(range(0,n_global,chunk_size))]
 
-    n_global += pad_length*n_chunks
-    chunk_size = int(np.round(n_global/n_chunks))
-
-    trace_do_list = [[do_trace_downstream, 'Downstream:', 0, np.float32(+1.0)]] \
-                  + [[do_trace_upstream,   'Upstream:  ', 1, np.float32(-1.0)]]
-    trace_do_chunks = [td+chunk for td in trace_do_list for chunk in chunk_list]
-        
-    vprint(verbose,'Number of seed points = total number of kernel instances: {0:,}'
-                .format(n_global))
-    vprint(verbose,'Number of chunks = seed point array divisor:', n_chunks)   
-    vprint(verbose,'Chunk size = number of kernel instances per chunk: {0:,}'
-                .format(chunk_size))   
-    return trace_do_chunks, chunk_size
 
 def gpu_integrate(device, context, queue, cl_kernel_source, 
-                   info_dict, trace_do_chunks, chunk_size, 
+                   info_dict, n_global, 
                    seed_point_array, mask_array, u_array, v_array, verbose):
     """
     Carry out GPU/OpenCL device computations in chunks.
@@ -199,7 +157,6 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         queue (pyopencl.CommandQueue):
         cl_kernel_source (str):
         info_dict (numpy.ndarray):
-        trace_do_chunks (list):
         chunk_size (int):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
@@ -215,10 +172,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     # Prepare memory, buffers 
     (slc_array, slt_array, 
      seed_point_buffer, uv_buffer, mask_buffer, slc_buffer, slt_buffer) \
-        = prepare_memory(context, queue, info_dict['n_padded_seed_points'],
-                          chunk_size, info_dict['max_n_steps'],
-                          seed_point_array, mask_array, u_array, v_array,
-                          verbose)
+        = prepare_memory(context, seed_point_array, mask_array, u_array,v_array, verbose)
     roi_nxy = slc_array.shape
     rtn_slc_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.uint32)
     rtn_slt_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
@@ -226,20 +180,14 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     
     # Downstream and upstream passes aka streamline integrations from
     #   chunks of seed points aka subsets of the total set
-    for downup_str, downup_idx, downup_sign, chunk_idx, \
-        seeds_chunk_offset, n_chunk_seeds in [td[1:] for td in trace_do_chunks if td[0]]:
-        vprint(verbose,'\n{0} downup={1} sgn(uv)={2:+} chunk={3} seeds: {4}+{5} => {6:}'
-                   .format(downup_str, downup_idx, downup_sign, chunk_idx,
-                           seeds_chunk_offset, n_chunk_seeds, 
-                           seeds_chunk_offset+n_chunk_seeds))
+    for downup_idx, downup_sign in [[0,+1.0],[1,-1.0]]:
 
         # Specify this integration job's parameters
-        global_size = [n_chunk_seeds,1]
+        global_size = [n_global,1]
         vprint(verbose,
                'Seed point buffer size = {}*8 bytes'.format(seed_point_buffer.size/8))
         local_size = [info_dict['n_work_items'],1]
         info_dict['downup_sign'] = downup_sign
-        info_dict['seeds_chunk_offset'] = seeds_chunk_offset
         
         ##################################
         
@@ -302,16 +250,12 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     
     return (slc, slt, sla)
 
-def prepare_memory(context, queue, n_padded_seed_points, chunk_size, max_traj_length, 
-                   seed_point_array, mask_array, u_array, v_array, verbose):
+def prepare_memory(context, seed_point_array, mask_array, u_array, v_array, verbose):
     """
     Create Numpy array and PyOpenCL buffers to allow CPU-GPU data transfer.
     
     Args:
         context (pyopencl.Context):
-        queue (pyopencl.CommandQueue):
-        chunk_size (int):
-        max_traj_length (int):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):

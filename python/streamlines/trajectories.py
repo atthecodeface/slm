@@ -209,10 +209,9 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
      chunk_trajcs_array, chunk_nsteps_array, chunk_length_array, 
      seed_point_buffer, uv_buffer, mask_buffer, 
      chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer) \
-        = prepare_memory(context, queue, info_dict['n_padded_seed_points'],
-                                      chunk_size, info_dict['max_n_steps'],
-                                      seed_point_array, mask_array, u_array, v_array,
-                                      verbose)
+        = prepare_memory(context, info_dict['n_padded_seed_points'],
+                         chunk_size, info_dict['max_n_steps'],
+                         seed_point_array, mask_array, u_array, v_array, verbose)
     
     # Downstream and upstream passes aka streamline integrations from
     #   chunks of seed points aka subsets of the total set
@@ -294,16 +293,13 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     n = info_dict['n_seed_points']
     return (streamline_arrays_list[0:n], traj_nsteps_array[0:n], traj_length_array[0:n])
 
-def prepare_memory(context, queue, 
-                    n_padded_seed_points, chunk_size, max_traj_length, 
-                    seed_point_array, mask_array, u_array, v_array,  
-                    verbose):
+def prepare_memory(context, n_padded_seed_points, chunk_size, max_traj_length, 
+                   seed_point_array, mask_array, u_array, v_array, verbose):
     """
     Create Numpy array and PyOpenCL buffers to allow CPU-GPU data transfer.
     
     Args:
         context (pyopencl.Context):
-        queue (pyopencl.CommandQueue):
         chunk_size (int):
         max_traj_length (int):
         seed_point_array (numpy.ndarray):
