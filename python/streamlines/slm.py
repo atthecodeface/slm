@@ -178,8 +178,8 @@ def _parse_cmd_line_args():
                         metavar='verbose_flag',
                         help='verbose mode')
     
-    parser.add_argument('-w','--workitems', dest='workitems', 
-                        default=None, type=_str2bool, action="store",  
+    parser.add_argument('-w','--workitems', dest='n_work_items', 
+                        default=None, type=int, action="store",  
                         metavar='n_work_items',
                         help='number of OpenCL work items per workgroup')
     
