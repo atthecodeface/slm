@@ -14,6 +14,10 @@
  *
  * @file   integration.ml
  * @brief  Integration using GPU for trace
+ *
+ * Up to date with python of git CS 3cb3f5e67e5594ef571415f636320bcd5d2d7290
+ * except chunk_size is not always a multiple of n_work_items
+ *
  * v}
  *)
 

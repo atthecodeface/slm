@@ -14,6 +14,10 @@
  *
  * @file   preprocess.ml
  * @brief  Preprocessing
+ *
+ * Up to date with python of git CS 3cb3f5e67e5594ef571415f636320bcd5d2d7290
+ * except for speed array and nonconditioned arrays
+ *
  * v}
  *)
 

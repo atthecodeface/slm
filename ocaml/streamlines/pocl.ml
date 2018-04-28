@@ -14,6 +14,10 @@
  *
  * @file   pocl.ml
  * @brief  OpenCL support library
+ *
+ * Up to date with python of git CS 3cb3f5e67e5594ef571415f636320bcd5d2d7290
+ * except for KDE options
+ *
  * v}
  *)
 
@@ -344,7 +348,30 @@ let get_memory_limit t =
     Convert the info struct into a list of '-D' compiler macros.
 
     This uses the kernel_name (as this is passed in as a define).
-    
+
+    This should use a list of info elements that are required for the kernel.
+
+For KDE we need to set
+            '-D','KERNEL_{}'.format(kernel_def.upper()),
+            '-D','KDF_BANDWIDTH={}f'.format(info_dict['kdf_bandwidth']),
+            '-D','KDF_IS_{}'.format(info_dict['kdf_kernel'].upper()),
+            '-D','N_DATA={}u'.format(info_dict['n_data']),
+            '-D','N_HIST_BINS={}u'.format(info_dict['n_hist_bins']),
+            '-D','N_PDF_POINTS={}u'.format(info_dict['n_pdf_points']),
+            '-D','X_MIN={}f'.format(info_dict['x_min']),
+            '-D','X_MAX={}f'.format(info_dict['x_max']),
+            '-D','X_RANGE={}f'.format(info_dict['x_range']),
+            '-D','BIN_DX={}f'.format(info_dict['bin_dx']),
+            '-D','PDF_DX={}f'.format(info_dict['pdf_dx']),
+            '-D','KDF_WIDTH_X={}f'.format(info_dict['kdf_width_x']),
+            '-D','N_KDF_PART_POINTS_X={}u'.format(info_dict['n_kdf_part_points_x']),
+            '-D','Y_MIN={}f'.format(info_dict['y_min']),
+            '-D','Y_MAX={}f'.format(info_dict['y_max']),
+            '-D','Y_RANGE={}f'.format(info_dict['y_range']),
+            '-D','BIN_DY={}f'.format(info_dict['bin_dy']),
+            '-D','PDF_DY={}f'.format(info_dict['pdf_dy']),
+            '-D','KDF_WIDTH_Y={}f'.format(info_dict['kdf_width_y']),
+            '-D','N_KDF_PART_POINTS_Y={}u'.format(info_dict['n_kdf_part_points_y'])
  *)
 let compile_options t data info_struct kernel_name =
   let grid_scale  = Info.float_of info_struct "grid_scale" in

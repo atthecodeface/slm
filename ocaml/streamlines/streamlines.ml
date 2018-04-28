@@ -12,8 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * @file   globals.ml
- * @brief  Globally useful functions and statics for the streamlines analysis
+ * @file   streamlines.ml
+ * @brief  Toplevel streamlines library
+ *
+ * Up to date with python of git CS 3cb3f5e67e5594ef571415f636320bcd5d2d7290
+ *
  * v}
  *)
 (** 
@@ -180,6 +183,7 @@ let parse_arguments _ =
       ("--file",    Set_string filename, "import parameters file");
       ("-f",        Set_string filename, "import parameters file");
       ("--json",    Set_string json,     "json settings");
+      ("-j",        Set_string json,     "json settings");
       ("-r",        (bool_json_param "do_reload_state"), "reload previous runtime state from files");
       ("-g",        (bool_json_param "do_geodata"),      "read geodata files (DTM, basins)");
       ("-e",        (bool_json_param "do_preprocess"),   "perform preprocessing (optionally do conditioning; compute gradients)");
