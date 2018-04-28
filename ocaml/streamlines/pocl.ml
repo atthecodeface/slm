@@ -349,14 +349,13 @@ let get_memory_limit t =
 let compile_options t data info_struct kernel_name =
   let grid_scale  = Info.float_of info_struct "grid_scale" in
   let downup_sign = Info.float_of info_struct "downup_sign" in
-  let array_order = Info.str_of   info_struct "array_order" in
   let kernel_name = String.uppercase_ascii kernel_name in
   Info.set_float32 info_struct "combo_factor" ((grid_scale *. data.properties.trace.integrator_step_factor) *. downup_sign);
   let add_option acc nv = 
     let option = sfmt "%s " (Info.define_str nv) in
     acc ^ option
   in
-  let base_options = sfmt "-D KERNEL_%s -D%s_ORDER " kernel_name array_order in
+  let base_options = sfmt "-D KERNEL_%s " kernel_name in
   Info.fold_left add_option base_options info_struct
 
 (**  [append_in_file (source, source_lines) filename f]
@@ -431,7 +430,6 @@ let rebuild_info_struct pocl (data:t_core_data) info_struct =
   let subpixel_seed_span = 1.0 -. ( 1.0 /. sspd_f) in
   let subpixel_seed_step = subpixel_seed_span /. (sspd_f -. 1.0) in
 
-  Info.set_str     info_struct "array_order"                   s_props.array_order;
   Info.set_float32 info_struct "max_integration_step_error"    t_props.max_integration_step_error;
   Info.set_float32 info_struct "integration_halt_threshold"    t_props.integration_halt_threshold;
   Info.set_uint    info_struct "trajectory_resolution"         t_props.trajectory_resolution;

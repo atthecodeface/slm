@@ -589,7 +589,6 @@ type t_props_state = {
     cl_device :          int;
     gpu_memory_limit_pc: float;
     n_work_items :       int;
-    array_order :        string;
     do_geodata :         bool;
     do_preprocess :      bool;
     do_condition :       bool;
@@ -864,7 +863,6 @@ let read_state properties =
   let cl_device =           Workflow.int_of   properties ~default:0 "cl_device" in
   let gpu_memory_limit_pc = Workflow.float_of properties ~default:50. "gpu_memory_limit_pc" in
   let n_work_items =        Workflow.int_of   properties ~default:32 "n_work_items" in
-  let array_order         = "C" in
   let do_rw_savez =         Workflow.bool_of  properties ~default:true "do_rw_savez" in
   let do_rw_hdf5 =          Workflow.bool_of  properties ~default:true "do_rw_hdf5" in
 
@@ -890,7 +888,6 @@ let read_state properties =
       cl_device;
       gpu_memory_limit_pc;
       n_work_items;
-      array_order;
       do_geodata;
       do_preprocess;
       do_condition;
