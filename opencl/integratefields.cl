@@ -27,7 +27,7 @@
                         | (initial_rng_state<< 8)&0xff0000 \
                         | (initial_rng_state<<24)&0xff000000;
 
-#ifdef KERNEL_INTEGRATE_TRAJECTORY
+#ifdef KERNEL_INTEGRATE_FIELDS
 ///
 /// GPU kernel that drives streamline integration from seed positions
 /// given in @p seed_point_array, controlled by the 'flow' vector field
@@ -40,23 +40,13 @@
 /// by computing a global id and using it to index the @p seed_point_array.
 /// UPDATE: now doing sub-pixel streamlines as a set per seed point... need to doc here
 ///
-/// Each streamline trajectory is returned in the appropriate location
-/// in @p trajectories_array as a list of compressed-into-byte dx,dy values.
-///
-/// Compiled if KERNEL_INTEGRATE_TRAJECTORY is defined.
+/// Compiled if KERNEL_INTEGRATE_FIELD is defined.
 ///
 /// @param[in]  seed_point_array: list of initial streamline point vectors,
 ///                               one allotted to each kernel instance
 /// @param[in]  mask_array: grid pixel mask (padded),
 ///                         with @p true = masked, @p false = good
 /// @param[in]  uv_array: flow unit velocity vector grid (padded)
-/// @param[out] trajectories_array: lists of streamline trajectories, stored as
-///                                 compressed-into-byte dx,dy vector sequences;
-///                                 one list per @p seed_point_array vector
-/// @param[out] traj_nsteps_array: list of number of steps along each trajectory;
-///                                 one per @p seed_point_array vector
-/// @param[out] traj_length_array: list of lengths of each trajectory;
-///                                 one per @p seed_point_array vector
 /// @param[out] slc_array: grid recording accumulated count of streamline integration
 ///                        steps across each pixel (padded)
 /// @param[out] slt_array: grid recording accumulated count of streamline segment lengths
@@ -66,21 +56,16 @@
 ///
 /// @ingroup integrate
 ///
-__kernel void integrate_trajectory( __global const float2 *seed_point_array,
-                                    __global const bool   *mask_array,
-                                    __global const float2 *uv_array,
-                                    __global       char2  *trajectories_array,
-                                    __global       ushort *traj_nsteps_array,
-                                    __global       float  *traj_length_array,
-                                    __global       uint   *slc_array,
-                                    __global       uint   *slt_array )
+__kernel void integrate_fields( __global const float2 *seed_point_array,
+                                __global const bool   *mask_array,
+                                __global const float2 *uv_array,
+                                __global       uint   *slc_array,
+                                __global       uint   *slt_array )
 {
     // global_id plus the chunk SEEDS_CHUNK_OFFSET is a seed point index
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u),
-               seed_idx = (SEEDS_CHUNK_OFFSET)+global_id,
-               trajectory_index = global_id*(MAX_N_STEPS);
+               seed_idx = (SEEDS_CHUNK_OFFSET)+global_id;
     const float2 current_seed_point_vec = seed_point_array[seed_idx];
-    __global char2 *trajectory_vec = &trajectories_array[trajectory_index];
     __private uint i=0,j=0, initial_rng_state;
 
     // Report how kernel instances are distributed
@@ -92,11 +77,6 @@ __kernel void integrate_trajectory( __global const float2 *seed_point_array,
         // This is a padded seed, so let's bail
         return;
     }
-
-    // Trace a "smooth" streamline from the seed point coordinate
-    trajectory_record( uv_array, mask_array, traj_nsteps_array, traj_length_array,
-                       trajectory_vec, global_id, seed_idx,
-                       seed_point_array[seed_idx] );
 
     // Trace a set of streamlines from a grid of sub-pixel positions centered
     //    on the seed point

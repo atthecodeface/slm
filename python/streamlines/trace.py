@@ -12,7 +12,8 @@ import timeit
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
 from streamlines.core import Core
-from streamlines.integration import integrate_trajectories
+from streamlines.trajectories import integrate_trajectories
+from streamlines.fields import integrate_fields
 
 __all__ = ['Trace']
 
@@ -91,8 +92,10 @@ class Trace(Core):
         self.print('\n**Trace begin**', flush=True)  
         # Assign a possibly irregular (near bdries) grid of initial streamline points
         self.create_seeds()
-        # Do the streamline integrations up and then downstream
-        self.trace_streamlines()
+        # Integrate streamlines downstream and upstream
+        self.trajectories()
+        # Map mean streamline integrations downstream and upstream
+        self.fields()
         # Done
         self.print('**Trace end**\n', flush=True)  
         
@@ -207,7 +210,7 @@ class Trace(Core):
         }
         return info_dict
 
-    def trace_streamlines(self):
+    def trajectories(self):
         """
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
@@ -218,8 +221,7 @@ class Trace(Core):
             slc_array, slt_array, sla_array
         """
         (self.streamline_arrays_list,
-         self.traj_nsteps_array, self.traj_length_array, self.traj_stats_df,
-         self.slc_array, self.slt_array, self.sla_array) \
+         self.traj_nsteps_array, self.traj_length_array, self.traj_stats_df) \
             = integrate_trajectories(
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.build_info_dict(),
@@ -227,6 +229,29 @@ class Trace(Core):
                 self.geodata.basin_mask_array,
                 self.preprocess.u_array,self.preprocess.v_array,
                 self.do_trace_downstream, self.do_trace_upstream, 
+                self.state.verbose
+            )
+        return
+
+    def fields(self):
+        """
+        Trace up or downstreamlines across region of interest (ROI) of DTM grid.
+    
+        Returns:
+            list, numpy.ndarray, numpy.ndarray, pandas.DataFrame,
+            numpy.ndarray, numpy.ndarray, numpy.ndarray: 
+            streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df,
+            slc_array, slt_array, sla_array
+        """
+        (self.slc_array, self.slt_array, self.sla_array) \
+            = integrate_fields(
+                self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
+                self.build_info_dict(),
+                self.seed_point_array, 
+                self.geodata.basin_mask_array,
+                self.preprocess.u_array,self.preprocess.v_array,
+                self.do_trace_downstream, self.do_trace_upstream, 
+                self.traj_stats_df,
                 self.state.verbose
             )
         return

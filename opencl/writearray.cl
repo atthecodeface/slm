@@ -7,7 +7,7 @@
 /// @bug No known bugs
 ///
 
-#ifdef KERNEL_INTEGRATE_TRAJECTORY
+#ifdef KERNEL_INTEGRATE_FIELDS
 ///
 /// Add the current streamline length (@p l_trajectory) to the current pixel of the
 ///    @p slt accumulation array.
@@ -40,7 +40,7 @@ static inline void atomic_write_sl_data(__global uint *slt, __global uint *slc,
 }
 #endif
 
-#ifdef KERNEL_INTEGRATE_TRAJECTORY
+#ifdef KERNEL_INTEGRATE_FIELDS
 ///
 /// Extended version of atomic_write_sl_data() to include testing whether the
 ///    current pixel is masked, and an assignment of the previous pixel index

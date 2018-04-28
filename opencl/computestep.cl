@@ -56,7 +56,7 @@ static inline void compute_step_vec(const float dt,
 }
 #endif
 
-#if defined(KERNEL_INTEGRATE_TRAJECTORY) && defined(IS_RNG_AVAILABLE)
+#if defined(KERNEL_INTEGRATE_FIELDS) && defined(IS_RNG_AVAILABLE)
 ///
 /// Compute a jittered 2nd-order Runge-Kutta integration step along a streamline.
 /// Jittering is achieved by adding a uniform random vector to of the RK2 flow velocity
