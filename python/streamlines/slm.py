@@ -115,8 +115,6 @@ def _parse_cmd_line_args():
     parser = ArgumentParser(description=usage, 
                             formatter_class=ArgumentDefaultsHelpFormatter)
     
-
-    
     parser.add_argument('-a', '--analysis', dest='do_analysis',
                         default=None, type=_str2bool,  action="store", 
                         metavar='analysis_flag',
@@ -142,16 +140,16 @@ def _parse_cmd_line_args():
                         default=None, type=_str2bool,  action="store", 
                         metavar='geodata_flag',
                         help='read geodata files (DTM, basins)')
-    
-    parser.add_argument('-m', '--mapping', dest='do_mapping',
-                        default=None, type=_str2bool,  action="store", 
-                        metavar='mapping flag',
-                        help='map channels, midlines')
 
-    parser.add_argument('-o', '--override', dest='override_parameters',
+    parser.add_argument('-j', '--json', dest='override_parameters',
                         default=None, type=str,  action="store", 
                         metavar='override_parameters',
                         help='JSON dict of override parameters & values')
+    
+    parser.add_argument('-m', '--mapping', dest='do_mapping',
+                        default=None, type=_str2bool,  action="store", 
+                        metavar='mapping_flag',
+                        help='map channels, midlines')
     
     parser.add_argument('-p', '--plot', dest='do_plot',
                         default=None, type=str,  action="store", 
