@@ -115,62 +115,73 @@ def _parse_cmd_line_args():
     parser = ArgumentParser(description=usage, 
                             formatter_class=ArgumentDefaultsHelpFormatter)
     
-    
-    parser.add_argument('-v','--verbose', dest='verbose', 
-                        default=None, type=_str2bool, action="store",  
-                        metavar='verbose_flag',
-                        help='verbose mode')
-    
-    parser.add_argument('-f', '--file', dest='parameters_file',
-                        default=None, type=str,  action="store",  
-                        metavar='parameters_file',
-                        help='import parameters file')
-    
-    parser.add_argument('-r','--reload', dest='do_reload_state', 
-                        default=None, type=_str2bool, action="store",  
-                        metavar='reload_state_flag',
-                        help='reload previous runtime state from files')
 
-    parser.add_argument('-g', '--geodata', dest='do_geodata',
+    
+    parser.add_argument('-a', '--analysis', dest='do_analysis',
                         default=None, type=_str2bool,  action="store", 
-                        metavar='geodata_flag',
-                        help='read geodata files (DTM, basins)')
+                        metavar='analysis_flag',
+                        help='analyze streamline patterns, distributions')
+                        
+    parser.add_argument('-c', '--condition', dest='do_condition',
+                        default=None, type=_str2bool,  action="store",  
+                        metavar='condition_flag',
+                        help='condition DTM for best tracing (fix loops & blockages)')
 
     parser.add_argument('-e', '--preprocess', dest='do_preprocess',
                         default=None, type=_str2bool,  action="store", 
                         metavar='preprocess_flag',
                         help='peform preprocessing ' \
                             +'(optionally do conditioning; compute gradients)')
-                        
-    parser.add_argument('-c', '--condition', dest='do_condition',
-                        default=None, type=_str2bool,  action="store",  
-                        metavar='condition_flag',
-                        help='condition DTM for best tracing (fix loops & blockages)')
     
-    parser.add_argument('-t', '--trace', dest='do_trace',
-                        default=None, type=_str2bool,  action="store",  
-                        metavar='trace_flag',
-                        help='perform streamline tracing')
-    
-    parser.add_argument('-a', '--analysis', dest='do_analysis',
+    parser.add_argument('-f', '--file', dest='parameters_file',
+                        default=None, type=str,  action="store",  
+                        metavar='parameters_file',
+                        help='import JSON parameters file')
+
+    parser.add_argument('-g', '--geodata', dest='do_geodata',
                         default=None, type=_str2bool,  action="store", 
-                        metavar='analysis_flag',
-                        help='analyze streamline patterns, distributions')
+                        metavar='geodata_flag',
+                        help='read geodata files (DTM, basins)')
     
     parser.add_argument('-m', '--mapping', dest='do_mapping',
                         default=None, type=_str2bool,  action="store", 
                         metavar='mapping flag',
                         help='map channels, midlines')
+
+    parser.add_argument('-o', '--override', dest='override_parameters',
+                        default=None, type=str,  action="store", 
+                        metavar='override_parameters',
+                        help='JSON dict of override parameters & values')
     
     parser.add_argument('-p', '--plot', dest='do_plot',
                         default=None, type=str,  action="store", 
                         metavar='maps/pdfs/all',
                         help='carry out all plotting set in parameters files')
     
+    parser.add_argument('-r','--reload', dest='do_reload_state', 
+                        default=None, type=_str2bool, action="store",  
+                        metavar='reload_state_flag',
+                        help='reload previous runtime state from files')
+    
     parser.add_argument('-s','--save', dest='do_save_state', 
                         default=None, type=_str2bool, action="store",  
                         metavar='save_state_flag',
                         help='save runtime state to files at completion')
+    
+    parser.add_argument('-t', '--trace', dest='do_trace',
+                        default=None, type=_str2bool,  action="store",  
+                        metavar='trace_flag',
+                        help='perform streamline tracing')
+    
+    parser.add_argument('-v','--verbose', dest='verbose', 
+                        default=None, type=_str2bool, action="store",  
+                        metavar='verbose_flag',
+                        help='verbose mode')
+    
+    parser.add_argument('-w','--workitems', dest='workitems', 
+                        default=None, type=_str2bool, action="store",  
+                        metavar='n_work_items',
+                        help='number of OpenCL work items per workgroup')
     
     parser.add_argument('-x','--export', dest='do_export', 
                         default=None, type=_str2bool, action="store",  

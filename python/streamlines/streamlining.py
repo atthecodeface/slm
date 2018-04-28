@@ -6,8 +6,7 @@ Todo:
 """
 
 import os
-from mixin import mixin
-from json import dumps
+from json import loads
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
@@ -89,6 +88,12 @@ class Streamlining(Core):
              or ('verbose' in kwargs.keys()  and kwargs['verbose'])):
             print('\n**Initialization begin**') 
             
+        override_parameters = kwargs['override_parameters']
+        if override_parameters is not None and override_parameters!='':
+            override_dict = loads(override_parameters)
+            for item in override_dict.items():
+                imported_parameters[item[0]].update(item[1])
+
         self.state = State(None,imported_parameters)
 
         for item in kwargs.items():
@@ -109,8 +114,7 @@ class Streamlining(Core):
             elif item[1] is not None:
                 setattr(self.state, item[0],item[1])
         self.state.obj_list=[self.state]
-
-
+        
         self.state.parameters_path = parameters_path
         self.state.parameters_file = parameters_file
         self.geodata = Geodata(self.state,imported_parameters)

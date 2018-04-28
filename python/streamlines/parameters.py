@@ -61,7 +61,7 @@ def read_json_file(parameter_file_list):
                 #   of sub-dicts only, one per workflow class instance
     return parameters_dict
 
-def import_parameters(parameters_path,parameters_file): #,do_reload_state=False
+def import_parameters(parameters_path, parameters_file): #,do_reload_state=False
     """
     Load JSON parameters files (defaults and job) and parse them in turn to 
     generate a workflow parameters dictionary. 
@@ -74,11 +74,15 @@ def import_parameters(parameters_path,parameters_file): #,do_reload_state=False
         dict:  workflow parameter dictionary
     """        
     # Parse default and assigned JSON parameters files
-    pdebug(os.path.realpath(
-        os.path.join(streamlines.__path__[0],'..','..','json','defaults')))
-    pdebug(os.path.realpath(os.path.join(parameters_path,parameters_file)))
+#     pdebug(os.path.realpath(
+#         os.path.join(streamlines.__path__[0],'..','..','json','defaults')))
+#     pdebug(os.path.realpath(os.path.join(parameters_path,parameters_file)))
     parameters_files_list \
         = [os.path.realpath(
             os.path.join(streamlines.__path__[0],'..','..','json','defaults')),
            os.path.realpath(os.path.join(parameters_path,parameters_file))]
     return read_json_file(parameters_files_list)
+
+
+
+

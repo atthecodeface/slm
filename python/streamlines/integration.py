@@ -70,7 +70,6 @@ def integrate_trajectories(
         slc_array, slt_array, sla_array
     """
     vprint(verbose,'Integrating streamlines'+'...')
-    pdebug(info_dict)
 
     # Prepare CL essentials
     platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
@@ -83,7 +82,7 @@ def integrate_trajectories(
     for cl_file in cl_files:
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
-    n_padded_seed_points = seed_point_array.shape[0]
+    n_padded_seed_points = info_dict['n_padded_seed_points']
 
     # Chunkification
     gpu_traj_memory_limit = (device.get_info(cl.device_info.GLOBAL_MEM_SIZE) 
@@ -150,10 +149,9 @@ def choose_chunks(seed_point_array, info_dict, n_chunks_required,
         list, int,
             trace_do_chunks, chunk_size
     """
-    n_global = seed_point_array.shape[0]
+    n_global = info_dict['n_padded_seed_points']
     n_chunks = n_chunks_required    
     chunk_size = int(np.round(n_global/n_chunks))
-    pdebug('chunk_size',chunk_size)
     n_work_items = info_dict['n_work_items']
     pad_length = np.uint32(np.round(chunk_size/n_work_items+0.5))*n_work_items-chunk_size
     if pad_length>0:
@@ -166,7 +164,6 @@ def choose_chunks(seed_point_array, info_dict, n_chunks_required,
 
     n_global += pad_length*n_chunks
     chunk_size = int(np.round(n_global/n_chunks))
-    pdebug('chunk_size',chunk_size)
 
     trace_do_list = [[do_trace_downstream, 'Downstream:', 0, np.float32(+1.0)]] \
                   + [[do_trace_upstream,   'Upstream:  ', 1, np.float32(-1.0)]]
@@ -228,8 +225,9 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
      seed_point_buffer, uv_buffer, mask_buffer, 
      chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer, 
      slc_buffer, slt_buffer) \
-        = prepare_memory(context, queue, chunk_size, info_dict['max_n_steps'],
-                        seed_point_array, mask_array, u_array, v_array,  verbose)
+        = prepare_memory(context, queue, info_dict['n_padded_seed_points'],
+                         chunk_size, info_dict['max_n_steps'],
+                         seed_point_array, mask_array, u_array, v_array,  verbose)
     roi_nxy = slc_array.shape
     rtn_slc_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.uint32)
     rtn_slt_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
@@ -278,8 +276,8 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
         
         # Calculate the time it took to execute the kernel
         elapsed = 1e-9*(event.profile.end - event.profile.start)  
-        print("\n##### Kernel lapsed time: {0:.3f} secs #####\n".format(elapsed))  
         pocl.report_kernel_info(device,kernel,verbose)
+        vprint(verbose,"##### Kernel lapsed time: {0:.3f} secs #####\n".format(elapsed))  
         queue.finish()   
         
         # Copy GPU-computed results back to CPU
@@ -344,7 +342,7 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
     return (streamline_arrays_list[0:n], traj_nsteps_array[0:n], traj_length_array[0:n], 
             slc, slt, sla)
 
-def prepare_memory(context, queue, chunk_size, max_traj_length, 
+def prepare_memory(context, queue, n_padded_seed_points, chunk_size, max_traj_length, 
                    seed_point_array, mask_array, u_array, v_array,  verbose):
     """
     Create Numpy array and PyOpenCL buffers to allow CPU-GPU data transfer.
@@ -374,7 +372,7 @@ def prepare_memory(context, queue, chunk_size, max_traj_length,
     # PyOpenCL array for seed points
     # Buffer for mask, (u,v) velocity array and more
     roi_nxy = mask_array.shape
-    n_padded_seed_points = seed_point_array.shape[0]
+#     n_padded_seed_points = seed_point_array.shape[0]
     uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32)
     slc_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32)
     slt_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32)

@@ -115,14 +115,15 @@ class Trace(Core):
             self.n_seed_points/self.state.n_work_items+0.5))*self.state.n_work_items
                       -self.n_seed_points)
         if pad_length>0:
+            self.print('padding for {0} CL work items/group: {1}->{2}...'
+                       .format(self.state.n_work_items, self.n_seed_points,
+                               self.n_seed_points+self.state.n_work_items ),
+                                            end='',flush=True)
             padding_array = -np.ones([pad_length,2], dtype=np.float32)
             self.seed_point_array = np.concatenate((self.seed_point_array,padding_array))
-            self.print('padding for {0} CL work items/group: {1}->{2}...'
-                       .format(self.state.n_work_items,
-                               self.n_seed_points, self.seed_point_array.shape[0]),
-                                            end='',flush=True)
         else:
             self.print('no padding needed...', end='',flush=True)
+        self.n_padded_seed_points = self.n_seed_points + pad_length
         self.print('done',flush=True)
 
     def build_info_dict(self):
@@ -152,8 +153,9 @@ class Trace(Core):
             = subpixel_seed_span/(np.float32(self.subpixel_seed_point_density)-1.0 
                                   if self.subpixel_seed_point_density>1 else 1.0)
         info_dict = {
-            'n_seed_points' :       np.uint32(self.n_seed_points),
-            'downup_sign' :         np.float32(np.nan),
+            'n_seed_points' :        np.uint32(self.n_seed_points),
+            'n_padded_seed_points' : np.uint32(self.n_padded_seed_points),
+            'downup_sign' :          np.float32(np.nan),
             'gpu_memory_limit_pc' :        np.uint32(self.state.gpu_memory_limit_pc),
             'n_work_items' :               np.uint32(self.state.n_work_items),
             'integrator_step_factor' :     np.float32(self.integrator_step_factor),

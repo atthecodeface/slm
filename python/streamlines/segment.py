@@ -71,7 +71,7 @@ def segment_channels( cl_src_path, which_cl_platform, which_cl_device, info_dict
     for idx,label in enumerate(channel_segment_labels_array):
         label_array[label_array==label]=idx+1
     n_segments = idx+1
-    vprint(verbose, ' number of segments={}... '.format(n_segments),end='')
+    vprint(verbose, ' number of segments={}...'.format(n_segments),end='')
 
     # Done
     vprint(verbose,'done')  
