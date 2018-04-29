@@ -221,6 +221,7 @@ let process json_dir parameters_filename jsons =
   let geodata     = Geodata.create props in
   let preprocess  = Preprocess.create props in
   let trace       = Trace.create props in
+  let analysis    = Analysis.create props in
   let plot        = Plot.create props in
 
   (* Load the data from file *)
@@ -234,6 +235,9 @@ let process json_dir parameters_filename jsons =
 
   (* Trace streamlines *)
   let results = Trace.process trace pocl data in
+
+  (* Analyze result *)
+  Analysis.process analysis data results;
 
   (* Plot a region *)
   Plot.process plot data geodata results;

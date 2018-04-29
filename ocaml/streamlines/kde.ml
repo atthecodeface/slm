@@ -257,7 +257,6 @@ let estimate_bivariate_pdf pocl data sl_array =
 
   let cl_kernel_source = Pocl.read_source cl_src_path cl_files in
             
-  let n_data      = Info.int_of data.info    "n_data" in
   let bandwidth   = Info.float_of data.info  "kdf_bandwidth" in
 
   let x_range  = Info.float_of data.info "x_range" in

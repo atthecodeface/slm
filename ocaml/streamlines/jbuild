@@ -9,7 +9,7 @@
     geodata
     preprocess
     integration trace
-    kde
+    kde analysis
     plot
     streamlines))
   (libraries (
