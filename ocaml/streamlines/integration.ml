@@ -444,7 +444,8 @@ let integrate_trajectories (tprops:t_props_trace) pocl data seeds =
   let (num_seeds,_) = ODM.shape seeds in
   let mem_per_seed = (Info.int_of data.info "max_n_steps") * 2 in (* an approximation *)
   let work_items_per_warp = Info.int_of data.info "n_work_items" in
-  let chunk_size = gpu_traj_memory_limit / mem_per_seed in
+  let max_chunk_size = gpu_traj_memory_limit / mem_per_seed in
+  let chunk_size = min (((num_seeds + work_items_per_warp-1)/work_items_per_warp)*work_items_per_warp) max_chunk_size in
   let chunk_size = work_items_per_warp * (chunk_size / work_items_per_warp) in
   let full_traj_memory_request = chunk_size * mem_per_seed in
   let to_do_list = generate_chunks data num_seeds chunk_size  in
@@ -490,11 +491,11 @@ let integrate_trajectories (tprops:t_props_trace) pocl data seeds =
   let ds_stats = get_traj_stats 0 in
   let us_stats = get_traj_stats 1 in
   let show_stats _ =
-    Printf.printf "   downstream                          upstream\n";
-    Printf.printf "          min        mean         max       min        mean         max\n";
-    Printf.printf "l  %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f\n"    us_stats.l_min us_stats.l_mean us_stats.l_max us_stats.l_min us_stats.l_mean us_stats.l_max ;
-    Printf.printf "n  %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f\n"    us_stats.c_min us_stats.c_mean us_stats.c_max us_stats.c_min us_stats.c_mean us_stats.c_max ;
-    Printf.printf "ds %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f\n%!"  us_stats.d_min us_stats.d_mean us_stats.d_max us_stats.d_min us_stats.d_mean us_stats.d_max ;
+    Printf.printf "   downstream                            upstream\n";
+    Printf.printf "          min        mean         max         min        mean         max\n";
+    Printf.printf "l %11.6f %11.6f %11.6f %11.6f %11.6f %11.6f\n"    ds_stats.l_min ds_stats.l_mean ds_stats.l_max us_stats.l_min us_stats.l_mean us_stats.l_max ;
+    Printf.printf "n %11.6f %11.6f %11.6f %11.6f %11.6f %11.6f\n"    ds_stats.c_min ds_stats.c_mean ds_stats.c_max us_stats.c_min us_stats.c_mean us_stats.c_max ;
+    Printf.printf "ds%11.6f %11.6f %11.6f %11.6f %11.6f %11.6f\n%!"  ds_stats.d_min ds_stats.d_mean ds_stats.d_max us_stats.d_min us_stats.d_mean us_stats.d_max ;
     ()
   in
   pv_verbose data show_stats;

@@ -13,7 +13,7 @@
 ///
 
 
-#ifdef KERNEL_INTEGRATE_TRAJECTORY
+#ifdef KERNEL_INTEGRATE_TRAJECTORY_UNUSED
 ///
 /// Update variables tracking trajectory length and integration step counter.
 /// Record (to global array) a compressed version of the current trajectory step vector.

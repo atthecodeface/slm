@@ -263,7 +263,7 @@ let buffer_of_array ?copy:(copy=false) t kernel_read kernel_write (ba:('a, 'b, '
 
  *)
 let copy_buffer_to_gpu t ~src ~dst =
-  pv_verbose t (fun _ -> Printf.printf "Copy buffer size %d\n%!" (buffer__size dst));
+  pv_debug t (fun _ -> Printf.printf "Copy buffer size %d\n%!" (buffer__size dst));
   ignore (buffer__enqueue_write (cl_queue t) src dst) (* ignore the event *)
 
 (**  [copy_buffer_from_gpu t src dst]
@@ -276,7 +276,7 @@ let copy_buffer_to_gpu t ~src ~dst =
 
  *)
 let copy_buffer_from_gpu t ~src ~dst =
-  pv_verbose t (fun _ -> Printf.printf "Copy buffer size %d\n%!" (buffer__size src));
+  pv_debug t (fun _ -> Printf.printf "Copy buffer size %d\n%!" (buffer__size src));
   ignore (buffer__enqueue_read (cl_queue t) src dst) (* ignore the event *)
 
 (** {1 Queue, event handling and kernel execution } *)
@@ -288,7 +288,7 @@ let copy_buffer_from_gpu t ~src ~dst =
 
  *)
 let finish_queue t =
-  pv_verbose t (fun _ -> Printf.printf "Wait for queue\n%!");
+  pv_debug t (fun _ -> Printf.printf "Wait for queue\n%!");
   CommandQueue.finish (cl_queue t)
 
 (**  [kernel_set_arg_buffer t kernel index buffer]
@@ -300,7 +300,7 @@ let kernel_set_arg_buffer t kernel index buffer =
   let open Ctypes in
   let _len = buffer__size buffer in
   let _buffer = allocate Owl_opencl.G.cl_mem buffer in
-  pv_verbose t  (fun _ -> Printf.printf "Set arg %d to buffer of size %d\n%!" index _len);
+  pv_debug t  (fun _ -> Printf.printf "Set arg %d to buffer of size %d\n%!" index _len);
   Kernel.set_arg kernel index (Ctypes.sizeof Owl_opencl.G.cl_mem) _buffer
 
 (**  [enqueue_kernel t kernel ?local_size global_work_size]
