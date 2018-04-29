@@ -341,6 +341,7 @@ let gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_sour
     pv_debug data (fun _ -> Printf.printf "Work sizes global %s local %s\n%!" (int_list_str global_size) (int_list_str local_work_size));
     let event = Pocl.enqueue_kernel pocl kernel ~local_work_size global_size in
     Pocl.event_wait pocl event;
+  Pocl.finish_queue pocl;
     let elapsed = Owl_enhance.event__get_duration event in
     let elapsed = (Int64.to_float elapsed) *. 1E-9 in
     Printf.printf "\n##### Kernel lapsed time: %0.3f secs #####\n" elapsed;

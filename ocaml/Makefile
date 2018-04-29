@@ -97,7 +97,7 @@ ocaml_help_jupyter:
 	@echo "   jupyter notebook"
 
 OCAML_BASIN := GuadalupeDemo1
-OCAML_JSON := '{"state":{"debug":false, "n_work_items":1024, "gpu_memory_limit_pc":80}}'
+OCAML_JSON := '{"state":{"debug":false, "n_work_items":64, "gpu_memory_limit_pc":80}}'
 .PHONY: ocaml_run
 ocaml_run:
 	jbuilder build ${OCAML_BUILD_LOCAL}/run_me/run_me.exe

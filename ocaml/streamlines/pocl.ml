@@ -531,7 +531,7 @@ let prepare_cl_context_queue t =
   if pai<>platform_index || dai<>device_index then (
     Printf.printf "Desired OpenCL platform/device of %d/%d not available - using platform %d and device %d" platform_index device_index pai dai;
   );
-  pv_verbose t (fun _ -> show_device pai dai device);
+  pv_noisy t (fun _ -> show_device pai dai device);
   let ctxt = Context.create [|device|] in
   t.platform <- Some platform;
   t.device <- Some device;

@@ -63,7 +63,7 @@ let program__get_info_source_str program    = opencl_read_param_str (clGetProgra
 let event__get_duration event = 
     let prof_start = event__get_profiling_info event cl_PROFILING_COMMAND_START in
     let prof_end   = event__get_profiling_info event cl_PROFILING_COMMAND_END in
-    Int64.(sub prof_end prof_end)
+    Int64.(sub prof_end prof_start)
 
   let get_buffer_info buf param_name =
     let param_name = Unsigned.UInt32.of_int param_name in
