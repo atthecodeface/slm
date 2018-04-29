@@ -15,7 +15,7 @@
  * @file   preprocess.ml
  * @brief  Preprocessing
  *
- * Up to date with python of git CS 3cb3f5e67e5594ef571415f636320bcd5d2d7290
+ * Up to date with python of git CS 54b7ed9ebd253403c1851764035b5c718d5937d3
  * except for speed array and nonconditioned arrays
  *
  * v}
@@ -107,8 +107,8 @@ let compute_topo_gradient_field roi_array =
   let (w,h)   = ODM.shape roi_array in
   let u_array = ODM.(empty BA.float32 w h) in
   let v_array = ODM.(empty BA.float32 w h) in
-  ba_filter 3 1 gradient_x 0. roi_array u_array;
-  ba_filter 1 3 gradient_y 0. roi_array v_array;
+  ignore (ba_filter 3 1 gradient_x 0. roi_array u_array);
+  ignore (ba_filter 1 3 gradient_y 0. roi_array v_array);
   (u_array, v_array)
 
 (**  [normalize_arrays u_array v_array]
@@ -328,10 +328,10 @@ let find_blockages t data =
 
     pv_info t (fun _ -> Printf.printf "Finding blockages...\n%!");
     let blockages_array = ODN.(empty Bigarray.char (shape roi_array)) in
-    ba_filter 3 3 has_just_diagonal_outflows '\000' data.roi_array blockages_array;
+    ignore (ba_filter 3 3 has_just_diagonal_outflows '\000' data.roi_array blockages_array);
 
     let blocked_neighbors_array = ODN.(empty Bigarray.char (shape roi_array)) in
-    ba_filter 3 3 upstream_of_diagonal_outflow '\000' blockages_array blocked_neighbors_array;
+    ignore (ba_filter 3 3 upstream_of_diagonal_outflow '\000' blockages_array blocked_neighbors_array);
 
     (blockages_array, blocked_neighbors_array)
 

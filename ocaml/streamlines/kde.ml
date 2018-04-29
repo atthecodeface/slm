@@ -1,0 +1,316 @@
+(** {v Copyright (C) 2017-2018,  Colin P Stark and Gavin J Stark.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @file   kde.ml
+ * @brief  Kernel density estimation
+ *
+ * Up to date with python of git CS 3cb3f5e67e5594ef571415f636320bcd5d2d7290
+ * except for speed array and nonconditioned arrays
+ *
+ * v}
+ *)
+
+(*f  Module abbreviations *)
+open Globals
+open Properties
+open Core
+module ODM = Owl.Dense.Matrix.Generic
+module ODN = Owl.Dense.Ndarray.Generic
+module BA=Bigarray
+
+(** {1 Types } *)
+
+(**  [t]
+
+  Structure for the Preprocess workflow
+
+ *)
+type t = {
+    props : t_props_preprocess;
+    mutable roi_gradx_array : t_ba_floats;
+    mutable roi_grady_array : t_ba_floats;
+    mutable where_looped : (int * int) list;
+    pad_width : int;
+  }
+
+(** {1 pv_verbosity functions} *)
+
+(**  [pv_noisy t]
+
+  Shortcut to use {!type:Properties.t_props_trace} verbosity for {!val:Properties.pv_noisy}
+
+ *)
+let pv_noisy   data = Workflow.pv_noisy data.properties.trace.workflow
+
+(**  [pv_debug t]
+
+  Shortcut to use {!type:Properties.t_props_trace} verbosity for {!val:Properties.pv_debug}
+
+ *)
+let pv_debug   data = Workflow.pv_noisy data.properties.trace.workflow
+
+(**  [pv_info t]
+
+  Shortcut to use {!type:Properties.t_props_trace} verbosity for {!val:Properties.pv_info}
+
+ *)
+let pv_info    data = Workflow.pv_info data.properties.trace.workflow
+
+(**  [pv_verbose t]
+
+  Shortcut to use {!type:Properties.t_props_trace} verbosity for {!val:Properties.pv_verbose}
+
+ *)
+let pv_verbose data = Workflow.pv_verbose data.properties.trace.workflow
+
+(** {1 Memory functions} *)
+
+(**  [copy_read pocl]
+
+  Shortcut for creating an OpenCL buffer that is read-only by the
+  kernel and copied from a big array before execution
+
+  @return OpenCL buffer
+
+ *)
+let copy_read       pocl = Pocl.buffer_of_array pocl ~copy:true true false
+
+(**  [copy_read_write pocl]
+
+  Shortcut for creating an OpenCL buffer that is read-write by the
+  kernel and copied from a big array before execution
+
+  @return OpenCL buffer
+
+ *)
+let copy_read_write pocl = Pocl.buffer_of_array pocl ~copy:true true true
+
+(**  [write_only pocl]
+
+  Shortcut for creating an OpenCL buffer that is write-only by the
+  kernel
+
+  @return OpenCL buffer
+
+ *)
+let write_only      pocl = Pocl.buffer_of_array pocl false true
+
+(** {1 GPU compute functions} *)
+
+(**  [gpu_compute_histogram pocl data program sl_array is_bivariate]
+ *)
+let gpu_compute_histogram pocl data program sl_array is_bivariate =
+  let n_hist_bins  = Info.int_of data.info "n_hist_bins" in
+  let n_data       = Info.int_of data.info "n_data" in
+
+  let cl_kernel_name = if is_bivariate then "histogram_bivariate" else  "histogram_univariate" in
+  let kernel = Pocl.get_kernel pocl program cl_kernel_name in
+
+  let nx = n_hist_bins in
+  let ny = if is_bivariate then n_hist_bins else 1 in
+  let histogram_array    = ba_int2d nx ny in
+  ODM.fill histogram_array 0;
+  let sl_buffer          = copy_read       pocl sl_array in
+  let histogram_buffer   = copy_read_write pocl histogram_array in
+  Pocl.kernel_set_arg_buffer pocl kernel 0 sl_buffer;
+  Pocl.kernel_set_arg_buffer pocl kernel 1 histogram_buffer;
+
+  let global_size = [n_data;1] in
+  let local_work_size = [] in
+  let event = Pocl.enqueue_kernel pocl kernel ~local_work_size global_size in
+  Pocl.event_wait pocl event;
+
+  Pocl.copy_buffer_from_gpu pocl ~src:histogram_buffer    ~dst:histogram_array;
+  Pocl.finish_queue pocl;
+  histogram_array
+
+(**  [gpu_compute_partial_pdf pocl data program histogram_array]
+ *)
+let gpu_compute_partial_pdf pocl data program histogram_array =
+  let n_hist_bins  = Info.int_of data.info "n_hist_bins" in
+
+  let cl_kernel_name = "pdf_bivariate_rows" in
+  let kernel = Pocl.get_kernel pocl program cl_kernel_name in
+
+  let partial_pdf_array  = ba_float2d n_hist_bins n_hist_bins in
+  ODM.fill partial_pdf_array 0.;
+  let histogram_buffer   = copy_read       pocl histogram_array in
+  let partial_pdf_buffer = copy_read_write pocl partial_pdf_array in
+
+  Pocl.kernel_set_arg_buffer pocl kernel 0 histogram_buffer;
+  Pocl.kernel_set_arg_buffer pocl kernel 1 partial_pdf_buffer;
+
+  let global_size = [n_hist_bins*n_hist_bins;1] in
+  let local_work_size = [] in
+  let event = Pocl.enqueue_kernel pocl kernel ~local_work_size global_size in
+  Pocl.event_wait pocl event;
+  Pocl.copy_buffer_from_gpu pocl ~src:partial_pdf_buffer    ~dst:partial_pdf_array;
+  Pocl.finish_queue pocl;
+  partial_pdf_array
+
+(**  [gpu_compute_full_bivariate_pdf pocl data program partial_pdf_array]
+ *)
+let gpu_compute_full_bivariate_pdf pocl data program partial_pdf_array =
+  let n_pdf_points  = Info.int_of data.info "n_pdf_points" in
+
+  let cl_kernel_name = "pdf_bivariate_cols" in
+  let kernel = Pocl.get_kernel pocl program cl_kernel_name in
+
+  let pdf_array          = ba_float2d n_pdf_points n_pdf_points in
+  ODM.fill pdf_array 0.;
+  let partial_pdf_buffer = copy_read       pocl partial_pdf_array in
+  let pdf_buffer         = copy_read_write pocl pdf_array in
+
+  Pocl.kernel_set_arg_buffer pocl kernel 0 partial_pdf_buffer;
+  Pocl.kernel_set_arg_buffer pocl kernel 1 pdf_buffer;
+
+  let global_size = [n_pdf_points*n_pdf_points;1] in
+  let local_work_size = [] in
+  let event = Pocl.enqueue_kernel pocl kernel ~local_work_size global_size in
+  Pocl.event_wait pocl event;
+  Pocl.copy_buffer_from_gpu pocl ~src:pdf_buffer    ~dst:pdf_array;
+  Pocl.finish_queue pocl;
+  pdf_array
+
+(**  [gpu_compute_full_univariate_pdf pocl data program histogram_array]
+ *)
+let gpu_compute_full_univariate_pdf pocl data program histogram_array =
+  let n_pdf_points  = Info.int_of data.info "n_pdf_points" in
+
+  let cl_kernel_name = "pdf_univariate" in
+  let kernel = Pocl.get_kernel pocl program cl_kernel_name in
+
+  let pdf_array          = ba_float2d n_pdf_points 1 in
+  ODM.fill pdf_array 0.;
+  let histogram_buffer   = copy_read       pocl histogram_array in
+  let pdf_buffer         = copy_read_write pocl pdf_array in
+
+  Pocl.kernel_set_arg_buffer pocl kernel 0 histogram_buffer;
+  Pocl.kernel_set_arg_buffer pocl kernel 1 pdf_buffer;
+
+  let global_size = [n_pdf_points;1] in
+  let local_work_size = [] in
+  let event = Pocl.enqueue_kernel pocl kernel ~local_work_size global_size in
+  Pocl.event_wait pocl event;
+  Pocl.copy_buffer_from_gpu pocl ~src:pdf_buffer    ~dst:pdf_array;
+  Pocl.finish_queue pocl;
+  pdf_array
+
+(** {1 Statics} *)
+
+let cl_files = ["kde.cl";
+    ]
+let cl_src_path = ["opencl"]
+
+(** {1 PDF estimation }
+ *)
+
+(**  [estimate_univariate_pdf pocl data]
+ *)
+let estimate_univariate_pdf pocl data sl_array =
+
+  let cl_kernel_source = Pocl.read_source cl_src_path cl_files in
+            
+  let n_data   = Info.int_of data.info "n_data" in
+  let bin_dx   = Info.float_of data.info "bin_dx" in
+  let pdf_dx   = Info.float_of data.info "pdf_dx" in
+
+  let stddev=1.0 in (*    stddev       = np.std(sl_array)*)
+    
+  (* Set up kernel filter -  Silverman hack for now *)
+  let kdf_width_x = 1.06 *. stddev *. ((float n_data) ** (-0.2)) *. 8. in
+  let n_kdf_part_points_x = (truncate (kdf_width_x /. pdf_dx)) / 2 in
+  Info.set data.info "kdf_width_x"         (Info.Float32 kdf_width_x);
+  Info.set data.info "n_kdf_part_points_x" (Info.Int     n_kdf_part_points_x);
+
+  let compile_options = Pocl.compile_options pocl data data.info "KDE" in
+  let program = Pocl.compile_program pocl cl_kernel_source compile_options in
+
+  pv_verbose data (fun _ -> Printf.printf "histogram...%!");
+  let histogram_array = gpu_compute_histogram pocl data program sl_array false in
+  pv_verbose data (fun _ -> Printf.printf "done\n%!");
+
+  pv_verbose data (fun _ -> Printf.printf "kernel filtering...%!");
+  let pdf_array = gpu_compute_full_univariate_pdf pocl data program histogram_array in
+  pv_verbose data (fun _ -> Printf.printf "done\n%!");
+
+  let weighted_total = (ODM.sum' pdf_array) *. bin_dx in
+  ODM.div_scalar pdf_array weighted_total
+
+(**  [estimate_bivariate_pdf pocl data]
+
+    Compute bivariate histogram and subsequent kernel-density smoothed pdf.
+
+ *)
+let estimate_bivariate_pdf pocl data sl_array =
+
+  let cl_kernel_source = Pocl.read_source cl_src_path cl_files in
+            
+  let n_data      = Info.int_of data.info    "n_data" in
+  let bandwidth   = Info.float_of data.info  "kdf_bandwidth" in
+
+  let x_range  = Info.float_of data.info "x_range" in
+  let stddev_x  = 1.0 in
+  let bin_dx   = Info.float_of data.info "bin_dx" in
+  let pdf_dx   = Info.float_of data.info "pdf_dx" in
+
+  let y_range  = Info.float_of data.info "y_range" in
+  let stddev_y  = 1.0 in
+  let bin_dy   = Info.float_of data.info "bin_dy" in
+  let pdf_dy   = Info.float_of data.info "pdf_dy" in
+
+  (* Set up kernel filter -  Silverman hack for now *)
+  let kdf_width_x = stddev_x *. bandwidth *. 3. in
+  let kdf_width_y = stddev_x *. bandwidth *. 3. *. 2. in
+  let n_kdf_part_points_x = ((truncate (kdf_width_x /. bin_dx)) / 2) * 2 in
+  let n_kdf_part_points_y = ((truncate (kdf_width_y /. bin_dy)) / 2) * 2 in
+  Info.set data.info "kdf_width_x"         (Info.Float32 kdf_width_x);
+  Info.set data.info "kdf_width_y"         (Info.Float32 kdf_width_y);
+  Info.set data.info "n_kdf_part_points_x" (Info.Int     n_kdf_part_points_x);
+  Info.set data.info "n_kdf_part_points_y" (Info.Int     n_kdf_part_points_y);
+
+  let show_parameters _ =
+    Printf.printf " stddev_x %f\n" stddev_x;
+    Printf.printf " stddev_y %f\n" stddev_y;
+    Printf.printf " kdf_width_x %f\n" (Info.float_of data.info "kdf_width_x");
+    Printf.printf " kdf_width_y %f\n" (Info.float_of data.info "kdf_width_y");
+    Printf.printf " x_min %f\n" (Info.float_of data.info "x_min");
+    Printf.printf " x_max %f\n" (Info.float_of data.info "x_max");
+    Printf.printf " y_min %f\n" (Info.float_of data.info "y_min");
+    Printf.printf " y_max %f\n" (Info.float_of data.info "y_max");
+    Printf.printf " n_kdf_part_points_x %f\n" (Info.float_of data.info "n_kdf_part_points_x");
+    Printf.printf " n_kdf_part_points_y %f\n" (Info.float_of data.info "n_kdf_part_points_y");
+    Printf.printf " n_data %f\n" (Info.float_of data.info "n_data");
+    Printf.printf " n_hist_bins/n_pdf_points %d\n" (Info.int_of data.info "n_hist_bins" / Info.int_of data.info "n_pdf_points");
+  in
+  pv_debug data show_parameters;
+            
+  let compile_options = Pocl.compile_options pocl data data.info "KDE" in
+  let program = Pocl.compile_program pocl cl_kernel_source compile_options in
+
+  pv_verbose data (fun _ -> Printf.printf "histogram...%!");
+  let histogram_array = gpu_compute_histogram pocl data program sl_array true in
+  pv_verbose data (fun _ -> Printf.printf "done\n%!");
+
+  pv_verbose data (fun _ -> Printf.printf "kernel filtering rows...%!");
+  let partial_pdf_array = gpu_compute_partial_pdf pocl data program histogram_array in
+  pv_verbose data (fun _ -> Printf.printf "done\n%!");
+
+  pv_verbose data (fun _ -> Printf.printf "kernel filtering columns...%!");
+  let pdf_array = gpu_compute_full_bivariate_pdf pocl data program partial_pdf_array in
+  pv_verbose data (fun _ -> Printf.printf "done\n%!");
+
+  let weighted_total = (ODM.sum' pdf_array) *. bin_dx *. bin_dy in
+  ODM.div_scalar pdf_array weighted_total
+    

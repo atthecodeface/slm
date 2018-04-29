@@ -33,6 +33,16 @@ let log_or_min x = if x<=0. then min_float else log x
     Class for making and recording kernel-density estimate of univariate 
     probability distribution f(x) data and metadata. 
     Provides a method to find the modal average: x | max{f(x}.
+
+A univariate distribution of logx values is created from a pair of
+logx and logy arrays.
+
+The logy array is {i only} used to filter out points (logx,logy) which
+lie outside of the range logy_min to logy_max.
+
+Points whose logx value lie outside a logx_min to logx_max range are
+also filtered out.
+
  *)
 
 module Univariate_distribution =
@@ -46,14 +56,16 @@ type t = {
     logx_vec  : t_ba_floats;
     x_vec : t_ba_floats;
     search_cdf_min : float;
+    pdf : t_ba_floats;
+    cdf : t_ba_floats;
   }
   (*f create
-    logx_array must have only positive non-NaN elements
-    logy_array must have only positive non-NaN elements
+    logx_array must have only non-NaN elements
+    logy_array must have only non-NaN elements
+
    *)
   let create ?pixel_size:(pixel_size=1.0)
         ?n_samples:(n_samples=100)
-        ?shear_factor:(shear_factor=0.)
         ?search_cdf_min:(search_cdf_min=0.95)
         ?logx_min ?logy_min ?logx_max ?logy_max
         ~logx_array ~logy_array =
@@ -62,18 +74,6 @@ type t = {
     let logx_max = Option.default_delayed (fun _ -> ODN.max' logx_array) logx_max in
     let logy_max = Option.default_delayed (fun _ -> ODN.max' logy_array) logy_max in
 
-    (* Transform the x values to shear the pdf and detrend
-       The shear acts parallel to the x axis, in contrast to the behavior
-       in the joint pdf method, otherwise it would have no effect on this marginal.
-     *)
-    let (logx_array, logx_min, logx_max) = 
-      if (shear_factor=0.) then ( (logx_array, logx_min, logx_max)
-                                ) else (
-        (ODN.(sub_ logx_array (mul_scalar logy_array shear_factor)); logx_array),
-        (logx_min -. logy_min *. shear_factor),
-        (logx_max -. logy_max *. shear_factor)
-      ) 
-    in
     let f i logx =
      let logy = ODN.get logy_array [|i|] in
      ((logx>=logx_min) && (logx<=logx_max) && (logy>=logy_min) && (logy<=logy_max)) in
@@ -93,56 +93,67 @@ type t = {
 
   (*f compute_kde *)
   let compute_kde ?bw_method:(m="scott") t =
- (*
-    pdf is an array of the same size as t.logx_vec (i.e. t.n_samples)
-    with values derived from a kernel of a certain bandwidth applied
-    to it
-
-    The sum of the pdf is obviously 1.0
-
-
-        self.kde['bw_method'] = bw_method
-        let kde_model = gaussian_kde t.logx_data bw_method=self.kde['bw_method'])
-        let kde_pdf   = kde_model.pdf
-
-
-OR
-
         self.kernel = kernel
         self.bandwidth = bandwidth
-#         pdebug(self.logx_data.shape,self.x_vec.shape)
-        self.kde['model'] = KernelDensity(kernel=self.kernel, 
-                                 bandwidth=self.bandwidth).fit(self.logx_data)
-        self.kde['pdf'] = np.exp(self.kde['model'].score_samples(self.logx_vec)).reshape(
-                                                                    (self.n_samples,1))
-        dx = self.logx_vec[1]-self.logx_vec[0]
-        self.kde['cdf'] = np.cumsum(self.kde['pdf'])*dx
-
- *)
-
+        # hack
+        if kernel=='gaussian':
+            self.bandwidth /= 2.0
+        available_kernels = ['tophat','triangle','epanechnikov','cosine','gaussian']
+        if kernel not in available_kernels:
+            raise ValueError('PDF kernel "{}" is not among those available: {}'
+                             .format(kernel, available_kernels))
+        x_range = self.logx_max-self.logx_min;
+        bin_dx = x_range/self.n_hist_bins
+        pdf_dx = x_range/self.n_pdf_points
+        self.info_dict = {
+            'kdf_bandwidth' : np.float32(self.bandwidth),
+            'kdf_kernel' :    kernel,
+            'n_data' :        np.uint32(self.n_data),
+            'n_hist_bins' :   np.uint32(self.n_hist_bins),
+            'n_pdf_points' :  np.uint32(self.n_pdf_points),
+            'x_min' :         np.float32(self.logx_min),
+            'x_max' :         np.float32(self.logx_max),
+            'x_range' :       np.float32(x_range),
+            'bin_dx' :        np.float32(bin_dx),
+            'pdf_dx' :        np.float32(pdf_dx),
+            'kdf_width_x' :   np.float32(0.0),
+            'n_kdf_part_points_x' : np.uint32(0),
+            'y_min' :         np.float32(0.0),
+            'y_max' :         np.float32(1.0),
+            'y_range' :       np.float32(1.0),
+            'bin_dy' :        np.float32(1.0/2000),
+            'pdf_dy' :        np.float32(1.0/200),
+            'kdf_width_y' :         np.float32(0.0),
+            'n_kdf_part_points_y' : np.uint32(0)
+        }
+        t.pdf <- Kde.estimate_univariate_pdf pocl data logx_data;
+        t.cdf <- ODM.(mul_scalar_ (cumsum t.pdf) bin_dx);
+        let should_be_one = ODN.get t.cdf (n_data-1) in
+        if (abs_float (should_be_one -. 1.)) > 5e-3 then (
+           Printf.printf "Error/imprecision when computing cumulative probability distribution:\npdf integrates to %3f not to 1.0\n%!" should_be_one);
     ()
                                
   (*f statistics *)
     let statistics t =
         let x   = t.logx_vec in
-        let pdf = t.logx_vec in (*t.kde_pdf in*) (* one pdf for each x *)
+        let pdf = t.pdf in
         let log_mean     = ODN.(get (cumsum (mul x pdf)) [|1|]) in (* / sum pdf *)
         let log_variance = ODN.(get (cumsum (mul pdf (sqr (sub_scalar x log_mean)))) [|1|]) in (* / sum pdf *)
-        let mean = exp log_mean in
-        let stddev = exp (sqrt log_variance) in
-        let variance = exp log_variance in
+        let mean      = exp log_mean in
+        let stddev    = exp (sqrt log_variance) in
+        let variance  = exp log_variance in
 
         let raw_mean   = exp (OS.mean (ODN.to_array t.logx_data)) in
         let raw_stddev = exp (OS.std  (ODN.to_array t.logx_data)) in
         let raw_var    = exp (OS.var  (ODN.to_array t.logx_data)) in
 
-        (*self.print('raw mean:  {:.2f}'.format(self.raw_mean), end='')
-        self.print(' sigma:  {:.2f}'.format(self.raw_stddev), end='')
-        self.print(' var:  {:.2f}'.format(self.raw_var))
-        self.print('kde mean:  {:.2f}'.format(self.kde['mean']), end='')
-        self.print(' sigma:  {:.2f}'.format(self.kde['stddev']), end='')
-        self.print(' var:  {:.2f}'.format(self.kde['var']))
-         *)
+        let show_statistics t = 
+        Printf.printf "raw mean:  {:.2f}\n" t.raw_mean;
+        Printf.printf " sigma:  {:.2f}\n" t.raw_stddev;
+        Printf.printf " var:  {:.2f}\n" t.raw_var;
+        Printf.printf "kde mean:  {:.2f}\n" t.kde['mean'];
+        Printf.printf " sigma:  {:.2f}\n" t.kde['stddev'];
+        Printf.printf " var:  {:.2f}\n" t.kde['var'];
     ()
     
     let find_modes t =
@@ -208,8 +219,6 @@ OR
                                   logx_max=None, logy_max=None):*)
 (*
     let t = create ~pixel_size ~n_samples ~shear_factor in
-    let logx_array = ODN.(map log_or_min (slice_left [|up_down_idx_x|] x_array)) in
-    let logy_array = ODN.(map log_or_min (slice_left [|up_down_idx_y|] y_array)) in
         if method is None: method = 'sklearn'
     let n_samples = Option.default self.marginal_distbn_kde_nx_samples n_samples in
     if kernel is None: kernel = self.marginal_distbn_kde_kernel
@@ -426,6 +435,42 @@ let create props geodata trace =
     length_correction_factor;
   }
 
+(**  [compute_marginal_distribn]
+ *)
+let compute_marginal_distribn ?n_hist_bins ?n_pdf_points =
+  let logx_array = ODN.(map log_or_min (slice_left [|up_down_idx_x|] x_array)) in
+  let logy_array = ODN.(map log_or_min (slice_left [|up_down_idx_y|] y_array)) in
+  (* map NAN to min float *)
+  let n_hist_bins  = Option.default t.props.n_hist_bins                    n_hist_bins in
+  let n_pdf_points = Option.default t.props.n_pdf_points                   n_pdf_points in
+  let kernel       = Option.default t.props.marginal_distbn_kde_kernel     kernel in
+  let bandwidth    = Option.default t.props.marginal_distbn_kde_bandwidth  bandwidth in
+  let uv_distbn    = Univariate_distribution.create ~logx_array ~logy_array
+                                            n_hist_bins n_pdf_points bounds
+                                            search_cdf_min
+  uv_distbn.compute_kde_opencl kernel bandwidth;
+  (*uv_distbn.find_modes()
+  uv_distbn.statistics()
+  uv_distbn.choose_threshold()
+   *)
+  uv_distbn
+   
+
+let compute_marginal_distribn_dsla t results =
+  pv_verbose t (fun _ -> Printf.printf "Computing marginal distribution 'dsla'...\n%!");
+  let up_down_idx_x = 0 in
+  let up_down_idx_y = 0 in
+  let x_array = ODN.get_slice results.sla_array up_down_idx_x in
+  let y_array = ODN.get_slice results.slc_array up_down_idx_y mapped to floats in
+  let mask_array = data.basin_mask_array in
+  let logx_min = Option.map log t.props.pdf_sla_min in
+  let logx_max = Option.map log t.props.pdf_sla_max in
+  let logy_min = Option.map log t.props.pdf_slc_min in
+  let logy_max = Option.map log t.props.pdf_slc_max in
+  let bounds = (logx_min, logx_min, logy_max, logy_max) in
+  t.mpdf_dsla <- compute_marginal_distribn x_array y_array mask_array bounds;
+  pv_verbose t (fun _ -> Printf.printf "Done\n%!");
+        
 (*f process 
 
   Analyze streamline count, length distbns etc, generate stats and pdfs
@@ -433,7 +478,8 @@ let create props geodata trace =
 let process t = 
   Workflow.workflow_start t.props.workflow;
 
-(*        if self.do_marginal_distbn_dsla: self.compute_marginal_distribn_dsla()
+  if self.do_marginal_distbn_dsla then compute_marginal_distribn_dsla t results;
+(*
         if self.do_marginal_distbn_dslt: self.compute_marginal_distribn_dslt()
 
     t.area_correction_factor   <-  1. /. self.mpdf_dslt.kde['var']

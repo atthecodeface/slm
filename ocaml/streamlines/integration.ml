@@ -15,7 +15,7 @@
  * @file   integration.ml
  * @brief  Integration using GPU for trace
  *
- * Up to date with python of git CS 3cb3f5e67e5594ef571415f636320bcd5d2d7290
+ * Up to date with python of git CS 54b7ed9ebd253403c1851764035b5c718d5937d3
  * except chunk_size is not always a multiple of n_work_items
  *
  * v}
@@ -27,6 +27,7 @@ open Core
 open Properties
 module ODM = Owl.Dense.Matrix.Generic
 module ODN = Owl.Dense.Ndarray.Generic
+module OS  = Owl.Stats
 
 (** {1 pv_verbosity functions} *)
 
@@ -35,28 +36,28 @@ module ODN = Owl.Dense.Ndarray.Generic
   Shortcut to use {!type:Properties.t_props_trace} verbosity for {!val:Properties.pv_noisy}
 
  *)
-let pv_noisy   (props:t_props_trace) = Workflow.pv_noisy props.workflow
+let pv_noisy   data = Workflow.pv_noisy data.properties.trace.workflow
 
 (**  [pv_debug t]
 
   Shortcut to use {!type:Properties.t_props_trace} verbosity for {!val:Properties.pv_debug}
 
  *)
-let pv_debug   (props:t_props_trace) = Workflow.pv_noisy props.workflow
+let pv_debug   data = Workflow.pv_noisy data.properties.trace.workflow
 
 (**  [pv_info t]
 
   Shortcut to use {!type:Properties.t_props_trace} verbosity for {!val:Properties.pv_info}
 
  *)
-let pv_info    (props:t_props_trace) = Workflow.pv_info props.workflow
+let pv_info    data = Workflow.pv_info data.properties.trace.workflow
 
 (**  [pv_verbose t]
 
   Shortcut to use {!type:Properties.t_props_trace} verbosity for {!val:Properties.pv_verbose}
 
  *)
-let pv_verbose (props:t_props_trace) = Workflow.pv_verbose props.workflow
+let pv_verbose data = Workflow.pv_verbose data.properties.trace.workflow
 
 (** {1 Statics} *)
 
@@ -101,18 +102,20 @@ let chunk data downstream nse =
 
 *)
 let show_chunk t =
-    ()
+  Printf.printf "Chunk %d\n" t.chunk_index;
+  Printf.printf "  %s (required %b, index %d, sign %f)" t.direction t.required t.downup_index t.downup_sign;
+  Printf.printf "  from seed %d for %d seeds\n%!" t.seed_offset t.num_seeds
 
-(**  [generate_chunks num_seeds data num_chunks_required]
+(**  [generate_chunks data num_seeds chunk_size]
 
   Generate a to_do_list of chunks
 
  *)
-let generate_chunks num_seeds data num_chunks_required =
-  let chunk_size = (num_seeds + num_chunks_required - 1) / num_chunks_required in
+let generate_chunks data num_seeds chunk_size =
+  let num_chunks_required = (num_seeds + chunk_size - 1) / chunk_size in
   let chunks = List.init num_chunks_required (fun i -> (i, i*chunk_size, min ((i+1)*chunk_size) num_seeds)) in
   let to_do_list = List.fold_left (fun acc nse -> (chunk data true nse)::(chunk data false nse)::acc) [] chunks in
-  (chunk_size, to_do_list)
+  to_do_list
 
 (** {1 Memory} *)
 
@@ -220,7 +223,7 @@ let memory_create_buffers pocl data seeds chunk_size =
     Printf.printf "Streamlines virtual array allocation: %d,%d size %d\n" num_seeds y (num_seeds*y*max_traj_length*2);
     Printf.printf "Streamlines array allocation per chunk: %d,%d size %d\n%!" x y (ODM.size_in_bytes chunk_trajcs_array)
   in
-  pv_verbose data.properties.trace show_sizes;
+  pv_verbose data show_sizes;
   {
     uv_array;
     chunk_slc_array;
@@ -308,12 +311,14 @@ let results_create data seeds =
  *)
 let gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_source t =
   if t.required then (
-    pv_verbose data.properties.trace (fun _ -> show_chunk t);
+    pv_verbose data (fun _ -> show_chunk t);
 
     (* Specify this integration job's parameters and compile *)
     let info = data.info in
-    let global_size     = [t.num_seeds; 1] in
-    let local_work_size = [Info.int_of info "n_work_items"; 1] in
+    let n_work_items = Info.int_of info "n_work_items" in
+    let global_size = ((t.num_seeds+n_work_items-1)/n_work_items) * n_work_items in
+    let global_size     = [global_size; 1] in
+    let local_work_size = [n_work_items; 1] in
     Info.set info "downup_sign" (Info.Float32 t.downup_sign);
     Info.set info "seeds_chunk_offset" (Info.Int t.seed_offset);
     let compile_options = Pocl.compile_options pocl data info "INTEGRATE_TRAJECTORY" in
@@ -333,7 +338,7 @@ let gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_sour
     Pocl.kernel_set_arg_buffer pocl kernel 7 memory.chunk_slt_buffer;
 
     let int_list_str l = (List.fold_left (fun acc d -> acc ^ (sfmt "%d; " d)) "[" l) ^ "]" in
-    pv_debug data.properties.trace (fun _ -> Printf.printf "Work sizes global %s local %s\n%!" (int_list_str global_size) (int_list_str local_work_size));
+    pv_debug data (fun _ -> Printf.printf "Work sizes global %s local %s\n%!" (int_list_str global_size) (int_list_str local_work_size));
     let event = Pocl.enqueue_kernel pocl kernel ~local_work_size global_size in
     Pocl.event_wait pocl event;
     let elapsed = Owl_enhance.event__get_duration event in
@@ -343,7 +348,7 @@ let gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_sour
     memory_copyback memory pocl;
 
     (* Compile streamline results *)
-    pv_noisy data.properties.trace (fun _ -> Printf.printf "Building streamlines compressed array for chunk\n%!");
+    pv_noisy data (fun _ -> Printf.printf "Building streamlines compressed array for chunk\n%!");
     for i=0 to t.num_seeds-1 do (* i is in range 0 to chunk_size-1 *)
       let seed_downup_index = 2*(i + t.seed_offset) + t.downup_index in
       let traj_nsteps = ODN.get memory.chunk_nsteps_array [|i|] in
@@ -397,13 +402,13 @@ let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
       slt /. (float slc)
     )
   in
-  let sla = ODN.mapi_nd map_slc_slt results.slt_array in
+  results.sla_array <- ODN.mapi_nd map_slc_slt results.slt_array;
 
   results.streamline_arrays <- [| Array.of_list (List.rev streamline_lists.(0)); Array.of_list (List.rev streamline_lists.(1)); |];
 
   let total_steps = Array.fold_left (fun acc t -> acc+(Bytes.length t)) 0           results.streamline_arrays.(0) in
   let total_steps = Array.fold_left (fun acc t -> acc+(Bytes.length t)) total_steps results.streamline_arrays.(1) in
-  pv_verbose data.properties.trace (fun _ -> Printf.printf "Total steps in all streamlines %d\n%!" (total_steps/2));
+  pv_verbose data (fun _ -> Printf.printf "Total steps in all streamlines %d\n%!" (total_steps/2));
   results
 
 (**  [integrate_trajectories tprops pocl data seeds]
@@ -417,15 +422,33 @@ let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
   @return trace_results
 
  *)
+type t_stats = {
+  l_mean : float;
+  l_min  : float;
+  l_max  : float;
+
+  c_mean : float;
+  c_min  : float;
+  c_max  : float;
+
+  d_mean : float;
+  d_min  : float;
+  d_max  : float;
+  }
+
 let integrate_trajectories (tprops:t_props_trace) pocl data seeds =
   Workflow.workflow_start ~subflow:"integrating streamlines" tprops.workflow;
   Pocl.prepare_cl_context_queue pocl;
 
   let gpu_traj_memory_limit = Pocl.get_memory_limit pocl in (* max memory permitted to use *)
   let (num_seeds,_) = ODM.shape seeds in
-  let full_traj_memory_request = num_seeds * (Info.int_of data.info "max_n_steps") * 2 in
-  let num_chunks_required = (full_traj_memory_request+gpu_traj_memory_limit-1) / gpu_traj_memory_limit in
-  let (chunk_size, to_do_list) = generate_chunks num_seeds data num_chunks_required  in
+  let mem_per_seed = (Info.int_of data.info "max_n_steps") * 2 in (* an approximation *)
+  let work_items_per_warp = Info.int_of data.info "n_work_items" in
+  let chunk_size = gpu_traj_memory_limit / mem_per_seed in
+  let chunk_size = work_items_per_warp * (chunk_size / work_items_per_warp) in
+  let full_traj_memory_request = chunk_size * mem_per_seed in
+  let to_do_list = generate_chunks data num_seeds chunk_size  in
+  let num_chunks_required = List.length to_do_list in
 
   let show_memory _ =
     Printf.printf "GPU/OpenCL device global memory limit for streamline trajectories: %d\n" gpu_traj_memory_limit;
@@ -440,53 +463,54 @@ let integrate_trajectories (tprops:t_props_trace) pocl data seeds =
     Printf.printf "Chunk size = number of kernel instances per chunk: %d\n" chunk_size;
     Printf.printf "%!"
   in
-  pv_verbose data.properties.trace show_memory;
+  pv_verbose data show_memory;
 
   let results = gpu_integrate_trajectories pocl data seeds chunk_size to_do_list in
     
   (* Streamline stats *)
   let pixel_size = Info.float_of data.info "pixel_size" in
 
-(*
-    traj_stats_df = compute_stats(traj_length_array,traj_nsteps_array,pixel_size,verbose)
-    dds =  traj_stats_df['ds']['downstream','mean']
-    uds =  traj_stats_df['ds']['upstream','mean']
-    # slt: sum of line lengths crossing a pixel * number of line-points per pixel
-    # slt: <=> sum of line-points per pixel
-    rtn_slt_array[:,:,0] = rtn_slt_array[:,:,0]*(dds/pixel_size)
-    rtn_slt_array[:,:,1] = rtn_slt_array[:,:,1]*(uds/pixel_size)
-    # slt:  => sum of line-points per meter
-    rtn_slt_array = np.sqrt(rtn_slt_array) #*np.exp(-1/4) # *(3/4)
-    # slt:  =>  sqrt(area)
+  pv_verbose data (fun _ -> Printf.printf "Computing streamlines statistics\n");
+  let get_traj_stats downup_index =
+    let data_of_seed seed =
+      let seed_downup_index = 2*seed + downup_index in
+      let ln0 = (ODN.get results.traj_lengths_array [|seed_downup_index|]) *. pixel_size in
+      let ln1 = float (ODN.get results.traj_nsteps_array  [|seed_downup_index|]) in
+      (ln0, ln1, ln0 /. ln1)
+    in
+    let line_stats = Array.init num_seeds data_of_seed in
+    let lengths = Array.map (fun (x,_,_) -> x) line_stats in
+    let counts  = Array.map (fun (_,x,_) -> x) line_stats in
+    let dses    = Array.map (fun (_,_,x) -> x) line_stats in
+    {l_mean=OS.mean lengths; l_min=OS.min lengths; l_max=OS.max lengths;
+     c_mean=OS.mean counts;  c_min=OS.min counts;  c_max=OS.max counts;
+     d_mean=OS.mean dses;    d_min=OS.min dses;    d_max=OS.max dses;
+    }
+  in
+  let ds_stats = get_traj_stats 0 in
+  let us_stats = get_traj_stats 1 in
+  let show_stats _ =
+    Printf.printf "   downstream                          upstream\n";
+    Printf.printf "          min        mean         max       min        mean         max\n";
+    Printf.printf "l  %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f\n"    us_stats.l_min us_stats.l_mean us_stats.l_max us_stats.l_min us_stats.l_mean us_stats.l_max ;
+    Printf.printf "n  %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f\n"    us_stats.c_min us_stats.c_mean us_stats.c_max us_stats.c_min us_stats.c_mean us_stats.c_max ;
+    Printf.printf "ds %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f\n%!"  us_stats.d_min us_stats.d_mean us_stats.d_max us_stats.d_min us_stats.d_mean us_stats.d_max ;
+    ()
+  in
+  pv_verbose data show_stats;
 
-*)
+  let dds =  ds_stats.d_mean in
+  let uds =  us_stats.d_mean in
+  (* slt: sum of line lengths crossing a pixel * number of line-points per pixel *)
+  (* slt: <=> sum of line-points per pixel *)
+  let slt_ds = ODN.slice_left results.slt_array [|0|] in (* slice_left so it does not copy *)
+  let slt_us = ODN.slice_left results.slt_array [|1|] in (* slice_left so it does not copy *)
+  ODN.mul_scalar_ slt_ds (dds /. pixel_size);
+  ODN.mul_scalar_ slt_us (uds /. pixel_size);
+  (* slt:  => sum of line-points per meter *)
+  ODN.sqr_ results.slt_array;
+  (* slt:  =>  sqrt(area) *)
+
   Workflow.workflow_end tprops.workflow;
   results
-
-(*a Post-GPU functions *)
-(*f compute_stats
-    Compute streamline point density and trajectory length min, mean, max.
-
-    Returns:
-        pandas.DataFrame:  lnds_stats_df
-let compute_stats trace traj_length_array traj_nsteps_array  pixel_size =
-    vprint(verbose,'Computing streamlines statistics')
-    lnds_stats = []
-    for downup_idx in [0,1]:
-(
-        ln0(xy) = traj_length_array[:,downup_idx]*pixel_size
-        ln1(xy) = traj_nsteps_array[:,downup_idx])).T)])
-        lnds = array_of (ln0; ln1; ln0/ln1;) for all xy
-        lnds_stats.append( min(lnds,axis=0); mean(lnds,axis=0); np.max(lnds,axis=0) )
-)
-    lnds_stats_array = np.array(lnds_stats,dtype=np.float32)
-    lnds_indexes = [np.array(['downstream', 'downstream', 'downstream', 
-                              'upstream', 'upstream', 'upstream']),
-                         np.array(['min','mean','max','min','mean','max'])]
-    lnds_stats_df = pd.DataFrame(data=lnds_stats_array, 
-                                 columns=['l','n','ds'],
-                                 index=lnds_indexes)
-    vprint(verbose,lnds_stats_df.T)
-    return lnds_stats_df
- *)
 

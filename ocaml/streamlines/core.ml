@@ -15,7 +15,7 @@
  * @file   core.ml
  * @brief  Core data, Info, and Workflow handling
  *
- * Up to date with python of git CS 3cb3f5e67e5594ef571415f636320bcd5d2d7290
+ * Up to date with python of git CS 54b7ed9ebd253403c1851764035b5c718d5937d3
  *
  * v}
  *)
@@ -260,7 +260,7 @@ type t_trace_results = {
     traj_lengths_array : t_ba_floats; (* num_seeds*2 - streamline length from seed in direction *)
     slc_array          : t_ba_ints;   (* 2:downup * padded roi_nx * padded roi_ny : count of streamlines per pixel *)
     slt_array          : t_ba_floats; (* 2:downup * padded roi_nx * padded roi_ny : length of streamlines per pixel *)
-    sla_array          : t_ba_floats; (* 2:downup * padded roi_nx * padded roi_ny : area of streamlines per pixel *)
+    mutable sla_array  : t_ba_floats; (* 2:downup * padded roi_nx * padded roi_ny : area of streamlines per pixel *)
   }
 
 (** {1 Core toplevel functions}

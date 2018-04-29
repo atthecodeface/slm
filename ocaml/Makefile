@@ -99,7 +99,8 @@ ocaml_help_jupyter:
 .PHONY: ocaml_run
 ocaml_run:
 	jbuilder build ${OCAML_BUILD_LOCAL}/run_me/run_me.exe
-	${OCAML_PATH} SLMDATA=${SLMDATA} ${OCAML_BUILD}/run_me/run_me.exe --json '{"state":{"n_work_items":"16"}}' -f GuadalupeDemo1.json -a 1 -m 1 -v 5
+	${OCAML_PATH} SLMDATA=${SLMDATA} ${OCAML_BUILD}/run_me/run_me.exe -j '{"state":{"n_work_items":16}}' -f GabilanMesa2.json -a 1 -m 1 -v 5
+	#${OCAML_PATH} SLMDATA=${SLMDATA} ${OCAML_BUILD}/run_me/run_me.exe --json '{"state":{"n_work_items":16}}' -f GuadalupeDemo1.json -a 1 -m 1 -v 5
 
 .PHONY:ocaml_doc
 ocaml_doc:

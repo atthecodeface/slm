@@ -15,7 +15,7 @@
  * @file   properties.ml
  * @brief  Workflow and properties libraries
  *
- * Up to date with python of git CS 3cb3f5e67e5594ef571415f636320bcd5d2d7290
+ * Up to date with python of git CS 54b7ed9ebd253403c1851764035b5c718d5937d3
  *
  * v}
  *)
@@ -371,6 +371,24 @@ struct
     | Some s -> s
     | _ -> raise (Bad_property (sfmt "Expected float of property %s.%s" t.workflow_name member_name))
 
+  (** [float_option_of t member_name]
+
+    Extract {i member_name} from the json for the workflow if present;
+    if not, return None
+
+    A float representation of the extracted property is returned. If
+    that does not make sense, then Bad_property is raised.
+
+   *)
+  let float_option_of t member_name =
+    rebuild t;
+    match Json.Util.member member_name t.json with
+    | `Int i -> Some (float i)
+    | `Float f -> Some f
+    | `String s -> Some (float_of_string s)
+    | `Null -> None
+    | _ -> raise (Bad_property (sfmt "Expected float of property %s.%s" t.workflow_name member_name))
+
   (** [int_of t ?default member_name]
 
     Extract {i member_name} from the json for the workflow if present;
@@ -696,7 +714,12 @@ type t_props_analysis = {
     marginal_distbn_kde_bandwidth :               float;
     marginal_distbn_kde_nx_samples :              int;
 	
-	pdf_slt_min: float;
+	pdf_slt_min:                                      float option;
+	pdf_slt_max:                                      float option;
+	pdf_slc_min:                                      float option;
+	pdf_slc_max:                                      float option;
+	pdf_sla_min:                                      float option;
+	pdf_sla_max:                                      float option;
     do_joint_distribn_dsla_dslt :                     bool;
     do_joint_distribn_usla_uslt :                     bool;
     do_joint_distribn_uslt_dslt :                     bool;
@@ -1059,7 +1082,12 @@ let read_analysis verbosity properties =
   let marginal_distbn_kde_bandwidth  = Workflow.float_of   workflow ~default:0.2 "marginal_distbn_kde_bandwidth" in
   let marginal_distbn_kde_nx_samples = Workflow.int_of   workflow ~default:200 "marginal_distbn_kde_nx_samples" in
   
-  let pdf_slt_min                    = Workflow.float_of   workflow ~default:0.5 "pdf_slt_min" in
+  let pdf_slt_min                    = Workflow.float_option_of  workflow "pdf_slt_min" in
+  let pdf_slc_min                    = Workflow.float_option_of  workflow "pdf_slc_min" in
+  let pdf_sla_min                    = Workflow.float_option_of  workflow "pdf_sla_min" in
+  let pdf_slt_max                    = Workflow.float_option_of  workflow "pdf_slt_max" in
+  let pdf_slc_max                    = Workflow.float_option_of  workflow "pdf_slc_max" in
+  let pdf_sla_max                    = Workflow.float_option_of  workflow "pdf_sla_max" in
   let do_joint_distribn_dsla_dslt    = Workflow.bool_of   workflow ~default:false "do_joint_distribn_dsla_dslt" in
   let do_joint_distribn_usla_uslt    = Workflow.bool_of   workflow ~default:false "do_joint_distribn_usla_uslt" in
   let do_joint_distribn_uslt_dslt    = Workflow.bool_of   workflow ~default:false "do_joint_distribn_uslt_dslt" in
@@ -1093,7 +1121,12 @@ let read_analysis verbosity properties =
       marginal_distbn_kde_nx_samples;
       
       pdf_slt_min;
-        do_joint_distribn_dsla_dslt;
+      pdf_slt_max;
+      pdf_slc_min;
+      pdf_slc_max;
+      pdf_sla_min;
+      pdf_sla_max;
+      do_joint_distribn_dsla_dslt;
       do_joint_distribn_usla_uslt;
       do_joint_distribn_uslt_dslt;
       do_joint_distribn_dsla_usla;
