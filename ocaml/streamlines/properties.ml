@@ -709,6 +709,8 @@ type t_props_analysis = {
     do_marginal_distbn_dslc :                     bool;
     do_marginal_distbn_uslc :                     bool;
     (*marginal_distbn_kde_methods :                 string;*)
+    n_hist_bins :                                 int;
+    n_pdf_points :                                int;
     marginal_distbn_kde_kernel :                  string;
     marginal_distbn_kde_bw_method :               string;
     marginal_distbn_kde_bandwidth :               float;
@@ -1077,7 +1079,9 @@ let read_analysis verbosity properties =
   let do_marginal_distbn_dslc        = Workflow.bool_of   workflow ~default:false "do_marginal_distbn_dslc" in
   let do_marginal_distbn_uslc        = Workflow.bool_of   workflow ~default:false "do_marginal_distbn_uslc" in
   (*marginal_distbn_kde_methods :                 string;*)
-  let marginal_distbn_kde_kernel     = Workflow.str_of   workflow ~default:"gaussian" "marginal_distbn_kde_kernel" in
+  let n_hist_bins                    = Workflow.int_of    workflow ~default:2000 "n_hist_bins" in
+  let n_pdf_points                   = Workflow.int_of    workflow ~default:200  "n_pdf_points" in
+  let marginal_distbn_kde_kernel     = Workflow.str_of    workflow ~default:"gaussian" "marginal_distbn_kde_kernel" in
   let marginal_distbn_kde_bw_method  = Workflow.str_of   workflow ~default:"scott" "marginal_distbn_kde_bw_method"in
   let marginal_distbn_kde_bandwidth  = Workflow.float_of   workflow ~default:0.2 "marginal_distbn_kde_bandwidth" in
   let marginal_distbn_kde_nx_samples = Workflow.int_of   workflow ~default:200 "marginal_distbn_kde_nx_samples" in
@@ -1115,6 +1119,10 @@ let read_analysis verbosity properties =
       do_marginal_distbn_uslt;
       do_marginal_distbn_dslc;
       do_marginal_distbn_uslc;
+
+      n_hist_bins;
+      n_pdf_points;
+
       marginal_distbn_kde_kernel;
       marginal_distbn_kde_bw_method;
       marginal_distbn_kde_bandwidth;

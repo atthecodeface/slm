@@ -20,7 +20,7 @@
  * v}
  *)
 
-(*a Module abbreviations *)
+(*f Module abbreviations *)
 open Globals
 module ODM = Owl.Dense.Matrix.Generic
 module ODN = Owl.Dense.Ndarray.Generic
@@ -122,6 +122,14 @@ struct
      *)
   let set_uint32 t name x =
     set t name (Uint32 x)
+
+  (**  [set_int t name x] 
+
+     Set name/(int x) as a name/value pair in the Info block
+
+     *)
+  let set_int t name x =
+    set t name (Int x)
 
   (**  [set_float32 t name x]
 

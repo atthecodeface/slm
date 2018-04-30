@@ -85,6 +85,68 @@ let filename_from_path path leaf =
     let path_stripped = List.fold_left (fun acc n->if n.[0]='/' then [n] else acc@[n]) [!root_dir] path in
     (String.concat "/" path_stripped) ^ "/" ^ leaf
 
+(** {1 Useful functions} *)
+
+(**  [trace pos] 
+
+ Trace function used to debug code, particularly when it is
+ crashing. Use as trace __POS__ to trace execution
+
+ *)
+let trace pos =
+    let (a,b,c,d) = pos in
+    Printf.printf "trace:%s:%d:%d:%d\n%!" a b c d
+
+(**  [sfmt] 
+
+ Short-cut for Printf.sprintf, used throughout the code for reduced
+ code clutter.
+
+ *)
+let sfmt = Printf.sprintf
+
+(**  [get_padded_array ba width value]
+
+ Pad a 2D generic big array by a certain padding width on all four
+ sides, using the specified value for that padding.
+
+ *)
+let get_padded_array ba width value = 
+  if (width>0) then (
+    let padding = [[width;width];[width;width];] in
+    ODM.pad ~v:value padding ba;
+  ) else (
+     ba
+  )
+
+(**  [list_assoc_replace name value]
+
+ Add or replace (name*value) in assoc List
+
+ *)
+let list_assoc_replace l name value =
+  let rec find_name l rev_hd =
+    match l with 
+    | [] -> (rev_hd,[(name,value)])
+    | hd::tl -> (
+      let (n,v) = hd in
+      if (compare n name)=0 then (
+        ((name,value)::rev_hd, tl)
+      ) else (
+        find_name tl (hd::rev_hd)
+      )
+    )
+  in
+  let (tl, rev_hd) = find_name l [] in
+  List.rev_append rev_hd tl
+
+(**  [is_nan x] 
+
+ Shorthand for the correct way to determine if a float is NAN
+
+ *)
+let is_nan x = (compare x nan)=0
+
 (** {1 Bigarray types and handling} *)
 
 (** {2 Types} *)
@@ -192,6 +254,18 @@ let ba_int3d   d w h  = Bigarray.(genarray_of_array3 (Array3.create int c_layout
 let ba_float3d d w h  = Bigarray.(genarray_of_array3 (Array3.create float32 c_layout d w h))
 
 (** {2 Bigarray functions - for Owl?} Probably suitable to be migrated to Owl *)
+
+(**  [ba_cast kind f x]
+ *)
+let ba_cast kind f x =
+  let y = ODN.empty kind (ODN.shape x) in
+  let y' = ODN.flatten y |> Bigarray.array1_of_genarray in
+  let x' = ODN.flatten x |> Bigarray.array1_of_genarray in
+  for i = 0 to (Bigarray.Array1.dim x') - 1 do
+    let a = Bigarray.Array1.unsafe_get x' i in
+    Bigarray.Array1.unsafe_set y' i (f a)
+  done;
+  y
 
 (**  [ba_fold f acc ba]
 
@@ -381,66 +455,4 @@ let ba_filter xsize ysize f rv src dst =
   in
   ODM.iteri_2d f_pruned src;
   dst
-
-(** {1 Useful functions} *)
-
-(**  [trace pos] 
-
- Trace function used to debug code, particularly when it is
- crashing. Use as trace __POS__ to trace execution
-
- *)
-let trace pos =
-    let (a,b,c,d) = pos in
-    Printf.printf "trace:%s:%d:%d:%d\n%!" a b c d
-
-(**  [sfmt] 
-
- Short-cut for Printf.sprintf, used throughout the code for reduced
- code clutter.
-
- *)
-let sfmt = Printf.sprintf
-
-(**  [get_padded_array ba width value]
-
- Pad a 2D generic big array by a certain padding width on all four
- sides, using the specified value for that padding.
-
- *)
-let get_padded_array ba width value = 
-  if (width>0) then (
-    let padding = [[width;width];[width;width];] in
-    ODM.pad ~v:value padding ba;
-  ) else (
-     ba
-  )
-
-(**  [list_assoc_replace name value]
-
- Add or replace (name*value) in assoc List
-
- *)
-let list_assoc_replace l name value =
-  let rec find_name l rev_hd =
-    match l with 
-    | [] -> (rev_hd,[(name,value)])
-    | hd::tl -> (
-      let (n,v) = hd in
-      if (compare n name)=0 then (
-        ((name,value)::rev_hd, tl)
-      ) else (
-        find_name tl (hd::rev_hd)
-      )
-    )
-  in
-  let (tl, rev_hd) = find_name l [] in
-  List.rev_append rev_hd tl
-
-(**  [is_nan x] 
-
- Shorthand for the correct way to determine if a float is NAN
-
- *)
-let is_nan x = (compare x nan)=0
 
