@@ -217,6 +217,9 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
         
         # Trace the streamlines on the GPU
+        print ("Work size",global_size)
+        global_size = [(17200//64)*64,1]
+        print ("Work size",global_size)
         event = cl.enqueue_nd_range_kernel(queue, kernel, global_size, local_size)
 #         event.wait()
         queue.finish()

@@ -53,10 +53,12 @@ static inline void trajectory_jittered( __global const float2 *uv_array,
     __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
                      vec=current_seed_point_vec, prev_vec, next_vec;
     prev_vec = vec;
+
     // Start by recording the seed point
     idx = get_array_idx(vec);
     if (!mask_array[idx])
         atomic_write_sl_data(&slt_array[idx], &slc_array[idx], l_trajectory);
+
     // Loop downstream until the pixel is masked, i.e., we've exited the basin or grid,
     //   or if the streamline is too long (in l_trajectory or n_steps)
     while (idx<(NX_PADDED*NY_PADDED) && !mask_array[idx]

@@ -65,6 +65,12 @@ __kernel void integrate_fields( __global const float2 *seed_point_array,
     // global_id plus the chunk SEEDS_CHUNK_OFFSET is a seed point index
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u),
                seed_idx = (SEEDS_CHUNK_OFFSET)+global_id;
+
+    if (seed_idx>=N_SEED_POINTS) {
+        // This is a padded seed, so let's bail BEFORE WE USE THE BLOODY THING
+        return;
+    }
+
     const float2 current_seed_point_vec = seed_point_array[seed_idx];
     __private uint i=0,j=0, initial_rng_state;
 
@@ -72,10 +78,6 @@ __kernel void integrate_fields( __global const float2 *seed_point_array,
     if (seed_idx==0) {
         printf("On GPU/OpenCL device: #workitems=%d  #workgroups=%d\n",
                 get_local_size(0u), get_num_groups(0u));
-    }
-    if (seed_idx>=N_SEED_POINTS) {
-        // This is a padded seed, so let's bail
-        return;
     }
 
     // Trace a set of streamlines from a grid of sub-pixel positions centered
