@@ -7,7 +7,7 @@
 /// @bug No known bugs
 ///
 
-#ifdef KERNEL_INTEGRATE_TRAJECTORY
+#ifdef KERNEL_INTEGRATE_FIELDS
 ///
 /// Add the current streamline length (@p l_trajectory) to the current pixel of the
 ///    @p slt accumulation array.
@@ -18,10 +18,10 @@
 ///
 /// Compiled if KERNEL_INTEGRATE_TRAJECTORY is defined.
 ///
-/// @param[in,out] slc: grid recording accumulated count of streamline integration
-///                         steps across each pixel (padded)
 /// @param[in,out] slt: grid recording accumulated count of streamline segment lengths
 ///                         crossing each pixel (padded)
+/// @param[in,out] slc: grid recording accumulated count of streamline integration
+///                         steps across each pixel (padded)
 /// @param[in]     l_trajectory: total streamline distance so far
 ///
 /// @returns void
@@ -40,7 +40,7 @@ static inline void atomic_write_sl_data(__global uint *slt, __global uint *slc,
 }
 #endif
 
-#ifdef KERNEL_INTEGRATE_TRAJECTORY
+#ifdef KERNEL_INTEGRATE_FIELDS
 ///
 /// Extended version of atomic_write_sl_data() to include testing whether the
 ///    current pixel is masked, and an assignment of the previous pixel index
@@ -58,10 +58,10 @@ static inline void atomic_write_sl_data(__global uint *slt, __global uint *slc,
 /// @param[in]      idx: array index of pixel at current (x,y) position
 /// @param[in,out]  prev_idx: array index of pixel at previous (x,y) position
 /// @param[in]      mask_flag: whether current pixel is masked or not
-/// @param[in,out]  slc: grid recording accumulated count of streamline integration
-///                         steps across each pixel (padded)
 /// @param[in,out]  slt: grid recording accumulated count of streamline segment lengths
 ///                         crossing each pixel (padded)
+/// @param[in,out]  slc: grid recording accumulated count of streamline integration
+///                         steps across each pixel (padded)
 /// @param[in]      l_trajectory: total streamline distance so far
 ///
 /// @returns void

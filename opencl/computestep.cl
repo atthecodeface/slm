@@ -56,7 +56,7 @@ static inline void compute_step_vec(const float dt,
 }
 #endif
 
-#if defined(KERNEL_INTEGRATE_TRAJECTORY) && defined(IS_RNG_AVAILABLE)
+#if defined(KERNEL_INTEGRATE_FIELDS) && defined(IS_RNG_AVAILABLE)
 ///
 /// Compute a jittered 2nd-order Runge-Kutta integration step along a streamline.
 /// Jittering is achieved by adding a uniform random vector to of the RK2 flow velocity
@@ -64,7 +64,7 @@ static inline void compute_step_vec(const float dt,
 /// The [0,1) uniform variates are scaled by JITTER_MAGNITUDE before addition
 ///   to the unit flow vectors.
 ///
-/// Compiled if KERNEL_INTEGRATE_TRAJECTORY and IS_RNG_AVAILABLE is defined.
+/// Compiled if KERNEL_INTEGRATE_FIELDS and IS_RNG_AVAILABLE is defined.
 ///
 /// @param[in]      dt: delta time step
 /// @param[in]      uv_array  (float *,  RO): gridded velocity vector components (u,v)

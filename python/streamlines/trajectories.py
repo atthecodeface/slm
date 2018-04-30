@@ -10,7 +10,6 @@ Basins of interest can be delimited by masking.
 import pyopencl as cl
 import pyopencl.array
 import numpy as np
-import pandas as pd
 import os
 os.environ['PYTHONUNBUFFERED']='True'
 os.environ['PYOPENCL_NO_CACHE']='True'
@@ -18,30 +17,27 @@ os.environ['PYOPENCL_COMPILER_OUTPUT']='0'
 
 from streamlines import pocl
 from streamlines import state
-from streamlines.useful import vprint
+from streamlines.useful import vprint, create_seeds, compute_stats
 
-__all__ = ['integrate_trajectories','gpu_integrate_trajectories','prepare_memory',
-           'compute_stats']
+__all__ = ['integrate_trajectories','gpu_integrate','prepare_memory']
 
 import warnings
 pdebug = print
 
-def integrate_trajectories( 
-        cl_src_path, which_cl_platform, which_cl_device, info_dict, 
-        seed_point_array, mask_array, u_array, v_array,  
-        do_trace_downstream, do_trace_upstream, verbose
-     ):
+def integrate_trajectories(cl_src_path, which_cl_platform, which_cl_device, info_dict, 
+                           mask_array, u_array, v_array, 
+                           do_trace_downstream, do_trace_upstream, verbose):
     """
     Trace each streamline from its corresponding seed point using 2nd-order Runge-Kutta 
     integration of the topographic gradient vector field.
     
     This function is a master wrapper connecting the streamlines object and its trace()
-    method to the GPU/OpenCL wrapper function gpu_integrate_trajectories(). As such it
+    method to the GPU/OpenCL wrapper function gpu_integrate(). As such it
     acts on a set of parameters passed as arguments here rather than by accessing
     object variables. 
     
     Workflow parameters are transferred here bundled in the Numpy structure array 
-    info_dict, which is parsed as well as passed on to gpu_integrate_trajectories.
+    info_dict, which is parsed as well as passed on to gpu_integrate.
     
     The tasks undertaken by this function are to:
        1) prepare the OpenCL context, device and kernel source string
@@ -55,7 +51,6 @@ def integrate_trajectories(
         which_cl_platform (int):
         which_cl_device (int):
         info_dict (numpy.ndarray):
-        seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
         v_array (numpy.ndarray):
@@ -64,12 +59,10 @@ def integrate_trajectories(
         verbose (bool):
         
     Returns:
-        list, numpy.ndarray, numpy.ndarray, pandas.DataFrame, \
-        numpy.ndarray, numpy.ndarray, numpy.ndarray:
-        streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df,
-        slc_array, slt_array, sla_array
+        list, numpy.ndarray, numpy.ndarray, pandas.DataFrame:
+        streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df
     """
-    vprint(verbose,'Integrating streamlines'+'...')
+    vprint(verbose,'Integrating trajectories'+'...')
 
     # Prepare CL essentials
     platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
@@ -77,17 +70,28 @@ def integrate_trajectories(
                             properties=cl.command_queue_properties.PROFILING_ENABLE)
     cl_files = ['rng.cl','essentials.cl',
                 'writearray.cl','trajectoryfns.cl','computestep.cl',
-                'integrationfns.cl','trajectory.cl','integration.cl']
+                'integrationfns.cl','trajectory.cl','integratetraj.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
-    n_padded_seed_points = info_dict['n_padded_seed_points']
+            
+    # Seed point selection, padding and shuffling
+    n_trajectory_seed_points = info_dict['n_trajectory_seed_points']
+    pad_width                = info_dict['pad_width']
+    n_work_items             = info_dict['n_work_items']
+    do_shuffle               = info_dict['do_shuffle']
+    seed_point_array, n_seed_points, n_padded_seed_points \
+        = create_seeds(mask_array, pad_width, n_work_items, 
+                       n_seed_points=n_trajectory_seed_points, 
+                       do_shuffle=do_shuffle, verbose=verbose)
+    info_dict['n_seed_points']        = n_seed_points
+    info_dict['n_padded_seed_points'] = n_padded_seed_points
 
     # Chunkification
     gpu_traj_memory_limit = (device.get_info(cl.device_info.GLOBAL_MEM_SIZE) 
                              *info_dict['gpu_memory_limit_pc'])//100
-    full_traj_memory_request = (n_padded_seed_points*np.dtype(np.uint8).itemsize
+    full_traj_memory_request = (n_seed_points*np.dtype(np.uint8).itemsize
                                 *info_dict['max_n_steps']*2)
     n_chunks_required = max(1,int(np.ceil(
                         full_traj_memory_request/gpu_traj_memory_limit)) )
@@ -97,7 +101,7 @@ def integrate_trajectories(
     vprint(verbose,
            'GPU/OpenCL device global memory limit for streamline trajectories: {}' 
               .format(state.neatly(gpu_traj_memory_limit)))
-    vprint(verbose,'GPU/OpenCL device memory required for streamline trajectories {}'
+    vprint(verbose,'GPU/OpenCL device memory required for streamline trajectories: {}'
               .format(state.neatly(full_traj_memory_request)), end='')
     vprint(verbose,' => {}'.format('no need to chunkify' if n_chunks_required==1
                     else 'need to split into {} chunks'.format(n_chunks_required) ))
@@ -107,31 +111,22 @@ def integrate_trajectories(
     vprint(verbose,'Compile options:\n',pocl.set_compile_options(info_dict,
                                                                  'INTEGRATE_TRAJECTORY'))
     # Do integrations on the GPU
-    (streamline_arrays_list, traj_nsteps_array, traj_length_array,
-     rtn_slc_array, rtn_slt_array, rtn_sla_array) \
-        = gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
-                                     info_dict, trace_do_chunks, chunk_size, 
-                                     seed_point_array, mask_array, u_array, v_array,  
-                                     verbose)
+    (streamline_arrays_list, traj_nsteps_array, traj_length_array) \
+        = gpu_integrate(device, context, queue, cl_kernel_source,
+                        info_dict, trace_do_chunks, chunk_size, 
+                        seed_point_array, mask_array, u_array, v_array, verbose)
     # Streamline stats
     pixel_size = info_dict['pixel_size']
     traj_stats_df = compute_stats(traj_length_array,traj_nsteps_array,pixel_size,verbose)
     dds =  traj_stats_df['ds']['downstream','mean']
     uds =  traj_stats_df['ds']['upstream','mean']
-    # slt: sum of line lengths crossing a pixel * number of line-points per pixel
-    # slt: <=> sum of line-points per pixel
-    rtn_slt_array[:,:,0] = rtn_slt_array[:,:,0]*(dds/pixel_size)
-    rtn_slt_array[:,:,1] = rtn_slt_array[:,:,1]*(uds/pixel_size)
-    # slt:  => sum of line-points per meter
-    rtn_slt_array = np.sqrt(rtn_slt_array) #*np.exp(-1/4) # *(3/4)
-    # slt:  =>  sqrt(area)
 
     # Done
     vprint(verbose,'...done')
-    return (streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df,
-            rtn_slc_array, rtn_slt_array, rtn_sla_array)
+    return (seed_point_array, streamline_arrays_list, 
+            traj_nsteps_array, traj_length_array, traj_stats_df)
 
-def choose_chunks(seed_point_array, info_dict, n_chunks_required,
+def choose_chunks(seed_point_array, info_dict, n_chunks,
                   do_trace_downstream, do_trace_upstream, verbose):
     """
     Compute lists of parameters needed to carry out GPU/OpenCL device computations
@@ -146,39 +141,32 @@ def choose_chunks(seed_point_array, info_dict, n_chunks_required,
         verbose (bool):  
         
     Returns: 
-        list, int,
+        list, int:
             trace_do_chunks, chunk_size
     """
-    n_global = info_dict['n_padded_seed_points']
-    n_chunks = n_chunks_required    
-    chunk_size = int(np.round(n_global/n_chunks))
-    n_work_items = info_dict['n_work_items']
-    pad_length = np.uint32(np.round(chunk_size/n_work_items+0.5))*n_work_items-chunk_size
-    if pad_length>0:
-        padding_array = -np.ones([pad_length,2], dtype=np.float32)
-        vprint(verbose,'Chunk size adjustment for {0} CL work items/group: {1}->{2}...'
-             .format(n_work_items, chunk_size, chunk_size+pad_length))
-    chunk_size += pad_length
-    chunk_list = [[chunk_idx,chunk,min(n_global,chunk+chunk_size)-chunk] 
-                   for chunk_idx,chunk in enumerate(range(0,n_global,chunk_size))]
-
-    n_global += pad_length*n_chunks
-    chunk_size = int(np.round(n_global/n_chunks))
+    n_seed_points        = info_dict['n_seed_points']
+    n_padded_seed_points = info_dict['n_padded_seed_points']
+    n_work_items         = info_dict['n_work_items']
+    
+    chunk_size = int(np.round(n_padded_seed_points/n_chunks))
+    n_global = n_padded_seed_points
+    chunk_list = [[chunk_idx,chunk,min(n_seed_points,chunk+chunk_size)-chunk,chunk_size] 
+                   for chunk_idx,chunk in enumerate(range(0,n_global,chunk_size))]            
 
     trace_do_list = [[do_trace_downstream, 'Downstream:', 0, np.float32(+1.0)]] \
                   + [[do_trace_upstream,   'Upstream:  ', 1, np.float32(-1.0)]]
     trace_do_chunks = [td+chunk for td in trace_do_list for chunk in chunk_list]
         
-    vprint(verbose,'Number of seed points = total number of kernel instances: {0:,}'
+    vprint(verbose,'Total number of kernel instances: {0:,}'
                 .format(n_global))
     vprint(verbose,'Number of chunks = seed point array divisor:', n_chunks)   
     vprint(verbose,'Chunk size = number of kernel instances per chunk: {0:,}'
                 .format(chunk_size))   
     return trace_do_chunks, chunk_size
 
-def gpu_integrate_trajectories(device, context, queue, cl_kernel_source, 
-                               info_dict, trace_do_chunks, chunk_size, 
-                               seed_point_array, mask_array, u_array, v_array, verbose):
+def gpu_integrate(device, context, queue, cl_kernel_source, 
+                  info_dict, trace_do_chunks, chunk_size, 
+                  seed_point_array, mask_array, u_array, v_array, verbose):
     """
     Carry out GPU/OpenCL device computations in chunks.
     This function is the basic wrapper interfacing Python with the GPU/OpenCL device.
@@ -212,38 +200,32 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
         verbose (bool):  
         
     Returns: 
-        list, numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray:
-        streamline_arrays_list, traj_nsteps_array, traj_length_array,
-        rtn_slc_array, rtn_slt_array, rtn_sla_array
+        list, numpy.ndarray, numpy.ndarray:
+        streamline_arrays_list, traj_nsteps_array, traj_length_array
     """
         
     # Prepare memory, buffers 
     streamline_arrays_list = [[],[]]
     (traj_nsteps_array, traj_length_array, 
      chunk_trajcs_array, chunk_nsteps_array, chunk_length_array, 
-     slc_array, slt_array, 
      seed_point_buffer, uv_buffer, mask_buffer, 
-     chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer, 
-     slc_buffer, slt_buffer) \
-        = prepare_memory(context, queue, info_dict['n_padded_seed_points'],
+     chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer) \
+        = prepare_memory(context, info_dict['n_seed_points'],
                          chunk_size, info_dict['max_n_steps'],
-                         seed_point_array, mask_array, u_array, v_array,  verbose)
-    roi_nxy = slc_array.shape
-    rtn_slc_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.uint32)
-    rtn_slt_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
-    rtn_sla_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
+                         seed_point_array, mask_array, u_array, v_array, verbose)
     
     # Downstream and upstream passes aka streamline integrations from
     #   chunks of seed points aka subsets of the total set
     for downup_str, downup_idx, downup_sign, chunk_idx, \
-        seeds_chunk_offset, n_chunk_seeds in [td[1:] for td in trace_do_chunks if td[0]]:
+        seeds_chunk_offset, n_chunk_seeds, n_chunk_ki in [td[1:] \
+            for td in trace_do_chunks if td[0]]:
         vprint(verbose,'\n{0} downup={1} sgn(uv)={2:+} chunk={3} seeds: {4}+{5} => {6:}'
                    .format(downup_str, downup_idx, downup_sign, chunk_idx,
                            seeds_chunk_offset, n_chunk_seeds, 
                            seeds_chunk_offset+n_chunk_seeds))
 
         # Specify this integration job's parameters
-        global_size = [n_chunk_seeds,1]
+        global_size = [n_chunk_ki,1]
         vprint(verbose,
                'Seed point buffer size = {}*8 bytes'.format(seed_point_buffer.size/8))
         local_size = [info_dict['n_work_items'],1]
@@ -264,8 +246,7 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
         
         # Designate buffered arrays
         buffer_list = [seed_point_buffer, mask_buffer, uv_buffer,
-                       chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer,
-                       slc_buffer, slt_buffer ]
+                       chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer]
         kernel.set_args(*buffer_list)
         kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
         
@@ -287,14 +268,9 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
         queue.finish()   
         cl.enqueue_copy(queue, chunk_length_array, chunk_length_buffer)
         queue.finish()   
-        # Copy back the streamline length, distance density grid
-        cl.enqueue_copy(queue, slc_array, slc_buffer)
-        queue.finish()   
-        cl.enqueue_copy(queue, slt_array, slt_buffer)
-        queue.finish()   
                 
         ##################################
-                
+                        
         # This is part going to be slow...
         for traj_nsteps,traj_vec in \
             zip(chunk_nsteps_array[:n_chunk_seeds], chunk_trajcs_array[:n_chunk_seeds]): 
@@ -309,28 +285,6 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
                           downup_idx] = chunk_nsteps_array[:n_chunk_seeds].copy()
         traj_length_array[seeds_chunk_offset:(seeds_chunk_offset+n_chunk_seeds),
                           downup_idx] = chunk_length_array[:n_chunk_seeds].copy()
-        # Copy out the slc, slt results for this pass only
-        # Count of streamlines entering per pixel width: n/meter
-        rtn_slc_array[:,:,downup_idx] += slc_array.copy()
-        # Average streamline length of streamlines entering each pixel: meters
-        rtn_slt_array[:,:,downup_idx] += slt_array.copy().astype(np.float32)
-        # Zero the GPU slt, slc arrays before using in the next pass
-        slc_array.fill(0)
-        slt_array.fill(0.0)
-        cl.enqueue_copy(queue, slc_buffer,slc_array)
-        queue.finish()   
-        cl.enqueue_copy(queue, slt_buffer,slt_array)
-        queue.finish()   
-
-    # Compute average streamline lengths (sla) from total lengths (slt) and counts (slc)
-    # Shorthand
-    (slc,sla,slt) = (rtn_slc_array,rtn_sla_array,rtn_slt_array)
-    # slc: count of lines crossing a pixel * number of line-points per pixel
-    # slt: sum of line lengths crossing a pixel * number of line-points per pixel
-    # sla: sum of line lengths / count of lines
-    sla[slc==0] = 0.0
-    sla[slc>0]  = slt[slc>0]/slc[slc>0]
-    slt[slc>0]  = slt[slc>0]/info_dict['subpixel_seed_point_density']**2
     
     vprint(verbose,'Building streamlines compressed array')
     for downup_idx in [0,1]:
@@ -339,17 +293,15 @@ def gpu_integrate_trajectories(device, context, queue, cl_kernel_source,
         np.sum(traj_nsteps_array[:,:])*np.dtype(chunk_trajcs_array.dtype).itemsize)))
    
     n = info_dict['n_seed_points']
-    return (streamline_arrays_list[0:n], traj_nsteps_array[0:n], traj_length_array[0:n], 
-            slc, slt, sla)
+    return (streamline_arrays_list[0:n], traj_nsteps_array[0:n], traj_length_array[0:n])
 
-def prepare_memory(context, queue, n_padded_seed_points, chunk_size, max_traj_length, 
-                   seed_point_array, mask_array, u_array, v_array,  verbose):
+def prepare_memory(context, n_seed_points, chunk_size, max_traj_length, 
+                   seed_point_array, mask_array, u_array, v_array, verbose):
     """
     Create Numpy array and PyOpenCL buffers to allow CPU-GPU data transfer.
     
     Args:
         context (pyopencl.Context):
-        queue (pyopencl.CommandQueue):
         chunk_size (int):
         max_traj_length (int):
         seed_point_array (numpy.ndarray):
@@ -359,25 +311,20 @@ def prepare_memory(context, queue, n_padded_seed_points, chunk_size, max_traj_le
         verbose (bool):
         
     Returns:
-        numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray,\
-        numpy.ndarray, numpy.ndarray, pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer,\
+        numpy.ndarray, numpy.ndarray,\
+        numpy.ndarray, numpy.ndarray, numpy.ndarray, \
         pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, \
-        pyopencl.Buffer, pyopencl.Buffer:
+        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer:
         traj_nsteps_array, traj_length_array, 
         chunk_trajcs_array, chunk_nsteps_array, chunk_length_array,
-        slc_array, slt_array, seed_point_buffer, uv_buffer, mask_buffer,
-        chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer,
-        slc_buffer, slt_buffer
+        seed_point_buffer, uv_buffer, mask_buffer,
+        chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer
     """
     # PyOpenCL array for seed points
     # Buffer for mask, (u,v) velocity array and more
-    roi_nxy = mask_array.shape
-#     n_padded_seed_points = seed_point_array.shape[0]
     uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32)
-    slc_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32)
-    slt_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32)
-    traj_nsteps_array  = np.zeros([n_padded_seed_points,2], dtype=np.uint16)
-    traj_length_array  = np.zeros([n_padded_seed_points,2], dtype=np.float32)
+    traj_nsteps_array  = np.zeros([n_seed_points,2], dtype=np.uint16)
+    traj_length_array  = np.zeros([n_seed_points,2], dtype=np.float32)
 
     # Chunk-sized temporary arrays
     # Use "bag o' bytes" buffer for huge trajectories array. Write (by GPU) only.
@@ -392,20 +339,17 @@ def prepare_memory(context, queue, n_padded_seed_points, chunk_size, max_traj_le
     seed_point_buffer   = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=seed_point_array)
     mask_buffer         = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=mask_array)
     uv_buffer           = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=uv_array)
-    slc_buffer          = cl.Buffer(context, COPY_READ_WRITE, hostbuf=slc_array)
-    slt_buffer          = cl.Buffer(context, COPY_READ_WRITE, hostbuf=slt_array)
     chunk_nsteps_buffer = cl.Buffer(context, WRITE_ONLY, chunk_nsteps_array.nbytes )
     chunk_length_buffer = cl.Buffer(context, WRITE_ONLY, chunk_length_array.nbytes )
     chunk_trajcs_buffer = cl.Buffer(context, WRITE_ONLY, chunk_trajcs_array.nbytes )     
     vprint(verbose,'Array sizes:\n',
            'ROI-type =', mask_array.shape, '\n',
-           'uv =', uv_array.shape, '\n',
-           'slx-type = ',slc_array.shape)
+           'uv =',       uv_array.shape,   '\n')
     vprint(verbose,'Streamlines virtual array allocation:  ',
                  '   dims={0}'.format(
-                     (n_padded_seed_points, chunk_trajcs_array.shape[1],2)), 
+                     (n_seed_points, chunk_trajcs_array.shape[1],2)), 
                  '  size={}'.format(state.neatly(
-                     n_padded_seed_points*chunk_trajcs_array.shape[1]*2
+                     n_seed_points*chunk_trajcs_array.shape[1]*2
                         *np.dtype(chunk_trajcs_array.dtype).itemsize)))
     vprint(verbose,'Streamlines array allocation per chunk:',
                      '   dims={0}'.format(chunk_trajcs_array.shape), 
@@ -414,40 +358,6 @@ def prepare_memory(context, queue, n_padded_seed_points, chunk_size, max_traj_le
 
     return (traj_nsteps_array, traj_length_array, 
             chunk_trajcs_array, chunk_nsteps_array, chunk_length_array,
-            slc_array, slt_array, 
             seed_point_buffer, uv_buffer, mask_buffer,
-            chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer,
-            slc_buffer, slt_buffer)
+            chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer)
 
-def compute_stats(traj_length_array, traj_nsteps_array, pixel_size, verbose):
-    """
-    Compute streamline integration point spacing and trajectory length statistics 
-    (min, mean, max) for the sets of both downstream and upstream trajectories.
-    Return them as a small Pandas dataframe table.
-    
-    Args:
-        traj_length_array (numpy.ndarray):
-        traj_nsteps_array (numpy.ndarray):
-        pixel_size (float):
-        verbose (bool):
-        
-    Returns:
-        pandas.DataFrame:  lnds_stats_df
-    """
-    vprint(verbose,'Computing streamlines statistics')
-    lnds_stats = []
-    for downup_idx in [0,1]:
-        lnds = np.array( [ [ln[0],ln[1],ln[0]/ln[1]] 
-                            for ln in (np.stack(
-                                 (traj_length_array[:,downup_idx]*pixel_size, 
-                                            traj_nsteps_array[:,downup_idx])   ).T) ] )
-        lnds_stats += [np.min(lnds,axis=0), np.mean(lnds,axis=0), np.max(lnds,axis=0)]
-    lnds_stats_array = np.array(lnds_stats,dtype=np.float32)
-    lnds_indexes = [np.array(['downstream', 'downstream', 'downstream', 
-                              'upstream', 'upstream', 'upstream']),
-                         np.array(['min','mean','max','min','mean','max'])]
-    lnds_stats_df = pd.DataFrame(data=lnds_stats_array, 
-                                 columns=['l','n','ds'],
-                                 index=lnds_indexes)
-    vprint(verbose,lnds_stats_df.T)
-    return lnds_stats_df

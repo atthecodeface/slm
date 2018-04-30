@@ -51,8 +51,6 @@
 	},
 
 	"plot": {
-		"plot_streamline_limit" : 1000,
-
 		"do_plot_dtm" : false,
 		"do_plot_roi" : false,
 		"do_plot_streamlines" : true,
@@ -78,10 +76,6 @@
 		"gradient_vector_color" : "black",
 		"gradient_vector_alpha" : 0.5,
 		"gradient_vector_scale" : 50,
-
-		"streamline_point_marker" : ".",
-		"streamline_point_size" : 0.2,
-		"streamline_point_alpha" : 0.5,
 		
 		"seed_point_marker" : "D",
 		"seed_point_marker_size" : 0.5,

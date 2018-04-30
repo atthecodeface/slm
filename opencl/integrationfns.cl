@@ -120,7 +120,7 @@ static inline void euler_step_record(float *dt, float  *dl,
  }
 #endif
 
-#ifdef KERNEL_INTEGRATE_TRAJECTORY
+#ifdef KERNEL_INTEGRATE_FIELDS
 ///
 /// Compute a single step of 2nd-order Runge-Kutta numerical integration of
 ///    a streamline given precomputed 1st and 2nd order step vectors.
@@ -187,7 +187,7 @@ static inline bool runge_kutta_step_write_sl_data(
 }
 #endif
 
-#ifdef KERNEL_INTEGRATE_TRAJECTORY
+#ifdef KERNEL_INTEGRATE_FIELDS
 ///
 /// Compute a single Euler integration step of of a streamline.
 /// Record this step in the global @p trajectory_vec (array of step vectors).

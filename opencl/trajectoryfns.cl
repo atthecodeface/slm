@@ -13,54 +13,7 @@
 ///
 
 
-#ifdef KERNEL_INTEGRATE_TRAJECTORY_UNUSED
-///
-/// Update variables tracking trajectory length and integration step counter.
-/// Record (to global array) a compressed version of the current trajectory step vector.
-/// Write length and count data to global arrays.
-///
-/// Compiled if KERNEL_INTEGRATE_TRAJECTORY is defined.
-///
-/// @param[in]      dl: step distance
-/// @param[in,out]  l_trajectory: total streamline distance so far
-/// @param[in,out]  vec: current (x,y) coordinate vector at tip of streamline trajectory
-/// @param[in,out]  prev_vec: previous (x,y) coordinate vector on streamline trajectory
-/// @param[in,out]  n_steps: number of integration steps so far in streamline trajectory
-/// @param[in,out]  idx: array index of pixel at current (x,y) position
-/// @param[in,out]  prev_idx: array index of pixel at previous (x,y) position
-/// @param[in,out]  trajectory_vec: streamline trajectory record
-///                                 (2d array of compressed (x,y) vectors)
-/// @param[in]      mask_array: grid pixel mask (padded),
-///                         with @p true = masked, @p false = good
-/// @param[in,out]  slc_array: grid recording accumulated count of streamline integration
-///                           steps across each pixel (padded)
-/// @param[in,out]  slt_array: grid recording accumulated count of streamline segment
-///                           lengths crossing each pixel (padded)
-///
-/// @returns void
-///
-/// @ingroup trajectoryfns
-///
-static inline void update_record_trajectory_write_sl_data(
-        const float  dl, float *l_trajectory, const float2 vec, const float2 prev_vec,
-        uint *n_steps, uint *idx, uint *prev_idx,
-        __global char2 *trajectory_vec, __global const bool *mask_array,
-        __global uint *slt_array, __global uint *slc_array) {
-    // Step to next point along streamline, adding to trajectory length
-    //   and n_steps counter.
-    // Compress step delta vector into fixed-point integer form & record in traj.
-    // Write to slt, slc arrays to record passage of this streamline.
-    *l_trajectory += dl;
-    trajectory_vec[*n_steps] = compress(vec-prev_vec);
-    *n_steps += 1u;
-    // Current pixel position in data array
-    *idx = get_array_idx(vec); \
-    check_atomic_write_sl_data(*idx, prev_idx, mask_array[*idx],
-                               &slt_array[*idx], &slc_array[*idx], *l_trajectory);
-}
-#endif
-
-#ifdef KERNEL_INTEGRATE_TRAJECTORY
+#ifdef KERNEL_INTEGRATE_FIELDS
 ///
 /// Update variables tracking trajectory length and integration step counter.
 /// Write length and count data to global arrays.
