@@ -48,22 +48,41 @@ also filtered out.
 module Univariate_distribution =
 struct
 
-type t = {
-    pixel_size     : float;
-    logx_data      : t_ba_floats; (* log(x) from x_array that is in bounds *)
-    bounds         : float * float * float * float; (* min x, min y, max x, max y, used to get data (logs) *)
-    info           : Info.t; (* Info with data to use for KDE etc *)
-    logx_vec       : t_ba_floats; (* n_pdf_points linearly spaced from logx_min to logx_max *)
-    x_vec          : t_ba_floats; (* n_pdf_points logarithmically spaced from x_min to x_max *)
-    pdf            : t_ba_floats;
-    cdf            : t_ba_floats;
-  }
-  (**  [create]
-    logx_array must have only non-NaN elements
-    logy_array must have only non-NaN elements
-
+  (**  [t_stats]
    *)
-  let create ?pixel_size:(pixel_size=1.0) ~logx_array ~logy_array info bounds =
+  type t_stats = {
+      mean     : float;
+      stddev   : float;
+      variance : float;
+    }                             
+
+  (**  [t]
+   *)
+  type t = {
+      pixel_size     : float;
+      logx_data      : t_ba_floats; (* log(x) from x_array that is in bounds *)
+      n_data         : int; (* Size of logx_data *)
+      bounds         : float * float * float * float; (* min x, min y, max x, max y, used to get data (logs) *)
+      info           : Info.t; (* Info with data to use for KDE etc *)
+      logx_vec       : t_ba_floats; (* n_pdf_points linearly spaced from logx_min to logx_max *)
+      x_vec          : t_ba_floats; (* n_pdf_points logarithmically spaced from x_min to x_max *)
+      mutable pdf    : t_ba_floats;
+      mutable cdf    : t_ba_floats;
+      stats_raw      : t_stats;
+      mutable stats_kde      : t_stats;
+    }
+
+  (**  [create]
+    logx_array must have only non-NaN elements as ODN.min requires it
+    logy_array must have only non-NaN elements as ODN.min requires it
+   *)
+  let create ?pixel_size:(pixel_size=1.0) ~n_hist_bins ~n_pdf_points ~kernel ~bandwidth ~logx_array ~logy_array bounds =
+    let info = Info.create () in
+    Info.set_int     info "n_hist_bins"  n_hist_bins;
+    Info.set_int     info "n_pdf_points" n_pdf_points;
+    Info.set_str     info "kernel"       kernel;
+    Info.set_float32 info "bandwidth"    bandwidth;
+
     let (logx_min, logy_min, logx_max, logy_max) = bounds in
     let logx_min = Option.default_delayed (fun _ -> ODN.min' logx_array) logx_min in
     let logy_min = Option.default_delayed (fun _ -> ODN.min' logy_array) logy_min in
@@ -71,98 +90,98 @@ type t = {
     let logy_max = Option.default_delayed (fun _ -> ODN.max' logy_array) logy_max in
     let bounds = (logx_min, logy_min, logx_max, logy_max) in
 
-    let n_pdf_points = Info.int_of info "n_pdf_points" in
-
     let f i logx =
      let logy = ODN.get logy_array [|i|] in
      ((logx>=logx_min) && (logx<=logx_max) && (logy>=logy_min) && (logy<=logy_max)) in
     let logx_data = filtered_array f logx_array in
+    let n_data = (ODN.shape logx_data).(0) in
     let logx_vec  = ODN.linspace Bigarray.float32 logx_min logx_max n_pdf_points in
+
+    let mean     = exp (OS.mean (ODN.to_array logx_data)) in
+    let stddev   = exp (OS.std  (ODN.to_array logx_data)) in
+    let variance = exp (OS.var  (ODN.to_array logx_data)) in
+    let stats_raw = {mean; stddev; variance;} in
+
     let x_vec     = ODN.exp logx_vec in
     {
       pixel_size;
       logx_data;
+      n_data;
       bounds;
       logx_vec;
       x_vec;
       info;
       pdf = ba_float2d 1 1;
       cdf = ba_float2d 1 1;
+      stats_raw;
+      stats_kde = {mean=0.; stddev=0.; variance=0.;}
     }
 
   (**  [compute_kde
-  let compute_kde ?bw_method:(m="scott") t =
-        self.kernel = kernel
-        self.bandwidth = bandwidth
-        # hack
-        if kernel=='gaussian':
-            self.bandwidth /= 2.0
-        available_kernels = ['tophat','triangle','epanechnikov','cosine','gaussian']
-        if kernel not in available_kernels:
-            raise ValueError('PDF kernel "{}" is not among those available: {}'
-                             .format(kernel, available_kernels))
-        x_range = self.logx_max-self.logx_min;
-        bin_dx = x_range/self.n_hist_bins
-        pdf_dx = x_range/self.n_pdf_points
-        self.info_dict = {
-            'kdf_bandwidth' : np.float32(self.bandwidth),
-            'kdf_kernel' :    kernel,
-            'n_data' :        np.uint32(self.n_data),
-            'n_hist_bins' :   np.uint32(self.n_hist_bins),
-            'n_pdf_points' :  np.uint32(self.n_pdf_points),
-            'x_min' :         np.float32(self.logx_min),
-            'x_max' :         np.float32(self.logx_max),
-            'x_range' :       np.float32(x_range),
-            'bin_dx' :        np.float32(bin_dx),
-            'pdf_dx' :        np.float32(pdf_dx),
-            'kdf_width_x' :   np.float32(0.0),
-            'n_kdf_part_points_x' : np.uint32(0),
-            'y_min' :         np.float32(0.0),
-            'y_max' :         np.float32(1.0),
-            'y_range' :       np.float32(1.0),
-            'bin_dy' :        np.float32(1.0/2000),
-            'pdf_dy' :        np.float32(1.0/200),
-            'kdf_width_y' :         np.float32(0.0),
-            'n_kdf_part_points_y' : np.uint32(0)
-        }
-        t.pdf <- Kde.estimate_univariate_pdf pocl data logx_data;
-        t.cdf <- ODM.(mul_scalar_ (cumsum t.pdf) bin_dx);
-        let should_be_one = ODN.get t.cdf (n_data-1) in
-        if (abs_float (should_be_one -. 1.)) > 5e-3 then (
-           Printf.printf "Error/imprecision when computing cumulative probability distribution:\npdf integrates to %3f not to 1.0\n%!" should_be_one);
+   *)
+  let compute_kde t props pocl =
+    let kernel = Info.str_of t.info "kernel" in
+    if kernel="gaussian" then (
+      Info.set_float32 t.info "bandwidth" ((Info.float_of t.info "bandwidth") /. 2.);
+    );
+    let available_kernels = ["tophat"; "triangle"; "epanechnikov"; "cosine"; "gaussian"] in
+    let kernel_available = List.fold_left (fun acc s -> if kernel=s then true else acc) false available_kernels in
+    if not kernel_available then raise Not_found;
+
+    let (logx_min, logy_min, logx_max, logy_max) = t.bounds in
+    let x_range = logx_max -. logx_min in
+    let bin_dx  = x_range /. (float (Info.int_of t.info "n_hist_bins")) in
+    let pdf_dx  = x_range /. (float (Info.int_of t.info "n_pdf_points")) in
+    Info.set_float32 t.info "kdf_bandwidth" (Info.float_of t.info "bandwidth");
+
+    Info.set_float32 t.info "x_min"         logx_min;
+    Info.set_float32 t.info "x_max"         logx_max;
+    Info.set_float32 t.info "x_range"       x_range;
+    Info.set_float32 t.info "bin_dx"        bin_dx;
+    Info.set_float32 t.info "pdf_dx"        pdf_dx;
+
+    Info.set_float32 t.info "y_min"         0.;
+    Info.set_float32 t.info "y_may"         1.;
+    Info.set_float32 t.info "y_range"       1.;
+    Info.set_float32 t.info "bin_dy"        (1.0 /. 2000.);
+    Info.set_float32 t.info "pdf_dy"        (1.0 /. 200.);
+
+    Info.set_float32 t.info "kdf_width_x"   0.;
+    Info.set_float32 t.info "kdf_width_y"   0.;
+    Info.set_uint32  t.info "n_kdf_part_points_x"   0l;
+    Info.set_uint32  t.info "n_kdf_part_points_x"   0l;
+
+    Info.set_uint32 t.info "n_data" (Int32.of_int t.n_data);
+
+    let n_pdf_points = Info.int_of t.info "n_pdf_points" in
+    t.pdf <- Kde.estimate_univariate_pdf props pocl t.info t.logx_data;
+    t.cdf <- ODM.(mul_scalar (cumsum t.pdf) bin_dx);
+    let should_be_one = ODN.get t.cdf [|n_pdf_points-1;0|] in
+    if (abs_float (should_be_one -. 1.)) > 5e-3 then (
+      Printf.printf "Error/imprecision when computing cumulative probability distribution:\npdf integrates to %3f not to 1.0\n%!" should_be_one);
     ()
- *)  
-type t_stats = {
-  raw_mean   : float;
-  raw_stddev : float;
-  raw_var    : float;
-  mean     : float;
-  stddev   : float;
-  variance : float;
-   }                             
-  (**  [statistics *)
-    let statistics t =
-      let x   = t.logx_vec in
-      let pdf = t.pdf in
-      let log_mean     = ODN.(get (cumsum (mul x pdf)) [|1|]) in (* / sum pdf *)
-      let log_variance = ODN.(get (cumsum (mul pdf (sqr (sub_scalar x log_mean)))) [|1|]) in (* / sum pdf *)
-      let mean      = exp log_mean in
-      let stddev    = exp (sqrt log_variance) in
-      let variance  = exp log_variance in
+  (**  [show_statistics t]
+    *)
+  let show_statistics t = 
+    Printf.printf "raw mean:  %.2f\n" t.stats_raw.mean;
+    Printf.printf " sigma:  %.2f\n"   t.stats_raw.stddev;
+    Printf.printf " var:  %.2f\n"     t.stats_raw.variance;
+    Printf.printf "kde mean:  %.2f\n" t.stats_kde.mean;
+    Printf.printf " sigma:  %.2f\n"   t.stats_kde.stddev;
+    Printf.printf " var:  %.2f\n"     t.stats_kde.variance;
+    ()
 
-      let raw_mean   = exp (OS.mean (ODN.to_array t.logx_data)) in
-      let raw_stddev = exp (OS.std  (ODN.to_array t.logx_data)) in
-      let raw_var    = exp (OS.var  (ODN.to_array t.logx_data)) in
+  (**  [calc_statistics t] *)
+  let calc_statistics t =
+    let x   = t.logx_vec in
+    let pdf = t.pdf in
+    let log_mean     = ODN.(get (cumsum (mul x pdf)) [|1|]) in (* / sum pdf *)
+    let log_variance = ODN.(get (cumsum (mul pdf (sqr (sub_scalar x log_mean)))) [|1|]) in (* / sum pdf *)
+    let mean      = exp log_mean in
+    let stddev    = exp (sqrt log_variance) in
+    let variance  = exp log_variance in
+    t.stats_kde <- {mean; stddev; variance;};
 
-      let show_statistics t = 
-        Printf.printf "raw mean:  %.2f\n" t.raw_mean;
-        Printf.printf " sigma:  %.2f\n"   t.raw_stddev;
-        Printf.printf " var:  %.2f\n"     t.raw_var;
-        Printf.printf "kde mean:  %.2f\n" t.mean;
-        Printf.printf " sigma:  %.2f\n"   t.stddev;
-        Printf.printf " var:  %.2f\n"     t.variance;
-        ()
-        in
     ()
     
     let find_modes t =
@@ -191,7 +210,7 @@ type t_stats = {
                                          np.round(self.kde['bimode_x'],2)))
  *)
     ()
-  (**  [choose_threshold *)
+  (**  [choose_threshold t] *)
   let choose_threshold t =
 (*
         x_vec = self.x_vec
@@ -218,41 +237,6 @@ type t_stats = {
             [np.round(x_vec[extremum_i][0], 2) for extremum_i in extrema_i] ))
  *)
     ()
-
-  (**  [compute_marginal_distribution *)
-  let compute_marginal_distribn pixel_size =
-(*(self, x_array,y_array,mask_array=None,shear_factor=0.0,
-                                  up_down_idx_x=0, up_down_idx_y=0, n_samples=None, 
-                                  kernel=None, bandwidth=None, method=None,
-                                  logx_min=None, logy_min=None, 
-                                  logx_max=None, logy_max=None):*)
-(*
-    let t = create ~pixel_size ~n_samples ~shear_factor in
-        if method is None: method = 'sklearn'
-    let n_samples = Option.default self.marginal_distbn_kde_nx_samples n_samples in
-    if kernel is None: kernel = self.marginal_distbn_kde_kernel
-    if bandwidth is None: bandwidth = self.marginal_distbn_kde_bandwidth  
-            
-        uv_distbn = Univariate_distribution(logx_array=logx_array, logy_array=logy_array,
-                                            method=method, n_samples=n_samples,
-                                            shear_factor=shear_factor, 
-                                            logx_min=logx_min, logy_min=logy_min, 
-                                            logx_max=logx_max, logy_max=logy_max,
-                                            pixel_size = self.geodata.roi_pixel_size,
-                                            search_cdf_min = self.search_cdf_min,
-                                            verbose=self.state.verbose)
-        if method=='sklearn':
-            uv_distbn.compute_kde_sklearn(kernel=kernel, bandwidth=bandwidth)
-        elif method=='scipy':
-            uv_distbn.compute_kde_scipy(bw_method=self.marginal_distbn_kde_bw_method)
-        else:
-            raise NameError('KDE method "{}" not recognized'.format(method))
-        uv_distbn.find_modes()
-        uv_distbn.statistics()
-        uv_distbn.choose_threshold()
-        return uv_distbn
- *)
-()
 
   (*f  All done *)   
 end
@@ -430,6 +414,11 @@ type t = {
     mutable area_correction_factor : float;
     mutable length_correction_factor : float;
     mutable mpdf_dsla : Univariate_distribution.t option;
+    mutable mpdf_usla : Univariate_distribution.t option;
+    mutable mpdf_dslc : Univariate_distribution.t option;
+    mutable mpdf_uslc : Univariate_distribution.t option;
+    mutable mpdf_dslt : Univariate_distribution.t option;
+    mutable mpdf_uslt : Univariate_distribution.t option;
   }
 
 (** {1 pv_verbosity functions} *)
@@ -462,58 +451,118 @@ let pv_info    data = Workflow.pv_info data.props.workflow
  *)
 let pv_verbose data = Workflow.pv_verbose data.props.workflow
 
+(** {1 Dist_data module}
+ *)
+module Dist_data =
+struct
+  (**  [t]
+   *)
+  type t = {
+      data    : t_ba_floats;
+      opt_min : float option;
+      opt_max : float option;
+    }
+
+  (**  [create data opt_min opt_max]
+   *)
+  let create data opt_min opt_max = { data; opt_min; opt_max }
+
+  (**  [create_int data opt_min opt_max]
+   *)
+  let create_int data opt_min opt_max =
+    let data = ba_cast Bigarray.float32 float data in
+    create data opt_min opt_max
+
+  (*f All done
+   *)
+end
+
 (** {1 Toplevel of analysis module}
 
     Class providing statistics & probability tools to analyze streamline data and its
     probability distributions.
 
  *)
-(**  [compute_marginal_distribn t ?n_hist_bins ?n_pdf_points ?kernel ?bandwidth x_array y_array bounds]
+(**  [compute_marginal_distribn t ?n_hist_bins ?n_pdf_points ?kernel ?bandwidth x_data y_data bounds]
  *)
-let compute_marginal_distribn t ?n_hist_bins ?n_pdf_points ?kernel ?bandwidth x_array y_array bounds =
-  let logx_array = ODN.(map log_or_min x_array |> flatten) in
-  let logy_array = ODN.(map log_or_min y_array |> flatten) in
+let compute_marginal_distribn t pocl ?n_hist_bins ?n_pdf_points ?kernel ?bandwidth (x_data:Dist_data.t) (y_data:Dist_data.t) =
+  let logx_min = Option.map log x_data.opt_min in
+  let logx_max = Option.map log x_data.opt_max in
+  let logy_min = Option.map log y_data.opt_min in
+  let logy_max = Option.map log y_data.opt_max in
+  let bounds = (logx_min, logy_min, logx_max, logy_max) in
+  let logx_array = ODN.(map log_or_min x_data.data |> flatten) in
+  let logy_array = ODN.(map log_or_min y_data.data |> flatten) in
   (* map NAN to min float *)
   let n_hist_bins   = Option.default t.props.n_hist_bins                   n_hist_bins in
   let n_pdf_points  = Option.default t.props.n_pdf_points                  n_pdf_points in
   let kernel        = Option.default t.props.marginal_distbn_kde_kernel    kernel in
   let bandwidth     = Option.default t.props.marginal_distbn_kde_bandwidth bandwidth in
-  let info = Info.create () in
-  Info.set_int     info "n_hist_bins"  n_hist_bins;
-  Info.set_int     info "n_pdf_points" n_pdf_points;
-  Info.set_str     info "kernel"       kernel;
-  Info.set_float32 info "bandwidth"    bandwidth;
-
-  let uv_distbn    = Univariate_distribution.create ~logx_array ~logy_array info bounds in
-(*  uv_distbn.compute_kde_opencl kernel bandwidth;
- *)
+  let uv_distbn     = Univariate_distribution.create ~n_hist_bins ~n_pdf_points ~kernel ~bandwidth ~logx_array ~logy_array bounds in
+  Univariate_distribution.compute_kde uv_distbn t.props pocl;
   (*uv_distbn.find_modes()
   uv_distbn.statistics()
   uv_distbn.choose_threshold()
    *)
   Some uv_distbn
-   
-let compute_marginal_distribn_dsla t results =
+
+(**  [compute_marginal_distribn_dsla t pocl sla_arrays slc_arrays]
+ *)
+let compute_marginal_distribn_dsla t pocl sla_arrays slc_arrays =
   pv_verbose t (fun _ -> Printf.printf "Computing marginal distribution 'dsla'...\n%!");
-  let up_down_idx_x = 0 in
-  let up_down_idx_y = 0 in
-  let x_array = ODN.slice_left results.sla_array [|up_down_idx_x|] in (* slice_left so it does not copy *)
-  let y_array = ODN.slice_left results.slc_array [|up_down_idx_y|] in (* mapped to floats in *)
-  let y_array = ba_cast Bigarray.float32 float y_array in
-  let logx_min = Option.map log t.props.pdf_sla_min in
-  let logx_max = Option.map log t.props.pdf_sla_max in
-  let logy_min = Option.map log t.props.pdf_slc_min in
-trace __POS__;
-  let logy_max = Option.map log t.props.pdf_slc_max in
-trace __POS__;
-  let bounds = (logx_min, logy_min, logy_min, logy_max) in
-trace __POS__;
-  t.mpdf_dsla <- compute_marginal_distribn t x_array y_array bounds;
-trace __POS__;
+  t.mpdf_dsla <- compute_marginal_distribn t pocl sla_arrays.(0) slc_arrays.(0);
   pv_verbose t (fun _ -> Printf.printf "Done\n%!");
   ()
         
-(**  [create props *)
+(**  [compute_marginal_distribn_usla t pocl sla_arrays slc_arrays]
+ *)
+let compute_marginal_distribn_usla t pocl sla_arrays slc_arrays =
+  pv_verbose t (fun _ -> Printf.printf "Computing marginal distribution 'usla'...\n%!");
+  t.mpdf_usla <- compute_marginal_distribn t pocl sla_arrays.(1) slc_arrays.(1);
+  pv_verbose t (fun _ -> Printf.printf "Done\n%!");
+  ()
+        
+(**  [compute_marginal_distribn_dslt t pocl slt_arrays sla_arrays]
+ *)
+let compute_marginal_distribn_dslt t pocl slt_arrays sla_arrays =
+  pv_verbose t (fun _ -> Printf.printf "Computing marginal distribution 'dslt'...\n%!");
+  t.mpdf_usla <- compute_marginal_distribn t pocl slt_arrays.(0) sla_arrays.(0);
+  pv_verbose t (fun _ -> Printf.printf "Done\n%!");
+  ()
+        
+(**  [compute_marginal_distribn_uslt t pocl slt_arrays sla_arrays]
+ *)
+let compute_marginal_distribn_uslt t pocl slt_arrays sla_arrays =
+  pv_verbose t (fun _ -> Printf.printf "Computing marginal distribution 'uslt'...\n%!");
+  t.mpdf_uslt <- compute_marginal_distribn t pocl slt_arrays.(1) sla_arrays.(1);
+  pv_verbose t (fun _ -> Printf.printf "Done\n%!");
+  ()
+        
+(**  [compute_marginal_distribn_dslc t pocl slc_arrays sla_arrays]
+ *)
+let compute_marginal_distribn_dslc t pocl slc_arrays sla_arrays =
+  pv_verbose t (fun _ -> Printf.printf "Computing marginal distribution 'dslc'...\n%!");
+  t.mpdf_dslc <- compute_marginal_distribn t pocl slc_arrays.(0) sla_arrays.(0);
+  pv_verbose t (fun _ -> Printf.printf "Done\n%!");
+  ()
+        
+(**  [compute_marginal_distribn_uslc t pocl slc_arrays sla_arrays]
+ *)
+let compute_marginal_distribn_uslc t pocl slc_arrays sla_arrays =
+  pv_verbose t (fun _ -> Printf.printf "Computing marginal distribution 'uslc'...\n%!");
+  t.mpdf_uslc <- compute_marginal_distribn t pocl slc_arrays.(1) sla_arrays.(1);
+  pv_verbose t (fun _ -> Printf.printf "Done\n%!");
+  ()
+        
+(**  [compute_joint_distribn_dsla_usla t sla_arrays]
+ *)
+let compute_joint_distribn_dsla_usla t pocl sla_arrays =
+  pv_verbose t (fun _ -> Printf.printf "Computing joint distribution 'dsla_usla'...\n%!");
+(*  compute_joint_distribn t sla_arrays.(0) sla_arrays.(1);*)
+  pv_verbose t (fun _ -> Printf.printf "Done\n%!");
+  ()
+
+(**  [create props] *)
 let create props =
   let area_correction_factor = 1.0 in
   let length_correction_factor = 1.0 in
@@ -522,32 +571,39 @@ let create props =
     area_correction_factor;
     length_correction_factor;
     mpdf_dsla = None;
+    mpdf_usla = None;
+    mpdf_dslc = None;
+    mpdf_uslc = None;
+    mpdf_dslt = None;
+    mpdf_uslt = None;
   }
 
 (**  [process  t data results]
 
   Analyze streamline count, length distbns etc, generate stats and pdfs
  *)
-let process t data results = 
+let process t pocl data results = 
   Workflow.workflow_start t.props.workflow;
 
-  if t.props.do_marginal_distbn_dsla then compute_marginal_distribn_dsla t results;
-(*
-        if self.do_marginal_distbn_dslt: self.compute_marginal_distribn_dslt()
+  let dist_data     = Dist_data.create in
+  let dist_data_int = Dist_data.create_int in
+  let sla_arrays = [|dist_data (ODN.slice_left results.sla_array [|0|]) t.props.pdf_sla_min t.props.pdf_sla_max;
+                     dist_data (ODN.slice_left results.sla_array [|1|]) t.props.pdf_sla_min t.props.pdf_sla_max;
+                   |] in (* slice_left so it does not copy *)
+  let slt_arrays = [|dist_data (ODN.slice_left results.slt_array [|0|]) t.props.pdf_slt_min t.props.pdf_slt_max;
+                     dist_data (ODN.slice_left results.slt_array [|1|]) t.props.pdf_slt_min t.props.pdf_slt_max;
+                   |] in (* slice_left so it does not copy *)
+  let slc_arrays = [|dist_data_int (ODN.slice_left results.slc_array [|0|]) t.props.pdf_slc_min t.props.pdf_slc_max;
+                     dist_data_int (ODN.slice_left results.slc_array [|1|]) t.props.pdf_slc_min t.props.pdf_slc_max;
+                   |] in (* slice_left so it does not copy *)
 
-    t.area_correction_factor   <-  1. /. self.mpdf_dslt.kde['var']
-    t.length_correction_factor <-  1. /. self.mpdf_dsla.kde['var']
-            
-    let scale_factor = t.area_correction_factor /. t.length_correction_factor in
-    ODN.mul_scalar_ t.trace.slt_array scale_factor;
-            
-        if self.do_marginal_distbn_dslt: self.compute_marginal_distribn_dslt()
-        if self.do_marginal_distbn_usla: self.compute_marginal_distribn_usla()
-        if self.do_marginal_distbn_uslt: self.compute_marginal_distribn_uslt()
-        if self.do_marginal_distbn_dslc: self.compute_marginal_distribn_dslc()
-        if self.do_marginal_distbn_uslc: self.compute_marginal_distribn_uslc()
-   
-        if self.do_joint_distribn_dsla_usla: self.compute_joint_distribn_dsla_usla()
+  if t.props.do_marginal_distbn_dsla then compute_marginal_distribn_dsla t pocl sla_arrays slc_arrays;
+  if t.props.do_marginal_distbn_usla then compute_marginal_distribn_usla t pocl sla_arrays slc_arrays;
+  if t.props.do_marginal_distbn_dslt then compute_marginal_distribn_dslt t pocl slt_arrays sla_arrays;
+  if t.props.do_marginal_distbn_uslt then compute_marginal_distribn_uslt t pocl slt_arrays sla_arrays;
+  if t.props.do_marginal_distbn_dslc then compute_marginal_distribn_dslc t pocl slc_arrays sla_arrays;
+  if t.props.do_marginal_distbn_uslc then compute_marginal_distribn_uslc t pocl slc_arrays sla_arrays;
+(*        if self.do_joint_distribn_dsla_usla: self.compute_joint_distribn_dsla_usla()
         if self.do_joint_distribn_usla_uslt: self.compute_joint_distribn_usla_uslt()
         if self.do_joint_distribn_dsla_dslt: self.compute_joint_distribn_dsla_dslt()
         if self.do_joint_distribn_uslt_dslt: self.compute_joint_distribn_uslt_dslt()
@@ -557,398 +613,3 @@ let process t data results =
  *)
   Workflow.workflow_end t.props.workflow;
   ()
-(*
-      
-
-    def compute_marginal_distribn(self, x_array,y_array,mask_array=None,shear_factor=0.0,
-                                  up_down_idx_x=0, up_down_idx_y=0, n_samples=None, 
-                                  kernel=None, bandwidth=None, method=None,
-                                  logx_min=None, logy_min=None, 
-                                  logx_max=None, logy_max=None):
-        """
-        TBD
-        """
-        logx_array = x_array[:,:,up_down_idx_x].copy().astype(dtype=np.float32)
-        logy_array = y_array[:,:,up_down_idx_y].copy().astype(dtype=np.float32)
-        logx_array[logx_array>0.0] = np.log(logx_array[logx_array>0.0])
-        logy_array[logy_array>0.0] = np.log(logy_array[logy_array>0.0])
-        logx_array[x_array[:,:,up_down_idx_x]<=0.0] = np.finfo(np.float32).min
-        logy_array[y_array[:,:,up_down_idx_y]<=0.0] = np.finfo(np.float32).min   
-        if method is None:
-            method = 'sklearn'
-        if n_samples is None:
-            n_samples = self.marginal_distbn_kde_nx_samples
-        if kernel is None:
-            kernel = self.marginal_distbn_kde_kernel
-        if bandwidth is None:
-            bandwidth = self.marginal_distbn_kde_bandwidth  
-            
-        uv_distbn = Univariate_distribution(logx_array=logx_array, logy_array=logy_array,
-                                            method=method, n_samples=n_samples,
-                                            shear_factor=shear_factor, 
-                                            logx_min=logx_min, logy_min=logy_min, 
-                                            logx_max=logx_max, logy_max=logy_max,
-                                            pixel_size = self.geodata.roi_pixel_size,
-                                            search_cdf_min = self.search_cdf_min,
-                                            verbose=self.state.verbose)
-        if method=='sklearn':
-            uv_distbn.compute_kde_sklearn(kernel=kernel, bandwidth=bandwidth)
-        elif method=='scipy':
-            uv_distbn.compute_kde_scipy(bw_method=self.marginal_distbn_kde_bw_method)
-        else:
-            raise NameError('KDE method "{}" not recognized'.format(method))
-        uv_distbn.find_modes()
-        uv_distbn.statistics()
-        uv_distbn.choose_threshold()
-        return uv_distbn
-   
-    def compute_marginal_distribn_dsla(self):
-        """
-        TBD
-        """
-        self.print('Computing marginal distribution "dsla"...')
-        x_array, y_array = self.trace.sla_array, self.trace.slc_array
-        mask_array = self.geodata.basin_mask_array
-        up_down_idx_x, up_down_idx_y = 0, 0
-        (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
-                                   'pdf_slc_min','pdf_slc_max'])
-        self.mpdf_dsla \
-            = self.compute_marginal_distribn(x_array,y_array, mask_array,
-                                             up_down_idx_x=up_down_idx_x,
-                                             up_down_idx_y=up_down_idx_y,
-                                             logx_min=logx_min,logy_min=logy_min, 
-                                             logx_max=logx_max,logy_max=logy_max,
-                                             shear_factor=0.0)
-        self.print('...done')            
-        
-    def compute_marginal_distribn_usla(self):
-        """
-        TBD
-        """
-        self.print('Computing marginal distribution "usla"...')
-        x_array, y_array = self.trace.sla_array, self.trace.slc_array
-        mask_array = self.geodata.basin_mask_array
-        up_down_idx_x, up_down_idx_y = 1, 1
-        (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
-                                   'pdf_slc_min','pdf_slc_max'])
-        self.mpdf_usla \
-            = self.compute_marginal_distribn(x_array,y_array, mask_array,
-                                             up_down_idx_x=up_down_idx_x,
-                                             up_down_idx_y=up_down_idx_y,
-                                             logx_min=logx_min,logy_min=logy_min, 
-                                             logx_max=logx_max,logy_max=logy_max,
-                                             shear_factor=0.0)
-        self.print('...done')            
-        
-    def compute_marginal_distribn_dslt(self):
-        """
-        TBD
-        """
-        self.print('Computing marginal distribution "dslt"...')
-        x_array, y_array = self.trace.slt_array, self.trace.sla_array
-        mask_array = self.geodata.basin_mask_array
-        up_down_idx_x, up_down_idx_y = 0, 0
-        (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
-                                   'pdf_sla_min','pdf_sla_max'])
-        self.mpdf_dslt \
-            = self.compute_marginal_distribn(x_array,y_array, mask_array,
-                                             up_down_idx_x=up_down_idx_x,
-                                             up_down_idx_y=up_down_idx_y,
-                                             logx_min=logx_min,logy_min=logy_min, 
-                                             logx_max=logx_max,logy_max=logy_max,
-                                             shear_factor=0.0)
-        self.print('...done')            
-        
-    def compute_marginal_distribn_uslt(self):
-        """
-        TBD
-        """
-        self.print('Computing marginal distribution "uslt"...')
-        x_array, y_array = self.trace.slt_array, self.trace.sla_array
-        mask_array = self.geodata.basin_mask_array
-        up_down_idx_x, up_down_idx_y = 1, 1
-        (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
-                                   'pdf_sla_min','pdf_sla_max'])
-        self.mpdf_uslt \
-            = self.compute_marginal_distribn(x_array,y_array, mask_array,
-                                             up_down_idx_x=up_down_idx_x,
-                                             up_down_idx_y=up_down_idx_y,
-                                             logx_min=logx_min,logy_min=logy_min, 
-                                             logx_max=logx_max,logy_max=logy_max,
-                                             shear_factor=0.0)
-        self.print('...done')            
-
-    def compute_marginal_distribn_dslc(self):
-        """
-        TBD
-        """
-        self.print('Computing marginal distribution "dslc"...')
-        x_array, y_array = self.trace.slc_array, self.trace.sla_array
-        mask_array = self.geodata.basin_mask_array
-        up_down_idx_x, up_down_idx_y = 0, 0
-        (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_slc_min','pdf_slc_max',
-                                   'pdf_sla_min','pdf_sla_max'])
-        self.mpdf_dslc \
-            = self.compute_marginal_distribn(x_array,y_array, mask_array,
-                                             up_down_idx_x=up_down_idx_x,
-                                             up_down_idx_y=up_down_idx_y,
-                                             logx_min=logx_min,logy_min=logy_min, 
-                                             logx_max=logx_max,logy_max=logy_max,
-                                             shear_factor=0.0)
-        self.print('...done')            
-        
-    def compute_marginal_distribn_uslc(self):
-        """
-        TBD
-        """
-        self.print('Computing marginal distribution "uslc"...')
-        x_array, y_array = self.trace.slc_array, self.trace.sla_array
-        mask_array = self.geodata.basin_mask_array
-        up_down_idx_x, up_down_idx_y = 1, 1
-        (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_slc_min','pdf_slc_max',
-                                   'pdf_sla_min','pdf_sla_max'])
-        self.mpdf_uslc \
-            = self.compute_marginal_distribn(x_array,y_array, mask_array,
-                                             up_down_idx_x=up_down_idx_x,
-                                             up_down_idx_y=up_down_idx_y,
-                                             logx_min=logx_min,logy_min=logy_min, 
-                                             logx_max=logx_max,logy_max=logy_max,
-                                             shear_factor=0.0)
-        self.print('...done')            
-
-
-    def compute_joint_distribn(self, x_array,y_array, mask_array=None, shear_factor=0.0,
-                               up_down_idx_x=0, up_down_idx_y=0, n_samples=None, 
-                               thresholding_marginal_distbn=None,
-                               kernel=None, bandwidth=None, method=None,
-                               logx_min=None, logy_min=None, 
-                               logx_max=None, logy_max=None, 
-                               upstream_modal_length=None,
-                               verbose=False):
-        """
-        TBD
-        """
-        logx_array = x_array[:,:,up_down_idx_x].copy().astype(dtype=np.float32)
-        logy_array = y_array[:,:,up_down_idx_y].copy().astype(dtype=np.float32)
-        logx_array[logx_array>0.0] = np.log(logx_array[logx_array>0.0])
-        logy_array[logy_array>0.0] = np.log(logy_array[logy_array>0.0])
-        logx_array[x_array[:,:,up_down_idx_x]<=0.0] = np.finfo(np.float32).min
-        logy_array[y_array[:,:,up_down_idx_y]<=0.0] = np.finfo(np.float32).min   
-        if method is None:
-            method = 'sklearn'
-        if n_samples is None:
-            n_samples = np.complex(self.joint_distbn_kde_nxy_samples)
-        else:
-            n_samples = np.complex(n_samples)
-        if kernel is None:
-            kernel = self.joint_distbn_kde_kernel
-        if bandwidth is None:
-            bandwidth = self.joint_distbn_kde_bandwidth  
-        bv_distbn = Bivariate_distribution(logx_array=logx_array, logy_array=logy_array,
-                                            method=method, n_samples=n_samples,
-                                            shear_factor=shear_factor, 
-                                            logx_min=logx_min, logy_min=logy_min, 
-                                            logx_max=logx_max, logy_max=logy_max,
-                                            pixel_size = self.geodata.roi_pixel_size,
-                                            verbose=self.state.verbose)
-        
-        if method=='sklearn':
-            bv_distbn.compute_kde_sklearn(kernel=kernel, bandwidth=bandwidth)
-        elif method=='scipy':
-            bv_distbn.compute_kde_scipy(bw_method=self.joint_distbn_kde_bw_method)
-        else:
-            raise NameError('KDE method "{}" not recognized'.format(method))
-
-        bv_distbn.find_mode(0)
-        bv_distbn.find_mode(1,tilt=self.joint_distbn_mode2_tilt)
-        bv_distbn.find_near_mode(0,
-                                 mode_threshold=self.joint_distbn_mode_threshold_list[0],
-                                 nearness = self.joint_distbn_mode2_nearness_factor)
-        bv_distbn.find_near_mode(1, marginal_distbn=thresholding_marginal_distbn,
-                                 tilt=self.joint_distbn_mode2_tilt,
-                                 mode_threshold=self.joint_distbn_mode_threshold_list[1],
-                                 nearness = self.joint_distbn_mode2_nearness_factor,
-                                 upstream_modal_length=upstream_modal_length)
-        self.print('modes @ {0} , {1}'
-              .format(list(np.round(bv_distbn.kde['mode_xy_list'][0],2)),
-                      list(np.round(bv_distbn.kde['mode_xy_list'][1],2))) )
-        return bv_distbn
-
-    def compute_joint_distribn_dsla_usla(self):
-        """
-        TBD
-        """
-        self.print('Computing joint distribution "dsla_usla"...')
-        x_array,y_array = self.trace.sla_array,self.trace.sla_array
-        mask_array = self.geodata.basin_mask_array
-        up_down_idx_x,up_down_idx_y = 0,1
-        (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
-                                     'pdf_sla_min','pdf_sla_max'])
-        self.jpdf_dsla_usla \
-            = self.compute_joint_distribn(x_array,y_array, mask_array,
-                                            up_down_idx_x=up_down_idx_x,
-                                            up_down_idx_y=up_down_idx_y,
-                                            logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            verbose=self.state.verbose)
-        self.print('...done')
-
-    def compute_joint_distribn_dsla_dslt(self):
-        """
-        TBD
-        """
-        self.print('Computing joint distribution "dsla_dslt"...')
-        x_array,y_array = self.trace.sla_array,self.trace.slt_array
-        mask_array = self.geodata.basin_mask_array
-        up_down_idx_x,up_down_idx_y = 0,0
-        shear_factor = self.joint_distbn_y_shear_factor
-        (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
-                                     'pdf_slt_min','pdf_slt_max'])
-        try:
-            upstream_modal_length = self.jpdf_usla_uslt.kde['mode_xy_list'][1][0]
-        except:
-            upstream_modal_length = None
-        try:
-            mpdf_dslt = self.mpdf_dslt
-        except:
-            mpdf_dslt = None
-        self.jpdf_dsla_dslt \
-            = self.compute_joint_distribn(x_array,y_array, mask_array,
-                                          thresholding_marginal_distbn=mpdf_dslt,
-                                          up_down_idx_x=up_down_idx_x,
-                                          up_down_idx_y=up_down_idx_y,
-                                          logx_min=logx_min,logy_min=logy_min, 
-                                          logx_max=logx_max,logy_max=logy_max,
-                                          shear_factor=shear_factor,
-                                          upstream_modal_length=upstream_modal_length,
-                                          verbose=self.state.verbose)
-        self.print('...done')
-
-    def compute_joint_distribn_usla_uslt(self):
-        """
-        TBD
-        """
-        self.print('Computing joint distribution "usla_uslt"...')
-        x_array,y_array = self.trace.sla_array,self.trace.slt_array
-        mask_array = self.geodata.basin_mask_array
-        up_down_idx_x,up_down_idx_y = 1,1
-        shear_factor = self.joint_distbn_y_shear_factor
-        (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
-                                     'pdf_slt_min','pdf_slt_max'])
-        self.jpdf_usla_uslt \
-            = self.compute_joint_distribn(x_array,y_array, mask_array,
-                                            up_down_idx_x=up_down_idx_x,
-                                            up_down_idx_y=up_down_idx_y,
-                                            logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            shear_factor=shear_factor,
-                                            verbose=self.state.verbose)
-        self.print('...done')
-
-    def compute_joint_distribn_uslt_dslt(self):
-        """
-        TBD
-        """
-        self.print('Computing joint distribution "uslt_dslt"...',flush=True)
-        x_array,y_array = self.trace.slt_array,self.trace.slt_array
-        up_down_idx_x, up_down_idx_y = 1,0
-        (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
-                                     'pdf_slt_min','pdf_slt_max'])
-        self.jpdf_uslt_dslt \
-            = self.compute_joint_distribn(x_array,y_array,
-                                            up_down_idx_x=up_down_idx_x,
-                                            up_down_idx_y=up_down_idx_y,
-                                            logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            verbose=self.state.verbose)
-        self.print('...done')
-
-    def compute_joint_distribn_dsla_dslc(self):
-        """
-        TBD
-        """
-        self.print('Computing joint distribution "dsla_dslc"...')
-        x_array,y_array = self.trace.sla_array,self.trace.slc_array
-        mask_array = self.geodata.basin_mask_array
-        up_down_idx_x,up_down_idx_y = 0,0
-        shear_factor = self.joint_distbn_y_shear_factor
-        (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
-                                     'pdf_slc_min','pdf_slc_max'])
-        try:
-            upstream_modal_length = self.jpdf_usla_uslc.kde['mode_xy_list'][1][0]
-        except:
-            upstream_modal_length = None
-        try:
-            mpdf_dslc = self.mpdf_dslc
-        except:
-            mpdf_dslc = None
-        self.jpdf_dsla_dslc \
-            = self.compute_joint_distribn(x_array,y_array, mask_array,
-                                          thresholding_marginal_distbn=mpdf_dslc,
-                                          up_down_idx_x=up_down_idx_x,
-                                          up_down_idx_y=up_down_idx_y,
-                                          logx_min=logx_min,logy_min=logy_min, 
-                                          logx_max=logx_max,logy_max=logy_max,
-                                          shear_factor=shear_factor,
-                                          upstream_modal_length=upstream_modal_length,
-                                          verbose=self.state.verbose)
-        self.print('...done')
-
-    def compute_joint_distribn_usla_uslc(self):
-        """
-        TBD
-        """
-        self.print('Computing joint distribution "usla_uslc"...')
-        x_array,y_array = self.trace.sla_array,self.trace.slc_array
-        mask_array = self.geodata.basin_mask_array
-        up_down_idx_x,up_down_idx_y = 1,1
-        shear_factor = self.joint_distbn_y_shear_factor
-        (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
-                                     'pdf_slc_min','pdf_slc_max'])
-        self.jpdf_usla_uslc \
-            = self.compute_joint_distribn(x_array,y_array, mask_array,
-                                            up_down_idx_x=up_down_idx_x,
-                                            up_down_idx_y=up_down_idx_y,
-                                            logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            shear_factor=shear_factor,
-                                            verbose=self.state.verbose)
-        self.print('...done')
-
-    def compute_joint_distribn_uslc_dslc(self):
-        """
-        TBD
-        """
-        self.print('Computing joint distribution "uslc_dslc"...',flush=True)
-        x_array,y_array = self.trace.slc_array,self.trace.slc_array
-        up_down_idx_x, up_down_idx_y = 1,0
-        (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_slc_min','pdf_slc_max',
-                                     'pdf_slc_min','pdf_slc_max'])
-        self.jpdf_uslc_dslc \
-            = self.compute_joint_distribn(x_array,y_array,
-                                            up_down_idx_x=up_down_idx_x,
-                                            up_down_idx_y=up_down_idx_y,
-                                            logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            verbose=self.state.verbose)
-        self.print('...done')
-
-
-    def _get_logminmaxes(self, attr_list):
-        return [np.log(getattr(self,attr)) if hasattr(self,attr) else None 
-                for attr in attr_list]
-        
- *)

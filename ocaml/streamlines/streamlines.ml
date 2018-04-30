@@ -237,7 +237,7 @@ let process json_dir parameters_filename jsons =
   let results = Trace.process trace pocl data in
 
   (* Analyze result *)
-  Analysis.process analysis data results;
+  Analysis.process analysis pocl data results;
 
   (* Plot a region *)
   Plot.process plot data geodata results;

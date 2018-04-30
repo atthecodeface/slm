@@ -223,8 +223,9 @@ let make_program t source compile_options =
 
  *)
 let get_kernel pocl program name =
-    let kernel = Kernel.create program name in
-    kernel
+  pv_debug pocl (fun _ -> Printf.printf "Get kernel %s\n%!" name);
+  let kernel = Kernel.create program name in
+  kernel
 
 (**  [make_queue t]
 
@@ -351,33 +352,9 @@ let get_memory_limit t =
 
     This should use a list of info elements that are required for the kernel.
 
-For KDE we need to set
-            '-D','KERNEL_{}'.format(kernel_def.upper()),
-            '-D','KDF_BANDWIDTH={}f'.format(info_dict['kdf_bandwidth']),
-            '-D','KDF_IS_{}'.format(info_dict['kdf_kernel'].upper()),
-            '-D','N_DATA={}u'.format(info_dict['n_data']),
-            '-D','N_HIST_BINS={}u'.format(info_dict['n_hist_bins']),
-            '-D','N_PDF_POINTS={}u'.format(info_dict['n_pdf_points']),
-            '-D','X_MIN={}f'.format(info_dict['x_min']),
-            '-D','X_MAX={}f'.format(info_dict['x_max']),
-            '-D','X_RANGE={}f'.format(info_dict['x_range']),
-            '-D','BIN_DX={}f'.format(info_dict['bin_dx']),
-            '-D','PDF_DX={}f'.format(info_dict['pdf_dx']),
-            '-D','KDF_WIDTH_X={}f'.format(info_dict['kdf_width_x']),
-            '-D','N_KDF_PART_POINTS_X={}u'.format(info_dict['n_kdf_part_points_x']),
-            '-D','Y_MIN={}f'.format(info_dict['y_min']),
-            '-D','Y_MAX={}f'.format(info_dict['y_max']),
-            '-D','Y_RANGE={}f'.format(info_dict['y_range']),
-            '-D','BIN_DY={}f'.format(info_dict['bin_dy']),
-            '-D','PDF_DY={}f'.format(info_dict['pdf_dy']),
-            '-D','KDF_WIDTH_Y={}f'.format(info_dict['kdf_width_y']),
-            '-D','N_KDF_PART_POINTS_Y={}u'.format(info_dict['n_kdf_part_points_y'])
  *)
-let compile_options t data info_struct kernel_name =
-  let grid_scale  = Info.float_of info_struct "grid_scale" in
-  let downup_sign = Info.float_of info_struct "downup_sign" in
+let compile_options t info_struct kernel_name =
   let kernel_name = String.uppercase_ascii kernel_name in
-  Info.set_float32 info_struct "combo_factor" ((grid_scale *. data.properties.trace.integrator_step_factor) *. downup_sign);
   let add_option acc nv = 
     let option = sfmt "%s " (Info.define_str nv) in
     acc ^ option

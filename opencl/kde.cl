@@ -163,25 +163,29 @@ static inline void filter_along_rows(
     // Get the kdf weight
     const double k_value = k_sample((double)k_idx, k_width);
 
+    unsigned int is_on_right = isless(hi_col_rght,(int)N_HIST_BINS);
+    unsigned int is_on_left  = isnotequal(k_idx,0u) & isgreaterequal(hi_col_left,0);
+    int hist_rght = hi_row*N_HIST_BINS+hi_col_rght;
+    int hist_left = hi_row*N_HIST_BINS+hi_col_left;
+    hist_rght = select(0u,(uint)hist_rght,is_on_right);
+    hist_left = select(0u,(uint)hist_left,is_on_left);
     // Get histogram right & left counts for this hist bin
     //   and add to the pdf bin accumulator
     *pdf_bin_accumulator
         += select((double)0.0f,
-                  k_value*(double)histogram_array[hi_row*N_HIST_BINS+hi_col_rght],
-                  (unsigned long)isless(hi_col_rght,(int)N_HIST_BINS));
+                  k_value*(double)histogram_array[hist_rght],
+                  (unsigned long)is_on_right);
     *pdf_bin_accumulator
         += select((double)0.0f,
-                  k_value*(double)histogram_array[hi_row*N_HIST_BINS+hi_col_left],
-                  (unsigned long)(isnotequal(k_idx,0u)
-                                & isgreaterequal(hi_col_left,0)) );
+                  k_value*(double)histogram_array[hist_left],
+                  (unsigned long)is_on_left);
     // Add the kdf weight to the kdf-integral accumulator
     *k_weight_accumulator
         += select((double)0.0f,   (double)k_value,
-                  (unsigned long)isless(hi_col_rght,(int)N_HIST_BINS));
+                  (unsigned long)is_on_right);
     *k_weight_accumulator
         += select((double)0.0f,   (double)k_value,
-                  (unsigned long)(isnotequal(k_idx,0u)
-                                & isgreaterequal(hi_col_left,0)) );
+                  (unsigned long)is_on_left );
     return;
 }
 #endif
@@ -292,27 +296,29 @@ static inline void filter_along_cols(
         for (hi_col=0u;hi_col<(int)n_bins_per_point;hi_col++) {
             hi_row_dn = hi_row_dn_offset+hi_row*N_HIST_BINS+hi_col;
             hi_row_up = hi_row_up_offset+(n_bins_per_point-1-hi_row)*N_HIST_BINS+hi_col;
+            unsigned int is_on_down = isless(hi_row_dn,(int)(N_HIST_BINS*N_HIST_BINS));
+            unsigned int is_on_up   = isnotequal(k_idx,0) & isgreaterequal(hi_row_up,0);
+            hi_row_dn = select(0u,(uint)hi_row_dn,is_on_down);
+            hi_row_up = select(0u,(uint)hi_row_up,is_on_up);
             // Get histogram right & left counts for this hist bin
             //   and add to the pdf bin accumulator
             *pdf_bin_accumulator
                 += select((double)0.0f,
                           k_value*(double)partial_pdf_array[hi_row_dn],
-                        (unsigned long)isless(hi_row_dn,(int)(N_HIST_BINS*N_HIST_BINS)));
+                        (unsigned long)is_on_down);
             *pdf_bin_accumulator
                 += select((double)0.0f,
                           k_value*(double)partial_pdf_array[hi_row_up],
-                          (unsigned long)(isnotequal(k_idx,0)
-                                        & isgreaterequal(hi_row_up,0)) );
+                          (unsigned long)is_on_up);
             // Add the kdf weight to the kdf-integral accumulator
             *k_weight_accumulator
                 += select((double)0.0f,
                           (double)k_value,
-                        (unsigned long)isless(hi_row_dn,(int)(N_HIST_BINS*N_HIST_BINS)));
+                        (unsigned long)is_on_down);
             *k_weight_accumulator
                 += select((double)0.0f,
                           (double)k_value,
-                          (unsigned long)(isnotequal(k_idx,0)
-                                        & isgreaterequal(hi_row_up,0)) );
+                          (unsigned long)is_on_up);
         }
     }
     return;
@@ -457,23 +463,25 @@ static inline void filter(
         k_value = k_sample(x,KDF_WIDTH_X);
         // Get histogram count for this hist bin
         //    and add to the pdf bin accumulator
-        h_col_rght = (uint)pdf_col_rght*n_bins_per_point+h_col;
-        h_col_left = (uint)pdf_col_left*n_bins_per_point-h_col-1u;
+        unsigned int is_on_right = isless(pdf_col_rght,(int)N_PDF_POINTS);
+        unsigned int is_on_left  = isnotequal(k_idx,0) & isgreater(pdf_col_left,0);
+        h_col_rght = (uint)(pdf_col_rght*n_bins_per_point+h_col);
+        h_col_left = (uint)(pdf_col_left*n_bins_per_point-h_col-1u);
+        h_col_rght = select(0u,h_col_rght,is_on_right);
+        h_col_left = select(0u,h_col_left,is_on_left);
         *pdf_bin_accumulator
             += select((double)0.0f,
                       (double)histogram_array[h_col_rght]*k_value,
-                      (unsigned long)isless(pdf_col_rght,(int)N_PDF_POINTS));
+                      (unsigned long)is_on_right);
         *pdf_bin_accumulator
             += select((double)0.0f,
                       (double)histogram_array[h_col_left]*k_value,
-                      (unsigned long)(isnotequal(k_idx,0) & isgreater(pdf_col_left,0)) );
+                      (unsigned long)is_on_left);
         // Add the kdf weight to the kdf-integral accumulator
         *k_weight_accumulator
-            += select((double)0.0f, (double)k_value,
-                      (unsigned long)isless(pdf_col_rght,(int)N_PDF_POINTS));
+            += select((double)0.0f, (double)k_value, (unsigned long)is_on_right);
         *k_weight_accumulator
-            += select((double)0.0f, (double)k_value,
-                      (unsigned long)(isnotequal(k_idx,0) & isgreater(pdf_col_left,0)) );
+            += select((double)0.0f, (double)k_value, (unsigned long)is_on_left);
     }
     return;
 }

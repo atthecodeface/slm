@@ -321,7 +321,9 @@ let gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_sour
     let local_work_size = [n_work_items; 1] in
     Info.set info "downup_sign" (Info.Float32 t.downup_sign);
     Info.set info "seeds_chunk_offset" (Info.Int t.seed_offset);
-    let compile_options = Pocl.compile_options pocl data info "INTEGRATE_TRAJECTORY" in
+    let grid_scale  = Info.float_of info "grid_scale" in
+    Info.set_float32 info "combo_factor" ((grid_scale *. data.properties.trace.integrator_step_factor) *. t.downup_sign);
+    let compile_options = Pocl.compile_options pocl info "INTEGRATE_TRAJECTORY" in
     let program = Pocl.compile_program pocl cl_kernel_source compile_options in
     let kernel = Pocl.get_kernel pocl program "integrate_trajectory" in
 
