@@ -19,8 +19,11 @@ help:
 clean:
 
 .PHONY: test_python
+BASIN := GabilanMesa2
+BASIN := GuadalupeDemo1
+JSON := '{"state":{"n_work_items":64, "gpu_memory_limit_pc":80}}'
 test_python:
-	SLMXPT= SLMDATA=`pwd`/../slmdata PYTHONPATH=`pwd`:python ./python/streamlines/slm.py -f json/GuadalupeDemo1.json -a 1 -m 1
+	SLMXPT= SLMDATA=`pwd`/../slmdata PYTHONPATH=`pwd`:python ./python/streamlines/slm.py  -j ${JSON} -f json/${BASIN}.json -a 1 -m 1
 
 include ${OCAML_ROOT}/Makefile
 

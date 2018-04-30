@@ -14,6 +14,9 @@
  *
  * @file   properties.ml
  * @brief  Workflow and properties libraries
+ *
+ * Up to date with python of git CS 54b7ed9ebd253403c1851764035b5c718d5937d3
+ *
  * v}
  *)
 
@@ -368,6 +371,24 @@ struct
     | Some s -> s
     | _ -> raise (Bad_property (sfmt "Expected float of property %s.%s" t.workflow_name member_name))
 
+  (** [float_option_of t member_name]
+
+    Extract {i member_name} from the json for the workflow if present;
+    if not, return None
+
+    A float representation of the extracted property is returned. If
+    that does not make sense, then Bad_property is raised.
+
+   *)
+  let float_option_of t member_name =
+    rebuild t;
+    match Json.Util.member member_name t.json with
+    | `Int i -> Some (float i)
+    | `Float f -> Some f
+    | `String s -> Some (float_of_string s)
+    | `Null -> None
+    | _ -> raise (Bad_property (sfmt "Expected float of property %s.%s" t.workflow_name member_name))
+
   (** [int_of t ?default member_name]
 
     Extract {i member_name} from the json for the workflow if present;
@@ -589,7 +610,6 @@ type t_props_state = {
     cl_device :          int;
     gpu_memory_limit_pc: float;
     n_work_items :       int;
-    array_order :        string;
     do_geodata :         bool;
     do_preprocess :      bool;
     do_condition :       bool;
@@ -689,12 +709,19 @@ type t_props_analysis = {
     do_marginal_distbn_dslc :                     bool;
     do_marginal_distbn_uslc :                     bool;
     (*marginal_distbn_kde_methods :                 string;*)
+    n_hist_bins :                                 int;
+    n_pdf_points :                                int;
     marginal_distbn_kde_kernel :                  string;
     marginal_distbn_kde_bw_method :               string;
     marginal_distbn_kde_bandwidth :               float;
     marginal_distbn_kde_nx_samples :              int;
 	
-	pdf_slt_min: float;
+	pdf_slt_min:                                      float option;
+	pdf_slt_max:                                      float option;
+	pdf_slc_min:                                      float option;
+	pdf_slc_max:                                      float option;
+	pdf_sla_min:                                      float option;
+	pdf_sla_max:                                      float option;
     do_joint_distribn_dsla_dslt :                     bool;
     do_joint_distribn_usla_uslt :                     bool;
     do_joint_distribn_uslt_dslt :                     bool;
@@ -864,7 +891,6 @@ let read_state properties =
   let cl_device =           Workflow.int_of   properties ~default:0 "cl_device" in
   let gpu_memory_limit_pc = Workflow.float_of properties ~default:50. "gpu_memory_limit_pc" in
   let n_work_items =        Workflow.int_of   properties ~default:32 "n_work_items" in
-  let array_order         = "C" in
   let do_rw_savez =         Workflow.bool_of  properties ~default:true "do_rw_savez" in
   let do_rw_hdf5 =          Workflow.bool_of  properties ~default:true "do_rw_hdf5" in
 
@@ -890,7 +916,6 @@ let read_state properties =
       cl_device;
       gpu_memory_limit_pc;
       n_work_items;
-      array_order;
       do_geodata;
       do_preprocess;
       do_condition;
@@ -1054,12 +1079,19 @@ let read_analysis verbosity properties =
   let do_marginal_distbn_dslc        = Workflow.bool_of   workflow ~default:false "do_marginal_distbn_dslc" in
   let do_marginal_distbn_uslc        = Workflow.bool_of   workflow ~default:false "do_marginal_distbn_uslc" in
   (*marginal_distbn_kde_methods :                 string;*)
-  let marginal_distbn_kde_kernel     = Workflow.str_of   workflow ~default:"gaussian" "marginal_distbn_kde_kernel" in
+  let n_hist_bins                    = Workflow.int_of    workflow ~default:2000 "n_hist_bins" in
+  let n_pdf_points                   = Workflow.int_of    workflow ~default:200  "n_pdf_points" in
+  let marginal_distbn_kde_kernel     = Workflow.str_of    workflow ~default:"gaussian" "marginal_distbn_kde_kernel" in
   let marginal_distbn_kde_bw_method  = Workflow.str_of   workflow ~default:"scott" "marginal_distbn_kde_bw_method"in
   let marginal_distbn_kde_bandwidth  = Workflow.float_of   workflow ~default:0.2 "marginal_distbn_kde_bandwidth" in
   let marginal_distbn_kde_nx_samples = Workflow.int_of   workflow ~default:200 "marginal_distbn_kde_nx_samples" in
   
-  let pdf_slt_min                    = Workflow.float_of   workflow ~default:0.5 "pdf_slt_min" in
+  let pdf_slt_min                    = Workflow.float_option_of  workflow "pdf_slt_min" in
+  let pdf_slc_min                    = Workflow.float_option_of  workflow "pdf_slc_min" in
+  let pdf_sla_min                    = Workflow.float_option_of  workflow "pdf_sla_min" in
+  let pdf_slt_max                    = Workflow.float_option_of  workflow "pdf_slt_max" in
+  let pdf_slc_max                    = Workflow.float_option_of  workflow "pdf_slc_max" in
+  let pdf_sla_max                    = Workflow.float_option_of  workflow "pdf_sla_max" in
   let do_joint_distribn_dsla_dslt    = Workflow.bool_of   workflow ~default:false "do_joint_distribn_dsla_dslt" in
   let do_joint_distribn_usla_uslt    = Workflow.bool_of   workflow ~default:false "do_joint_distribn_usla_uslt" in
   let do_joint_distribn_uslt_dslt    = Workflow.bool_of   workflow ~default:false "do_joint_distribn_uslt_dslt" in
@@ -1087,13 +1119,22 @@ let read_analysis verbosity properties =
       do_marginal_distbn_uslt;
       do_marginal_distbn_dslc;
       do_marginal_distbn_uslc;
+
+      n_hist_bins;
+      n_pdf_points;
+
       marginal_distbn_kde_kernel;
       marginal_distbn_kde_bw_method;
       marginal_distbn_kde_bandwidth;
       marginal_distbn_kde_nx_samples;
       
       pdf_slt_min;
-        do_joint_distribn_dsla_dslt;
+      pdf_slt_max;
+      pdf_slc_min;
+      pdf_slc_max;
+      pdf_sla_min;
+      pdf_sla_max;
+      do_joint_distribn_dsla_dslt;
       do_joint_distribn_usla_uslt;
       do_joint_distribn_uslt_dslt;
       do_joint_distribn_dsla_usla;

@@ -3,6 +3,15 @@
 (library (
   (public_name streamlines)
   (name streamlines)
+  (modules (local_owl_plot owl_enhance
+    globals properties core
+    pocl
+    geodata
+    preprocess
+    integration trace
+    kde analysis
+    plot
+    streamlines))
   (libraries (
     owl
     owl-opencl

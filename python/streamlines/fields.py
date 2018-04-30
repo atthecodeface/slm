@@ -18,7 +18,7 @@ os.environ['PYOPENCL_COMPILER_OUTPUT']='0'
 
 from streamlines import pocl
 from streamlines import state
-from streamlines.useful import vprint
+from streamlines.useful import vprint, create_seeds
 
 __all__ = ['integrate_fields','gpu_integrate','prepare_memory','compute_stats']
 
@@ -27,7 +27,7 @@ pdebug = print
 
 def integrate_fields( 
         cl_src_path, which_cl_platform, which_cl_device, info_dict, 
-        seed_point_array, mask_array, u_array, v_array,  
+        mask_array, u_array, v_array,  
         do_trace_downstream, do_trace_upstream, traj_stats_df, verbose
      ):
     """
@@ -54,7 +54,6 @@ def integrate_fields(
         which_cl_platform (int):
         which_cl_device (int):
         info_dict (numpy.ndarray):
-        seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
         v_array (numpy.ndarray):
@@ -91,18 +90,29 @@ def integrate_fields(
     vprint(verbose,
            'GPU/OpenCL device global memory limit for streamline trajectories: {}' 
               .format(state.neatly(gpu_traj_memory_limit)))
-    vprint(verbose,'GPU/OpenCL device memory required for streamline trajectories {}'
-              .format(state.neatly(full_traj_memory_request)), end='')
+    vprint(verbose,'GPU/OpenCL device memory required for streamline trajectories: {}'
+              .format(state.neatly(full_traj_memory_request)))
+    
+
+            
+    # Seed point selection, padding and shuffling
+    pad_width                = info_dict['pad_width']
+    n_work_items             = info_dict['n_work_items']
+    do_shuffle               = info_dict['do_shuffle']
+    seed_point_array, n_seed_points, n_padded_seed_points \
+        = create_seeds(mask_array, pad_width, n_work_items, 
+                       do_shuffle=do_shuffle, verbose=verbose)
+    info_dict['n_seed_points']        = n_seed_points
+    info_dict['n_padded_seed_points'] = n_padded_seed_points    
     
     # 
     n_global = info_dict['n_padded_seed_points']
-    n_work_items = info_dict['n_work_items']
     pad_length = np.uint32(np.round(n_global/n_work_items+0.5))*n_work_items-n_global
     if pad_length>0:
         padding_array = -np.ones([pad_length,2], dtype=np.float32)
         vprint(verbose,'Chunk size adjustment for {0} CL work items/group: {1}->{2}...'
              .format(n_work_items, n_global, n_global+pad_length))
-    n_global += pad_length*1
+    n_global += pad_length
     
     vprint(verbose,'Compile options:\n',pocl.set_compile_options(info_dict,
                                                                  'INTEGRATE_FIELDS'))
@@ -129,10 +139,9 @@ def integrate_fields(
     return (rtn_slc_array, rtn_slt_array, rtn_sla_array)
 
 
-
 def gpu_integrate(device, context, queue, cl_kernel_source, 
-                   info_dict, n_global, 
-                   seed_point_array, mask_array, u_array, v_array, verbose):
+                  info_dict, n_global, 
+                  seed_point_array, mask_array, u_array, v_array, verbose):
     """
     Carry out GPU/OpenCL device computations in chunks.
     This function is the basic wrapper interfacing Python with the GPU/OpenCL device.
@@ -192,6 +201,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         ##################################
         
         # Compile the CL code
+        vprint(verbose,'')
         compile_options = pocl.set_compile_options(info_dict, 'INTEGRATE_FIELDS', 
                                                    downup_sign=downup_sign)
         with warnings.catch_warnings():
@@ -230,13 +240,14 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         rtn_slc_array[:,:,downup_idx] += slc_array.copy()
         # Average streamline length of streamlines entering each pixel: meters
         rtn_slt_array[:,:,downup_idx] += slt_array.copy().astype(np.float32)
-        # Zero the GPU slt, slc arrays before using in the next pass
-        slc_array.fill(0)
-        slt_array.fill(0.0)
-        cl.enqueue_copy(queue, slc_buffer,slc_array)
-        queue.finish()   
-        cl.enqueue_copy(queue, slt_buffer,slt_array)
-        queue.finish()   
+        if downup_idx==0:
+            # Zero the GPU slt, slc arrays before using in the next pass
+            slc_array.fill(0)
+            slt_array.fill(0.0)
+            cl.enqueue_copy(queue, slc_buffer,slc_array)
+            queue.finish()   
+            cl.enqueue_copy(queue, slt_buffer,slt_array)
+            queue.finish()   
 
     # Compute average streamline lengths (sla) from total lengths (slt) and counts (slc)
     # Shorthand

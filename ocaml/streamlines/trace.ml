@@ -14,6 +14,10 @@
  *
  * @file   trace.ml
  * @brief  Trace workflow
+ *
+ * Up to date with python of git CS 54b7ed9ebd253403c1851764035b5c718d5937d3
+ * except for padding that is being removed
+ *
  * v}
  *)
 
@@ -87,7 +91,7 @@ let create_seeds t data =
         n := !n +1
       )
     in
-    ODM.iteri_2d add_seed data.basin_mask_array;
+    ODM.iteri_2d add_seed mask;
     pv_debug t (fun _ -> Printf.printf "...done\n%!");
     seeds
 

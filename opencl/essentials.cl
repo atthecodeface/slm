@@ -127,3 +127,8 @@ static inline float dt_to_nearest_edge(float x,float u) {
     // if dt=0 stuck
     return dt;
 }
+
+extern void use_unused_essentials(void);
+extern void use_unused_essentials(void) {
+char2 x=0;uncompress(x);
+}

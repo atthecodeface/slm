@@ -48,6 +48,8 @@
 	},
 
 	"trace": {
+		"n_trajectory_seed_points" : 1024,
+		"do_shuffle_seed_points" : true,
 		"subpixel_seed_point_density" : 5,
 		"max_length" : 500.0,
 		"interchannel_max_n_steps" : 200,
@@ -88,8 +90,8 @@
 		"joint_distbn_kde_method":    "opencl",
 		"joint_distbn_kde_kernel":    "gaussian",
 		"joint_distbn_kde_bandwidth" : 0.5,
-		"n_hist_bins" :  2000,
-		"n_pdf_points" : 200,
+		"n_hist_bins" :  2048,
+		"n_pdf_points" : 256,
 		
 		"marginal_distbn_kde_bw_method" : "scott",
 		"marginal_distbn_kde_bandwidth" : 0.2,

@@ -12,8 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * @file   globals.ml
- * @brief  Globally useful functions and statics for the streamlines analysis
+ * @file   streamlines.ml
+ * @brief  Toplevel streamlines library
+ *
+ * Up to date with python of git CS 54b7ed9ebd253403c1851764035b5c718d5937d3
+ *
  * v}
  *)
 (** 
@@ -180,6 +183,7 @@ let parse_arguments _ =
       ("--file",    Set_string filename, "import parameters file");
       ("-f",        Set_string filename, "import parameters file");
       ("--json",    Set_string json,     "json settings");
+      ("-j",        Set_string json,     "json settings");
       ("-r",        (bool_json_param "do_reload_state"), "reload previous runtime state from files");
       ("-g",        (bool_json_param "do_geodata"),      "read geodata files (DTM, basins)");
       ("-e",        (bool_json_param "do_preprocess"),   "perform preprocessing (optionally do conditioning; compute gradients)");
@@ -217,6 +221,7 @@ let process json_dir parameters_filename jsons =
   let geodata     = Geodata.create props in
   let preprocess  = Preprocess.create props in
   let trace       = Trace.create props in
+  let analysis    = Analysis.create props in
   let plot        = Plot.create props in
 
   (* Load the data from file *)
@@ -230,6 +235,9 @@ let process json_dir parameters_filename jsons =
 
   (* Trace streamlines *)
   let results = Trace.process trace pocl data in
+
+  (* Analyze result *)
+  Analysis.process analysis data results;
 
   (* Plot a region *)
   Plot.process plot data geodata results;

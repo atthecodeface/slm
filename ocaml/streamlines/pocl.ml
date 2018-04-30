@@ -14,6 +14,10 @@
  *
  * @file   pocl.ml
  * @brief  OpenCL support library
+ *
+ * Up to date with python of git CS 54b7ed9ebd253403c1851764035b5c718d5937d3
+ * except for KDE options
+ *
  * v}
  *)
 
@@ -259,7 +263,7 @@ let buffer_of_array ?copy:(copy=false) t kernel_read kernel_write (ba:('a, 'b, '
 
  *)
 let copy_buffer_to_gpu t ~src ~dst =
-  pv_verbose t (fun _ -> Printf.printf "Copy buffer size %d\n%!" (buffer__size dst));
+  pv_debug t (fun _ -> Printf.printf "Copy buffer size %d\n%!" (buffer__size dst));
   ignore (buffer__enqueue_write (cl_queue t) src dst) (* ignore the event *)
 
 (**  [copy_buffer_from_gpu t src dst]
@@ -272,7 +276,7 @@ let copy_buffer_to_gpu t ~src ~dst =
 
  *)
 let copy_buffer_from_gpu t ~src ~dst =
-  pv_verbose t (fun _ -> Printf.printf "Copy buffer size %d\n%!" (buffer__size src));
+  pv_debug t (fun _ -> Printf.printf "Copy buffer size %d\n%!" (buffer__size src));
   ignore (buffer__enqueue_read (cl_queue t) src dst) (* ignore the event *)
 
 (** {1 Queue, event handling and kernel execution } *)
@@ -284,7 +288,7 @@ let copy_buffer_from_gpu t ~src ~dst =
 
  *)
 let finish_queue t =
-  pv_verbose t (fun _ -> Printf.printf "Wait for queue\n%!");
+  pv_debug t (fun _ -> Printf.printf "Wait for queue\n%!");
   CommandQueue.finish (cl_queue t)
 
 (**  [kernel_set_arg_buffer t kernel index buffer]
@@ -296,7 +300,7 @@ let kernel_set_arg_buffer t kernel index buffer =
   let open Ctypes in
   let _len = buffer__size buffer in
   let _buffer = allocate Owl_opencl.G.cl_mem buffer in
-  pv_verbose t  (fun _ -> Printf.printf "Set arg %d to buffer of size %d\n%!" index _len);
+  pv_debug t  (fun _ -> Printf.printf "Set arg %d to buffer of size %d\n%!" index _len);
   Kernel.set_arg kernel index (Ctypes.sizeof Owl_opencl.G.cl_mem) _buffer
 
 (**  [enqueue_kernel t kernel ?local_size global_work_size]
@@ -344,19 +348,41 @@ let get_memory_limit t =
     Convert the info struct into a list of '-D' compiler macros.
 
     This uses the kernel_name (as this is passed in as a define).
-    
+
+    This should use a list of info elements that are required for the kernel.
+
+For KDE we need to set
+            '-D','KERNEL_{}'.format(kernel_def.upper()),
+            '-D','KDF_BANDWIDTH={}f'.format(info_dict['kdf_bandwidth']),
+            '-D','KDF_IS_{}'.format(info_dict['kdf_kernel'].upper()),
+            '-D','N_DATA={}u'.format(info_dict['n_data']),
+            '-D','N_HIST_BINS={}u'.format(info_dict['n_hist_bins']),
+            '-D','N_PDF_POINTS={}u'.format(info_dict['n_pdf_points']),
+            '-D','X_MIN={}f'.format(info_dict['x_min']),
+            '-D','X_MAX={}f'.format(info_dict['x_max']),
+            '-D','X_RANGE={}f'.format(info_dict['x_range']),
+            '-D','BIN_DX={}f'.format(info_dict['bin_dx']),
+            '-D','PDF_DX={}f'.format(info_dict['pdf_dx']),
+            '-D','KDF_WIDTH_X={}f'.format(info_dict['kdf_width_x']),
+            '-D','N_KDF_PART_POINTS_X={}u'.format(info_dict['n_kdf_part_points_x']),
+            '-D','Y_MIN={}f'.format(info_dict['y_min']),
+            '-D','Y_MAX={}f'.format(info_dict['y_max']),
+            '-D','Y_RANGE={}f'.format(info_dict['y_range']),
+            '-D','BIN_DY={}f'.format(info_dict['bin_dy']),
+            '-D','PDF_DY={}f'.format(info_dict['pdf_dy']),
+            '-D','KDF_WIDTH_Y={}f'.format(info_dict['kdf_width_y']),
+            '-D','N_KDF_PART_POINTS_Y={}u'.format(info_dict['n_kdf_part_points_y'])
  *)
 let compile_options t data info_struct kernel_name =
   let grid_scale  = Info.float_of info_struct "grid_scale" in
   let downup_sign = Info.float_of info_struct "downup_sign" in
-  let array_order = Info.str_of   info_struct "array_order" in
   let kernel_name = String.uppercase_ascii kernel_name in
   Info.set_float32 info_struct "combo_factor" ((grid_scale *. data.properties.trace.integrator_step_factor) *. downup_sign);
   let add_option acc nv = 
     let option = sfmt "%s " (Info.define_str nv) in
     acc ^ option
   in
-  let base_options = sfmt "-D KERNEL_%s -D%s_ORDER " kernel_name array_order in
+  let base_options = sfmt "-D KERNEL_%s " kernel_name in
   Info.fold_left add_option base_options info_struct
 
 (**  [append_in_file (source, source_lines) filename f]
@@ -431,7 +457,6 @@ let rebuild_info_struct pocl (data:t_core_data) info_struct =
   let subpixel_seed_span = 1.0 -. ( 1.0 /. sspd_f) in
   let subpixel_seed_step = subpixel_seed_span /. (sspd_f -. 1.0) in
 
-  Info.set_str     info_struct "array_order"                   s_props.array_order;
   Info.set_float32 info_struct "max_integration_step_error"    t_props.max_integration_step_error;
   Info.set_float32 info_struct "integration_halt_threshold"    t_props.integration_halt_threshold;
   Info.set_uint    info_struct "trajectory_resolution"         t_props.trajectory_resolution;
@@ -506,7 +531,7 @@ let prepare_cl_context_queue t =
   if pai<>platform_index || dai<>device_index then (
     Printf.printf "Desired OpenCL platform/device of %d/%d not available - using platform %d and device %d" platform_index device_index pai dai;
   );
-  pv_verbose t (fun _ -> show_device pai dai device);
+  pv_noisy t (fun _ -> show_device pai dai device);
   let ctxt = Context.create [|device|] in
   t.platform <- Some platform;
   t.device <- Some device;

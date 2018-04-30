@@ -90,8 +90,6 @@ class Trace(Core):
             sla_array (numpy.ndarray):
             """
         self.print('\n**Trace begin**', flush=True)  
-        # Assign a possibly irregular (near bdries) grid of initial streamline points
-        self.create_seeds()
         # Integrate streamlines downstream and upstream
         self.trajectories()
         # Map mean streamline integrations downstream and upstream
@@ -122,14 +120,12 @@ class Trace(Core):
                        .format(self.state.n_work_items, self.n_seed_points,
                                self.n_seed_points+self.state.n_work_items ),
                                             end='',flush=True)
-            padding_array = -np.ones([pad_length,2], dtype=np.float32)
-            self.seed_point_array = np.concatenate((self.seed_point_array,padding_array))
         else:
             self.print('no padding needed...', end='',flush=True)
         self.n_padded_seed_points = self.n_seed_points + pad_length
         self.print('done',flush=True)
 
-    def build_info_dict(self):
+    def build_info_dict(self, n_seed_points=None):
         """
         TBD.
     
@@ -137,6 +133,12 @@ class Trace(Core):
             numpy.ndarray: info_dict
         """
 
+#         if n_seed_points is None:
+#             n_seed_points = self.n_seed_points
+#             n_padded_seed_points = self.n_padded_seed_points
+#         else:
+#             n_seed_points = 0
+#             n_padded_seed_points = 0
         if self.max_length==np.float32(0.0):
             max_length = np.finfo(numpy.float32).max
         else:
@@ -156,9 +158,11 @@ class Trace(Core):
             = subpixel_seed_span/(np.float32(self.subpixel_seed_point_density)-1.0 
                                   if self.subpixel_seed_point_density>1 else 1.0)
         info_dict = {
-            'n_seed_points' :        np.uint32(self.n_seed_points),
-            'n_padded_seed_points' : np.uint32(self.n_padded_seed_points),
-            'downup_sign' :          np.float32(np.nan),
+            'n_trajectory_seed_points': np.uint32(self.n_trajectory_seed_points),
+            'n_seed_points' :           np.uint32(0),
+            'n_padded_seed_points' :    np.uint32(0),
+            'do_shuffle' :              np.bool8(self.do_shuffle_seed_points),
+            'downup_sign' :             np.float32(np.nan),
             'gpu_memory_limit_pc' :        np.uint32(self.state.gpu_memory_limit_pc),
             'n_work_items' :               np.uint32(self.state.n_work_items),
             'integrator_step_factor' :     np.float32(self.integrator_step_factor),
@@ -219,12 +223,11 @@ class Trace(Core):
             numpy.ndarray, numpy.ndarray, numpy.ndarray: 
             streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df
         """
-        (self.streamline_arrays_list,
+        (self.seed_point_array, self.streamline_arrays_list,
          self.traj_nsteps_array, self.traj_length_array, self.traj_stats_df) \
             = integrate_trajectories(
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.build_info_dict(),
-                self.seed_point_array, 
                 self.geodata.basin_mask_array,
                 self.preprocess.u_array,self.preprocess.v_array,
                 self.do_trace_downstream, self.do_trace_upstream, 
@@ -245,7 +248,6 @@ class Trace(Core):
             = integrate_fields(
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.build_info_dict(),
-                self.seed_point_array, 
                 self.geodata.basin_mask_array,
                 self.preprocess.u_array,self.preprocess.v_array,
                 self.do_trace_downstream, self.do_trace_upstream, 

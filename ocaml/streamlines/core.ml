@@ -14,10 +14,13 @@
  *
  * @file   core.ml
  * @brief  Core data, Info, and Workflow handling
+ *
+ * Up to date with python of git CS 54b7ed9ebd253403c1851764035b5c718d5937d3
+ *
  * v}
  *)
 
-(*a Module abbreviations *)
+(*f Module abbreviations *)
 open Globals
 module ODM = Owl.Dense.Matrix.Generic
 module ODN = Owl.Dense.Ndarray.Generic
@@ -119,6 +122,14 @@ struct
      *)
   let set_uint32 t name x =
     set t name (Uint32 x)
+
+  (**  [set_int t name x] 
+
+     Set name/(int x) as a name/value pair in the Info block
+
+     *)
+  let set_int t name x =
+    set t name (Int x)
 
   (**  [set_float32 t name x]
 
@@ -257,7 +268,7 @@ type t_trace_results = {
     traj_lengths_array : t_ba_floats; (* num_seeds*2 - streamline length from seed in direction *)
     slc_array          : t_ba_ints;   (* 2:downup * padded roi_nx * padded roi_ny : count of streamlines per pixel *)
     slt_array          : t_ba_floats; (* 2:downup * padded roi_nx * padded roi_ny : length of streamlines per pixel *)
-    sla_array          : t_ba_floats; (* 2:downup * padded roi_nx * padded roi_ny : area of streamlines per pixel *)
+    mutable sla_array  : t_ba_floats; (* 2:downup * padded roi_nx * padded roi_ny : area of streamlines per pixel *)
   }
 
 (** {1 Core toplevel functions}
