@@ -70,16 +70,15 @@ __kernel void integrate_fields( __global const float2 *seed_point_array,
         // This is a "padding" seed, so let's bail BEFORE WE USE THE BLOODY THING
         return;
     }
-
-    const float2 current_seed_point_vec = seed_point_array[seed_idx];
-    __private uint i=0,j=0, initial_rng_state;
-
     // Report how kernel instances are distributed
     if (seed_idx==0) {
         printf("On GPU/OpenCL device: #workitems=%d  #workgroups=%d => work size=%d\n",
                 get_local_size(0u), get_num_groups(0u),
                 get_local_size(0u)*get_num_groups(0u));
     }
+
+    const float2 current_seed_point_vec = seed_point_array[seed_idx];
+    __private uint i=0,j=0, initial_rng_state;
 
     // Trace a set of streamlines from a grid of sub-pixel positions centered
     //    on the seed point

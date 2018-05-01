@@ -68,19 +68,19 @@ static inline void atomic_write_sl_data(__global uint *slt, __global uint *slc,
 ///
 /// @ingroup trajectoryfns
 ///
-static inline void check_atomic_write_sl_data(const uint idx, uint *prev_idx,
-                                              const bool mask_flag,
+static inline void check_atomic_write_sl_data(const uint idx, const bool mask_flag,
                                               __global uint *slt, __global uint *slc,
                                               const float l_trajectory) {
-    if (idx<(NX_PADDED*NY_PADDED) && !mask_flag) {
+    if (idx<NXY_PADDED && !mask_flag) {
         // Add streamline length-so-far to total slt for this pixel
         //   - rounding up to & casting as 32bit int
         // There may be issues for short trajectories as a result.
         // Also if step distance is << pixel width.
         atomic_add(slt, (uint)(l_trajectory+0.5f));
         // Increment the 'visit' counter slc at this pixel.
+#ifndef DEBUG
         atomic_inc(slc);
+#endif
     }
-    *prev_idx = idx;
 }
 #endif

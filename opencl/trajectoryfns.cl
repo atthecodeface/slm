@@ -40,7 +40,7 @@
 ///
 static inline void update_trajectory_write_sl_data(
         float  dl, float *l_trajectory, float2 vec, float2 prev_vec,
-        uint *n_steps, uint *idx, uint *prev_idx,
+        uint *n_steps, uint *idx,
         __global const bool *mask_array,
         __global uint *slt_array, __global uint *slc_array) {
     // Step to next point along streamline, adding to trajectory length
@@ -51,7 +51,7 @@ static inline void update_trajectory_write_sl_data(
     *n_steps += 1u;
     // Current pixel position in data array
     *idx = get_array_idx(vec);
-    check_atomic_write_sl_data(*idx, prev_idx, mask_array[*idx],
+    check_atomic_write_sl_data(*idx, mask_array[*idx],
                                &slt_array[*idx], &slc_array[*idx], *l_trajectory);
 }
 #endif

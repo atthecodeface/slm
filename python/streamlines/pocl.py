@@ -137,7 +137,7 @@ def set_compile_options(info_dict, kernel_def, downup_sign=1,
             compile options
     """
     if job_type=='kde':
-        return [
+        rtn_list = [
             '-D','KERNEL_{}'.format(kernel_def.upper()),
             '-D','KDF_BANDWIDTH={}f'.format(info_dict['kdf_bandwidth']),
             '-D','KDF_IS_{}'.format(info_dict['kdf_kernel'].upper()),
@@ -159,8 +159,12 @@ def set_compile_options(info_dict, kernel_def, downup_sign=1,
             '-D','KDF_WIDTH_Y={}f'.format(info_dict['kdf_width_y']),
             '-D','N_KDF_PART_POINTS_Y={}u'.format(info_dict['n_kdf_part_points_y'])
         ]
+        if info_dict['debug']:
+            rtn_list += ['-D', 'DEBUG']
+        return rtn_list
+
     else:
-        return [
+        rtn_list = [
         '-D','KERNEL_{}'.format(kernel_def.upper()),
         '-D','N_SEED_POINTS={}u'.format(info_dict['n_seed_points']),
         '-D','DOWNUP_SIGN={}'.format(downup_sign),
@@ -181,6 +185,7 @@ def set_compile_options(info_dict, kernel_def, downup_sign=1,
         '-D','NYF={}f'.format(info_dict['nyf']),
         '-D','NX_PADDED={}u'.format(info_dict['nx_padded']),
         '-D','NY_PADDED={}u'.format(info_dict['ny_padded']),
+        '-D','NXY_PADDED={}u'.format(info_dict['nxy_padded']),
         '-D','X_MAX={}f'.format(info_dict['x_max']),
         '-D','Y_MAX={}f'.format(info_dict['y_max']),
         '-D','GRID_SCALE={}f'.format(info_dict['grid_scale']),
@@ -217,6 +222,9 @@ def set_compile_options(info_dict, kernel_def, downup_sign=1,
         '-D','IS_LOOP={}u'.format(info_dict['is_loop']),
         '-D','IS_BLOCKAGE={}u'.format(info_dict['is_blockage'])
         ]
+        if info_dict['debug']:
+            rtn_list += ['-D', 'DEBUG']
+        return rtn_list
 
 def report_kernel_info(device,kernel,verbose):
     """

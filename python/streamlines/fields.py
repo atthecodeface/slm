@@ -67,7 +67,7 @@ def integrate_fields(
         numpy.ndarray, numpy.ndarray, numpy.ndarray:
         slc_array, slt_array, sla_array
     """
-    vprint(verbose,'Integrating streamlines'+'...')
+    vprint(verbose,'Integrating streamline fields'+'...')
 
     # Prepare CL essentials
     platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
@@ -189,11 +189,11 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     
     # Downstream and upstream passes aka streamline integrations from
     #   chunks of seed points aka subsets of the total set
+    vprint(verbose,'')
     for downup_idx, downup_sign in [[0,+1.0],[1,-1.0]]:
 
         # Specify this integration job's parameters
         global_size = [n_global,1]
-        vprint(verbose,'')
         vprint(verbose,'Work size: {0}'.format(global_size))
         vprint(verbose,
                'Seed point buffer size = {}*8 bytes'.format(seed_point_buffer.size/8))
@@ -290,7 +290,6 @@ def prepare_memory(context, seed_point_array, mask_array, u_array, v_array, verb
     slc_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32)
     slt_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32)
 
-    
     # Buffers to GPU memory
     COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
     COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR

@@ -78,9 +78,6 @@ __kernel void integrate_trajectory( __global const float2 *seed_point_array,
     //   isn't padded and shouldn't be accessed for seed_idx>=N_SEED_POINTS
     trajectory_vec = &trajectories_array[trajectory_index];
 
-//    printf("%d: %g,%g\n",seed_idx,
-//            seed_point_array[seed_idx][0],seed_point_array[seed_idx][1]);
-
     // Trace a "smooth" streamline from the seed point coordinate
     trajectory_record( uv_array, mask_array, traj_nsteps_array, traj_length_array,
                        trajectory_vec, global_id, seed_idx,

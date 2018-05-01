@@ -164,7 +164,7 @@ static inline bool runge_kutta_step_write_sl_data(
                 float *dt, float  *dl, float *l_trajectory,
                 float2 *dxy1_vec, float2 *dxy2_vec,
                 float2 *vec, float2 *prev_vec, const float2 next_vec,
-                uint *n_steps, uint *idx, uint *prev_idx,
+                uint *n_steps, uint *idx,
                 __global const bool *mask_array,
                 __global uint *slt_array, __global uint *slc_array)
 {
@@ -174,14 +174,14 @@ static inline bool runge_kutta_step_write_sl_data(
     *vec = next_vec;
     if (*dl<(INTEGRATION_HALT_THRESHOLD)) {
         update_trajectory_write_sl_data(*dl,l_trajectory,*vec,*prev_vec,n_steps,
-                                        idx, prev_idx, mask_array, slt_array, slc_array);
+                                        idx, mask_array, slt_array, slc_array);
 //        printf("runge_kutta_step_write_sl_data: stuck @ %d\n",*idx);
         return true;
     }
     *dt = select( fmin(DT_MAX,(ADJUSTED_MAX_ERROR*(*dt))/(step_error)), DT_MAX,
                  isequal(step_error,0.0f) );
     update_trajectory_write_sl_data(*dl,l_trajectory,*vec,*prev_vec,n_steps,
-                                    idx, prev_idx, mask_array, slt_array, slc_array);
+                                    idx, mask_array, slt_array, slc_array);
     *prev_vec = *vec;
     return false;
 }
@@ -223,7 +223,7 @@ static inline void euler_step_write_sl_data(float *dt, float *dl,
                                             const float2 uv_vec, float2 *vec,
                                             const float2 prev_vec,
                                             uint *n_steps,
-                                            uint *idx, uint *prev_idx,
+                                            uint *idx,
                                             __global const bool *mask_array,
                                             __global uint *slt_array,
                                             __global uint *slc_array)
@@ -241,7 +241,7 @@ static inline void euler_step_write_sl_data(float *dt, float *dl,
                      fmin(fmax((*vec)[1],-0.5f),Y_MAX) );
     *dl = fast_length(*vec-prev_vec);
     update_trajectory_write_sl_data(*dl,l_trajectory,*vec,prev_vec,n_steps,
-                                    idx, prev_idx, mask_array, slt_array, slc_array);
+                                    idx, mask_array, slt_array, slc_array);
  }
 #endif
 

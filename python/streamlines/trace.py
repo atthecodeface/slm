@@ -158,6 +158,7 @@ class Trace(Core):
             = subpixel_seed_span/(np.float32(self.subpixel_seed_point_density)-1.0 
                                   if self.subpixel_seed_point_density>1 else 1.0)
         info_dict = {
+            'debug' :                   np.bool8(self.state.debug),
             'n_trajectory_seed_points': np.uint32(self.n_trajectory_seed_points),
             'n_seed_points' :           np.uint32(0),
             'n_padded_seed_points' :    np.uint32(0),
@@ -180,6 +181,8 @@ class Trace(Core):
             'nyf' :          np.float32(nyf),
             'nx_padded' :    np.uint32(self.geodata.roi_nx+2*self.geodata.pad_width),
             'ny_padded' :    np.uint32(self.geodata.roi_ny+2*self.geodata.pad_width),
+            'nxy_padded' :   np.uint32( (self.geodata.roi_nx+2*self.geodata.pad_width)
+                                       *(self.geodata.roi_ny+2*self.geodata.pad_width) ),
             'x_max' :        np.float32(nxf-0.5),
             'y_max' :        np.float32(nyf-0.5),
             'grid_scale' :   np.float32(grid_scale),
@@ -244,6 +247,7 @@ class Trace(Core):
             numpy.ndarray, numpy.ndarray, numpy.ndarray: 
             slc_array, slt_array, sla_array
         """
+        pdebug(self.build_info_dict())
         (self.slc_array, self.slt_array, self.sla_array) \
             = integrate_fields(
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 

@@ -30,7 +30,7 @@ class Univariate_distribution():
                  search_cdf_min=0.95,
                  logx_min=None, logy_min=None, logx_max=None, logy_max=None,
                  cl_src_path=None, cl_platform=None, cl_device=None,
-                 verbose=False):
+                 debug=False, verbose=False):
         if logx_min is None:
             logx_min = logx_array[logx_array>np.finfo(np.float32).min].min()
         if logx_max is None:
@@ -89,6 +89,7 @@ class Univariate_distribution():
         
         self.info_dict = {}       
              
+        self.debug = debug
         self.verbose = verbose
 
     def print(self, *args, **kwargs):
@@ -151,6 +152,7 @@ class Univariate_distribution():
         bin_dx = x_range/self.n_hist_bins
         pdf_dx = x_range/self.n_pdf_points
         self.info_dict = {
+            'debug' :         np.bool8(self.debug),
             'kdf_bandwidth' : np.float32(self.bandwidth),
             'kdf_kernel' :    kernel,
             'n_data' :        np.uint32(self.n_data),
@@ -263,7 +265,7 @@ class Bivariate_distribution():
                  method='sklearn', n_hist_bins=2000, n_pdf_points=200, 
                  logx_min=None, logy_min=None, logx_max=None, logy_max=None,
                  cl_src_path=None, cl_platform=None, cl_device=None,
-                 verbose=False):
+                 debug=False, verbose=False):
         self.logx_data = logx_array
         self.logy_data = logy_array
         if logx_min is None:
@@ -338,6 +340,7 @@ class Bivariate_distribution():
         
         self.info_dict = {}      
              
+        self.debug = debug
         self.verbose = verbose
 
     def print(self, *args, **kwargs):
@@ -374,8 +377,8 @@ class Bivariate_distribution():
         bin_dy = y_range/self.n_hist_bins
         pdf_dy = y_range/self.n_pdf_points
         
-
         self.info_dict = {
+            'debug' :         np.bool8(self.debug),
             'kdf_bandwidth' : np.float32(self.bandwidth),
             'kdf_kernel' :    kernel,
             'n_data' :        np.uint32(self.n_data),
@@ -586,6 +589,7 @@ class Analysis(Core):
                                             cl_src_path=self.state.cl_src_path, 
                                             cl_platform=self.state.cl_platform, 
                                             cl_device=self.state.cl_device,
+                                            debug=self.state.debug,
                                             verbose=self.state.verbose)
         if method=='opencl':
             uv_distbn.compute_kde_opencl(kernel=kernel, bandwidth=bandwidth)
@@ -755,6 +759,7 @@ class Analysis(Core):
                                             cl_src_path=self.state.cl_src_path, 
                                             cl_platform=self.state.cl_platform, 
                                             cl_device=self.state.cl_device,
+                                            debug=self.state.debug,
                                             verbose=self.state.verbose)
         
         if method=='opencl':
