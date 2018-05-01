@@ -44,44 +44,23 @@
 	},
 
 	"analysis": {
+		"joint_distbn_kde_bandwidth" : 0.25,
 		"pdf_sla_min": 1,
 		"Xpdf_sla_max": 1000,
 		"pdf_slc_min": 1,
 		"Xpdf_slc_max": 30000
 	},
 
+	"mapping": {
+	},
+
 	"plot": {
-		"do_plot_dtm" : false,
-		"do_plot_roi" : false,
 		"do_plot_streamlines" : true,
-		"do_plot_grids" : true,
-		"do_plot_downstreamlines" : true,
-		"do_plot_upstreamlines" : true,
-		"do_plot_seed_points" : false,
-		"do_plot_blockages" : false,
-		"do_plot_flow_vectors" : false,
-		"do_plot_loops" : false,
-		
-		"plot_window_size_factor" : 2.7,
-		"plot_window_pdf_size_factor" : 2.7,
-		"plot_window_width" :  3.0,
-		"plot_window_height" : 3.0,
-		"suptitle_y" : 0,
-		
+
 		"plot_interpolation_method" : "none",
 		
-		"shaded_relief_color_alpha" : 0.55,
-		"shaded_relief_hillshade_alpha" : 0.3,
-		
-		"gradient_vector_color" : "black",
 		"gradient_vector_alpha" : 0.5,
-		"gradient_vector_scale" : 50,
-		
-		"seed_point_marker" : "D",
-		"seed_point_marker_size" : 0.5,
-		
-		"blockage_marker_size" : 20,
-		"loops_marker_size" : 20
+		"gradient_vector_scale" : 50
 	},
 	
 	"export": {

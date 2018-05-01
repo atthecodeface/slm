@@ -48,6 +48,9 @@
 		"Xpdf_slc_max": 60000
 	},
 
+	"mapping": {
+	},
+
 	"plot": {
 		"do_plot_streamlines" : true,
 		"do_plot_distributions": true,

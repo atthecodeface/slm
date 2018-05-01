@@ -62,10 +62,6 @@
 	},
 
 	"analysis": {
-		"marginal_distbn_kde_method": "opencl",
-		"marginal_distbn_kde_kernel": "epanechnikov",
-		"joint_distbn_kde_method":    "opencl",
-		"joint_distbn_kde_kernel":    "gaussian",
 		"joint_distbn_kde_bandwidth" : 0.4,
 		"pdf_sla_min": 1,
 		"Xpdf_sla_max": 300,
@@ -74,7 +70,6 @@
 	},
 
 	"plot": {
-
 		"do_plot_streamlines" : true,
 		"do_plot_distributions": true,
 				

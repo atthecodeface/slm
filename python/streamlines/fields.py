@@ -107,7 +107,7 @@ def integrate_fields(
     
     # 
     n_global = info_dict['n_padded_seed_points']
-    pad_length = np.uint32(np.round(n_global/n_work_items+0.5))*n_work_items-n_global
+    pad_length = np.uint32(np.round(n_global/n_work_items))*n_work_items-n_global
     if pad_length>0:
         padding_array = -np.ones([pad_length,2], dtype=np.float32)
         vprint(verbose,'Chunk size adjustment for {0} CL work items/group: {1}->{2}...'
