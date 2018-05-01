@@ -163,29 +163,25 @@ static inline void filter_along_rows(
     // Get the kdf weight
     const double k_value = k_sample((double)k_idx, k_width);
 
-    unsigned int is_on_right = isless(hi_col_rght,(int)N_HIST_BINS);
-    unsigned int is_on_left  = isnotequal(k_idx,0u) & isgreaterequal(hi_col_left,0);
+    const uint is_ok_right = isless(hi_col_rght,(int)N_HIST_BINS);
+    const uint is_ok_left  = isnotequal(k_idx,0u) & isgreaterequal(hi_col_left,0);
     int hist_rght = hi_row*N_HIST_BINS+hi_col_rght;
     int hist_left = hi_row*N_HIST_BINS+hi_col_left;
-    hist_rght = select(0u,(uint)hist_rght,is_on_right);
-    hist_left = select(0u,(uint)hist_left,is_on_left);
+    hist_rght = select(0u, (uint)hist_rght, is_ok_right);
+    hist_left = select(0u, (uint)hist_left, is_ok_left);
     // Get histogram right & left counts for this hist bin
     //   and add to the pdf bin accumulator
     *pdf_bin_accumulator
-        += select((double)0.0f,
-                  k_value*(double)histogram_array[hist_rght],
-                  (unsigned long)is_on_right);
+        += select((double)0.0f, k_value*(double)histogram_array[hist_rght],
+                  (unsigned long)is_ok_right);
     *pdf_bin_accumulator
-        += select((double)0.0f,
-                  k_value*(double)histogram_array[hist_left],
-                  (unsigned long)is_on_left);
+        += select((double)0.0f, k_value*(double)histogram_array[hist_left],
+                  (unsigned long)is_ok_left);
     // Add the kdf weight to the kdf-integral accumulator
     *k_weight_accumulator
-        += select((double)0.0f,   (double)k_value,
-                  (unsigned long)is_on_right);
+        += select((double)0.0f, (double)k_value, (unsigned long)is_ok_right);
     *k_weight_accumulator
-        += select((double)0.0f,   (double)k_value,
-                  (unsigned long)is_on_left );
+        += select((double)0.0f, (double)k_value, (unsigned long)is_ok_left );
     return;
 }
 #endif
@@ -262,6 +258,7 @@ static inline void filter_along_cols(
 {
     __private double k_value, k_x;
     __private int hi_col, hi_row, hi_row_up, hi_row_dn;
+    __private uint is_ok_down, is_ok_up;
 
     // Set the number of histogram bins per pdf bin
     //   e.g., 1000 hist bins, 100 pdf point bins, 10 hist bins per pdf point bin
@@ -296,29 +293,23 @@ static inline void filter_along_cols(
         for (hi_col=0u;hi_col<(int)n_bins_per_point;hi_col++) {
             hi_row_dn = hi_row_dn_offset+hi_row*N_HIST_BINS+hi_col;
             hi_row_up = hi_row_up_offset+(n_bins_per_point-1-hi_row)*N_HIST_BINS+hi_col;
-            unsigned int is_on_down = isless(hi_row_dn,(int)(N_HIST_BINS*N_HIST_BINS));
-            unsigned int is_on_up   = isnotequal(k_idx,0) & isgreaterequal(hi_row_up,0);
-            hi_row_dn = select(0u,(uint)hi_row_dn,is_on_down);
-            hi_row_up = select(0u,(uint)hi_row_up,is_on_up);
+            is_ok_down = isless(hi_row_dn,(int)(N_HIST_BINS*N_HIST_BINS));
+            is_ok_up   = isnotequal(k_idx,0) & isgreaterequal(hi_row_up,0);
+            hi_row_dn = select(0u, (uint)hi_row_dn, is_ok_down);
+            hi_row_up = select(0u, (uint)hi_row_up, is_ok_up);
             // Get histogram right & left counts for this hist bin
             //   and add to the pdf bin accumulator
             *pdf_bin_accumulator
-                += select((double)0.0f,
-                          k_value*(double)partial_pdf_array[hi_row_dn],
-                        (unsigned long)is_on_down);
+                += select((double)0.0f, k_value*(double)partial_pdf_array[hi_row_dn],
+                          (unsigned long)is_ok_down);
             *pdf_bin_accumulator
-                += select((double)0.0f,
-                          k_value*(double)partial_pdf_array[hi_row_up],
-                          (unsigned long)is_on_up);
+                += select((double)0.0f, k_value*(double)partial_pdf_array[hi_row_up],
+                          (unsigned long)is_ok_up);
             // Add the kdf weight to the kdf-integral accumulator
             *k_weight_accumulator
-                += select((double)0.0f,
-                          (double)k_value,
-                        (unsigned long)is_on_down);
+                += select((double)0.0f, (double)k_value, (unsigned long)is_ok_down);
             *k_weight_accumulator
-                += select((double)0.0f,
-                          (double)k_value,
-                          (unsigned long)is_on_up);
+                += select((double)0.0f, (double)k_value, (unsigned long)is_ok_up);
         }
     }
     return;
@@ -440,6 +431,7 @@ static inline void filter(
     __private double k_bin_point, k_bin_edge, k_value, x;
     __private int pdf_col_left, pdf_col_rght;
     __private uint h_col, h_col_left, h_col_rght;
+    __private uint is_ok_right, is_ok_left;
 
     // Set the number of histogram bins per pdf bin
     //   e.g., 2000 hist bins, 200 pdf point bins, 10 hist bins per pdf point bin
@@ -461,27 +453,30 @@ static inline void filter(
         x = k_bin_edge+BIN_DX*((double)h_col+0.5f);
         // Calculate the kdf (kernel density filter) weight for this pdf point
         k_value = k_sample(x,KDF_WIDTH_X);
-        // Get histogram count for this hist bin
-        //    and add to the pdf bin accumulator
-        unsigned int is_on_right = isless(pdf_col_rght,(int)N_PDF_POINTS);
-        unsigned int is_on_left  = isnotequal(k_idx,0) & isgreater(pdf_col_left,0);
+        // Get histogram count for this hist bin on both sides of the symm filter
+        // First check if the filter spills off the right or left array limits
+        is_ok_right = isless(pdf_col_rght,(int)N_PDF_POINTS);
+        // When checking left also suppress accumulation if at filter center
+        //   (don't count twice at the x=0 pdf bin)
+        is_ok_left  = isnotequal(k_idx,0) & isgreater(pdf_col_left,0);
         h_col_rght = (uint)(pdf_col_rght*n_bins_per_point+h_col);
         h_col_left = (uint)(pdf_col_left*n_bins_per_point-h_col-1u);
-        h_col_rght = select(0u,h_col_rght,is_on_right);
-        h_col_left = select(0u,h_col_left,is_on_left);
+        // Map R&L col indexes into dummy value zero index if off grid
+        h_col_rght = select(0u, h_col_rght, is_ok_right);
+        h_col_left = select(0u, h_col_left, is_ok_left);
+        // Add to the pdf bin accumulator
+        //   - but don't bother if the array index is off grid
         *pdf_bin_accumulator
-            += select((double)0.0f,
-                      (double)histogram_array[h_col_rght]*k_value,
-                      (unsigned long)is_on_right);
+            += select((double)0.0f, (double)histogram_array[h_col_rght]*k_value,
+                      (unsigned long)is_ok_right);
         *pdf_bin_accumulator
-            += select((double)0.0f,
-                      (double)histogram_array[h_col_left]*k_value,
-                      (unsigned long)is_on_left);
+            += select((double)0.0f, (double)histogram_array[h_col_left]*k_value,
+                      (unsigned long)is_ok_left);
         // Add the kdf weight to the kdf-integral accumulator
         *k_weight_accumulator
-            += select((double)0.0f, (double)k_value, (unsigned long)is_on_right);
+            += select((double)0.0f, (double)k_value, (unsigned long)is_ok_right);
         *k_weight_accumulator
-            += select((double)0.0f, (double)k_value, (unsigned long)is_on_left);
+            += select((double)0.0f, (double)k_value, (unsigned long)is_ok_left);
     }
     return;
 }

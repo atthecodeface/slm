@@ -50,15 +50,12 @@
 
 	"plot": {
 		"do_plot_streamlines" : true,
-		"do_plot_downstreamlines" : true,
-		"do_plot_upstreamlines" : true,
+		"do_plot_distributions": true,
 		
 		"plot_interpolation_method" : "none",
 		
 		"gradient_vector_alpha" : 0.5,
-		"gradient_vector_scale" : 50,
-		
-		"do_plot_distributions": true
+		"gradient_vector_scale" : 50
 	},
 	
 	"export": {
