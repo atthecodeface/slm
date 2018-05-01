@@ -145,6 +145,28 @@ def integrate_fields(
     vprint(verbose,'...done')
     return (rtn_slc_array, rtn_slt_array, rtn_sla_array)
 
+def gavins_enqueue_nd_range_kernel(queue, kernel, global_size, local_size, n_work_items, verbose=True, max_time_per_kernel=4. ):
+        chunk_size = n_work_items*10
+        work_left = global_size[0]
+        offset = 0
+        cumultative_time = 0
+        time_per_item = 0
+        while work_left>0:
+            event = cl.enqueue_nd_range_kernel(queue, kernel, [chunk_size,1], local_size,global_work_offset=[offset,0])
+            if verbose:
+                print("Enqueued {2} items starting at {0} out of {1} with a time estimate of {3:.3f}".format(offset,global_size[0],chunk_size,time_per_item*chunk_size))
+            offset = offset + chunk_size
+            work_left = work_left - chunk_size
+            event.wait()
+            elapsed = 1e-9*(event.profile.end - event.profile.start)
+            if verbose:
+                print("Took {0:.3f} secs #####".format(elapsed))
+                pass
+            cumultative_time = cumultative_time + elapsed
+            time_per_item = elapsed / chunk_size
+            chunk_size = n_work_items * (int (max_time_per_kernel / time_per_item / n_work_items))
+            pass
+        return cumultative_time
 
 def gpu_integrate(device, context, queue, cl_kernel_source, 
                   info_dict, n_global, 
@@ -228,14 +250,10 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
         
         # Trace the streamlines on the GPU
-        event = cl.enqueue_nd_range_kernel(queue, kernel, global_size, local_size)
-#         event.wait()
-        queue.finish()
-        
-        # Calculate the time it took to execute the kernel
-        elapsed = 1e-9*(event.profile.end - event.profile.start)  
+        n_work_items = info_dict['n_work_items']
         pocl.report_kernel_info(device,kernel,verbose)
-        vprint(verbose,"##### Kernel lapsed time: {0:.3f} secs #####\n".format(elapsed))  
+        elapsed = gavins_enqueue_nd_range_kernel(queue, kernel, global_size, local_size, n_work_items )
+        vprint(verbose,"##### Kernel lapsed time ({1} items): {0:.3f} secs #####\n".format(elapsed,global_size[0]))
         queue.finish()   
         
         # Copy back the streamline length, distance density grid

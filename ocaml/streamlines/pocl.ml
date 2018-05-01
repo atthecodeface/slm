@@ -312,9 +312,9 @@ let kernel_set_arg_buffer t kernel index buffer =
   @return event indicating completion of the kernel
 
  *)
-let enqueue_kernel t kernel ?local_work_size:(local_work_size=[]) global_work_size =
+let enqueue_kernel t kernel ?local_work_size:(local_work_size=[]) ?global_work_ofs global_work_size =
   let work_dim = List.length global_work_size in
-  let event = Kernel.enqueue_ndrange ~local_work_size (cl_queue t) kernel work_dim global_work_size in
+  let event = Kernel.enqueue_ndrange ~local_work_size ?global_work_ofs (cl_queue t) kernel work_dim global_work_size in
   event
 
 (**  [event_wait t event]
