@@ -269,6 +269,38 @@ let memory_copyback t pocl =
   Pocl.copy_buffer_from_gpu pocl ~src:t.chunk_slt_buffer    ~dst:t.chunk_slt_array;
   Pocl.finish_queue pocl
 
+(** {1 Results} *)
+
+(**  [results_create data seeds]
+
+  Create the trace results structure given the seeds
+
+ *)
+let results_create data seeds =
+  let (num_seeds,_) = ODM.shape seeds in
+  let roi_nx = data.roi_nx + data.pad_width*2 in
+  let roi_ny = data.roi_ny + data.pad_width*2 in
+
+  (* Result arrays *)
+  let traj_nsteps_array  = ba_int16s (num_seeds*2) in (* *2 as there are 2 directions ? *)
+  let traj_lengths_array = ba_floats (num_seeds*2) in (* *2 as there are 2 directions ? *)
+  let slc_array          = ba_int3d   2 roi_nx roi_ny in
+  let slt_array          = ba_float3d 2 roi_nx roi_ny in
+  let sla_array          = ba_float3d 2 roi_nx roi_ny in
+  ODN.fill traj_nsteps_array  0;
+  ODN.fill traj_lengths_array 0.;
+  ODN.fill slc_array 0;
+  ODN.fill slt_array 0.;
+  ODN.fill sla_array 0.;
+  {
+    streamline_arrays= Array.make 2 (Array.make 0 (Bytes.make 0 ' '));
+    traj_nsteps_array;
+    traj_lengths_array;
+    slc_array;
+    slt_array;
+    sla_array;
+  }
+
 (** {1 GPU functions} *)
 
 (**  [gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_source t]
@@ -352,10 +384,11 @@ let gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_sour
   aggregated.
 
  *)
-let gpu_integrate_trajectories pocl data results seeds chunk_size to_do_list =
+let gpu_integrate_trajectories pocl data seeds chunk_size to_do_list =
 
   let memory = memory_create_buffers pocl data seeds chunk_size in
   let streamline_lists = [| []; []; |] in
+  let results = results_create data seeds in
   let cl_kernel_source = Pocl.read_source cl_src_path cl_files in
 
   List.iter (fun chunk -> gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_source chunk) to_do_list;
@@ -381,7 +414,7 @@ let gpu_integrate_trajectories pocl data results seeds chunk_size to_do_list =
   pv_verbose data (fun _ -> Printf.printf "Total steps in all streamlines %d\n%!" (total_steps/2));
   results
 
-(**  [integrate_trajectories tprops pocl data results seeds]
+(**  [integrate_trajectories tprops pocl data seeds]
 
   Integrate trajectories both upstream and downstream from the {i
   seeds} array of unpadded ROI coordinates.
@@ -406,7 +439,7 @@ type t_stats = {
   d_max  : float;
   }
 
-let integrate_trajectories (tprops:t_props_trace) pocl data results seeds =
+let integrate_trajectories (tprops:t_props_trace) pocl data seeds =
   Workflow.workflow_start ~subflow:"integrating streamlines" tprops.workflow;
   Pocl.prepare_cl_context_queue pocl;
 
@@ -436,7 +469,7 @@ let integrate_trajectories (tprops:t_props_trace) pocl data results seeds =
   in
   pv_verbose data show_memory;
 
-  gpu_integrate_trajectories pocl data results seeds chunk_size to_do_list;
+  let results = gpu_integrate_trajectories pocl data seeds chunk_size to_do_list in
     
   (* Streamline stats *)
   let pixel_size = Info.float_of data.info "pixel_size" in

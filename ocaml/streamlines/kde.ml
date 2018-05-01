@@ -15,8 +15,8 @@
  * @file   kde.ml
  * @brief  Kernel density estimation
  *
- * Up to date with python of git CS 3cb3f5e67e5594ef571415f636320bcd5d2d7290
- * except for speed array and nonconditioned arrays
+ * Up to date with python of git CS 9b039412ca3e76b47c78bba1593f93e7523fe45d
+ * except for bivariate which is not there yet
  *
  * v}
  *)

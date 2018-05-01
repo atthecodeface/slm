@@ -15,7 +15,7 @@
  * @file   streamlines.ml
  * @brief  Toplevel streamlines library
  *
- * Up to date with python of git CS 54b7ed9ebd253403c1851764035b5c718d5937d3
+ * Up to date with python of git CS 9b039412ca3e76b47c78bba1593f93e7523fe45d
  *
  * v}
  *)
@@ -172,10 +172,10 @@ let parse_arguments _ =
   let json = ref "" in
   let jsons = ref [] in
   let set_verbose s = verbosity := Properties.pv_of_int (verbosity_of_string s) in
-  let set_state_json_bool x s =
-    jsons := (Globals.sfmt "{\"state\":{\"%s\":%b}}" x (str2bool s)) :: !jsons
+  let set_state_json_bool ?section:(section="state") x s =
+    jsons := (Globals.sfmt "{\"%s\":{\"%s\":%b}}" section x (str2bool s)) :: !jsons
   in
-  let bool_json_param x = Arg.String (fun s -> set_state_json_bool x s) in
+  let bool_json_param ?section x = Arg.String (fun s -> set_state_json_bool ?section x s) in
   let open Arg in
   let options =
     [ ("--verbose", String set_verbose, "verbose mode");
@@ -184,6 +184,7 @@ let parse_arguments _ =
       ("-f",        Set_string filename, "import parameters file");
       ("--json",    Set_string json,     "json settings");
       ("-j",        Set_string json,     "json settings");
+      ("-d",        (bool_json_param ~section:"pocl" "debug"), "Set debug for POCL");
       ("-r",        (bool_json_param "do_reload_state"), "reload previous runtime state from files");
       ("-g",        (bool_json_param "do_geodata"),      "read geodata files (DTM, basins)");
       ("-e",        (bool_json_param "do_preprocess"),   "perform preprocessing (optionally do conditioning; compute gradients)");

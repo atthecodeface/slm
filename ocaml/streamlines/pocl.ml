@@ -15,8 +15,9 @@
  * @file   pocl.ml
  * @brief  OpenCL support library
  *
- * Up to date with python of git CS 54b7ed9ebd253403c1851764035b5c718d5937d3
- * except for KDE options
+ * Up to date with python of git CS 9b039412ca3e76b47c78bba1593f93e7523fe45d
+ *
+ * Client should set NXY_PADDED and DEBUG if required
  *
  * v}
  *)
@@ -351,6 +352,9 @@ let get_memory_limit t =
     This uses the kernel_name (as this is passed in as a define).
 
     This should use a list of info elements that are required for the kernel.
+
+NXY_PADDED is needed for trace/fields
+DEBUG can be set if required
 
  *)
 let compile_options t info_struct kernel_name =

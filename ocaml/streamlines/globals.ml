@@ -15,7 +15,9 @@
  * @file   globals.ml
  * @brief  Globally useful functions and statics for the streamlines analysis
  *
- * Up to date with python of git CS 54b7ed9ebd253403c1851764035b5c718d5937d3
+ * Up to date with python of git CS 9b039412ca3e76b47c78bba1593f93e7523fe45d
+ *
+ * However, might want to suck in some more of useful.py such as seed picking - but that may belong in core.
  *
  * v}
  *)

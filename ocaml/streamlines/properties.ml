@@ -938,11 +938,14 @@ let read_state properties =
 
  *)
 let read_pocl verbosity properties =
+  let workflow_pocl =       Workflow.create properties "pocl" in
+  Workflow.set_verbosity workflow_pocl verbosity;
+
   let workflow =            Workflow.create properties "state" in
-  let cl_platform =         Workflow.int_of  workflow ~default:0 "cl_platform" in
-  let cl_device =           Workflow.int_of  workflow ~default:0 "cl_device" in
+  let cl_platform =         Workflow.int_of    workflow ~default:0   "cl_platform" in
+  let cl_device =           Workflow.int_of    workflow ~default:0   "cl_device" in
   let gpu_memory_limit_pc = Workflow.float_of  workflow ~default:50. "gpu_memory_limit_pc" in
-  Workflow.set_verbosity workflow verbosity;
+  Workflow.set_verbosity workflow workflow_pocl.verbosity;
   {
     cl_platform;
     cl_device;

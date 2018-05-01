@@ -69,6 +69,38 @@ let pv_info    t = Workflow.pv_info t.props.workflow
  *)
 let pv_verbose t = Workflow.pv_verbose t.props.workflow
 
+(** {1 Results} *)
+
+(**  [results_create data seeds]
+
+  Create the trace results structure given the seeds
+
+ *)
+let results_create data seeds =
+  let (num_seeds,_) = ODM.shape seeds in
+  let roi_nx = data.roi_nx + data.pad_width*2 in
+  let roi_ny = data.roi_ny + data.pad_width*2 in
+
+  (* Result arrays *)
+  let traj_nsteps_array  = ba_int16s (num_seeds*2) in (* *2 as there are 2 directions ? *)
+  let traj_lengths_array = ba_floats (num_seeds*2) in (* *2 as there are 2 directions ? *)
+  let slc_array          = ba_int3d   2 roi_nx roi_ny in
+  let slt_array          = ba_float3d 2 roi_nx roi_ny in
+  let sla_array          = ba_float3d 2 roi_nx roi_ny in
+  ODN.fill traj_nsteps_array  0;
+  ODN.fill traj_lengths_array 0.;
+  ODN.fill slc_array 0;
+  ODN.fill slt_array 0.;
+  ODN.fill sla_array 0.;
+  {
+    streamline_arrays= Array.make 2 (Array.make 0 (Bytes.make 0 ' '));
+    traj_nsteps_array;
+    traj_lengths_array;
+    slc_array;
+    slt_array;
+    sla_array;
+  }
+
 (** {1 Seed functions} *)
 
 (**  [create_seeds t data]
@@ -104,8 +136,8 @@ let create_seeds t data =
   @return trace result
 
  *)
-let trace_streamlines t pocl data seeds =
-  Integration.integrate_trajectories t.props pocl data seeds
+let trace_streamlines t pocl data results seeds =
+  Integration.integrate_trajectories t.props pocl data results seeds
 
 (** {1 Workflow functions} *)
 
@@ -133,9 +165,10 @@ let create props =
 let process t pocl data =
   Workflow.workflow_start t.props.workflow;
   let seeds = create_seeds t data in
+  let results = results_create data seeds in
   data.seeds <- seeds;
   let (num_seeds,_) = ODM.shape seeds in
   Info.set data.info "n_seed_points" (Info.Int num_seeds);
-  let result = trace_streamlines t pocl data seeds in
+  trace_streamlines t pocl data results seeds;
   Workflow.workflow_end t.props.workflow;
-  result
+  results
