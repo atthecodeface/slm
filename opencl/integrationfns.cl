@@ -165,18 +165,26 @@ static inline bool runge_kutta_step_write_sl_data(
                 float2 *dxy1_vec, float2 *dxy2_vec,
                 float2 *vec, float2 *prev_vec, const float2 next_vec,
                 uint *n_steps, uint *idx,
-                __global const bool *mask_array,
+                __global const bool *mask_array, __global uint *mapping_array,
                 __global uint *slt_array, __global uint *slc_array)
 {
     const float step_error = fast_length((*dxy2_vec-*dxy1_vec)/GRID_SCALE);
 
+#ifdef DEBUG
+    if (mapping_array[*idx] & IS_STUCK) {
+        *dl = fast_length(*dxy1_vec);
+    } else {
+        *dl = fast_length(*dxy2_vec);
+    }
+#else
     *dl = fast_length(*dxy2_vec);
+#endif
     *vec = next_vec;
-    if (*dl<(INTEGRATION_HALT_THRESHOLD)) {
+    if ( (*dl<(INTEGRATION_HALT_THRESHOLD)) ) {
         update_trajectory_write_sl_data(*dl,l_trajectory,*vec,*prev_vec,n_steps,
                                         idx, mask_array, slt_array, slc_array);
 #ifdef DEBUG
-//        printf("runge_kutta_step_write_sl_data: stuck @ %d\n",*idx);
+        printf("runge_kutta_step_write_sl_data: stuck @ %d\n",*idx);
 #endif
         return true;
     }

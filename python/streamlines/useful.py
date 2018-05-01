@@ -27,7 +27,7 @@ def vprint(verbose, *args, **kwargs):
         sys.stdout.flush()
 
 def create_seeds(mask, pad_width, n_work_items, n_seed_points=None,
-                 do_shuffle=True, verbose=False):
+                 do_shuffle=True, rng_seed=1, verbose=False):
     """
     Generate seed points for tracing of streamline trajectories.   
         
@@ -42,6 +42,7 @@ def create_seeds(mask, pad_width, n_work_items, n_seed_points=None,
     # Randomize seed point sequence to help space out memory accesses by kernel instances
     if do_shuffle:
         vprint(verbose,'shuffling...', end='')
+        np.random.seed(rng_seed)
         np.random.shuffle(seed_point_array)
     # Truncate if we only want to visualize a subset of streamlines across the DTM
     if n_seed_points is not None:

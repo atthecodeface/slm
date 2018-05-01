@@ -38,7 +38,7 @@
 /// @param[in]  mask_array: grid pixel mask (padded),
 ///                         with @p true = masked, @p false = good
 /// @param[in]  uv_array: flow unit velocity vector grid (padded)
-/// @param[in,out]  mapping_array (uint *, RW): mapping multi-flag array
+/// @param[out]  mapping_array: multi-flag array
 /// @param[out] trajectories_array: lists of streamline trajectories, stored as
 ///                                 compressed-into-byte dx,dy vector sequences;
 ///                                 one list per @p seed_point_array vector
@@ -81,7 +81,8 @@ __kernel void integrate_trajectory( __global const float2 *seed_point_array,
     trajectory_vec = &trajectories_array[trajectory_index];
 
     // Trace a "smooth" streamline from the seed point coordinate
-    trajectory_record( uv_array, mask_array, traj_nsteps_array, traj_length_array,
+    trajectory_record( uv_array, mask_array,
+                       mapping_array, traj_nsteps_array, traj_length_array,
                        trajectory_vec, global_id, seed_idx,
                        seed_point_array[seed_idx] );
 }

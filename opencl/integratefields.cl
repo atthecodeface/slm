@@ -47,7 +47,7 @@
 /// @param[in]  mask_array: grid pixel mask (padded),
 ///                         with @p true = masked, @p false = good
 /// @param[in]  uv_array: flow unit velocity vector grid (padded)
-/// @param[in,out]  mapping_array (uint *, RW): mapping multi-flag array
+/// @param[out] mapping_array: multi-flag array
 /// @param[out] slc_array: grid recording accumulated count of streamline integration
 ///                        steps across each pixel (padded)
 /// @param[out] slt_array: grid recording accumulated count of streamline segment lengths
@@ -96,12 +96,13 @@ __kernel void integrate_fields( __global const float2 *seed_point_array,
     for (j=0u;j<SUBPIXEL_SEED_POINT_DENSITY;j++) {
         for (i=0u;i<SUBPIXEL_SEED_POINT_DENSITY;i++){
             // Trace a jittered streamline from a sub-pixel-offset first point
-            trajectory_jittered(uv_array, mask_array, slc_array, slt_array,
-                               global_id, seed_idx,
-                               current_seed_point_vec + (float2)(
+            trajectory_jittered(uv_array, mask_array,
+                                mapping_array, slc_array, slt_array,
+                                global_id, seed_idx,
+                                current_seed_point_vec + (float2)(
                                     (float)i*SUBPIXEL_SEED_STEP-SUBPIXEL_SEED_HALFSPAN,
                                     (float)j*SUBPIXEL_SEED_STEP-SUBPIXEL_SEED_HALFSPAN ),
-                               initial_rng_state);
+                                initial_rng_state);
         }
     }
 }

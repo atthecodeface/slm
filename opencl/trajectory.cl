@@ -20,6 +20,7 @@
 /// @param[in]  uv_array: flow unit velocity vector grid (padded)
 /// @param[in]  mask_array: grid pixel mask (padded),
 ///                         with @p true = masked, @p false = good
+/// @param[out] mapping_array: multi-flag array
 /// @param[out] traj_nsteps_array: list of number of steps along each trajectory;
 ///                                 one per @p seed_point_array vector
 /// @param[out] traj_length_array: list of lengths of each trajectory;
@@ -39,6 +40,7 @@
 ///
 static inline void trajectory_record( __global const float2 *uv_array,
                                       __global const bool   *mask_array,
+                                      __global       uint   *mapping_array,
                                       __global       ushort *traj_nsteps_array,
                                       __global       float  *traj_length_array,
                                       __global       char2  *trajectory_vec,
@@ -61,8 +63,10 @@ static inline void trajectory_record( __global const float2 *uv_array,
                          vec, &next_vec, &idx);
         if (!mask_array[idx]) {
             if (runge_kutta_step_record(&dt, &dl, &l_trajectory, &dxy1_vec, &dxy2_vec,
-                  &vec, &prev_vec, &next_vec, &n_steps, &idx, &prev_idx, trajectory_vec))
+                &vec, &prev_vec, &next_vec, &n_steps, &idx, &prev_idx, trajectory_vec)) {
+//                atomic_or(&mapping_array[idx],IS_STUCK);
                 break;
+            }
         } else {
             euler_step_record(&dt, &dl, &l_trajectory, uv1_vec,
                               &vec, prev_vec, &n_steps, trajectory_vec);

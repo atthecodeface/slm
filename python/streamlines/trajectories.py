@@ -82,10 +82,12 @@ def integrate_trajectories(cl_src_path, which_cl_platform, which_cl_device, info
     pad_width                = info_dict['pad_width']
     n_work_items             = info_dict['n_work_items']
     do_shuffle               = info_dict['do_shuffle']
+    shuffle_rng_seed         = info_dict['shuffle_rng_seed']
     seed_point_array, n_seed_points, n_padded_seed_points \
         = create_seeds(mask_array, pad_width, n_work_items, 
                        n_seed_points=n_trajectory_seed_points, 
-                       do_shuffle=do_shuffle, verbose=verbose)
+                       do_shuffle=do_shuffle, rng_seed=shuffle_rng_seed,
+                       verbose=verbose)
     info_dict['n_seed_points']        = n_seed_points
     info_dict['n_padded_seed_points'] = n_padded_seed_points
     

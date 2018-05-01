@@ -164,6 +164,7 @@ class Trace(Core):
             'n_seed_points' :           np.uint32(0),
             'n_padded_seed_points' :    np.uint32(0),
             'do_shuffle' :              np.bool8(self.do_shuffle_seed_points),
+            'shuffle_rng_seed' :        np.uint32(self.shuffle_rng_seed),
             'downup_sign' :             np.float32(np.nan),
             'gpu_memory_limit_pc' :        np.uint32(self.state.gpu_memory_limit_pc),
             'n_work_items' :               np.uint32(self.state.n_work_items),
@@ -249,7 +250,6 @@ class Trace(Core):
             numpy.ndarray, numpy.ndarray, numpy.ndarray: 
             slc_array, slt_array, sla_array
         """
-        pdebug(self.build_info_dict())
         (self.slc_array, self.slt_array, self.sla_array) \
             = integrate_fields(
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
