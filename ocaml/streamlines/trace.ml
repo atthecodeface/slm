@@ -99,6 +99,8 @@ let results_create data seeds =
     slc_array;
     slt_array;
     sla_array;
+    ds_stats = None;
+    us_stats = None;
   }
 
 (** {1 Seed functions} *)

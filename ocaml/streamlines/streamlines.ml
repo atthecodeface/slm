@@ -126,8 +126,11 @@ module Geodata     = Geodata
 (** Preprocess - Workflow module that takes an ROI and generates the vector field, filling blockages and fixing loops if required *)
 module Preprocess  = Preprocess
 
-(** Integration - Used only by trace workflow, invokes GPU to trace streamlines and count flows through ROI pixels *)
-module Integration = Integration
+(** Trajectories - Used only by trace workflow, invokes GPU to trace streamlines and count flows through ROI pixels *)
+module Trajectories = Trajectories
+
+(** Fields - Used only by trace workflow, invokes GPU to trace streamlines and count flows through ROI pixels *)
+(* module Fields = Fields*)
 
 (** Trace - Workflow module that traces streamlines *)
 module Trace       = Trace
@@ -232,6 +235,7 @@ let process json_dir parameters_filename jsons =
   Preprocess.process preprocess data;
 
   (* Create basic info structure based on loaded data and properties *)
+  Pocl.prepare_cl_context_queue pocl;
   Pocl.rebuild_info_struct pocl data data.info;
 
   (* Trace streamlines *)

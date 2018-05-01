@@ -12,11 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * @file   integration.ml
- * @brief  Integration using GPU for trace
+ * @file   trajectories.ml
+ * @brief  Integration of trajectories using GPU for trace
  *
- * Up to date with python of git CS 54b7ed9ebd253403c1851764035b5c718d5937d3
- * except chunk_size is not always a multiple of n_work_items
+ * Up to date with python of git CS 9b039412ca3e76b47c78bba1593f93e7523fe45d
+ *
+ * Note that integrate_trajectories does NOT create seeds - that is up to the client
  *
  * v}
  *)
@@ -112,7 +113,7 @@ let show_chunk t =
 
  *)
 let generate_chunks data num_seeds chunk_size =
-  let num_chunks_required = (num_seeds + chunk_size - 1) / chunk_size in
+  let num_chunks_required = required_units num_seeds chunk_size in
   let chunks = List.init num_chunks_required (fun i -> (i, i*chunk_size, min ((i+1)*chunk_size) num_seeds)) in
   let to_do_list = List.fold_left (fun acc nse -> (chunk data true nse)::(chunk data false nse)::acc) [] chunks in
   to_do_list
@@ -133,12 +134,12 @@ type t_memory = {
     chunk_trajcs_array : t_ba_chars;   (* chunk_size * max_traj_length*2 - char path of streamline from the seed *)
 
     seeds_buffer        : Pocl.t_buffer;
-    mask_buffer         : Pocl.t_buffer;
     uv_buffer           : Pocl.t_buffer;
+    mask_buffer         : Pocl.t_buffer;
     mapping_buffer      : Pocl.t_buffer;
+    chunk_trajcs_buffer : Pocl.t_buffer;
     chunk_nsteps_buffer : Pocl.t_buffer;
     chunk_length_buffer : Pocl.t_buffer;
-    chunk_trajcs_buffer : Pocl.t_buffer;
   }
 
 (**  [copy_read pocl]
@@ -233,15 +234,6 @@ let memory_create_buffers pocl data seeds chunk_size =
     chunk_trajcs_buffer;
   }
 
-(**  [memory_clear t pocl]
-
-  Clear the chunk buffers and copy them to the GPU, prior to execution
-  of the integrate_trajectories kernel
-
- *)
-let memory_clear t pocl = 
-  Pocl.finish_queue pocl
-
 (**  [memory_copyback t pocl]
 
   Copy back the chunk buffers from the GPU to the big arrays after execution
@@ -267,22 +259,19 @@ let gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_sour
     pv_verbose data (fun _ -> show_chunk t);
 
     (* Specify this integration job's parameters and compile *)
-    let info = data.info in
-    let n_work_items = Info.int_of info "n_work_items" in
-    let global_size = ((t.num_seeds+n_work_items-1)/n_work_items) * n_work_items in
+    let n_work_items    = Info.int_of   data.info "n_work_items" in
+    let grid_scale      = Info.float_of data.info "grid_scale" in
+    let global_size     = round_up_to_unit_size t.num_seeds n_work_items in
     let global_size     = [global_size; 1] in
     let local_work_size = [n_work_items; 1] in
-    Info.set info "downup_sign" (Info.Float32 t.downup_sign);
-    Info.set info "seeds_chunk_offset" (Info.Int t.seed_offset);
-    let grid_scale  = Info.float_of info "grid_scale" in
-    Info.set_float32 info "combo_factor" ((grid_scale *. data.properties.trace.integrator_step_factor) *. t.downup_sign);
-    let compile_options = Pocl.compile_options pocl info "INTEGRATE_TRAJECTORY" in
+    Info.set data.info "downup_sign" (Info.Float32 t.downup_sign);
+    Info.set data.info "seeds_chunk_offset" (Info.Int t.seed_offset);
+    Info.set_float32 data.info "combo_factor" ((grid_scale *. data.properties.trace.integrator_step_factor) *. t.downup_sign);
+    let compile_options = Pocl.compile_options pocl data.info "integrate_trajectory" in
     let program = Pocl.compile_program pocl cl_kernel_source compile_options in
     let kernel = Pocl.get_kernel pocl program "integrate_trajectory" in
 
     (* Execute the kernel *)
-    memory_clear memory pocl;
-
     Pocl.kernel_set_arg_buffer pocl kernel 0 memory.seeds_buffer;
     Pocl.kernel_set_arg_buffer pocl kernel 1 memory.mask_buffer;
     Pocl.kernel_set_arg_buffer pocl kernel 2 memory.uv_buffer;
@@ -353,57 +342,9 @@ let gpu_integrate_trajectories pocl data results seeds chunk_size to_do_list =
   @return trace_results
 
  *)
-type t_stats = {
-  l_mean : float;
-  l_min  : float;
-  l_max  : float;
+  let get_traj_stats data results num_seeds downup_index =
+    let pixel_size = Info.float_of data.info "pixel_size" in
 
-  c_mean : float;
-  c_min  : float;
-  c_max  : float;
-
-  d_mean : float;
-  d_min  : float;
-  d_max  : float;
-  }
-
-let integrate_trajectories (tprops:t_props_trace) pocl data results seeds =
-  Workflow.workflow_start ~subflow:"integrating streamlines" tprops.workflow;
-  Pocl.prepare_cl_context_queue pocl;
-
-  let gpu_traj_memory_limit = Pocl.get_memory_limit pocl in (* max memory permitted to use *)
-  let (num_seeds,_) = ODM.shape seeds in
-  let mem_per_seed = (Info.int_of data.info "max_n_steps") * 2 in (* an approximation *)
-  let work_items_per_warp = Info.int_of data.info "n_work_items" in
-  let max_chunk_size = gpu_traj_memory_limit / mem_per_seed in
-  let chunk_size = min (((num_seeds + work_items_per_warp-1)/work_items_per_warp)*work_items_per_warp) max_chunk_size in
-  let chunk_size = work_items_per_warp * (chunk_size / work_items_per_warp) in
-  let full_traj_memory_request = chunk_size * mem_per_seed in
-  let to_do_list = generate_chunks data num_seeds chunk_size  in
-  let num_chunks_required = List.length to_do_list in
-
-  let show_memory _ =
-    Printf.printf "GPU/OpenCL device global memory limit for streamline trajectories: %d\n" gpu_traj_memory_limit;
-    Printf.printf "GPU/OpenCL device memory required for streamline trajectories: %d\n" full_traj_memory_request;
-    (if num_chunks_required=1 then (
-      Printf.printf "no need to chunkify\n"
-     ) else (
-      Printf.printf "need to split into %d chunks\n" num_chunks_required
-     )
-    );
-    Printf.printf "Number of seed points = total number of kernel instances: %d\n" num_seeds;
-    Printf.printf "Chunk size = number of kernel instances per chunk: %d\n" chunk_size;
-    Printf.printf "%!"
-  in
-  pv_verbose data show_memory;
-
-  gpu_integrate_trajectories pocl data results seeds chunk_size to_do_list;
-    
-  (* Streamline stats *)
-  let pixel_size = Info.float_of data.info "pixel_size" in
-
-  pv_verbose data (fun _ -> Printf.printf "Computing streamlines statistics\n");
-  let get_traj_stats downup_index =
     let data_of_seed seed =
       let seed_downup_index = 2*seed + downup_index in
       let ln0 = (ODN.get results.traj_lengths_array [|seed_downup_index|]) *. pixel_size in
@@ -418,30 +359,53 @@ let integrate_trajectories (tprops:t_props_trace) pocl data results seeds =
      c_mean=OS.mean counts;  c_min=OS.min counts;  c_max=OS.max counts;
      d_mean=OS.mean dses;    d_min=OS.min dses;    d_max=OS.max dses;
     }
-  in
-  let ds_stats = get_traj_stats 0 in
-  let us_stats = get_traj_stats 1 in
-  let show_stats _ =
+  let show_stats results =
+    let ds_stats = Option.get results.ds_stats in
+    let us_stats = Option.get results.us_stats in
     Printf.printf "   downstream                            upstream\n";
     Printf.printf "          min        mean         max         min        mean         max\n";
     Printf.printf "l %11.6f %11.6f %11.6f %11.6f %11.6f %11.6f\n"    ds_stats.l_min ds_stats.l_mean ds_stats.l_max us_stats.l_min us_stats.l_mean us_stats.l_max ;
     Printf.printf "n %11.6f %11.6f %11.6f %11.6f %11.6f %11.6f\n"    ds_stats.c_min ds_stats.c_mean ds_stats.c_max us_stats.c_min us_stats.c_mean us_stats.c_max ;
     Printf.printf "ds%11.6f %11.6f %11.6f %11.6f %11.6f %11.6f\n%!"  ds_stats.d_min ds_stats.d_mean ds_stats.d_max us_stats.d_min us_stats.d_mean us_stats.d_max ;
     ()
-  in
-  pv_verbose data show_stats;
 
-  let dds =  ds_stats.d_mean in
-  let uds =  us_stats.d_mean in
-  (* slt: sum of line lengths crossing a pixel * number of line-points per pixel *)
-  (* slt: <=> sum of line-points per pixel *)
-  let slt_ds = ODN.slice_left results.slt_array [|0|] in (* slice_left so it does not copy *)
-  let slt_us = ODN.slice_left results.slt_array [|1|] in (* slice_left so it does not copy *)
-  ODN.mul_scalar_ slt_ds (dds /. pixel_size);
-  ODN.mul_scalar_ slt_us (uds /. pixel_size);
-  (* slt:  => sum of line-points per meter *)
-  ODN.sqr_ results.slt_array;
-  (* slt:  =>  sqrt(area) *)
+let integrate_trajectories (tprops:t_props_trace) pocl data results seeds =
+  Workflow.workflow_start ~subflow:"integrating trajectories" tprops.workflow;
+
+  let gpu_traj_memory_limit = Pocl.get_memory_limit pocl in (* max memory permitted to use *)
+  let (num_seeds,_) = ODM.shape seeds in
+  let mem_per_seed = (Info.int_of data.info "max_n_steps") * 2 in (* an approximation *)
+  let work_items_per_warp = Info.int_of data.info "n_work_items" in
+  let max_chunk_size = gpu_traj_memory_limit / mem_per_seed in
+  let max_chunk_size = round_up_to_unit_size max_chunk_size work_items_per_warp in
+  let chunk_size = min (round_up_to_unit_size num_seeds work_items_per_warp) max_chunk_size in
+  let full_traj_memory_request = chunk_size * mem_per_seed in
+  let to_do_list = generate_chunks data num_seeds chunk_size  in
+  let num_chunks_required = List.length to_do_list in
+
+  let show_memory _ =
+    Printf.printf "GPU/OpenCL device global memory limit for streamline trajectories: %d\n" gpu_traj_memory_limit;
+    Printf.printf "GPU/OpenCL device memory required for streamline trajectories: %d\n" full_traj_memory_request;
+    (if num_chunks_required=1 then (
+      Printf.printf "no need to chunkify\n"
+     ) else (
+      Printf.printf "need to split into %d chunks (note separation of up/down may impact this)\n" num_chunks_required
+     )
+    );
+    Printf.printf "Number of seed points = total number of kernel instances: %d\n" num_seeds;
+    Printf.printf "Max chunk size (given memory constraint, rounding up to num work items): %d\n" max_chunk_size;
+    Printf.printf "Actual chunk size = number of kernel instances per chunk: %d\n" chunk_size;
+    Printf.printf "%!"
+  in
+  pv_verbose data show_memory;
+
+  gpu_integrate_trajectories pocl data results seeds chunk_size to_do_list;
+    
+  (* Streamline stats *)
+  pv_verbose data (fun _ -> Printf.printf "Computing streamlines statistics\n");
+  results.ds_stats <- Some (get_traj_stats data results num_seeds 0);
+  results.us_stats <- Some (get_traj_stats data results num_seeds 1);
+  pv_verbose data (fun _ -> show_stats results);
 
   Workflow.workflow_end tprops.workflow;
   results

@@ -256,6 +256,22 @@ type t_core_data = {
     mutable seeds                 : t_ba_floats; (* *)
   }
 
+
+(**  t_stats *)
+type t_stats = {
+  l_mean : float;
+  l_min  : float;
+  l_max  : float;
+
+  c_mean : float;
+  c_min  : float;
+  c_max  : float;
+
+  d_mean : float;
+  d_min  : float;
+  d_max  : float;
+  }
+
 (**  t_trace_results
 
   The trace results are produced by the trace workflow, and are
@@ -269,6 +285,8 @@ type t_trace_results = {
     slc_array          : t_ba_ints;   (* 2:downup * padded roi_nx * padded roi_ny : count of streamlines per pixel *)
     slt_array          : t_ba_floats; (* 2:downup * padded roi_nx * padded roi_ny : length of streamlines per pixel *)
     mutable sla_array  : t_ba_floats; (* 2:downup * padded roi_nx * padded roi_ny : area of streamlines per pixel *)
+    mutable ds_stats   : t_stats option; (* Stats (downstream), only available once trajectories are found *)
+    mutable us_stats   : t_stats option; (* Stats (upstream), only available once trajectories are found *)
   }
 
 (** {1 Core toplevel functions}

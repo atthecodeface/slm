@@ -149,6 +149,14 @@ let list_assoc_replace l name value =
  *)
 let is_nan x = (compare x nan)=0
 
+(**  [required_units n unit_size]
+ *)
+let required_units n unit_size = (n + unit_size-1)/unit_size
+
+(**  [round_up_to_unit_size n unit_size]
+ *)
+let round_up_to_unit_size n unit_size = unit_size * (required_units n unit_size)
+
 (** {1 Bigarray types and handling} *)
 
 (** {2 Types} *)
