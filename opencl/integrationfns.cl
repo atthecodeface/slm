@@ -175,7 +175,9 @@ static inline bool runge_kutta_step_write_sl_data(
     if (*dl<(INTEGRATION_HALT_THRESHOLD)) {
         update_trajectory_write_sl_data(*dl,l_trajectory,*vec,*prev_vec,n_steps,
                                         idx, mask_array, slt_array, slc_array);
+#ifdef DEBUG
 //        printf("runge_kutta_step_write_sl_data: stuck @ %d\n",*idx);
+#endif
         return true;
     }
     *dt = select( fmin(DT_MAX,(ADJUSTED_MAX_ERROR*(*dt))/(step_error)), DT_MAX,

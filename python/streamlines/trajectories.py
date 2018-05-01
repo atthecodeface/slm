@@ -25,7 +25,7 @@ import warnings
 pdebug = print
 
 def integrate_trajectories(cl_src_path, which_cl_platform, which_cl_device, info_dict, 
-                           mask_array, u_array, v_array, 
+                           mask_array, u_array, v_array, mapping_array, 
                            do_trace_downstream, do_trace_upstream, verbose):
     """
     Trace each streamline from its corresponding seed point using 2nd-order Runge-Kutta 
@@ -54,6 +54,7 @@ def integrate_trajectories(cl_src_path, which_cl_platform, which_cl_device, info
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
         v_array (numpy.ndarray):
+        mapping_array (numpy.ndarray):
         do_trace_downstream (bool):
         do_trace_upstream (bool):
         verbose (bool):
@@ -87,6 +88,10 @@ def integrate_trajectories(cl_src_path, which_cl_platform, which_cl_device, info
                        do_shuffle=do_shuffle, verbose=verbose)
     info_dict['n_seed_points']        = n_seed_points
     info_dict['n_padded_seed_points'] = n_padded_seed_points
+    
+    # Mapping flag array - not likely already defined, but just in case...
+    if mapping_array is None:
+        mapping_array = np.zeros_like(mask_array, dtype=np.uint32)
 
     # Chunkification
     gpu_traj_memory_limit = (device.get_info(cl.device_info.GLOBAL_MEM_SIZE) 
@@ -114,7 +119,8 @@ def integrate_trajectories(cl_src_path, which_cl_platform, which_cl_device, info
     (streamline_arrays_list, traj_nsteps_array, traj_length_array) \
         = gpu_integrate(device, context, queue, cl_kernel_source,
                         info_dict, trace_do_chunks, chunk_size, 
-                        seed_point_array, mask_array, u_array, v_array, verbose)
+                        seed_point_array, mask_array, 
+                        u_array, v_array, mapping_array, verbose)
     # Streamline stats
     pixel_size = info_dict['pixel_size']
     traj_stats_df = compute_stats(traj_length_array,traj_nsteps_array,pixel_size,verbose)
@@ -166,7 +172,8 @@ def choose_chunks(seed_point_array, info_dict, n_chunks,
 
 def gpu_integrate(device, context, queue, cl_kernel_source, 
                   info_dict, trace_do_chunks, chunk_size, 
-                  seed_point_array, mask_array, u_array, v_array, verbose):
+                  seed_point_array, mask_array,
+                  u_array, v_array, mapping_array, verbose):
     """
     Carry out GPU/OpenCL device computations in chunks.
     This function is the basic wrapper interfacing Python with the GPU/OpenCL device.
@@ -197,6 +204,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
         v_array (numpy.ndarray):
+        mapping_array (numpy.ndarray):
         verbose (bool):  
         
     Returns: 
@@ -208,11 +216,12 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     streamline_arrays_list = [[],[]]
     (traj_nsteps_array, traj_length_array, 
      chunk_trajcs_array, chunk_nsteps_array, chunk_length_array, 
-     seed_point_buffer, uv_buffer, mask_buffer, 
+     seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer, 
      chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer) \
         = prepare_memory(context, info_dict['n_seed_points'],
                          chunk_size, info_dict['max_n_steps'],
-                         seed_point_array, mask_array, u_array, v_array, verbose)
+                         seed_point_array, mask_array, u_array, v_array, 
+                         mapping_array, verbose)
     
     # Downstream and upstream passes aka streamline integrations from
     #   chunks of seed points aka subsets of the total set
@@ -245,7 +254,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         kernel = program.integrate_trajectory
         
         # Designate buffered arrays
-        buffer_list = [seed_point_buffer, mask_buffer, uv_buffer,
+        buffer_list = [seed_point_buffer, mask_buffer, uv_buffer, mapping_buffer, 
                        chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer]
         kernel.set_args(*buffer_list)
         kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
@@ -296,7 +305,8 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     return (streamline_arrays_list[0:n], traj_nsteps_array[0:n], traj_length_array[0:n])
 
 def prepare_memory(context, n_seed_points, chunk_size, max_traj_length, 
-                   seed_point_array, mask_array, u_array, v_array, verbose):
+                   seed_point_array, mask_array, 
+                   u_array, v_array, mapping_array, verbose):
     """
     Create Numpy array and PyOpenCL buffers to allow CPU-GPU data transfer.
     
@@ -308,16 +318,17 @@ def prepare_memory(context, n_seed_points, chunk_size, max_traj_length,
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
         v_array (numpy.ndarray):
+        mapping_array (numpy.ndarray):
         verbose (bool):
         
     Returns:
         numpy.ndarray, numpy.ndarray,\
         numpy.ndarray, numpy.ndarray, numpy.ndarray, \
-        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, \
+        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, \
         pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer:
         traj_nsteps_array, traj_length_array, 
         chunk_trajcs_array, chunk_nsteps_array, chunk_length_array,
-        seed_point_buffer, uv_buffer, mask_buffer,
+        seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer,
         chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer
     """
     # PyOpenCL array for seed points
@@ -339,6 +350,7 @@ def prepare_memory(context, n_seed_points, chunk_size, max_traj_length,
     seed_point_buffer   = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=seed_point_array)
     mask_buffer         = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=mask_array)
     uv_buffer           = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=uv_array)
+    mapping_buffer      = cl.Buffer(context, COPY_READ_WRITE, hostbuf=mapping_array)
     chunk_nsteps_buffer = cl.Buffer(context, WRITE_ONLY, chunk_nsteps_array.nbytes )
     chunk_length_buffer = cl.Buffer(context, WRITE_ONLY, chunk_length_array.nbytes )
     chunk_trajcs_buffer = cl.Buffer(context, WRITE_ONLY, chunk_trajcs_array.nbytes )     
@@ -358,6 +370,6 @@ def prepare_memory(context, n_seed_points, chunk_size, max_traj_length,
 
     return (traj_nsteps_array, traj_length_array, 
             chunk_trajcs_array, chunk_nsteps_array, chunk_length_array,
-            seed_point_buffer, uv_buffer, mask_buffer,
+            seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer,
             chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer)
 

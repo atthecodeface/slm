@@ -74,9 +74,11 @@ static inline void trajectory_jittered( __global const float2 *uv_array,
                                                    mask_array, slt_array, slc_array))
                                           break;
             } else {
-//                euler_step_write_sl_data(&dt, &dl, &l_trajectory, uv1_vec,
-//                                         &vec, prev_vec, &n_steps, &idx,
-//                                         mask_array, slt_array, slc_array);
+#ifndef DEBUG
+                euler_step_write_sl_data(&dt, &dl, &l_trajectory, uv1_vec,
+                                         &vec, prev_vec, &n_steps, &idx,
+                                         mask_array, slt_array, slc_array);
+#endif
                 break;
             }
     }

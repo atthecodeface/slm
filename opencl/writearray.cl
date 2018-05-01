@@ -78,9 +78,7 @@ static inline void check_atomic_write_sl_data(const uint idx, const bool mask_fl
         // Also if step distance is << pixel width.
         atomic_add(slt, (uint)(l_trajectory+0.5f));
         // Increment the 'visit' counter slc at this pixel.
-#ifndef DEBUG
         atomic_inc(slc);
-#endif
     }
 }
 #endif

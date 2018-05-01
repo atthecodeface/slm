@@ -27,7 +27,7 @@ pdebug = print
 
 def integrate_fields( 
         cl_src_path, which_cl_platform, which_cl_device, info_dict, 
-        mask_array, u_array, v_array,  
+        mask_array, u_array, v_array, mapping_array, 
         do_trace_downstream, do_trace_upstream, traj_stats_df, verbose
      ):
     """
@@ -57,6 +57,7 @@ def integrate_fields(
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
         v_array (numpy.ndarray):
+        mapping_array (numpy.ndarray):
         do_trace_downstream (bool):
         do_trace_upstream (bool):
         traj_stats_df (pandas.DataFrame):
@@ -81,6 +82,10 @@ def integrate_fields(
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
     n_padded_seed_points = info_dict['n_padded_seed_points']
+
+    # Mapping flag array - will already be defined if trajectories have been traced
+    if mapping_array is None:
+        mapping_array = np.zeros_like(mask_array, dtype=np.uint32)
 
     # Memory check - not really needed 
     gpu_traj_memory_limit = (device.get_info(cl.device_info.GLOBAL_MEM_SIZE) 
@@ -120,7 +125,7 @@ def integrate_fields(
     (rtn_slc_array, rtn_slt_array, rtn_sla_array) \
         = gpu_integrate(device, context, queue, cl_kernel_source,
                          info_dict, n_global,
-                         seed_point_array, mask_array, u_array, v_array,  
+                         seed_point_array, mask_array, u_array, v_array, mapping_array,
                          verbose)
     # Streamline stats
     pixel_size = info_dict['pixel_size']
@@ -141,7 +146,7 @@ def integrate_fields(
 
 def gpu_integrate(device, context, queue, cl_kernel_source, 
                   info_dict, n_global, 
-                  seed_point_array, mask_array, u_array, v_array, verbose):
+                  seed_point_array, mask_array, u_array,v_array, mapping_array, verbose):
     """
     Carry out GPU/OpenCL device computations in chunks.
     This function is the basic wrapper interfacing Python with the GPU/OpenCL device.
@@ -171,6 +176,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
         v_array (numpy.ndarray):
+        mapping_array (numpy.ndarray):
         verbose (bool):  
         
     Returns: 
@@ -180,8 +186,9 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         
     # Prepare memory, buffers 
     (slc_array, slt_array, 
-     seed_point_buffer, uv_buffer, mask_buffer, slc_buffer, slt_buffer) \
-        = prepare_memory(context, seed_point_array, mask_array, u_array,v_array, verbose)
+     seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer, slc_buffer, slt_buffer) \
+        = prepare_memory(context, seed_point_array, mask_array, 
+                         u_array,v_array, mapping_array, verbose)
     roi_nxy = slc_array.shape
     rtn_slc_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.uint32)
     rtn_slt_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
@@ -194,7 +201,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
 
         # Specify this integration job's parameters
         global_size = [n_global,1]
-        vprint(verbose,'Work size: {0}'.format(global_size))
+        vprint(verbose,'##### Work size: {0} ##### '.format(global_size))
         vprint(verbose,
                'Seed point buffer size = {}*8 bytes'.format(seed_point_buffer.size/8))
         local_size = [info_dict['n_work_items'],1]
@@ -213,7 +220,8 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         kernel = program.integrate_fields
         
         # Designate buffered arrays
-        buffer_list = [seed_point_buffer, mask_buffer, uv_buffer, slc_buffer, slt_buffer]
+        buffer_list = [seed_point_buffer, mask_buffer, 
+                       uv_buffer, mapping_buffer, slc_buffer, slt_buffer]
         kernel.set_args(*buffer_list)
         kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
         
@@ -262,7 +270,8 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     
     return (slc, slt, sla)
 
-def prepare_memory(context, seed_point_array, mask_array, u_array, v_array, verbose):
+def prepare_memory(context, seed_point_array, mask_array, 
+                   u_array,v_array, mapping_array, verbose):
     """
     Create Numpy array and PyOpenCL buffers to allow CPU-GPU data transfer.
     
@@ -272,14 +281,15 @@ def prepare_memory(context, seed_point_array, mask_array, u_array, v_array, verb
         mask_array (numpy.ndarray):
         u_array (numpy.ndarray):
         v_array (numpy.ndarray):
+        mapping_array (numpy.ndarray):
         verbose (bool):
         
     Returns:
         numpy.ndarray, numpy.ndarray, \
-        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, \
+        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, \
         pyopencl.Buffer, pyopencl.Buffer:
         slc_array, slt_array, 
-        seed_point_buffer, uv_buffer, mask_buffer, 
+        seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer, 
         slc_buffer, slt_buffer
     """
     # PyOpenCL array for seed points
@@ -297,6 +307,7 @@ def prepare_memory(context, seed_point_array, mask_array, u_array, v_array, verb
     seed_point_buffer   = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=seed_point_array)
     mask_buffer         = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=mask_array)
     uv_buffer           = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=uv_array)
+    mapping_buffer      = cl.Buffer(context, COPY_READ_WRITE, hostbuf=mapping_array)
     slc_buffer          = cl.Buffer(context, COPY_READ_WRITE, hostbuf=slc_array)
     slt_buffer          = cl.Buffer(context, COPY_READ_WRITE, hostbuf=slt_array)
     vprint(verbose,'Array sizes:\n',
@@ -305,4 +316,5 @@ def prepare_memory(context, seed_point_array, mask_array, u_array, v_array, verb
            'slx-type = ',slc_array.shape)
 
     return (slc_array, slt_array, 
-            seed_point_buffer, uv_buffer, mask_buffer, slc_buffer, slt_buffer)
+            seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer, 
+            slc_buffer, slt_buffer)

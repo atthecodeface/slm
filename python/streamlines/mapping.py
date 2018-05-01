@@ -105,11 +105,16 @@ class Mapping(Core):
     def map_channels(self):
         self.print('Channels...',end='')  
         jpdf = self.analysis.jpdf_dsla_dslt
+        # Create mapping flag array 
         self.mapping_array = np.zeros(self.trace.slt_array[:,:,0].shape, dtype=np.uint32)
+        # Designate channel pixels according to dsla pdf analysis
         self.mapping_array[jpdf.mode_cluster_ij_list[1][:,0],
                            jpdf.mode_cluster_ij_list[1][:,1]] = self.trace.is_channel
-#         if self.mask_array is not None:
-#             self.mapping_array = self.mapping_array & self.mask_array
+#         # Ref existing mapping array used in streamline trajectory mapping
+#         self.mapping_array = self.trace.mapping_array
+#         # Designate channel pixels according to dsla pdf analysis
+#         self.mapping_array[jpdf.mode_cluster_ij_list[1][:,0],
+#                            jpdf.mode_cluster_ij_list[1][:,1]] |= self.trace.is_channel
         self.print('done')  
 
     def connect_channel_pixels(self):

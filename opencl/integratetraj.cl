@@ -38,6 +38,7 @@
 /// @param[in]  mask_array: grid pixel mask (padded),
 ///                         with @p true = masked, @p false = good
 /// @param[in]  uv_array: flow unit velocity vector grid (padded)
+/// @param[in,out]  mapping_array (uint *, RW): mapping multi-flag array
 /// @param[out] trajectories_array: lists of streamline trajectories, stored as
 ///                                 compressed-into-byte dx,dy vector sequences;
 ///                                 one list per @p seed_point_array vector
@@ -53,6 +54,7 @@
 __kernel void integrate_trajectory( __global const float2 *seed_point_array,
                                     __global const bool   *mask_array,
                                     __global const float2 *uv_array,
+                                    __global       uint   *mapping_array,
                                     __global       char2  *trajectories_array,
                                     __global       ushort *traj_nsteps_array,
                                     __global       float  *traj_length_array )

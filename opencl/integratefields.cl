@@ -47,6 +47,7 @@
 /// @param[in]  mask_array: grid pixel mask (padded),
 ///                         with @p true = masked, @p false = good
 /// @param[in]  uv_array: flow unit velocity vector grid (padded)
+/// @param[in,out]  mapping_array (uint *, RW): mapping multi-flag array
 /// @param[out] slc_array: grid recording accumulated count of streamline integration
 ///                        steps across each pixel (padded)
 /// @param[out] slt_array: grid recording accumulated count of streamline segment lengths
@@ -59,6 +60,7 @@
 __kernel void integrate_fields( __global const float2 *seed_point_array,
                                 __global const bool   *mask_array,
                                 __global const float2 *uv_array,
+                                __global       uint   *mapping_array,
                                 __global       uint   *slc_array,
                                 __global       uint   *slt_array )
 {

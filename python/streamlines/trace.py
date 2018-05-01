@@ -53,6 +53,7 @@ class Trace(Core):
         super(Trace,self).__init__(state,imported_parameters)  
         self.geodata = geodata
         self.preprocess = preprocess
+        self.mapping_array = None
         self.seed_point_array = None
         flags = [
             'is_channel',         # 1
@@ -233,6 +234,7 @@ class Trace(Core):
                 self.build_info_dict(),
                 self.geodata.basin_mask_array,
                 self.preprocess.u_array,self.preprocess.v_array,
+                self.mapping_array,
                 self.do_trace_downstream, self.do_trace_upstream, 
                 self.state.verbose
             )
@@ -254,6 +256,7 @@ class Trace(Core):
                 self.build_info_dict(),
                 self.geodata.basin_mask_array,
                 self.preprocess.u_array,self.preprocess.v_array,
+                self.mapping_array,
                 self.do_trace_downstream, self.do_trace_upstream, 
                 self.traj_stats_df,
                 self.state.verbose
