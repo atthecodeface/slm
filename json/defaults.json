@@ -1,7 +1,7 @@
 {
 	"state": {
 		"verbose" : true,
-		"debug" : true,
+		"debug" : false,
 		"noisy" : false,
 		"cl_platform" : 0,
 		"cl_device" : 2,

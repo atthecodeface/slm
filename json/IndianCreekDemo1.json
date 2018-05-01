@@ -1,9 +1,5 @@
 {
 	"state": {
-		"verbose" : true,
-		"debug" : true,
-		"noisy" : false,
-			
 		"do_reload_state" : false,	
 		
 		"do_geodata" : true,	
