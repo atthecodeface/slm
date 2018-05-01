@@ -124,6 +124,11 @@ def _parse_cmd_line_args():
                         default=None, type=_str2bool,  action="store",  
                         metavar='condition_flag',
                         help='condition DTM for best tracing (fix loops & blockages)')
+                        
+    parser.add_argument('-d', '--debug', dest='debug',
+                        default=None, type=_str2bool,  action="store",  
+                        metavar='debug_flag',
+                        help='turn on OpenCL compiler -D DEBUG flag')
 
     parser.add_argument('-e', '--preprocess', dest='do_preprocess',
                         default=None, type=_str2bool,  action="store", 
