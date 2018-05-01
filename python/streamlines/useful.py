@@ -33,6 +33,7 @@ def create_seeds(mask, pad_width, n_work_items, n_seed_points=None,
         
     Returns:
         numpy.ndarray: seed point array   
+        int: n_seed_points  
         int: n_padded_seed_points  
     """    
     vprint(verbose,'Generating seed points...', end='')
