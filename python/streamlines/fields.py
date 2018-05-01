@@ -193,6 +193,8 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
 
         # Specify this integration job's parameters
         global_size = [n_global,1]
+        vprint(verbose,'')
+        vprint(verbose,'Work size: {0}'.format(global_size))
         vprint(verbose,
                'Seed point buffer size = {}*8 bytes'.format(seed_point_buffer.size/8))
         local_size = [info_dict['n_work_items'],1]
@@ -201,7 +203,6 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         ##################################
         
         # Compile the CL code
-        vprint(verbose,'')
         compile_options = pocl.set_compile_options(info_dict, 'INTEGRATE_FIELDS', 
                                                    downup_sign=downup_sign)
         with warnings.catch_warnings():
@@ -217,9 +218,6 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
         
         # Trace the streamlines on the GPU
-        print ("Work size",global_size)
-        global_size = [(17200//64)*64,1]
-        print ("Work size",global_size)
         event = cl.enqueue_nd_range_kernel(queue, kernel, global_size, local_size)
 #         event.wait()
         queue.finish()
