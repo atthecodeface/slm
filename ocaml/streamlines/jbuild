@@ -8,7 +8,7 @@
     pocl
     geodata
     preprocess
-    integration trace
+    trajectories trace
     kde analysis
     plot
     streamlines))

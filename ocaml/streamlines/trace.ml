@@ -127,17 +127,15 @@ let create_seeds t data =
     pv_debug t (fun _ -> Printf.printf "...done\n%!");
     seeds
 
-(**  [trace_streamlines t pocl data seeds]
+(**  [trace_streamlines t pocl data results seeds]
 
   Trace up or downstreamlines across region of interest (ROI) of DTM grid with the given seeds.
 
   The seeds are a big array of unpadded (x,y) ROI locations
 
-  @return trace result
-
  *)
 let trace_streamlines t pocl data results seeds =
-  Integration.integrate_trajectories t.props pocl data results seeds
+  Trajectories.integrate_trajectories t.props pocl data results seeds
 
 (** {1 Workflow functions} *)
 

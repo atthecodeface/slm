@@ -63,7 +63,7 @@ let pv_verbose data = Workflow.pv_verbose data.properties.trace.workflow
 
 let cl_files = ["rng.cl";"essentials.cl";
                 "writearray.cl";"trajectoryfns.cl";"computestep.cl";
-                "integrationfns.cl";"trajectory.cl";"integration.cl"]
+                "integrationfns.cl";"trajectory.cl";"integratetraj.cl"]
 let cl_src_path = ["opencl"]
 
 (** {1 Chunks} *)
@@ -127,8 +127,7 @@ let generate_chunks data num_seeds chunk_size =
  *)
 type t_memory = {
     uv_array           : t_ba_floats;  (* padded ROI - vector field array input *)
-    chunk_slc_array    : t_ba_ints;    (* padded ROI - #streamlines crossing pixel *)
-    chunk_slt_array    : t_ba_ints;    (* padded ROI - streamline length total of all crossing pixel *)
+    mapping_array      : t_ba_ints;    (* padded ROI - #streamlines crossing pixel *)
     chunk_nsteps_array : t_ba_int16s;  (* chunk_size - number of steps taken for a streamline from the seed *)
     chunk_length_array : t_ba_floats;  (* chunk_size - streamline length from the seed *)
     chunk_trajcs_array : t_ba_chars;   (* chunk_size * max_traj_length*2 - char path of streamline from the seed *)
@@ -136,8 +135,7 @@ type t_memory = {
     seeds_buffer        : Pocl.t_buffer;
     mask_buffer         : Pocl.t_buffer;
     uv_buffer           : Pocl.t_buffer;
-    chunk_slc_buffer    : Pocl.t_buffer;
-    chunk_slt_buffer    : Pocl.t_buffer;
+    mapping_buffer      : Pocl.t_buffer;
     chunk_nsteps_buffer : Pocl.t_buffer;
     chunk_length_buffer : Pocl.t_buffer;
     chunk_trajcs_buffer : Pocl.t_buffer;
@@ -190,10 +188,8 @@ let memory_create_buffers pocl data seeds chunk_size =
     ODM.set uv_array x (y*2+1) v;
   in
   ODM.iter2i_2d fill_uv data.u_array data.v_array;
-
-  (* fill with zeros *)
-  let chunk_slc_array = ba_int2d roi_nx roi_ny  in
-  let chunk_slt_array = ba_int2d roi_nx roi_ny  in
+  let mapping_array = ba_int2d (roi_nx) (roi_ny) in
+  ODM.fill mapping_array 0;
 
   (* Chunk-sized temporary arrays - use for a work group, then copy to traj_* *)
   (* Use "bag o' bytes" buffer for huge trajectories array. Write (by GPU) only. *)
@@ -205,8 +201,7 @@ let memory_create_buffers pocl data seeds chunk_size =
   let seeds_buffer        = copy_read pocl seeds in
   let mask_buffer         = copy_read pocl data.basin_mask_array in
   let uv_buffer           = copy_read pocl uv_array in
-  let chunk_slc_buffer    = copy_read_write pocl chunk_slc_array in (* no need to copy - filled with zero before run *)
-  let chunk_slt_buffer    = copy_read_write pocl chunk_slt_array in (* no need to copy - filled with zero before run *)
+  let mapping_buffer      = copy_read_write pocl mapping_array in
   let chunk_nsteps_buffer = write_only pocl chunk_nsteps_array in
   let chunk_length_buffer = write_only pocl chunk_length_array in
   let chunk_trajcs_buffer = write_only pocl chunk_trajcs_array in
@@ -216,8 +211,6 @@ let memory_create_buffers pocl data seeds chunk_size =
     Printf.printf "ROI-type = %d,%d\n" roi_nx roi_ny ;
     let (x,y) = ODM.shape uv_array in
     Printf.printf "uv = %d,%d\n" x y;
-    let (x,y) = ODM.shape chunk_slc_array in
-    Printf.printf "chunk slc-type = %d,%d\n" x y;
     let (x,y) = ODM.shape chunk_trajcs_array in
     let (num_seeds,_) = ODM.shape seeds in
     Printf.printf "Streamlines virtual array allocation: %d,%d size %d\n" num_seeds y (num_seeds*y*max_traj_length*2);
@@ -226,8 +219,7 @@ let memory_create_buffers pocl data seeds chunk_size =
   pv_verbose data show_sizes;
   {
     uv_array;
-    chunk_slc_array;
-    chunk_slt_array;
+    mapping_array;
     chunk_nsteps_array;
     chunk_length_array;
     chunk_trajcs_array;
@@ -235,8 +227,7 @@ let memory_create_buffers pocl data seeds chunk_size =
     seeds_buffer;
     mask_buffer;
     uv_buffer;
-    chunk_slc_buffer;
-    chunk_slt_buffer;
+    mapping_buffer;
     chunk_nsteps_buffer;
     chunk_length_buffer;
     chunk_trajcs_buffer;
@@ -249,10 +240,6 @@ let memory_create_buffers pocl data seeds chunk_size =
 
  *)
 let memory_clear t pocl = 
-  ODN.fill t.chunk_slc_array 0;
-  ODN.fill t.chunk_slt_array 0;
-  Pocl.copy_buffer_to_gpu pocl ~dst:t.chunk_slc_buffer ~src:t.chunk_slc_array;
-  Pocl.copy_buffer_to_gpu pocl ~dst:t.chunk_slt_buffer ~src:t.chunk_slt_array;
   Pocl.finish_queue pocl
 
 (**  [memory_copyback t pocl]
@@ -265,8 +252,6 @@ let memory_copyback t pocl =
   Pocl.copy_buffer_from_gpu pocl ~src:t.chunk_trajcs_buffer ~dst:t.chunk_trajcs_array;
   Pocl.copy_buffer_from_gpu pocl ~src:t.chunk_nsteps_buffer ~dst:t.chunk_nsteps_array;
   Pocl.copy_buffer_from_gpu pocl ~src:t.chunk_length_buffer ~dst:t.chunk_length_array;
-  Pocl.copy_buffer_from_gpu pocl ~src:t.chunk_slc_buffer    ~dst:t.chunk_slc_array;
-  Pocl.copy_buffer_from_gpu pocl ~src:t.chunk_slt_buffer    ~dst:t.chunk_slt_array;
   Pocl.finish_queue pocl
 
 (** {1 GPU functions} *)
@@ -301,11 +286,10 @@ let gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_sour
     Pocl.kernel_set_arg_buffer pocl kernel 0 memory.seeds_buffer;
     Pocl.kernel_set_arg_buffer pocl kernel 1 memory.mask_buffer;
     Pocl.kernel_set_arg_buffer pocl kernel 2 memory.uv_buffer;
-    Pocl.kernel_set_arg_buffer pocl kernel 3 memory.chunk_trajcs_buffer;
-    Pocl.kernel_set_arg_buffer pocl kernel 4 memory.chunk_nsteps_buffer;
-    Pocl.kernel_set_arg_buffer pocl kernel 5 memory.chunk_length_buffer;
-    Pocl.kernel_set_arg_buffer pocl kernel 6 memory.chunk_slc_buffer;
-    Pocl.kernel_set_arg_buffer pocl kernel 7 memory.chunk_slt_buffer;
+    Pocl.kernel_set_arg_buffer pocl kernel 3 memory.mapping_buffer;
+    Pocl.kernel_set_arg_buffer pocl kernel 4 memory.chunk_trajcs_buffer;
+    Pocl.kernel_set_arg_buffer pocl kernel 5 memory.chunk_nsteps_buffer;
+    Pocl.kernel_set_arg_buffer pocl kernel 6 memory.chunk_length_buffer;
 
     let int_list_str l = (List.fold_left (fun acc d -> acc ^ (sfmt "%d; " d)) "[" l) ^ "]" in
     pv_debug data (fun _ -> Printf.printf "Work sizes global %s local %s\n%!" (int_list_str global_size) (int_list_str local_work_size));
@@ -331,15 +315,6 @@ let gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_sour
       streamline_lists.(t.downup_index) <- streamlines_of_seed :: ((streamline_lists.(t.downup_index)));
     done;
     
-    (* Compile slc/slt array results *)
-    let sum_to_total x y slc slt =
-      let tslc = ODN.get results.slc_array [|t.downup_index; x; y|] in
-      let tslt = ODN.get results.slt_array [|t.downup_index; x; y|] in
-      ODN.set results.slc_array [|t.downup_index; x; y|] (tslc + slc);
-      ODN.set results.slt_array [|t.downup_index; x; y|] (tslt +. (float slt));
-    in
-    ODM.iter2i_2d sum_to_total memory.chunk_slc_array memory.chunk_slt_array;
-
   ) else (
      (* chunk was not required *)
   )
@@ -359,20 +334,6 @@ let gpu_integrate_trajectories pocl data results seeds chunk_size to_do_list =
   let cl_kernel_source = Pocl.read_source cl_src_path cl_files in
 
   List.iter (fun chunk -> gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_source chunk) to_do_list;
-
-  (* Compute average streamline lengths (sla) from total lengths (slt) and counts (slc)
-  *)
-  let sspd2 = (Info.float_of data.info "subpixel_seed_point_density") ** 2. in
-  let map_slc_slt ind slt =
-    let slc=ODN.get results.slc_array ind in
-    ODN.set results.slt_array ind (slt /. sspd2);
-    if (slc=0) then (
-      0. 
-    ) else  (
-      slt /. (float slc)
-    )
-  in
-  results.sla_array <- ODN.mapi_nd map_slc_slt results.slt_array;
 
   results.streamline_arrays <- [| Array.of_list (List.rev streamline_lists.(0)); Array.of_list (List.rev streamline_lists.(1)); |];
 
