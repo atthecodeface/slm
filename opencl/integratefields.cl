@@ -67,7 +67,7 @@ __kernel void integrate_fields( __global const float2 *seed_point_array,
                seed_idx = (SEEDS_CHUNK_OFFSET)+global_id;
 
     if (seed_idx>=N_SEED_POINTS) {
-        // This is a padded seed, so let's bail BEFORE WE USE THE BLOODY THING
+        // This is a "padding" seed, so let's bail BEFORE WE USE THE BLOODY THING
         return;
     }
 
