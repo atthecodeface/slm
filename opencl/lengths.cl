@@ -46,6 +46,10 @@ __kernel void hillslope_lengths(
     // For every non-thin-channel pixel
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    if (global_id>=N_SEED_POINTS) {
+        // This is a "padding" seed, so let's bail
+        return;
+    }
     __private uint idx, hillslope_idx, n_steps=0u;
     __private float dl=0.0f, dt=DT_MAX, l_trajectory=0.0f;
     __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,

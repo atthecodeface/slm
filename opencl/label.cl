@@ -59,6 +59,10 @@ __kernel void label_confluences(
     // For every (redesignated) thin channel pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    if (global_id>=N_SEED_POINTS) {
+        // This is a "padding" seed, so let's bail
+        return;
+    }
     __private uchar n_inflows=0u, n_equal_dominant_inflows=0u;
     __private uint i, idx, nbr_idx, inflows_list[8], equal_dominant_inflows_list[8],
                    dominant_slt_index=0u;

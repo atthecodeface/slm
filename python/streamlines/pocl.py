@@ -4,6 +4,7 @@ Prep PyOpenCL kernel
 
 import pyopencl as cl
 import pyopencl.tools as cltools
+import numpy as np
 from os import environ
 from streamlines import state
 from streamlines.useful import vprint
@@ -16,6 +17,8 @@ __all__ = ['prepare_cl_context','choose_platform_and_device',
            'set_compile_options', 
            'report_kernel_info', 'report_device_info', 'report_build_log',
            'adaptive_enqueue_nd_range_kernel']
+
+pdebug = print
 
 def prepare_cl_context(cl_platform=0, cl_device=2):
     """
@@ -303,30 +306,35 @@ def report_build_log(program, device, verbose):
 def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size, 
                                      n_work_items, chunk_size_factor=10, 
                                      max_time_per_kernel=4.0, verbose=True):
-    chunk_size = n_work_items*chunk_size_factor
-    work_left  = global_size[0]
+    work_size  = n_work_items*int(np.ceil(global_size[0]/n_work_items))
+    work_left  = work_size
+    chunk_size = min(n_work_items*chunk_size_factor,work_left)
     offset = 0
     cumulative_time = 0.0
     time_per_item   = 0.0
     while work_left>0:
         event = cl.enqueue_nd_range_kernel(queue, kernel, [chunk_size,1], 
                                            local_size,global_work_offset=[offset,0])
-        progress = 100.0*(min(global_size[0],(offset+chunk_size))/global_size[0])
+        progress = 100.0*(min(work_size,(offset+chunk_size))/work_size)
         vprint(verbose,
                '{0:.2f}%: enqueued {1}/{2} workitems'
-                    .format(progress,chunk_size,global_size[0]),
+                    .format(progress,chunk_size,work_size),
                 'in range [{0}-{1}]'.format(offset,offset+chunk_size-1),
                 'with estimated time {0:.3f}s...'.format(time_per_item*chunk_size),
                 end='')
         offset    += chunk_size
         work_left -= chunk_size
         event.wait()
-        elapsed_time = 1e-9*(event.profile.end-event.profile.start)
-        vprint(verbose, '...actual time {0:.3f}s'.format(elapsed_time))
+        try:
+            elapsed_time = 1e-9*(event.profile.end-event.profile.start)
+            vprint(verbose, '...actual time {0:.3f}s'.format(elapsed_time))
+        except:
+            vprint(verbose, '...profiling failed')
+            continue
         cumulative_time += elapsed_time
         time_per_item    = elapsed_time/chunk_size
         chunk_size = n_work_items*(min(
                             int(max_time_per_kernel/(time_per_item*n_work_items)),
-                            int(work_left/n_work_items+0.5) ))
+                            int(np.ceil(work_left/n_work_items)) ))
     return cumulative_time
 

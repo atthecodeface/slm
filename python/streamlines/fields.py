@@ -197,15 +197,12 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     
     # Downstream and upstream passes aka streamline integrations from
     #   chunks of seed points aka subsets of the total set
-    vprint(verbose,'')
+    global_size = [n_global,1]
+    local_size = [info_dict['n_work_items'],1]
+    vprint(verbose,
+           'Seed point buffer size = {}*8 bytes'.format(seed_point_buffer.size/8))
+    # Downstream then upstream loop
     for downup_idx, downup_sign in [[0,+1.0],[1,-1.0]]:
-
-        # Specify this integration job's parameters
-        global_size = [n_global,1]
-        vprint(verbose,'##### Work size: {0} ##### '.format(global_size))
-        vprint(verbose,
-               'Seed point buffer size = {}*8 bytes'.format(seed_point_buffer.size/8))
-        local_size = [info_dict['n_work_items'],1]
         info_dict['downup_sign'] = downup_sign
         
         ##################################
@@ -227,9 +224,11 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
         
         # Trace the streamlines on the GPU
-        n_work_items = info_dict['n_work_items']
-        chunk_size_factor = info_dict['chunk_size_factor']
+        n_work_items        = info_dict['n_work_items']
+        chunk_size_factor   = info_dict['chunk_size_factor']
         max_time_per_kernel = info_dict['max_time_per_kernel']
+        vprint(verbose,
+            '#### GPU/OpenCL computation: {0} work items... ####'.format(global_size[0]))
         pocl.report_kernel_info(device,kernel,verbose)
         elapsed_time \
             = pocl.adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, 
@@ -238,7 +237,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
                                                max_time_per_kernel=max_time_per_kernel,
                                                verbose=verbose )
         vprint(verbose,
-               "##### Kernel lapsed time ({1} items): {0:.3f} secs #####\n"
+               '#### ...elapsed time for {1} work items: {0:.3f}s ####'
                .format(elapsed_time,global_size[0]))
         queue.finish()   
         

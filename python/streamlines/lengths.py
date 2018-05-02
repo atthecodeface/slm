@@ -37,11 +37,12 @@ def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_dic
         verbose (bool):
         
     """
-    vprint(verbose,'Measuring hillslope lengths...',end='')
+    vprint(verbose,'Measuring hillslope lengths...')
     
     # Prepare CL essentials
     platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
-    queue = cl.CommandQueue(context)
+    queue = cl.CommandQueue(context,
+                            properties=cl.command_queue_properties.PROFILING_ENABLE)
     cl_files = ['essentials.cl','trajectoryfns.cl','computestep.cl',
                 'integrationfns.cl','lengths.cl']
     cl_kernel_source = ''
@@ -70,9 +71,8 @@ def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_dic
     # Scale by pixel size and by two because we measured only half lengths
     traj_length_array *= pixel_size*2
     # Done
-    vprint(verbose,'done')  
-    
-    
+    vprint(verbose,'...done')  
+      
 def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
                 seed_point_array, mask_array, u_array, v_array, 
                 mapping_array, label_array, traj_length_array, verbose):
@@ -103,10 +103,9 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
         = prepare_memory(context, queue,
                          seed_point_array, mask_array, u_array,v_array, 
                          mapping_array, label_array, traj_length_array, verbose)    
-    # Specify this integration job's parameters
-    global_size = [seed_point_array.shape[0],1]
-    local_size = None
     # Compile the CL code
+    global_size = [seed_point_array.shape[0],1]
+    info_dict['n_seed_points'] = global_size[0]
     compile_options = pocl.set_compile_options(info_dict, cl_kernel_fn, downup_sign=1)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -119,11 +118,29 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
                    mapping_buffer, label_buffer, traj_length_buffer]
     kernel.set_args(*buffer_list)
     kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
+    
+    # Specify this integration job's parameters
+    n_work_items        = info_dict['n_work_items']
+    local_size          = [n_work_items,1]
+    chunk_size_factor   = info_dict['chunk_size_factor']
+    max_time_per_kernel = info_dict['max_time_per_kernel']
     # Do the GPU compute
-    event = cl.enqueue_nd_range_kernel(queue, kernel, global_size, local_size)
+    vprint(verbose,
+           '#### GPU/OpenCL computation: {0} work items... ####'.format(global_size[0]))
+    pocl.report_kernel_info(device,kernel,verbose)
+    elapsed_time \
+        = pocl.adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, 
+                                           local_size, n_work_items,
+                                           chunk_size_factor=chunk_size_factor,
+                                           max_time_per_kernel=max_time_per_kernel,
+                                           verbose=verbose )
+    vprint(verbose,
+           '#### ...elapsed time for {1} work items: {0:.3f}s ####'
+           .format(elapsed_time,global_size[0]))
+    queue.finish()   
+
     # Fetch the data back from the GPU and finish
     cl.enqueue_copy(queue, traj_length_array, traj_length_buffer)
-    
     queue.finish()
     
 def prepare_memory(context, queue, seed_point_array, mask_array, u_array,v_array, 

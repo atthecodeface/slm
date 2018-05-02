@@ -40,6 +40,10 @@ __kernel void map_channel_heads(
     // For every non-masked pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    if (global_id>=N_SEED_POINTS) {
+        // This is a "padding" seed, so let's bail
+        return;
+    }
     __private uint idx, prev_idx, n_steps = 0u;
     __private float dl = 0.0f, dt = DT_MAX;
     __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
@@ -137,6 +141,10 @@ __kernel void prune_channel_heads(
     // For every provisional channel head pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    if (global_id>=N_SEED_POINTS) {
+        // This is a "padding" seed, so let's bail
+        return;
+    }
     // Use an unsigned integer for the 'flag' var, because it needs it to be big
     __private uint idx, flag = 0;
     __private float2 vec = seed_point_array[global_id];

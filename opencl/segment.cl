@@ -48,6 +48,10 @@ __kernel void segment_downchannels(
     // For every channel head pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    if (global_id>=N_SEED_POINTS) {
+        // This is a "padding" seed, so let's bail
+        return;
+    }
     __private uint idx, prev_idx, segment_label=0u,
                    segmentation_counter=SEGMENTATION_THRESHOLD;
     __private float2 vec = seed_point_array[global_id];
@@ -118,6 +122,10 @@ __kernel void segment_hillslopes(
     // For every non-thin-channel pixel
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    if (global_id>=N_SEED_POINTS) {
+        // This is a "padding" seed, so let's bail
+        return;
+    }
     __private uint idx, hillslope_idx, n_steps=0u;
     __private float dl=0.0f, dt=DT_MAX;
     __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
@@ -179,6 +187,10 @@ __kernel void subsegment_channel_edges(
     // For every channel head and major confluence pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    if (global_id>=N_SEED_POINTS) {
+        // This is a "padding" seed, so let's bail
+        return;
+    }
     __private uint idx, prev_idx, left_idx, segment_label=0u, prev_x,prev_y, x,y, n_turns;
     __private char dx,dy, rotated_dx,rotated_dy;
     __private float2 vec = seed_point_array[global_id];
@@ -271,6 +283,10 @@ __kernel void subsegment_flanks(
     // For every non-left-flank hillslope pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    if (global_id>=N_SEED_POINTS) {
+        // This is a "padding" seed, so let's bail
+        return;
+    }
     __private uint idx, hillslope_idx, n_steps=0u;
     __private float dl=0.0f, dt=DT_MAX;
     __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
