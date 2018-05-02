@@ -76,6 +76,7 @@ def import_parameters(parameters_path, parameters_file): #,do_reload_state=False
     # Parse default and assigned JSON parameters files
 #     pdebug(os.path.realpath(
 #         os.path.join(streamlines.__path__[0],'..','..','json','defaults')))
+#     pdebug(parameters_path,parameters_file)
 #     pdebug(os.path.realpath(os.path.join(parameters_path,parameters_file)))
     parameters_files_list \
         = [os.path.realpath(

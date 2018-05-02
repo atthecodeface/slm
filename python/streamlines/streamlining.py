@@ -7,8 +7,8 @@ Todo:
 
 import os
 from json import loads
-from os import environ
-environ['PYTHONUNBUFFERED']='True'
+import os
+os.environ['PYTHONUNBUFFERED']='True'
 
 from streamlines.core import Core
 from streamlines.parameters import read_json_file, import_parameters
@@ -24,6 +24,9 @@ from streamlines.export import Export
 __all__ = ['Streamlining']
 
 pdebug = print
+
+def is_json(path,file):
+    return os.path.isfile(os.path.realpath(os.path.join(path, file+'.json')))
 
 class Streamlining(Core):
     """
@@ -50,7 +53,7 @@ class Streamlining(Core):
                               (parsed from kwargs 'parameters_file').
     
     
-        """      
+        """  
     def __init__(self, do_reload_state=False, **kwargs):
         """
         Initialize the principal 'streamlines' class instance, whose object
@@ -74,19 +77,37 @@ class Streamlining(Core):
         if 'parameters_file' not in kwargs.keys():
             raise ValueError('Must specify a parameters JSON file')
         # Remove trailing .json for now if there is one
+        import os
         parameters_path, parameters_file  = os.path.split(kwargs['parameters_file'])
-        if parameters_path=='':
-            parameters_path='.'
         parameters_file = ''.join(parameters_file.split('.json',-1))
-        
+        if parameters_path=='':            
+            possible_paths = ['.']
+            try:
+                possible_paths += [os.path.join(os.environ['SLM'],'json')]
+            except:
+                pass
+            guess = os.path.join('..','..','slm','json')
+            if os.path.isdir(guess):
+                possible_paths += [guess]
+            for path in possible_paths:
+                if is_json(path,parameters_file):
+                    parameters_path = path
+                    break
+            if parameters_path=='':
+                raise ValueError('Cannot find JSON parameters file in {}'
+                                 .format(possible_paths))
+            
         # Read in parameters and assign to the Trajectories class instance
         imported_parameters = import_parameters(parameters_path, parameters_file)
-            
-        if (('verbose' not in kwargs.keys() and 
-             'verbose' in imported_parameters['state'].keys() 
-             and imported_parameters['state']['verbose']) 
-             or ('verbose' in kwargs.keys()  and kwargs['verbose'])):
+        if ( ('verbose' not in kwargs.keys() or kwargs['verbose'] is None and 
+                  'verbose' in imported_parameters['state'].keys() 
+                   and imported_parameters['state']['verbose']) 
+             or ('verbose' in kwargs.keys() and kwargs['verbose'] is not None 
+                   and kwargs['verbose'])):
             print('\n**Initialization begin**') 
+            print('Loaded JSON parameters file "{}"'
+                  .format(os.path.realpath(os.path.join(parameters_path, 
+                                                        parameters_file+'.json'))))
         
         try:
             override_parameters = kwargs['override_parameters']
@@ -132,3 +153,5 @@ class Streamlining(Core):
         self.export = Export(self.state,imported_parameters,self.plot)
                              
         self.print('**Initialization end**\n') 
+    
+    

@@ -13,6 +13,8 @@ from scipy.ndimage import gaussian_filter
 from scipy.ndimage.filters import generic_filter
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
+environ['NUMBA_WARNINGS']='1'
+environ['NUMBA_DEBUG_ARRAY_OPT_STATS']='1'
 
 from streamlines.core import Core
 
