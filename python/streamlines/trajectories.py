@@ -227,6 +227,9 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     
     # Downstream and upstream passes aka streamline integrations from
     #   chunks of seed points aka subsets of the total set
+    n_work_items = info_dict['n_work_items']
+    chunk_size_factor = info_dict['chunk_size_factor']
+    max_time_per_kernel = info_dict['max_time_per_kernel']
     for downup_str, downup_idx, downup_sign, chunk_idx, \
         seeds_chunk_offset, n_chunk_seeds, n_chunk_ki in [td[1:] \
             for td in trace_do_chunks if td[0]]:
@@ -261,15 +264,17 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         kernel.set_args(*buffer_list)
         kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
         
-        # Trace the streamlines on the GPU
-        event = cl.enqueue_nd_range_kernel(queue, kernel, global_size, local_size)
-#         event.wait()
-        queue.finish()
-        
-        # Calculate the time it took to execute the kernel
-        elapsed = 1e-9*(event.profile.end - event.profile.start)  
+        # Trace the streamlines on the GPU        
         pocl.report_kernel_info(device,kernel,verbose)
-        vprint(verbose,"##### Kernel lapsed time: {0:.3f} secs #####\n".format(elapsed))  
+        elapsed_time \
+            = pocl.adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, 
+                                               local_size, n_work_items,
+                                               chunk_size_factor=chunk_size_factor,
+                                               max_time_per_kernel=max_time_per_kernel,
+                                               verbose=verbose )
+        vprint(verbose,
+               "##### Kernel lapsed time ({1} items): {0:.3f} secs #####\n"
+               .format(elapsed_time,global_size[0]))
         queue.finish()   
         
         # Copy GPU-computed results back to CPU
