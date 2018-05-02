@@ -20,7 +20,7 @@ from streamlines import pocl
 from streamlines import state
 from streamlines.useful import vprint, create_seeds
 
-__all__ = ['integrate_fields','gpu_integrate','prepare_memory','compute_stats']
+__all__ = ['integrate_fields','gpu_integrate','prepare_memory']
 
 import warnings
 pdebug = print
@@ -145,31 +145,6 @@ def integrate_fields(
     vprint(verbose,'...done')
     return (rtn_slc_array, rtn_slt_array, rtn_sla_array)
 
-def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size, n_work_items,
-                                     chunk_size_factor=10, max_time_per_kernel=4.0, 
-                                     verbose=True):
-    chunk_size = n_work_items*chunk_size_factor
-    work_left = global_size[0]
-    offset = 0
-    cumulative_time = 0.0
-    time_per_item = 0.0
-    while work_left>0:
-        event = cl.enqueue_nd_range_kernel(queue, kernel, [chunk_size,1], 
-                                           local_size,global_work_offset=[offset,0])
-        vprint(verbose,'Enqueued {0} workitems'.format(chunk_size),
-                       'starting at {0} out of {1}'.format(offset,global_size[0]),
-                       'with estimated time {0:.2f}s...'.format(time_per_item*chunk_size),
-                       end='')
-        offset    += chunk_size
-        work_left -= chunk_size
-        event.wait()
-        elapsed_time = 1e-9*(event.profile.end-event.profile.start)
-        vprint(verbose, '...actual time {0:.2f}s'.format(elapsed_time))
-        cumulative_time += elapsed_time
-        time_per_item    = elapsed_time/chunk_size
-        chunk_size = n_work_items*(int(max_time_per_kernel/(time_per_item*n_work_items)))
-    return cumulative_time
-
 def gpu_integrate(device, context, queue, cl_kernel_source, 
                   info_dict, n_global, 
                   seed_point_array, mask_array, u_array,v_array, mapping_array, verbose):
@@ -257,7 +232,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         max_time_per_kernel = info_dict['max_time_per_kernel']
         pocl.report_kernel_info(device,kernel,verbose)
         elapsed_time \
-            = adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, 
+            = pocl.adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, 
                                                local_size, n_work_items,
                                                chunk_size_factor=chunk_size_factor,
                                                max_time_per_kernel=max_time_per_kernel,

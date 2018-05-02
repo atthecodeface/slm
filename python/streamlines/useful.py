@@ -8,7 +8,7 @@ import os
 os.environ['PYTHONUNBUFFERED']='True'
 import sys
 
-__all__ = ['vprint','pick_seeds','compute_stats']
+__all__ = ['vprint','create_seeds','pick_seeds','compute_stats']
 
 pdebug = print
 

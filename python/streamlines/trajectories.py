@@ -19,7 +19,7 @@ from streamlines import pocl
 from streamlines import state
 from streamlines.useful import vprint, create_seeds, compute_stats
 
-__all__ = ['integrate_trajectories','gpu_integrate','prepare_memory']
+__all__ = ['integrate_trajectories','choose_chunks','gpu_integrate','prepare_memory']
 
 import warnings
 pdebug = print
