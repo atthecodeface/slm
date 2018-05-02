@@ -250,7 +250,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     max_time_per_kernel = info_dict['max_time_per_kernel']
     # Do the GPU compute
     vprint(verbose,
-           "#### GPU/OpenCL computation: {0} items... ####".format(global_size[0]))
+           "#### GPU/OpenCL computation: {0} work items... ####".format(global_size[0]))
     pocl.report_kernel_info(device,kernel,verbose)
     elapsed_time \
         = pocl.adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, 
@@ -259,7 +259,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
                                            max_time_per_kernel=max_time_per_kernel,
                                            verbose=verbose )
     vprint(verbose,
-           "#### ...elapsed time ({1} items): {0:.3f}s ####"
+           "#### ...elapsed time for {1} work items: {0:.3f}s ####"
            .format(elapsed_time,global_size[0]))
     queue.finish()   
 
