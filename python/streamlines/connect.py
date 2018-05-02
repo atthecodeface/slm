@@ -166,13 +166,13 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
     kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
     
     # Specify this integration job's parameters
-    n_work_items = info_dict['n_work_items']
-    local_size = [n_work_items,1]
-    chunk_size_factor = info_dict['chunk_size_factor']
+    n_work_items        = info_dict['n_work_items']
+    local_size          = [n_work_items,1]
+    chunk_size_factor   = info_dict['chunk_size_factor']
     max_time_per_kernel = info_dict['max_time_per_kernel']
     # Do the GPU compute
     vprint(verbose,
-           "#### GPU/OpenCL computation: {0} work items... ####".format(global_size[0]))
+           '#### GPU/OpenCL computation: {0} work items... ####'.format(global_size[0]))
     pocl.report_kernel_info(device,kernel,verbose)
     elapsed_time \
         = pocl.adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, 
@@ -181,7 +181,7 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
                                            max_time_per_kernel=max_time_per_kernel,
                                            verbose=verbose )
     vprint(verbose,
-           "#### ...elapsed time for {1} work items: {0:.3f}s ####"
+           '#### ...elapsed time for {1} work items: {0:.3f}s ####'
            .format(elapsed_time,global_size[0]))
     queue.finish()   
     

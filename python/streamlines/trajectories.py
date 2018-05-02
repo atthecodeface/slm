@@ -233,7 +233,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     for downup_str, downup_idx, downup_sign, chunk_idx, \
         seeds_chunk_offset, n_chunk_seeds, n_chunk_ki in [td[1:] \
             for td in trace_do_chunks if td[0]]:
-        vprint(verbose,'\n{0} downup={1} sgn(uv)={2:+} chunk={3} seeds: {4}+{5} => {6:}'
+        vprint(verbose,'{0} downup={1} sgn(uv)={2:+} chunk={3} seeds: {4}+{5} => {6:}'
                    .format(downup_str, downup_idx, downup_sign, chunk_idx,
                            seeds_chunk_offset, n_chunk_seeds, 
                            seeds_chunk_offset+n_chunk_seeds))
@@ -264,7 +264,9 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         kernel.set_args(*buffer_list)
         kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
         
-        # Trace the streamlines on the GPU        
+        # Trace the streamlines on the GPU    
+        vprint(verbose,
+            '#### GPU/OpenCL computation: {0} work items... ####'.format(global_size[0]))    
         pocl.report_kernel_info(device,kernel,verbose)
         elapsed_time \
             = pocl.adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, 
@@ -273,7 +275,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
                                                max_time_per_kernel=max_time_per_kernel,
                                                verbose=verbose )
         vprint(verbose,
-               "##### Kernel lapsed time ({1} items): {0:.3f} secs #####\n"
+               '#### ...elapsed time for {1} work items: {0:.3f}s ####'
                .format(elapsed_time,global_size[0]))
         queue.finish()   
         
@@ -363,7 +365,7 @@ def prepare_memory(context, n_seed_points, chunk_size, max_traj_length,
     chunk_trajcs_buffer = cl.Buffer(context, WRITE_ONLY, chunk_trajcs_array.nbytes )     
     vprint(verbose,'Array sizes:\n',
            'ROI-type =', mask_array.shape, '\n',
-           'uv =',       uv_array.shape,   '\n')
+           'uv =',       uv_array.shape)
     vprint(verbose,'Streamlines virtual array allocation:  ',
                  '   dims={0}'.format(
                      (n_seed_points, chunk_trajcs_array.shape[1],2)), 
