@@ -74,7 +74,7 @@ __kernel void integrate_fields( __global const float2 *seed_point_array,
     }
     // Report how kernel instances are distributed
     if (seed_idx==0) {
-        printf("On GPU/OpenCL device: #workitems=%d  #workgroups=%d => work size=%d\n",
+        printf("\nOn GPU/OpenCL device: #workitems=%d  #workgroups=%d => work size=%d\n",
                 get_local_size(0u), get_num_groups(0u),
                 get_local_size(0u)*get_num_groups(0u));
     }

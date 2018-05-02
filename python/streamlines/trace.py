@@ -98,34 +98,6 @@ class Trace(Core):
         # Done
         self.print('**Trace end**\n', flush=True)  
         
-    def create_seeds(self):
-        """
-        Parent method to generate streamline seed points.   
-            
-        Attributes:
-            self.seed_point_array (numpy.ndarray):
-        
-        """    
-        self.print('Generating seed points...', end='',flush=True)
-        mask = self.geodata.basin_mask_array
-        pad = self.geodata.pad_width
-        self.seed_point_array \
-            = ((np.argwhere(~mask).astype(np.float32) - pad)
-               ).copy()
-        self.n_seed_points = self.seed_point_array.shape[0]
-        pad_length = (np.uint32(np.round(
-            self.n_seed_points/self.state.n_work_items+0.5))*self.state.n_work_items
-                      -self.n_seed_points)
-        if pad_length>0:
-            self.print('padding for {0} CL work items/group: {1}->{2}...'
-                       .format(self.state.n_work_items, self.n_seed_points,
-                               self.n_seed_points+self.state.n_work_items ),
-                                            end='',flush=True)
-        else:
-            self.print('no padding needed...', end='',flush=True)
-        self.n_padded_seed_points = self.n_seed_points + pad_length
-        self.print('done',flush=True)
-
     def build_info_dict(self, n_seed_points=None):
         """
         TBD.
@@ -168,6 +140,8 @@ class Trace(Core):
             'downup_sign' :             np.float32(np.nan),
             'gpu_memory_limit_pc' :        np.uint32(self.state.gpu_memory_limit_pc),
             'n_work_items' :               np.uint32(self.state.n_work_items),
+            'chunk_size_factor' :          np.uint32(self.state.chunk_size_factor),
+            'max_time_per_kernel' :        np.float32(self.state.max_time_per_kernel),
             'integrator_step_factor' :     np.float32(self.integrator_step_factor),
             'max_integration_step_error' : np.float32(self.max_integration_step_error),
             'adjusted_max_error' :         np.float32(0.85*np.sqrt(

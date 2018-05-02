@@ -7,6 +7,8 @@
 		"cl_device" : 2,
 		"gpu_memory_limit_pc" : 90,
 		"n_work_items" : 64,
+		"chunk_size_factor" : 10,
+		"max_time_per_kernel" : 4.0,
 		
 		"do_geodata" : true,	
 		"do_preprocess" : true,	
@@ -59,7 +61,7 @@
 		"IDEALintegration_halt_threshold" : 0.01,
 		"trajectory_resolution" : 128,
 		
-		"jitter_magnitude" : 1.0,
+		"jitter_magnitude" : 1.5,
 		"integrator_step_factor" : 0.5,
 		
 		"Ujitter_magnitude" : 2.1,
