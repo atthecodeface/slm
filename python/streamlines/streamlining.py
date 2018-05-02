@@ -87,8 +87,11 @@ class Streamlining(Core):
              and imported_parameters['state']['verbose']) 
              or ('verbose' in kwargs.keys()  and kwargs['verbose'])):
             print('\n**Initialization begin**') 
-            
-        override_parameters = kwargs['override_parameters']
+        
+        try:
+            override_parameters = kwargs['override_parameters']
+        except:
+            override_parameters = None
         if override_parameters is not None and override_parameters!='':
             override_dict = loads(override_parameters)
             for item in override_dict.items():
