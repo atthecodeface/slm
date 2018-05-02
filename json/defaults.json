@@ -50,7 +50,7 @@
 	},
 
 	"trace": {
-		"n_trajectory_seed_points" : 1024,
+		"n_trajectory_seed_points" : 1000,
 		"do_shuffle_seed_points" : true,
 		"shuffle_rng_seed" : 1,
 		"subpixel_seed_point_density" : 5,

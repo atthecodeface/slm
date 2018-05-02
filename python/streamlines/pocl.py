@@ -316,15 +316,17 @@ def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size,
                '{0:.2f}%: enqueued {1}/{2} workitems'
                     .format(progress,chunk_size,global_size[0]),
                 'in range [{0}-{1}]'.format(offset,offset+chunk_size-1),
-                'with estimated time {0:.2f}s...'.format(time_per_item*chunk_size),
+                'with estimated time {0:.3f}s...'.format(time_per_item*chunk_size),
                 end='')
         offset    += chunk_size
         work_left -= chunk_size
         event.wait()
         elapsed_time = 1e-9*(event.profile.end-event.profile.start)
-        vprint(verbose, '...actual time {0:.2f}s'.format(elapsed_time))
+        vprint(verbose, '...actual time {0:.3f}s'.format(elapsed_time))
         cumulative_time += elapsed_time
         time_per_item    = elapsed_time/chunk_size
-        chunk_size = n_work_items*(int(max_time_per_kernel/(time_per_item*n_work_items)))
+        chunk_size = n_work_items*(min(
+                            int(max_time_per_kernel/(time_per_item*n_work_items)),
+                            int(work_left/n_work_items+0.5) ))
     return cumulative_time
 
