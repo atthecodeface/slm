@@ -15,7 +15,8 @@
  * @file   properties.ml
  * @brief  Workflow and properties libraries
  *
- * Up to date with python of git CS 54b7ed9ebd253403c1851764035b5c718d5937d3
+ * Up to date with python of git CS 189bfccdabc3371eafe8bcafa3bdfa8c241e56e4
+ * Except  max_time_per_kernel and initial_size_factor are hardwired
  *
  * v}
  *)

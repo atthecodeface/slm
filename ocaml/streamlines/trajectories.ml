@@ -15,7 +15,8 @@
  * @file   trajectories.ml
  * @brief  Integration of trajectories using GPU for trace
  *
- * Up to date with python of git CS 9b039412ca3e76b47c78bba1593f93e7523fe45d
+ * Up to date with python of git CS 189bfccdabc3371eafe8bcafa3bdfa8c241e56e4
+ * Except  max_time_per_kernel and initial_size_factor are hardwired
  *
  * Note that integrate_trajectories does NOT create seeds - that is up to the client
  *
@@ -259,11 +260,7 @@ let gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_sour
     pv_verbose data (fun _ -> show_chunk t);
 
     (* Specify this integration job's parameters and compile *)
-    let n_work_items    = Info.int_of   data.info "n_work_items" in
     let grid_scale      = Info.float_of data.info "grid_scale" in
-    let global_size     = round_up_to_unit_size t.num_seeds n_work_items in
-    let global_size     = [global_size; 1] in
-    let local_work_size = [n_work_items; 1] in
     Info.set data.info "downup_sign" (Info.Float32 t.downup_sign);
     Info.set data.info "seeds_chunk_offset" (Info.Int t.seed_offset);
     Info.set_float32 data.info "combo_factor" ((grid_scale *. data.properties.trace.integrator_step_factor) *. t.downup_sign);
@@ -280,14 +277,10 @@ let gpu_integrate_chunk pocl data memory streamline_lists results cl_kernel_sour
     Pocl.kernel_set_arg_buffer pocl kernel 5 memory.chunk_nsteps_buffer;
     Pocl.kernel_set_arg_buffer pocl kernel 6 memory.chunk_length_buffer;
 
-    let int_list_str l = (List.fold_left (fun acc d -> acc ^ (sfmt "%d; " d)) "[" l) ^ "]" in
-    pv_debug data (fun _ -> Printf.printf "Work sizes global %s local %s\n%!" (int_list_str global_size) (int_list_str local_work_size));
-    let event = Pocl.enqueue_kernel pocl kernel ~local_work_size global_size in
-    Pocl.event_wait pocl event;
-  Pocl.finish_queue pocl;
-    let elapsed = Owl_enhance.event__get_duration event in
-    let elapsed = (Int64.to_float elapsed) *. 1E-9 in
-    Printf.printf "\n##### Kernel lapsed time: %0.3f secs #####\n" elapsed;
+    let n_work_items    = Info.int_of   data.info "n_work_items" in
+    let global_size     = round_up_to_unit_size t.num_seeds n_work_items in
+    let time_taken = Pocl.adaptive_enqueue_kernel pocl kernel global_size n_work_items in
+    Printf.printf "\n##### Kernel lapsed time: %0.3f secs #####\n" time_taken;
     
     memory_copyback memory pocl;
 

@@ -15,14 +15,15 @@
  * @file   pocl.ml
  * @brief  OpenCL support library
  *
- * Up to date with python of git CS 9b039412ca3e76b47c78bba1593f93e7523fe45d
+ * Up to date with python of git CS 189bfccdabc3371eafe8bcafa3bdfa8c241e56e4
+ * Except  max_time_per_kernel and initial_size_factor are hardwired
  *
  * Client should set NXY_PADDED and DEBUG if required
  *
  * v}
  *)
 
-(*a Module abbreviations *)
+(*f Module abbreviations *)
 module ODM = Owl.Dense.Matrix.Generic
 module ODN = Owl.Dense.Ndarray.Generic
 
@@ -312,7 +313,7 @@ let kernel_set_arg_buffer t kernel index buffer =
   @return event indicating completion of the kernel
 
  *)
-let enqueue_kernel t kernel ?local_work_size:(local_work_size=[]) ?global_work_ofs global_work_size =
+let enqueue_kernel t kernel ?local_work_size:(local_work_size=[]) ?global_work_ofs ~global_work_size =
   let work_dim = List.length global_work_size in
   let event = Kernel.enqueue_ndrange ~local_work_size ?global_work_ofs (cl_queue t) kernel work_dim global_work_size in
   event
@@ -324,6 +325,50 @@ let enqueue_kernel t kernel ?local_work_size:(local_work_size=[]) ?global_work_o
  *)
 let event_wait t event =
   ignore (Event.wait_for [event])
+
+(**  [adaptive_enqueue_kernel t kernel ?initial_size_factor ?max_time_per_kernel work_size work_items_per_warp]
+ *)
+let adaptive_enqueue_kernel t kernel
+      ?initial_size_factor:(initial_size_factor=10)
+      ?max_time_per_kernel:(max_time_per_kernel=4.0)
+      work_size work_items_per_warp =
+
+  let show_progress_start offset chunk_size =
+    function _ ->
+      let progress = 100.0 *. (float (offset+chunk_size)) /. (float work_size) in
+      Printf.printf "%0.2f%%: enqueued %d/%d workitems" progress chunk_size work_size;
+      Printf.printf " in range [%d-%d]...%!" offset (offset+chunk_size-1);
+      ()
+  in
+
+  let show_progress_end chunk_size elapsed_time =
+    function _ ->
+      Printf.printf "...%0.3fs (%.0fms per item)\n%!" elapsed_time (elapsed_time /. (float chunk_size));
+      ()
+  in
+
+  let rec do_work_chunk offset size_factor time_taken =
+    if offset<work_size then (
+       let chunk_size       = min (work_items_per_warp * size_factor) (work_size - offset) in
+       let global_work_ofs  = [offset; 0] in
+       let global_work_size = [chunk_size; 1] in
+       let local_work_size  = [work_items_per_warp; 1] in
+       let event = enqueue_kernel t kernel ~global_work_ofs ~local_work_size ~global_work_size in
+       pv_verbose t (show_progress_start offset chunk_size);
+       let offset = offset + chunk_size in 
+       event_wait t event;
+       let elapsed_ns = Owl_enhance.event__get_duration event in
+       let elapsed_time = (Int64.to_float elapsed_ns) *. 1E-9 in
+       pv_verbose t (show_progress_end chunk_size elapsed_time);
+       let time_taken = time_taken +. elapsed_time in
+       let time_per_item  = elapsed_time /. (float chunk_size) in
+       let size_factor = truncate ( max_time_per_kernel /. (time_per_item *. (float work_items_per_warp))) in
+       do_work_chunk offset size_factor time_taken
+    ) else (
+      time_taken
+    )
+  in
+  do_work_chunk 0 initial_size_factor 0.
 
 (** {1 External creation/build functions } *)
 

@@ -15,7 +15,8 @@
  * @file   kde.ml
  * @brief  Kernel density estimation
  *
- * Up to date with python of git CS 9b039412ca3e76b47c78bba1593f93e7523fe45d
+ * Up to date with python of git CS 189bfccdabc3371eafe8bcafa3bdfa8c241e56e4
+ * Except  max_time_per_kernel and initial_size_factor are hardwired
  * except for bivariate which is not there yet
  *
  * v}
@@ -126,10 +127,8 @@ let gpu_compute_histogram pocl info program sl_array is_bivariate =
   Pocl.kernel_set_arg_buffer pocl kernel 0 sl_buffer;
   Pocl.kernel_set_arg_buffer pocl kernel 1 histogram_buffer;
 
-  let global_size = [n_data;1] in
-  let local_work_size = [] in
-  let event = Pocl.enqueue_kernel pocl kernel ~local_work_size global_size in
-  Pocl.event_wait pocl event;
+  let time_taken = Pocl.adaptive_enqueue_kernel pocl kernel n_data 1 in
+  Printf.printf "\n##### Kernel lapsed time: %0.3f secs #####\n" time_taken;
 
   Pocl.copy_buffer_from_gpu pocl ~src:histogram_buffer    ~dst:histogram_array;
   Pocl.finish_queue pocl;
@@ -151,10 +150,9 @@ let gpu_compute_partial_pdf pocl info program histogram_array =
   Pocl.kernel_set_arg_buffer pocl kernel 0 histogram_buffer;
   Pocl.kernel_set_arg_buffer pocl kernel 1 partial_pdf_buffer;
 
-  let global_size = [n_hist_bins*n_hist_bins;1] in
-  let local_work_size = [] in
-  let event = Pocl.enqueue_kernel pocl kernel ~local_work_size global_size in
-  Pocl.event_wait pocl event;
+  let global_size = n_hist_bins*n_hist_bins in
+  let time_taken = Pocl.adaptive_enqueue_kernel pocl kernel global_size 1 in
+  Printf.printf "\n##### Kernel lapsed time: %0.3f secs #####\n" time_taken;
   Pocl.copy_buffer_from_gpu pocl ~src:partial_pdf_buffer    ~dst:partial_pdf_array;
   Pocl.finish_queue pocl;
   partial_pdf_array
@@ -175,10 +173,9 @@ let gpu_compute_full_bivariate_pdf pocl info program partial_pdf_array =
   Pocl.kernel_set_arg_buffer pocl kernel 0 partial_pdf_buffer;
   Pocl.kernel_set_arg_buffer pocl kernel 1 pdf_buffer;
 
-  let global_size = [n_pdf_points*n_pdf_points;1] in
-  let local_work_size = [] in
-  let event = Pocl.enqueue_kernel pocl kernel ~local_work_size global_size in
-  Pocl.event_wait pocl event;
+  let global_size = n_pdf_points*n_pdf_points in
+  let time_taken = Pocl.adaptive_enqueue_kernel pocl kernel global_size 1 in
+  Printf.printf "\n##### Kernel lapsed time: %0.3f secs #####\n" time_taken;
   Pocl.copy_buffer_from_gpu pocl ~src:pdf_buffer    ~dst:pdf_array;
   Pocl.finish_queue pocl;
   pdf_array
@@ -199,11 +196,9 @@ let gpu_compute_full_univariate_pdf pocl info program histogram_array =
   Pocl.kernel_set_arg_buffer pocl kernel 0 histogram_buffer;
   Pocl.kernel_set_arg_buffer pocl kernel 1 pdf_buffer;
 
-  let global_size = [n_pdf_points;1] in
-  let local_work_size = [] in
-  let event = Pocl.enqueue_kernel pocl kernel ~local_work_size global_size in
-  Pocl.event_wait pocl event;
-  Pocl.finish_queue pocl;
+  let global_size = n_pdf_points in
+  let time_taken = Pocl.adaptive_enqueue_kernel pocl kernel global_size 1 in
+  Printf.printf "\n##### Kernel lapsed time: %0.3f secs #####\n" time_taken;
   Pocl.copy_buffer_from_gpu pocl ~src:pdf_buffer    ~dst:pdf_array;
   Pocl.finish_queue pocl;
   pdf_array
