@@ -25,9 +25,6 @@ __all__ = ['Streamlining']
 
 pdebug = print
 
-def is_json(path,file):
-    return os.path.isfile(os.path.realpath(os.path.join(path, file+'.json')))
-
 class Streamlining(Core):
     """
     Class providing set of methods to compute streamline trajectories and 
@@ -76,10 +73,12 @@ class Streamlining(Core):
         """
         if 'parameters_file' not in kwargs.keys():
             raise ValueError('Must specify a parameters JSON file')
-        # Remove trailing .json for now if there is one
-        import os
+
         parameters_path, parameters_file  = os.path.split(kwargs['parameters_file'])
+        # Remove trailing .json for now if there is one
         parameters_file = ''.join(parameters_file.split('.json',-1))
+
+        # Look for the JSON file in several likely places
         if parameters_path=='':            
             possible_paths = ['.']
             try:
@@ -90,7 +89,8 @@ class Streamlining(Core):
             if os.path.isdir(guess):
                 possible_paths += [guess]
             for path in possible_paths:
-                if is_json(path,parameters_file):
+                if os.path.isfile(os.path.realpath(
+                            os.path.join(path, parameters_file+'.json'))):
                     parameters_path = path
                     break
             if parameters_path=='':

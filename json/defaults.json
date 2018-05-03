@@ -8,7 +8,7 @@
 		"gpu_memory_limit_pc" : 90,
 		"n_work_items" : 64,
 		"chunk_size_factor" : 10,
-		"max_time_per_kernel" : 4.0,
+		"max_time_per_kernel" : 5.0,
 		
 		"do_geodata" : true,	
 		"do_preprocess" : true,	
@@ -61,16 +61,9 @@
 		"IDEALintegration_halt_threshold" : 0.01,
 		"trajectory_resolution" : 128,
 		
-		"jitter_magnitude" : 1.5,
+		"jitter_magnitude" : 2.0,
+		"WASjitter_magnitude" : 2.9,
 		"integrator_step_factor" : 0.5,
-		
-		"Ujitter_magnitude" : 2.1,
-		"Uintegrator_step_factor" : 0.5,
-		
-		"Yjitter_magnitude" : 2.0,
-		"Yintegrator_step_factor" : 0.3,
-		"Xjitter_magnitude" : 2.2,
-		"Xintegrator_step_factor" : 0.4,
 		"max_integration_step_error" : 0.03,
 		
 		"do_trace_upstream" : true,

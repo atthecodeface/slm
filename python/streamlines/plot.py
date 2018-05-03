@@ -421,9 +421,9 @@ class Plot(Core):
                                do_flip_cmap=True, do_balance_cmap=False)
         tmp_array = self.trace.slt_array[:,:,0].copy()
         tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)] \
-            = np.sqrt(tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)])
+            = np.log(tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)])
         self.plot_gridded_data(tmp_array,
-                               'seismic', 
+                               'gist_earth', #'seismic', 
                                fig_name='dslt',
                                window_title='dslt',
                                do_flip_cmap=True, do_balance_cmap=False)
@@ -448,7 +448,7 @@ class Plot(Core):
                                do_colorbar=True, 
                                colorbar_title='mean hillslope length [m]')
     
-    def plot_hillslope_distributions(self):
+    def plot_hillslope_distributions(self, mean_x_stretch=1.0):
         df = self.mapping.hillslope_stats_df
         kde_min_labels = 20
 
@@ -462,7 +462,7 @@ class Plot(Core):
                                           title='Mean hillslope length')
         axes.set_xlabel(r'distance $L$  [m]')
         axes.set_ylabel(r'probability density  $f(L)$  [m$^{-1}$]')
-        axes.set_xlim(0)
+        axes.set_xlim(0,df['mean [m]'].quantile(q=1)*mean_x_stretch)
         self._record_fig(name,fig)
 
         name = 'hillslope_stddev'
@@ -475,7 +475,7 @@ class Plot(Core):
                         title='Hillslope length std deviation');
         axes.set_xlabel(r'distance std deviation $\sigma_L$  [m]');
         axes.set_ylabel(r'probability density  $f(\sigma_L)$  [m$^{-1}$]');
-        axes.set_xlim(0);
+        axes.set_xlim(0,df['stddev [m]'].quantile(q=0.99));
         # axes.legend(['hillslope length std dev'],frameon=False);
         self._record_fig(name,fig)
         
@@ -485,7 +485,7 @@ class Plot(Core):
                                 title='Hillslope streamline count');
         axes.set_xlabel(r'number $N_{sl}$   [-]');
         axes.set_ylabel(r'probability density  $f(N_{sl})$  [-]');
-        axes.set_xlim(0);
+        axes.set_xlim(0,df['count'].quantile(q=0.99));
         self._record_fig(name,fig)
 
     def plot_gridded_data(self, 
@@ -559,10 +559,11 @@ class Plot(Core):
             cbar.set_label(colorbar_title)
         self._record_fig(fig_name,fig)
 
-    def plot_hillslope_lengths_contoured(self,cmap='rainbow',vmin=None,vmax=None,
+    def plot_hillslope_lengths_contoured(self,cmap='rainbow',
                                          do_colorbar=True, 
                                          colorbar_title='mean hillslope length [m]',
                                          n_contours=None,
+                                         z_min=None,z_max=None,
                                          contour_label_suffix='m',
                                          contour_label_fontsize=12):
         """
@@ -570,11 +571,12 @@ class Plot(Core):
         """
         fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
                                     y_pixel_scale=self.geodata.roi_pixel_size)
-        if vmin is not None or vmax is not None:
-            grid_array = np.clip(self.mapping.hillslope_length_smoothed_array,
-                                 vmin,vmax)
-        else:
-            grid_array = self.mapping.hillslope_length_smoothed_array
+        if z_min is None:
+            z_min = np.percentile(self.mapping.hillslope_length_smoothed_array, 1.0)
+        if z_max is None:
+            z_max = np.percentile(self.mapping.hillslope_length_smoothed_array,99.0)        
+        grid_array = np.clip(self.mapping.hillslope_length_smoothed_array,z_min,z_max)
+        
         mask_array = self.geodata.basin_mask_array[
                         self.geodata.pad_width:-self.geodata.pad_width,
                         self.geodata.pad_width:-self.geodata.pad_width]  
@@ -610,11 +612,13 @@ class Plot(Core):
             = np.meshgrid(self.geodata.x_roi_n_pixel_centers,
                           self.geodata.y_roi_n_pixel_centers)
         Z = np.ma.array(Z,mask=mask.T)
+#         z_min = np.percentile(Z, 1.0)
+        z_max = np.percentile(Z,100.0)
         if n_contours is None:
             c_interval = 5
             while c_interval<50:
                 c_min = np.floor(np.min(Z)/c_interval)*c_interval
-                c_max = np.ceil(np.max(Z)/c_interval)*c_interval
+                c_max = np.ceil(z_max/c_interval)*c_interval
                 c_count = (c_max-c_min)/c_interval
                 if c_count<=15:
                     break
