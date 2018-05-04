@@ -106,8 +106,8 @@ class Mapping(Core):
         self.print('Channels...',end='')  
         jpdf = self.analysis.jpdf_dsla_dslt
         # Create mapping flag array 
-        self.mapping_array = self.trace.mapping_array
-#         self.mapping_array = np.zeros(self.trace.slt_array[:,:,0].shape, dtype=np.uint32)
+#         self.mapping_array = self.trace.mapping_array
+        self.mapping_array = np.zeros(self.trace.slt_array[:,:,0].shape, dtype=np.uint32)
         # Designate channel pixels according to dsla pdf analysis
         self.mapping_array[jpdf.mode_cluster_ij_list[1][:,0],
                            jpdf.mode_cluster_ij_list[1][:,1]] = self.trace.is_channel
