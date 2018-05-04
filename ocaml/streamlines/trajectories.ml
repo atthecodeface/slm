@@ -64,8 +64,8 @@ let pv_verbose data = Workflow.pv_verbose data.properties.trace.workflow
 (** {1 Statics} *)
 
 let cl_files = ["rng.cl";"essentials.cl";
-                "writearray.cl";"trajectoryfns.cl";"computestep.cl";
-                "integrationfns.cl";"trajectory.cl";"integratetraj.cl"]
+                "writearray.cl";"updatetraj.cl";"computestep.cl";
+                "rungekutta.cl";"trajectory.cl";"integratetraj.cl"]
 let cl_src_path = ["opencl"]
 
 (** {1 Chunks} *)
@@ -86,8 +86,7 @@ type t_chunk = {
   Create a chunk (index {i n}) with the given seeds, for upstream or downstream
 
  *)
-let chunk data downstream nse =
-  let (n, seed_start, seed_end) = nse in
+let chunk data downstream (n, seed_start, seed_end) =
   let (required, direction, downup_index, downup_sign) = 
     if downstream then
       (data.properties.trace.do_trace_downstream, "Downstream", 0,(+1.))

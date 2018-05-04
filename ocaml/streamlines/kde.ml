@@ -127,7 +127,7 @@ let gpu_compute_histogram pocl info program sl_array is_bivariate =
   Pocl.kernel_set_arg_buffer pocl kernel 0 sl_buffer;
   Pocl.kernel_set_arg_buffer pocl kernel 1 histogram_buffer;
 
-  let time_taken = Pocl.adaptive_enqueue_kernel pocl kernel n_data 1 in
+  let time_taken = Pocl.adaptive_enqueue_kernel pocl kernel n_data 64 in
   Printf.printf "\n##### Kernel lapsed time: %0.3f secs #####\n" time_taken;
 
   Pocl.copy_buffer_from_gpu pocl ~src:histogram_buffer    ~dst:histogram_array;
@@ -151,7 +151,7 @@ let gpu_compute_partial_pdf pocl info program histogram_array =
   Pocl.kernel_set_arg_buffer pocl kernel 1 partial_pdf_buffer;
 
   let global_size = n_hist_bins*n_hist_bins in
-  let time_taken = Pocl.adaptive_enqueue_kernel pocl kernel global_size 1 in
+  let time_taken = Pocl.adaptive_enqueue_kernel pocl kernel global_size 64 in
   Printf.printf "\n##### Kernel lapsed time: %0.3f secs #####\n" time_taken;
   Pocl.copy_buffer_from_gpu pocl ~src:partial_pdf_buffer    ~dst:partial_pdf_array;
   Pocl.finish_queue pocl;
@@ -174,7 +174,7 @@ let gpu_compute_full_bivariate_pdf pocl info program partial_pdf_array =
   Pocl.kernel_set_arg_buffer pocl kernel 1 pdf_buffer;
 
   let global_size = n_pdf_points*n_pdf_points in
-  let time_taken = Pocl.adaptive_enqueue_kernel pocl kernel global_size 1 in
+  let time_taken = Pocl.adaptive_enqueue_kernel pocl kernel global_size 64 in
   Printf.printf "\n##### Kernel lapsed time: %0.3f secs #####\n" time_taken;
   Pocl.copy_buffer_from_gpu pocl ~src:pdf_buffer    ~dst:pdf_array;
   Pocl.finish_queue pocl;
@@ -197,7 +197,7 @@ let gpu_compute_full_univariate_pdf pocl info program histogram_array =
   Pocl.kernel_set_arg_buffer pocl kernel 1 pdf_buffer;
 
   let global_size = n_pdf_points in
-  let time_taken = Pocl.adaptive_enqueue_kernel pocl kernel global_size 1 in
+  let time_taken = Pocl.adaptive_enqueue_kernel pocl kernel global_size 64 in
   Printf.printf "\n##### Kernel lapsed time: %0.3f secs #####\n" time_taken;
   Pocl.copy_buffer_from_gpu pocl ~src:pdf_buffer    ~dst:pdf_array;
   Pocl.finish_queue pocl;

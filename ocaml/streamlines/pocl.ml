@@ -343,16 +343,25 @@ let adaptive_enqueue_kernel t kernel
 
   let show_progress_end chunk_size elapsed_time =
     function _ ->
-      Printf.printf "...%0.3fs (%.0fms per item)\n%!" elapsed_time (elapsed_time /. (float chunk_size));
+      Printf.printf "...%0.3fs (%.3fus per item)\n%!" elapsed_time (1e6 *. elapsed_time /. (float chunk_size));
       ()
   in
-
+  let max_odd_chunk_size = 4*work_items_per_warp in
   let rec do_work_chunk offset size_factor time_taken =
     if offset<work_size then (
        let chunk_size       = min (work_items_per_warp * size_factor) (work_size - offset) in
-       let global_work_ofs  = [offset; 0] in
-       let global_work_size = [chunk_size; 1] in
-       let local_work_size  = [work_items_per_warp; 1] in
+       let chunk_overflow   = (chunk_size mod work_items_per_warp) in
+       let chunk_size =
+         if ((chunk_overflow<>0) && (chunk_size>max_odd_chunk_size)) then
+           chunk_size - chunk_overflow
+         else
+           chunk_size
+       in
+       let local_work_size =
+         if (chunk_size mod work_items_per_warp)<>0 then [] else [work_items_per_warp]
+       in
+       let global_work_size = [chunk_size] in
+       let global_work_ofs  = [offset] in
        let event = enqueue_kernel t kernel ~global_work_ofs ~local_work_size ~global_work_size in
        pv_verbose t (show_progress_start offset chunk_size);
        let offset = offset + chunk_size in 
@@ -408,7 +417,7 @@ let compile_options t info_struct kernel_name =
     let option = sfmt "%s " (Info.define_str nv) in
     acc ^ option
   in
-  let base_options = sfmt "-D KERNEL_%s " kernel_name in
+  let base_options = sfmt "-DKERNEL_%s " kernel_name in
   Info.fold_left add_option base_options info_struct
 
 (**  [append_in_file (source, source_lines) filename f]

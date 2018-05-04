@@ -516,7 +516,7 @@ let plot_maps t data geodata results =
   if true || t.props.do_plot_dtm then plot_dtm_shaded_relief t data geodata;
   if true || t.props.do_plot_roi then plot_roi_shaded_relief t data;
   if t.props.do_plot_streamlines then plot_streamlines t data results;
-plot_classical_streamlines t data results;
+(*plot_classical_streamlines t data results;*)
 (*  if t.props.do_plot_flow_maps then plot_flow_maps t data;
   if t.props.do_plot_segments then plot_segments t data;
   if t.props.do_plot_channels then plot_channels t data;
