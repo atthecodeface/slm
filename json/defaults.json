@@ -61,7 +61,7 @@
 		"IDEALintegration_halt_threshold" : 0.01,
 		"trajectory_resolution" : 128,
 		
-		"jitter_magnitude" : 2.0,
+		"jitter_magnitude" : 2.5,
 		"WASjitter_magnitude" : 2.9,
 		"integrator_step_factor" : 0.5,
 		"max_integration_step_error" : 0.03,

@@ -40,7 +40,7 @@
 /// by computing a global id and using it to index the @p seed_point_array.
 /// UPDATE: now doing sub-pixel streamlines as a set per seed point... need to doc here
 ///
-/// Compiled if KERNEL_INTEGRATE_FIELD is defined.
+/// Compiled if KERNEL_INTEGRATE_FIELDS is defined.
 ///
 /// @param[in]  seed_point_array: list of initial streamline point vectors,
 ///                               one allotted to each kernel instance
@@ -72,11 +72,19 @@ __kernel void integrate_fields( __global const float2 *seed_point_array,
         // This is a "padding" seed, so let's bail
         return;
     }
+//    // Report how kernel instances are distributed
+//    if (seed_idx==0) {
+//        printf("\nOn GPU/OpenCL device: #workitems=%d  #workgroups=%d => work size=%d\n",
+//                get_local_size(0u), get_num_groups(0u),
+//                get_local_size(0u)*get_num_groups(0u));
+//    }
     // Report how kernel instances are distributed
-    if (seed_idx==0) {
-        printf("\nOn GPU/OpenCL device: #workitems=%d  #workgroups=%d => work size=%d\n",
+    if (global_id==get_global_offset(0u)) {
+        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
+=> work size=%d   global offset=%d\n",
                 get_local_size(0u), get_num_groups(0u),
-                get_local_size(0u)*get_num_groups(0u));
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_offset(0u));
     }
 
     const float2 current_seed_point_vec = seed_point_array[seed_idx];
@@ -93,10 +101,13 @@ __kernel void integrate_fields( __global const float2 *seed_point_array,
     lehmer_rand_uint(&initial_rng_state);
     BYTE_REVERSAL(initial_rng_state);
 
+    const uint idx = get_array_idx(current_seed_point_vec);
+//    atomic_or(&mapping_array[idx],WAS_CHANNELHEAD);
+
     for (j=0u;j<SUBPIXEL_SEED_POINT_DENSITY;j++) {
         for (i=0u;i<SUBPIXEL_SEED_POINT_DENSITY;i++){
             // Trace a jittered streamline from a sub-pixel-offset first point
-            trajectory_jittered(uv_array, mask_array,
+            jittered_trajectory(uv_array, mask_array,
                                 mapping_array, slc_array, slt_array,
                                 global_id, seed_idx,
                                 current_seed_point_vec + (float2)(

@@ -344,6 +344,7 @@ class Plot(Core):
         is_leftflank       = self.trace.is_leftflank
         is_midslope        = self.trace.is_midslope
         is_ridge           = self.trace.is_ridge
+        was_channelhead    = self.trace.was_channelhead
         
         basin_mask_array = self.geodata.basin_mask_array
         
@@ -355,24 +356,24 @@ class Plot(Core):
         mask_array = basin_mask_array | ~(grid_array)
         self.plot_simple_grid(grid_array, mask_array, axes, cmap='Reds', alpha=0.8)
         
-#         self.plot_compound_markers(axes, is_majorconfluence, ['blue','black'])
+        self.plot_compound_markers(axes, is_majorconfluence, ['blue','black'])
 #         self.plot_compound_markers(axes, is_minorinflow,     ['yellow','black'])
 #         self.plot_compound_markers(axes, is_majorinflow,     ['green','black'])
         self.plot_compound_markers(axes, is_channeltail,     ['lightgreen','black'])
-#         self.plot_compound_markers(axes, is_channelhead,     ['orange','black'])
-#         self.plot_compound_markers(axes, is_leftflank,       ['red','black'])
+        self.plot_compound_markers(axes, is_channelhead,     ['orange','black'])
+        self.plot_compound_markers(axes, was_channelhead,    ['red','black'], msf=0.5)
 #         self.plot_compound_markers(axes, is_midslope,        ['purple','black'])
 #         self.plot_compound_markers(axes, is_ridge,        ['purple','black'])
         
         self._record_fig(fig_name,fig)
 
-    def plot_compound_markers(self, axes, flag, colors):
+    def plot_compound_markers(self, axes, flag, colors, msf=1.0):
         pad = self.geodata.pad_width
         markers_array = (np.flipud(np.argwhere(
                                         self.mapping.mapping_array & flag
                                         ).astype(np.float32)-pad))
         marker = self.channel_head_marker
-        marker_sizes = self.channel_head_marker_sizes
+        marker_sizes = [ms*msf for ms in self.channel_head_marker_sizes]
         colors = colors
         alpha = self.channel_head_marker_alpha
         axes.plot(markers_array[:,0]+self.geodata.roi_x_origin,

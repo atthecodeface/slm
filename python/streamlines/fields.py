@@ -75,8 +75,8 @@ def integrate_fields(
     queue = cl.CommandQueue(context,
                             properties=cl.command_queue_properties.PROFILING_ENABLE)
     cl_files = ['rng.cl','essentials.cl',
-                'writearray.cl','trajectoryfns.cl','computestep.cl',
-                'integrationfns.cl','jittertrajectory.cl','integratefields.cl']
+                'writearray.cl','updatetraj.cl','computestep.cl',
+                'rungekutta.cl','jittertrajectory.cl','integratefields.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
@@ -120,9 +120,8 @@ def integrate_fields(
         vprint(verbose,'Chunk size adjustment for {0} CL work items/group: {1}->{2}...'
              .format(n_work_items, n_global, n_global+pad_length))
     n_global += pad_length
-    
-    vprint(verbose,'Compile options:\n',pocl.set_compile_options(info_dict,
-                                                                 'INTEGRATE_FIELDS'))
+    compile_options = pocl.set_compile_options(info_dict,'INTEGRATE_FIELDS')
+    vprint(verbose,'Compile options:\n',compile_options)
     # Do integrations on the GPU
     (rtn_slc_array, rtn_slt_array, rtn_sla_array) \
         = gpu_integrate(device, context, queue, cl_kernel_source,

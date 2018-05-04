@@ -41,8 +41,8 @@ def connect_channel_pixels(
     platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
     queue = cl.CommandQueue(context,
                             properties=cl.command_queue_properties.PROFILING_ENABLE)
-    cl_files = ['essentials.cl','trajectoryfns.cl','computestep.cl',
-                'integrationfns.cl','connect.cl']
+    cl_files = ['essentials.cl','updatetraj.cl','computestep.cl',
+                'rungekutta.cl','connect.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
@@ -89,8 +89,8 @@ def map_channel_heads(
     platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
     queue = cl.CommandQueue(context,
                             properties=cl.command_queue_properties.PROFILING_ENABLE)
-    cl_files = ['essentials.cl','trajectoryfns.cl','computestep.cl',
-                'integrationfns.cl','channelheads.cl']
+    cl_files = ['essentials.cl','updatetraj.cl','computestep.cl',
+                'rungekutta.cl','channelheads.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
@@ -112,6 +112,7 @@ def map_channel_heads(
     gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
                  seed_point_array, mask_array, u_array,v_array, mapping_array, verbose)
     
+    vprint(verbose,'pruning...')
     # Trace downstream from all provisional channel head pixels
     seed_point_array \
         = pick_seeds(mask=mask_array, map=mapping_array, flag=is_channelhead, 
@@ -154,6 +155,7 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
     global_size = [seed_point_array.shape[0],1]
     info_dict['n_seed_points'] = global_size[0]
     compile_options = pocl.set_compile_options(info_dict, cl_kernel_fn, downup_sign=1)
+    vprint(verbose,'Compile options:\n', compile_options)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         program = cl.Program(context, cl_kernel_source).build(options=compile_options)
@@ -176,10 +178,10 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
     pocl.report_kernel_info(device,kernel,verbose)
     elapsed_time \
         = pocl.adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, 
-                                           local_size, n_work_items,
-                                           chunk_size_factor=chunk_size_factor,
-                                           max_time_per_kernel=max_time_per_kernel,
-                                           verbose=verbose )
+                                                local_size, n_work_items,
+                                                chunk_size_factor=chunk_size_factor,
+                                                max_time_per_kernel=max_time_per_kernel,
+                                                verbose=verbose )
     vprint(verbose,
            '#### ...elapsed time for {1} work items: {0:.3f}s ####'
            .format(elapsed_time,global_size[0]))

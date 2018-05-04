@@ -222,7 +222,7 @@ def set_compile_options(info_dict, kernel_def, downup_sign=1,
         '-D','IS_RIGHTFLANK={}u'.format(info_dict['is_rightflank']),
         '-D','IS_MIDSLOPE={}u'.format(info_dict['is_midslope']),
         '-D','IS_RIDGE={}u'.format(info_dict['is_ridge']),
-        '-D','IS_STUCK={}u'.format(info_dict['is_stuck']),
+        '-D','WAS_CHANNELHEAD={}u'.format(info_dict['was_channelhead']),
         '-D','IS_LOOP={}u'.format(info_dict['is_loop']),
         '-D','IS_BLOCKAGE={}u'.format(info_dict['is_blockage'])
         ]
@@ -313,8 +313,10 @@ def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size,
     cumulative_time = 0.0
     time_per_item   = 0.0
     while work_left>0:
+#         pdebug(queue, kernel, [chunk_size,1], local_size,[offset,0])
         event = cl.enqueue_nd_range_kernel(queue, kernel, [chunk_size,1], 
                                            local_size,global_work_offset=[offset,0])
+#         pdebug('event',event,'chunk_size',chunk_size,'time_per_item',time_per_item)
         progress = 100.0*(min(work_size,(offset+chunk_size))/work_size)
         vprint(verbose,
                '{0:.2f}%: enqueued {1}/{2} workitems'

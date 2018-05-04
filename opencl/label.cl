@@ -63,6 +63,14 @@ __kernel void label_confluences(
         // This is a "padding" seed, so let's bail
         return;
     }
+    // Report how kernel instances are distributed
+    if (global_id==get_global_offset(0u)) {
+        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
+=> work size=%d   global offset=%d\n",
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_offset(0u));
+    }
     __private uchar n_inflows=0u, n_equal_dominant_inflows=0u;
     __private uint i, idx, nbr_idx, inflows_list[8], equal_dominant_inflows_list[8],
                    dominant_slt_index=0u;

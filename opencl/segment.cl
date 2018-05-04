@@ -48,6 +48,14 @@ __kernel void segment_downchannels(
     // For every channel head pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    // Report how kernel instances are distributed
+    if (global_id==get_global_offset(0u)) {
+        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
+=> work size=%d   global offset=%d\n",
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_offset(0u));
+    }
     if (global_id>=N_SEED_POINTS) {
         // This is a "padding" seed, so let's bail
         return;
@@ -122,6 +130,14 @@ __kernel void segment_hillslopes(
     // For every non-thin-channel pixel
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    // Report how kernel instances are distributed
+    if (global_id==get_global_offset(0u)) {
+        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
+=> work size=%d   global offset=%d\n",
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_offset(0u));
+    }
     if (global_id>=N_SEED_POINTS) {
         // This is a "padding" seed, so let's bail
         return;
@@ -187,6 +203,14 @@ __kernel void subsegment_channel_edges(
     // For every channel head and major confluence pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    // Report how kernel instances are distributed
+    if (global_id==get_global_offset(0u)) {
+        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
+=> work size=%d   global offset=%d\n",
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_offset(0u));
+    }
     if (global_id>=N_SEED_POINTS) {
         // This is a "padding" seed, so let's bail
         return;
@@ -283,6 +307,14 @@ __kernel void subsegment_flanks(
     // For every non-left-flank hillslope pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    // Report how kernel instances are distributed
+    if (global_id==get_global_offset(0u)) {
+        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
+=> work size=%d   global offset=%d\n",
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_offset(0u));
+    }
     if (global_id>=N_SEED_POINTS) {
         // This is a "padding" seed, so let's bail
         return;

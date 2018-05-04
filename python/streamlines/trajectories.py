@@ -70,8 +70,8 @@ def integrate_trajectories(cl_src_path, which_cl_platform, which_cl_device, info
     queue = cl.CommandQueue(context,
                             properties=cl.command_queue_properties.PROFILING_ENABLE)
     cl_files = ['rng.cl','essentials.cl',
-                'writearray.cl','trajectoryfns.cl','computestep.cl',
-                'integrationfns.cl','trajectory.cl','integratetraj.cl']
+                'writearray.cl','updatetraj.cl','computestep.cl',
+                'rungekutta.cl','trajectory.cl','integratetraj.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
@@ -115,8 +115,8 @@ def integrate_trajectories(cl_src_path, which_cl_platform, which_cl_device, info
     trace_do_chunks,chunk_size \
         = choose_chunks(seed_point_array,info_dict,n_chunks_required,
                         do_trace_downstream,do_trace_upstream,verbose)
-    vprint(verbose,'Compile options:\n',pocl.set_compile_options(info_dict,
-                                                                 'INTEGRATE_TRAJECTORY'))
+    compile_options = pocl.set_compile_options(info_dict,'INTEGRATE_TRAJECTORY')
+    vprint(verbose,'Compile options:\n',compile_options)
     # Do integrations on the GPU
     (streamline_arrays_list, traj_nsteps_array, traj_length_array) \
         = gpu_integrate(device, context, queue, cl_kernel_source,

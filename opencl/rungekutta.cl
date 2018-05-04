@@ -134,7 +134,7 @@ static inline void euler_step_record(float *dt, float  *dl,
 /// In addition, push the current @p vec to the @p prev_vec, push the current @p idx to
 ///    the @p prev_idx, and update the @p idx of the current @p vec.
 ///
-/// Compiled if KERNEL_INTEGRATE_TRAJECTORY is defined.
+/// Compiled if KERNEL_INTEGRATE_FIELDS is defined.
 ///
 /// @param[in,out]  dt: delta time step
 /// @param[in,out]  dl: step distance
@@ -170,22 +170,11 @@ static inline bool runge_kutta_step_write_sl_data(
 {
     const float step_error = fast_length((*dxy2_vec-*dxy1_vec)/GRID_SCALE);
 
-#ifdef DEBUG
-    if (mapping_array[*idx] & IS_STUCK) {
-        *dl = fast_length(*dxy1_vec);
-    } else {
-        *dl = fast_length(*dxy2_vec);
-    }
-#else
     *dl = fast_length(*dxy2_vec);
-#endif
     *vec = next_vec;
     if ((*dl<(INTEGRATION_HALT_THRESHOLD)) ) {
         update_trajectory_write_sl_data(*dl,l_trajectory,*vec,*prev_vec,n_steps,
                                         idx, mask_array, slt_array, slc_array);
-//#ifdef DEBUG
-//        printf("runge_kutta_step_write_sl_data: stuck @ %d\n",*idx);
-//#endif
         return true;
     }
     *dt = select( fmin(DT_MAX,(ADJUSTED_MAX_ERROR*(*dt))/(step_error)), DT_MAX,
@@ -204,7 +193,7 @@ static inline bool runge_kutta_step_write_sl_data(
 /// Also update the total streamline length @p l_trajectory and
 ///    increment the step counter @p n_steps.
 ///
-/// Compiled if KERNEL_INTEGRATE_TRAJECTORY is defined.
+/// Compiled if KERNEL_INTEGRATE_FIELDS is defined.
 ///
 /// @param[in,out]  dt: delta time step
 /// @param[in,out]  dl: step distance
@@ -407,7 +396,7 @@ static inline bool countlink_runge_kutta_step(float *dt, float *dl,
     *idx = get_array_idx(*next_vec);
     if (*dl<(INTEGRATION_HALT_THRESHOLD)) {
         printf("Count-link @ %g,%g: stuck\n",(*vec)[0],(*vec)[1]);
-        atomic_or(&mapping_array[*idx],IS_STUCK);
+//        atomic_or(&mapping_array[*idx],IS_STUCK);
         return true;
     }
     *dt = select( fmin(DT_MAX,(ADJUSTED_MAX_ERROR*(*dt))/(step_error)), DT_MAX,

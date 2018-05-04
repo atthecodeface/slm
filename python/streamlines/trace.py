@@ -69,7 +69,7 @@ class Trace(Core):
             'is_rightflank',      # 1024
             'is_midslope',        # 2048
             'is_ridge',           # 4028
-            'is_stuck',           # 8196
+            'was_channelhead',    # 8196
             'is_loop',            # 16384
             'is_blockage'         # 32768
             ]
@@ -187,7 +187,7 @@ class Trace(Core):
             'is_rightflank' :      np.uint32(self.is_rightflank),
             'is_midslope' :        np.uint32(self.is_midslope),
             'is_ridge' :           np.uint32(self.is_ridge),
-            'is_stuck' :           np.uint32(self.is_stuck),
+            'was_channelhead' :    np.uint32(self.was_channelhead),
             'is_loop' :            np.uint32(self.is_loop),
             'is_blockage' :        np.uint32(self.is_blockage)
         }
@@ -235,4 +235,5 @@ class Trace(Core):
                 self.traj_stats_df,
                 self.state.verbose
             )
+        pdebug(self.mapping_array)
         return

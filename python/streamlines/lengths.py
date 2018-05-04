@@ -43,8 +43,8 @@ def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_dic
     platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
     queue = cl.CommandQueue(context,
                             properties=cl.command_queue_properties.PROFILING_ENABLE)
-    cl_files = ['essentials.cl','trajectoryfns.cl','computestep.cl',
-                'integrationfns.cl','lengths.cl']
+    cl_files = ['essentials.cl','updatetraj.cl','computestep.cl',
+                'rungekutta.cl','lengths.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:

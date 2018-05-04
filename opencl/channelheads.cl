@@ -40,6 +40,14 @@ __kernel void map_channel_heads(
     // For every non-masked pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    // Report how kernel instances are distributed
+    if (global_id==get_global_offset(0u)) {
+        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
+=> work size=%d   global offset=%d\n",
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_offset(0u));
+    }
     if (global_id>=N_SEED_POINTS) {
         // This is a "padding" seed, so let's bail
         return;
@@ -141,14 +149,35 @@ __kernel void prune_channel_heads(
     // For every provisional channel head pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
-    if (global_id>=N_SEED_POINTS) {
-        // This is a "padding" seed, so let's bail
-        return;
+//    if (global_id>=N_SEED_POINTS) {
+//        // This is a "padding" seed, so let's bail
+//#ifdef DEBUG
+//        printf("Bailing @ %d !in [%d-%d]\n",
+//                global_id,get_global_offset(0u),N_SEED_POINTS-1);
+//#endif
+//        return;
+//    }
+    // Report how kernel instances are distributed
+    if (global_id==get_global_offset(0u)) {
+        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
+=> work size=%d   global offset=%d\n",
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_offset(0u));
     }
-    // Use an unsigned integer for the 'flag' var, because it needs it to be big
-    __private uint idx, flag = 0;
-    __private float2 vec = seed_point_array[global_id];
-
+    __private uint idx;
+    __private uint flag = 0;
+    const float2 vec = seed_point_array[global_id];
+#ifdef DEBUG
+    if (1) {
+        printf("*#*#*#*#*#*#*#    %d %d,%d@ %g,%g\n",
+                global_id, get_global_size(0u), get_global_size(1u),
+                vec[0]*2.0f,vec[1]*2.0f); //427,1227
+    }
+#endif
+    // Scan all 8 next/nearest neighbors:
+    //   - add 1 to flag if the nbr is a thin channel pixel
+    //   - add 16 if the nbr is masked (pathological case: 8*16=128)
     CHECK_N(vec);
     CHECK_S(vec);
     CHECK_E(vec);
@@ -161,13 +190,13 @@ __kernel void prune_channel_heads(
     // Otherwise, remove this provisional channel head.
     if (flag!=1) {
         idx = get_array_idx(vec);
-        atomic_and(&mapping_array[idx],~IS_CHANNELHEAD);
+//        atomic_and(&mapping_array[idx],~IS_CHANNELHEAD);
+        atomic_or(&mapping_array[idx],WAS_CHANNELHEAD);
         // If there are no thin channel neighbors AT ALL,
         //   we must be at an isolated pixel.
         // Thus redesignate this pixel as 'not channelized at all'.
         if (flag==0 || flag>=16) {
-            atomic_and(&mapping_array[idx],IS_THINCHANNEL);
-            atomic_and(&mapping_array[idx],IS_CHANNEL);
+            atomic_and(&mapping_array[idx], ~(IS_THINCHANNEL | IS_CHANNEL));
         }
     }
     return;

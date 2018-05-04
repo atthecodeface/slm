@@ -37,6 +37,14 @@ __kernel void connect_channels(
         // This is a "padding" seed, so let's bail
         return;
     }
+    // Report how kernel instances are distributed
+    if (global_id==get_global_offset(0u)) {
+        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
+=> work size=%d   global offset=%d\n",
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_offset(0u));
+    }
     const float2 current_seed_point_vec = seed_point_array[global_id];
     __private uint idx, prev_idx, n_steps = 0u, step=0u;
     __private float l_trajectory = 0.0f, dl = 0.0f, dt = DT_MAX;

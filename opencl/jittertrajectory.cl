@@ -17,7 +17,7 @@
 /// Write the streamline count and lengths to slc, slt arrays.
 /// Don't record the trajectory itself.
 ///
-/// Compiled if KERNEL_INTEGRATE_TRAJECTORY is defined.
+/// Compiled if KERNEL_INTEGRATE_FIELDS is defined.
 ///
 /// @param[in]  uv_array: flow unit velocity vector grid (padded)
 /// @param[in]  mask_array: grid pixel mask (padded),
@@ -39,7 +39,7 @@
 ///
 /// @ingroup integrate
 ///
-static inline void trajectory_jittered( __global const float2 *uv_array,
+static inline void jittered_trajectory( __global const float2 *uv_array,
                                         __global const bool   *mask_array,
                                         __global       uint   *mapping_array,
                                         __global       uint   *slc_array,
@@ -58,9 +58,6 @@ static inline void trajectory_jittered( __global const float2 *uv_array,
 
     // Start by recording the seed point
     idx = get_array_idx(vec);
-#ifdef DEBUG
-    if (idx>=NXY_PADDED) printf("Jittered seed point out of bounds\n");
-#endif
     if (!mask_array[idx])
         atomic_write_sl_data(&slt_array[idx], &slc_array[idx], l_trajectory);
 
@@ -78,19 +75,15 @@ static inline void trajectory_jittered( __global const float2 *uv_array,
                                                    &n_steps, &idx,
                                                    mask_array, mapping_array,
                                                    slt_array, slc_array)) {
-                    atomic_or(&mapping_array[idx],IS_STUCK);
                     break;
                 }
             } else {
-//#ifndef DEBUG
                 euler_step_write_sl_data(&dt, &dl, &l_trajectory, uv1_vec,
                                          &vec, prev_vec, &n_steps, &idx,
                                          mask_array, slt_array, slc_array);
-//#endif
                 break;
             }
     }
     return;
 }
 #endif
-
