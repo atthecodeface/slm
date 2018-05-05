@@ -68,10 +68,6 @@ __kernel void integrate_fields( __global const float2 *seed_point_array,
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u),
                seed_idx = (SEEDS_CHUNK_OFFSET)+global_id;
 
-    if (seed_idx>=N_SEED_POINTS) {
-        // This is a "padding" seed, so let's bail
-        return;
-    }
 //    // Report how kernel instances are distributed
 //    if (seed_idx==0) {
 //        printf("\nOn GPU/OpenCL device: #workitems=%d  #workgroups=%d => work size=%d\n",
@@ -80,15 +76,21 @@ __kernel void integrate_fields( __global const float2 *seed_point_array,
 //    }
     // Report how kernel instances are distributed
     if (global_id==get_global_offset(0u)) {
-        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
-=> work size=%d   global offset=%d\n",
+        printf("\n   >>> on GPU/OpenCL device: #workitems=%d * #workgroups=%d \
+= worksize=%d   global offset=%d\n",
                 get_local_size(0u), get_num_groups(0u),
                 get_local_size(0u)*get_num_groups(0u),
                 get_global_offset(0u));
     }
+    if (seed_idx>=N_SEED_POINTS) {
+        // This is a "padding" seed, so let's bail
+        return;
+    }
 
     const float2 current_seed_point_vec = seed_point_array[seed_idx];
     __private uint i=0,j=0, initial_rng_state;
+    const uint idx = get_array_idx(current_seed_point_vec);
+    atomic_or(&mapping_array[idx],WAS_CHANNELHEAD);
 
     // Trace a set of streamlines from a grid of sub-pixel positions centered
     //    on the seed point
@@ -101,8 +103,6 @@ __kernel void integrate_fields( __global const float2 *seed_point_array,
     lehmer_rand_uint(&initial_rng_state);
     BYTE_REVERSAL(initial_rng_state);
 
-    const uint idx = get_array_idx(current_seed_point_vec);
-//    atomic_or(&mapping_array[idx],WAS_CHANNELHEAD);
 
     for (j=0u;j<SUBPIXEL_SEED_POINT_DENSITY;j++) {
         for (i=0u;i<SUBPIXEL_SEED_POINT_DENSITY;i++){

@@ -91,6 +91,10 @@ class Trace(Core):
             sla_array (numpy.ndarray):
             """
         self.print('\n**Trace begin**', flush=True)  
+        # Create mapping flag array 
+        self.mapping_array = np.zeros((self.geodata.roi_nx+2*self.geodata.pad_width,
+                                       self.geodata.roi_ny+2*self.geodata.pad_width),
+                                       dtype=np.uint32)
         # Integrate streamlines downstream and upstream
         self.trajectories()
         # Map mean streamline integrations downstream and upstream
@@ -235,5 +239,4 @@ class Trace(Core):
                 self.traj_stats_df,
                 self.state.verbose
             )
-        pdebug(self.mapping_array)
         return

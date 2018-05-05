@@ -65,15 +65,20 @@ __kernel void integrate_trajectory( __global const float2 *seed_point_array,
                trajectory_index = global_id*(MAX_N_STEPS);
     __global char2 *trajectory_vec;
 
+//    printf("global ids %d %d size %d offset %d\n",
+//            get_global_id(0u),get_global_id(1u),get_global_size(0u),get_global_offset(0u));
+
+    // Report how kernel instances are distributed
+    if (global_id==get_global_offset(0u)) {
+        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
+=> work size=%d   global offset=%d\n",
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_offset(0u));
+    }
     if (seed_idx>=N_SEED_POINTS) {
         // This is a "padding seed", so let's bail
         return;
-    }
-    // Report how kernel instances are distributed
-    if (seed_idx==0) {
-        printf("\nOn GPU/OpenCL device: #workitems=%d  #workgroups=%d => work size=%d\n",
-                get_local_size(0u), get_num_groups(0u),
-                get_local_size(0u)*get_num_groups(0u));
     }
 
     // Bug fix: bail BEFORE reading this element, because trajectories_array

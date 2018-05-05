@@ -83,9 +83,9 @@ def integrate_fields(
             cl_kernel_source += fp.read()
     n_padded_seed_points = info_dict['n_padded_seed_points']
 
-    # Mapping flag array - will already be defined if trajectories have been traced
-    if mapping_array is None:
-        mapping_array = np.zeros_like(mask_array, dtype=np.uint32)
+#     # Mapping flag array - will already be defined if trajectories have been traced
+#     if mapping_array is None:
+#         mapping_array = np.zeros_like(mask_array, dtype=np.uint32)
 
     # Memory check - not really needed 
     gpu_traj_memory_limit = (device.get_info(cl.device_info.GLOBAL_MEM_SIZE) 
@@ -123,7 +123,7 @@ def integrate_fields(
     compile_options = pocl.set_compile_options(info_dict,'INTEGRATE_FIELDS')
     vprint(verbose,'Compile options:\n',compile_options)
     # Do integrations on the GPU
-    (rtn_slc_array, rtn_slt_array, rtn_sla_array) \
+    (rtn_slc_array, rtn_slt_array, rtn_sla_array, mapping_array) \
         = gpu_integrate(device, context, queue, cl_kernel_source,
                          info_dict, n_global,
                          seed_point_array, mask_array, u_array, v_array, mapping_array,
@@ -142,6 +142,7 @@ def integrate_fields(
 
     # Done
     vprint(verbose,'...done')
+    
     return (rtn_slc_array, rtn_slt_array, rtn_sla_array)
 
 def gpu_integrate(device, context, queue, cl_kernel_source, 
@@ -262,6 +263,9 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
             cl.enqueue_copy(queue, slt_buffer,slt_array)
             queue.finish()   
 
+    cl.enqueue_copy(queue, mapping_array, mapping_buffer)
+    queue.finish()   
+    
     # Compute average streamline lengths (sla) from total lengths (slt) and counts (slc)
     # Shorthand
     (slc,sla,slt) = (rtn_slc_array,rtn_sla_array,rtn_slt_array)
@@ -272,7 +276,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     sla[slc>0]  = slt[slc>0]/slc[slc>0]
     slt[slc>0]  = slt[slc>0]/info_dict['subpixel_seed_point_density']**2
     
-    return (slc, slt, sla)
+    return (slc, slt, sla, mapping_array)
 
 def prepare_memory(context, seed_point_array, mask_array, 
                    u_array,v_array, mapping_array, verbose):

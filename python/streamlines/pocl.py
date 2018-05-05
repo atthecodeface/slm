@@ -313,10 +313,9 @@ def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size,
     cumulative_time = 0.0
     time_per_item   = 0.0
     while work_left>0:
-#         pdebug(queue, kernel, [chunk_size,1], local_size,[offset,0])
+#         event = cl.enqueue_nd_range_kernel(queue, kernel, [chunk_size+offset,1], 
         event = cl.enqueue_nd_range_kernel(queue, kernel, [chunk_size,1], 
                                            local_size,global_work_offset=[offset,0])
-#         pdebug('event',event,'chunk_size',chunk_size,'time_per_item',time_per_item)
         progress = 100.0*(min(work_size,(offset+chunk_size))/work_size)
         vprint(verbose,
                '{0:.2f}%: enqueued {1}/{2} workitems'

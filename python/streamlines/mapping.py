@@ -39,8 +39,11 @@ class Mapping(Core):
         """
         TBD.
         """
-        self.print('\n**Mapping begin**')  
-
+        self.print('\n**Mapping begin**') 
+        
+        # Shorthand
+        self.mapping_array = self.trace.mapping_array
+         
         # Use downstream slt,sla pdfs to designate pixels as channels
         #    - no GPU invocation
         self.map_channels()
@@ -105,17 +108,9 @@ class Mapping(Core):
     def map_channels(self):
         self.print('Channels...',end='')  
         jpdf = self.analysis.jpdf_dsla_dslt
-        # Create mapping flag array 
-#         self.mapping_array = self.trace.mapping_array
-        self.mapping_array = np.zeros(self.trace.slt_array[:,:,0].shape, dtype=np.uint32)
         # Designate channel pixels according to dsla pdf analysis
         self.mapping_array[jpdf.mode_cluster_ij_list[1][:,0],
                            jpdf.mode_cluster_ij_list[1][:,1]] = self.trace.is_channel
-#         # Ref existing mapping array used in streamline trajectory mapping
-#         self.mapping_array = self.trace.mapping_array
-#         # Designate channel pixels according to dsla pdf analysis
-#         self.mapping_array[jpdf.mode_cluster_ij_list[1][:,0],
-#                            jpdf.mode_cluster_ij_list[1][:,1]] |= self.trace.is_channel
         self.print('done')  
 
     def connect_channel_pixels(self):
