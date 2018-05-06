@@ -6,7 +6,7 @@
 		"cl_platform" : 0,
 		"cl_device" : 2,
 		"gpu_memory_limit_pc" : 90,
-		"n_work_items" : 64,
+		"n_work_items" : 32,
 		"chunk_size_factor" : 20,
 		"max_time_per_kernel" : 5.0,
 		

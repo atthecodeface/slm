@@ -47,12 +47,15 @@ __kernel void hillslope_lengths(
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
     // Report how kernel instances are distributed
-    if (global_id==get_global_offset(0u)) {
-        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
-=> work size=%d   global offset=%d\n",
+    // Report how kernel instances are distributed
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf("\n  >>> on GPU/OpenCL device: id=%d offset=%d ",
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf("#workitems=%d x #workgroups=%d = %d=%d\n",
                 get_local_size(0u), get_num_groups(0u),
                 get_local_size(0u)*get_num_groups(0u),
-                get_global_offset(0u));
+                get_global_size(0u));
     }
     if (global_id>=N_SEED_POINTS) {
         // This is a "padding" seed, so let's bail

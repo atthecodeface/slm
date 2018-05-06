@@ -320,15 +320,15 @@ def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size,
         vprint(verbose,
                '{0:.2f}%: enqueued {1}/{2} workitems'
                     .format(progress,chunk_size,work_size),
-                'in range [{0}-{1}]'.format(offset,offset+chunk_size-1),
-                'with estimated time {0:.3f}s...'.format(time_per_item*chunk_size),
+                'in [{0}-{1}]'.format(offset,offset+chunk_size-1),
+                'estimated t={0:.3f}s...'.format(time_per_item*chunk_size),
                 end='')
         offset    += chunk_size
         work_left -= chunk_size
         event.wait()
         try:
             elapsed_time = 1e-9*(event.profile.end-event.profile.start)
-            vprint(verbose, '...actual time {0:.3f}s'.format(elapsed_time))
+            vprint(verbose, '...actual t={0:.3f}s'.format(elapsed_time))
         except:
             vprint(verbose, '...profiling failed')
             continue

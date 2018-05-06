@@ -41,12 +41,15 @@ __kernel void map_channel_heads(
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
     // Report how kernel instances are distributed
-    if (global_id==get_global_offset(0u)) {
-        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
-=> work size=%d   global offset=%d\n",
+    // Report how kernel instances are distributed
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf("\n  >>> on GPU/OpenCL device: id=%d offset=%d ",
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf("#workitems=%d x #workgroups=%d = %d=%d\n",
                 get_local_size(0u), get_num_groups(0u),
                 get_local_size(0u)*get_num_groups(0u),
-                get_global_offset(0u));
+                get_global_size(0u));
     }
     if (global_id>=N_SEED_POINTS) {
         // This is a "padding" seed, so let's bail
@@ -149,21 +152,23 @@ __kernel void prune_channel_heads(
     // For every provisional channel head pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
-//    if (global_id>=N_SEED_POINTS) {
-//        // This is a "padding" seed, so let's bail
-//#ifdef DEBUG
-//        printf("Bailing @ %d !in [%d-%d]\n",
-//                global_id,get_global_offset(0u),N_SEED_POINTS-1);
-//#endif
-//        return;
-//    }
+    if (global_id>=N_SEED_POINTS) {
+        // This is a "padding" seed, so let's bail
+#ifdef DEBUG
+        printf("Bailing @ %d !in [%d-%d]\n",
+                global_id,get_global_offset(0u),N_SEED_POINTS-1);
+#endif
+        return;
+    }
     // Report how kernel instances are distributed
-    if (global_id==get_global_offset(0u)) {
-        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
-=> work size=%d   global offset=%d\n",
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf("\n  >>> on GPU/OpenCL device: id=%d offset=%d ",
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf("#workitems=%d x #workgroups=%d = %d=%d\n",
                 get_local_size(0u), get_num_groups(0u),
                 get_local_size(0u)*get_num_groups(0u),
-                get_global_offset(0u));
+                get_global_size(0u));
     }
     __private uint idx;
     __private uint flag = 0;

@@ -38,12 +38,14 @@ __kernel void connect_channels(
         return;
     }
     // Report how kernel instances are distributed
-    if (global_id==get_global_offset(0u)) {
-        printf("\n   >>> on GPU/OpenCL device: #workitems=%d  #workgroups=%d \
-=> work size=%d   global offset=%d\n",
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf("\n  >>> on GPU/OpenCL device: id=%d offset=%d ",
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf("#workitems=%d x #workgroups=%d = %d=%d\n",
                 get_local_size(0u), get_num_groups(0u),
                 get_local_size(0u)*get_num_groups(0u),
-                get_global_offset(0u));
+                get_global_size(0u));
     }
     const float2 current_seed_point_vec = seed_point_array[global_id];
     __private uint idx, prev_idx, n_steps = 0u, step=0u;
@@ -163,6 +165,16 @@ __kernel void push_to_exit(
     // For every channel but not thin-channel pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    // Report how kernel instances are distributed
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf("\n  >>> on GPU/OpenCL device: id=%d offset=%d ",
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf("#workitems=%d x #workgroups=%d = %d=%d\n",
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_size(0u));
+    }
     if (global_id>=N_SEED_POINTS) {
         // This is a "padding" seed, so let's bail
         return;
