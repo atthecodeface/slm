@@ -438,7 +438,9 @@ class Plot(Core):
                                do_shaded_relief=do_shaded_relief, 
                                do_flip_cmap=False, do_balance_cmap=False)
 
-    def plot_hillslope_lengths(self,cmap='rainbow',do_shaded_relief=True):
+    def plot_hillslope_lengths(self, cmap='jet', #cmap='rainbow', 
+                               do_shaded_relief=True,
+                               colorbar_aspect=0.07):
         tmp_array = (self.mapping.hillslope_length_array.copy().astype(np.float32))
         self.plot_gridded_data(tmp_array,
                                cmap,  # rainbow
@@ -447,7 +449,8 @@ class Plot(Core):
                                do_flip_cmap=False, do_balance_cmap=False,
                                do_shaded_relief=do_shaded_relief, 
                                do_colorbar=True, 
-                               colorbar_title='mean hillslope length [m]')
+                               colorbar_title='mean hillslope length [m]',
+                               colorbar_aspect=colorbar_aspect)
     
     def plot_hillslope_distributions(self, x_stretch=1.0):
         df = self.mapping.hillslope_stats_df
@@ -464,6 +467,7 @@ class Plot(Core):
         axes.set_xlabel(r'distance $L$  [m]')
         axes.set_ylabel(r'probability density  $f(L)$  [m$^{-1}$]')
         axes.set_xlim(0,df['mean [m]'].quantile(q=1)*x_stretch)
+        axes.set_ylim(0,None)
         self._record_fig(name,fig)
 
         name = 'hillslope_stddev'
@@ -474,19 +478,21 @@ class Plot(Core):
         else:
             axes = df['stddev [m]'].plot.hist(figsize=(8,8),
                         title='Hillslope length std deviation');
-        axes.set_xlabel(r'distance std deviation $\sigma_L$  [m]');
-        axes.set_ylabel(r'probability density  $f(\sigma_L)$  [m$^{-1}$]');
-        axes.set_xlim(0,df['stddev [m]'].quantile(q=0.99));
-        # axes.legend(['hillslope length std dev'],frameon=False);
+        axes.set_xlabel(r'distance std deviation $\sigma_L$  [m]')
+        axes.set_ylabel(r'probability density  $f(\sigma_L)$  [m$^{-1}$]')
+        axes.set_xlim(0,df['stddev [m]'].quantile(q=0.99))
+        axes.set_ylim(0,None)
+        # axes.legend(['hillslope length std dev'],frameon=False)
         self._record_fig(name,fig)
         
         name = 'hillslope_count'
         fig,_ = self._new_figure(window_title=name)
         axes = df['count'].plot.hist(bins=20,figsize=(8,8),
-                                title='Hillslope streamline count');
+                                title='Hillslope streamline count')
         axes.set_xlabel(r'number $N_{sl}$   [-]');
-        axes.set_ylabel(r'probability density  $f(N_{sl})$  [-]');
-        axes.set_xlim(0,df['count'].quantile(q=0.99));
+        axes.set_ylabel(r'probability density  $f(N_{sl})$  [-]')
+        axes.set_xlim(0,df['count'].quantile(q=0.99))
+        axes.set_ylim(0,None)
         self._record_fig(name,fig)
 
     def plot_gridded_data(self, 
@@ -498,7 +504,8 @@ class Plot(Core):
                             do_balance_cmap=True,
                             do_shaded_relief=True,
                             do_colorbar=False,
-                            colorbar_title=None):
+                            colorbar_title=None,
+                            colorbar_aspect=0.07):
         """
         TBD
         """
@@ -523,6 +530,9 @@ class Plot(Core):
             self.plot_roi_shaded_relief_overlay(axes, do_plot_color_relief=False,
                     color_alpha=self.grid_shaded_relief_color_alpha,
                     hillshade_alpha=self.grid_shaded_relief_hillshade_alpha)
+            grid_alpha = self.streamline_density_alpha
+        else:
+            grid_alpha = 1.0
 
         grid_array = grid_array[self.geodata.pad_width:-self.geodata.pad_width,
                                 self.geodata.pad_width:-self.geodata.pad_width]
@@ -548,25 +558,28 @@ class Plot(Core):
         im = axes.imshow(np.flipud(masked_grid_array.T), 
                   cmap=gridded_cmap, 
                   extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds],
-                  alpha=self.streamline_density_alpha,
+                  alpha=grid_alpha,
                   interpolation=self.plot_interpolation_method,
                   vmin=vmin, vmax=vmax
                   )
         clim=im.properties()['clim']
         if do_colorbar:
             divider = make_axes_locatable(axes)
-            cax = divider.append_axes("bottom", size="4%", pad=0.5)
+            cax = divider.append_axes("bottom", size="4%", pad=0.5,
+                                      aspect=colorbar_aspect)
             cbar = plt.colorbar(im, cax=cax, orientation="horizontal")
             cbar.set_label(colorbar_title)
         self._record_fig(fig_name,fig)
 
-    def plot_hillslope_lengths_contoured(self,cmap='rainbow',
+    def plot_hillslope_lengths_contoured(self,cmap='jet', #cmap='rainbow',
                                          do_colorbar=True, 
                                          colorbar_title='mean hillslope length [m]',
                                          n_contours=None,
                                          z_min=None,z_max=None,
+                                         do_shaded_relief=True, 
                                          contour_label_suffix='m',
-                                         contour_label_fontsize=12):
+                                         contour_label_fontsize=12,
+                                         colorbar_aspect=0.07):
         """
         Streamlines, points on semi-transparent shaded relief
         """
@@ -584,13 +597,20 @@ class Plot(Core):
         mask_array[(self.mapping.label_array[
                         self.geodata.pad_width:-self.geodata.pad_width,
                         self.geodata.pad_width:-self.geodata.pad_width]==0)] = True
+        if do_shaded_relief:
+            hillshade_alpha = self.grid_shaded_relief_hillshade_alpha
+            hsl_alpha = 0.3
+        else:
+            hillshade_alpha = 0.0
+            hsl_alpha = 1.0
         self.plot_roi_shaded_relief_overlay(axes, do_plot_color_relief=False,
-                                hillshade_alpha=self.grid_shaded_relief_hillshade_alpha)
+                                            hillshade_alpha=hillshade_alpha)
         im = self.plot_simple_grid(np.fliplr(grid_array.T),
-                              mask_array,axes,cmap=cmap,alpha=0.3,do_vlimit=False)
+                              mask_array,axes,cmap=cmap,alpha=hsl_alpha,do_vlimit=False)
         if do_colorbar:
             divider = make_axes_locatable(axes)
-            cax = divider.append_axes("bottom", size="4%", pad=0.5)
+            cax = divider.append_axes("bottom", size="4%", 
+                                      pad=0.5, aspect=colorbar_aspect)
             cbar = plt.colorbar(im, cax=cax, orientation="horizontal")
             cbar.set_label(colorbar_title)
         self.plot_contours_overlay(axes,np.flipud(grid_array),mask=mask_array,

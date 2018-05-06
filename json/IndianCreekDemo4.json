@@ -71,7 +71,8 @@
 	},
 
 	"mapping": {
-		"hillslope_length_median_radius" : 250,
+		"joint_distbn_kde_bandwidth" : 0.25,
+		"hillslope_length_median_radius" : 125,
 		"hillslope_length_mean_radius" :   250
 	},
 	
