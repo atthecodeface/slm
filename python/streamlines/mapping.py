@@ -107,6 +107,11 @@ class Mapping(Core):
       
     def map_channels(self):
         self.print('Channels...',end='')  
+        # Shorthand
+        try:
+            self.mapping_array
+        except:
+            self.mapping_array = self.trace.mapping_array
         jpdf = self.analysis.jpdf_dsla_dslt
         # Designate channel pixels according to dsla pdf analysis
         self.mapping_array[jpdf.mode_cluster_ij_list[1][:,0],
@@ -298,15 +303,23 @@ class Mapping(Core):
         hsl_clipped = 65535*(hsl_clipped-hsl_min)/(hsl_max-hsl_min)
         hsl_masked = np.ma.array(hsl_clipped.astype(np.uint16),mask=~hsl_bool)
 
-        median_disk=disk(self.hillslope_length_median_radius)
-        mean_disk=disk(self.hillslope_length_mean_radius)
+        median_radius = int(self.hillslope_length_median_radius
+                            /self.geodata.roi_pixel_size)
+        mean_radius   = int(self.hillslope_length_mean_radius
+                            /self.geodata.roi_pixel_size)
+        median_disk = disk(median_radius)
+        mean_disk   = disk(mean_radius)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            self.print('median-disk filtering...', end='',flush=True)
+            self.print('median filtering with {0}m ({1}-pixel) diameter disk...'
+                       .format(self.hillslope_length_median_radius,median_radius), 
+                       end='',flush=True)
             sys.stdout.flush()
             hsl_median \
                = np.ma.array(median(hsl_masked,median_disk,mask=hsl_bool),mask=~hsl_bool)
-            self.print('mean-disk filtering...', end='',flush=True) 
+            self.print('mean filtering with {0}m ({1}-pixel) diameter disk...'
+                       .format(self.hillslope_length_mean_radius,mean_radius),
+                       end='',flush=True) 
             sys.stdout.flush()
             hsl_median_nm = mean(hsl_median,mean_disk)
         self.hillslope_length_smoothed_array \

@@ -89,8 +89,11 @@ __kernel void integrate_fields( __global const float2 *seed_point_array,
 
     const float2 current_seed_point_vec = seed_point_array[seed_idx];
     __private uint i=0,j=0, initial_rng_state;
-    const uint idx = get_array_idx(current_seed_point_vec);
-    atomic_or(&mapping_array[idx],WAS_CHANNELHEAD);
+
+//#ifdef DEBUG
+//    const uint idx = get_array_idx(current_seed_point_vec);
+//    atomic_or(&mapping_array[idx],WAS_CHANNELHEAD);
+//#endif
 
     // Trace a set of streamlines from a grid of sub-pixel positions centered
     //    on the seed point

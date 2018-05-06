@@ -8,7 +8,7 @@
 		"gpu_memory_limit_pc" : 90,
 		"n_work_items" : 64,
 		"chunk_size_factor" : 20,
-		"max_time_per_kernel" : 8.0,
+		"max_time_per_kernel" : 5.0,
 		
 		"do_geodata" : true,	
 		"do_preprocess" : true,	
@@ -109,9 +109,9 @@
 
 	"mapping": {
 		"midslope_filter_sigma" : 3.0,
-		"midslope_threshold" : 0.015,
-		"hillslope_length_median_radius" : 40,
-		"hillslope_length_mean_radius" : 40
+		"midslope_threshold" : 0.02,
+		"hillslope_length_median_radius" : 50,
+		"hillslope_length_mean_radius" : 50
 	},
 
 	"plot": {

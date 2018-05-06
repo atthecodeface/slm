@@ -356,12 +356,12 @@ class Plot(Core):
         mask_array = basin_mask_array | ~(grid_array)
         self.plot_simple_grid(grid_array, mask_array, axes, cmap='Reds', alpha=0.8)
         
-        self.plot_compound_markers(axes, is_majorconfluence, ['blue','black'])
+#         self.plot_compound_markers(axes, is_majorconfluence, ['blue','black'])
 #         self.plot_compound_markers(axes, is_minorinflow,     ['yellow','black'])
 #         self.plot_compound_markers(axes, is_majorinflow,     ['green','black'])
         self.plot_compound_markers(axes, is_channeltail,     ['lightgreen','black'])
-        self.plot_compound_markers(axes, is_channelhead,     ['orange','black'])
-        self.plot_compound_markers(axes, was_channelhead,    ['red','black'], msf=0.5)
+#         self.plot_compound_markers(axes, is_channelhead,     ['orange','black'])
+#         self.plot_compound_markers(axes, was_channelhead,    ['red','black'], msf=0.5)
 #         self.plot_compound_markers(axes, is_midslope,        ['purple','black'])
 #         self.plot_compound_markers(axes, is_ridge,        ['purple','black'])
         
@@ -449,7 +449,7 @@ class Plot(Core):
                                do_colorbar=True, 
                                colorbar_title='mean hillslope length [m]')
     
-    def plot_hillslope_distributions(self, mean_x_stretch=1.0):
+    def plot_hillslope_distributions(self, x_stretch=1.0):
         df = self.mapping.hillslope_stats_df
         kde_min_labels = 20
 
@@ -463,7 +463,7 @@ class Plot(Core):
                                           title='Mean hillslope length')
         axes.set_xlabel(r'distance $L$  [m]')
         axes.set_ylabel(r'probability density  $f(L)$  [m$^{-1}$]')
-        axes.set_xlim(0,df['mean [m]'].quantile(q=1)*mean_x_stretch)
+        axes.set_xlim(0,df['mean [m]'].quantile(q=1)*x_stretch)
         self._record_fig(name,fig)
 
         name = 'hillslope_stddev'
