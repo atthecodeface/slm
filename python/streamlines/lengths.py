@@ -94,13 +94,14 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
         verbose (bool):  
         
     """
-        
-    # Prepare memory, buffers 
-    (seed_point_buffer, uv_buffer, mask_buffer, 
-     mapping_buffer, label_buffer, traj_length_buffer) \
-        = prepare_memory(context, queue,
-                         seed_point_array, mask_array, uv_array, 
-                         mapping_array, label_array, traj_length_array, verbose)    
+    # Buffer for mask, (u,v) velocity array and more 
+    array_info_dict = {'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
+                       'mask':       {'array': mask_array,       'rwf': 'RO'}, 
+                       'uv':         {'array': uv_array,         'rwf': 'RO'}, 
+                       'mapping':    {'array': mapping_array,    'rwf': 'RO'}, 
+                       'label':      {'array': label_array,      'rwf': 'RO'}, 
+                       'traj_length':{'array': traj_length_array,'rwf': 'RW'} }
+    buffer_dict = pocl.prepare_buffers(context, array_info_dict, verbose)    
     # Compile the CL code
     global_size = [seed_point_array.shape[0],1]
     info_dict['n_seed_points'] = global_size[0]
@@ -112,10 +113,8 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     # Set the GPU kernel
     kernel = getattr(program,cl_kernel_fn)
     # Designate buffered arrays
-    buffer_list = [seed_point_buffer, mask_buffer, uv_buffer, 
-                   mapping_buffer, label_buffer, traj_length_buffer]
-    kernel.set_args(*buffer_list)
-    kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
+    kernel.set_args(*list(buffer_dict.values()))
+    kernel.set_scalar_arg_dtypes( [None]*len(buffer_dict) )
     
     # Specify this integration job's parameters
     n_work_items        = info_dict['n_work_items']
@@ -138,39 +137,6 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     queue.finish()   
 
     # Fetch the data back from the GPU and finish
-    cl.enqueue_copy(queue, traj_length_array, traj_length_buffer)
+    cl.enqueue_copy(queue, traj_length_array, buffer_dict['traj_length'])
     queue.finish()
     
-def prepare_memory(context, queue, seed_point_array, mask_array, uv_array, 
-                   mapping_array, label_array, traj_length_array, verbose):
-    """
-    Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
-    
-    Args:
-        context (pyopencl.Context):
-        queue (pyopencl.CommandQueue):
-        seed_point_array (numpy.ndarray):
-        mask_array (numpy.ndarray):
-        uv_array (numpy.ndarray):
-        mapping_array (numpy.ndarray):
-        label_array (numpy.ndarray):
-        traj_length_array (numpy.ndarray):
-        verbose (bool):
-        
-    Returns:
-        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, \
-        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer:
-            seed_point_buffer, uv_buffer, mask_buffer, \
-            mapping_buffer, label_buffer, traj_length_buffer
-    """
-     # Buffers to GPU memory
-    COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
-    COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR
-    seed_point_buffer = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=seed_point_array)
-    uv_buffer         = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=uv_array)
-    mask_buffer       = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=mask_array)
-    mapping_buffer    = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=mapping_array)
-    label_buffer      = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=label_array)
-    traj_length_buffer= cl.Buffer(context, COPY_READ_WRITE, hostbuf=traj_length_array)
-    return (seed_point_buffer, uv_buffer, mask_buffer, 
-            mapping_buffer, label_buffer, traj_length_buffer)

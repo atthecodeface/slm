@@ -216,13 +216,16 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
         verbose (bool):  
         
     """
-        
     # Prepare memory, buffers 
-    (seed_point_buffer, uv_buffer, mask_buffer, 
-     mapping_buffer, count_buffer, link_buffer, label_buffer) \
-        = prepare_memory(context, queue, 
-                         seed_point_array, mask_array, uv_array, 
-                         mapping_array, count_array, link_array, label_array, verbose)    
+    # Buffer for mask, (u,v) velocity array and more 
+    array_info_dict = {'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
+                       'mask':       {'array': mask_array,       'rwf': 'RO'}, 
+                       'uv':         {'array': uv_array,         'rwf': 'RO'}, 
+                       'mapping':    {'array': mapping_array,    'rwf': 'RW'}, 
+                       'count':      {'array': count_array,      'rwf': 'RO'}, 
+                       'link':       {'array': link_array,       'rwf': 'RO'}, 
+                       'label':      {'array': label_array,      'rwf': 'RW'} }
+    buffer_dict = pocl.prepare_buffers(context, array_info_dict, verbose)    
     # Compile the CL code
     global_size = [seed_point_array.shape[0],1]
     info_dict['n_seed_points'] = global_size[0]
@@ -234,10 +237,8 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     # Set the GPU kernel
     kernel = getattr(program,cl_kernel_fn)
     # Designate buffered arrays
-    buffer_list = [seed_point_buffer, mask_buffer, uv_buffer, 
-                   mapping_buffer, count_buffer, link_buffer, label_buffer]
-    kernel.set_args(*buffer_list)
-    kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
+    kernel.set_args(*list(buffer_dict.values()))
+    kernel.set_scalar_arg_dtypes( [None]*len(buffer_dict) )
     
     # Specify this integration job's parameters
     n_work_items        = info_dict['n_work_items']
@@ -260,42 +261,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     queue.finish()   
 
     # Fetch the data back from the GPU and finish
-    cl.enqueue_copy(queue, mapping_array, mapping_buffer)
-    cl.enqueue_copy(queue, label_array, label_buffer)
+    cl.enqueue_copy(queue, mapping_array, buffer_dict['mapping'])
+    cl.enqueue_copy(queue, label_array,   buffer_dict['label'])
     queue.finish()   
     
-def prepare_memory(context,queue, seed_point_array, mask_array, uv_array, 
-                   mapping_array, count_array, link_array, label_array, verbose):
-    """
-    Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
-    
-    Args:
-        context (pyopencl.Context):
-        queue (pyopencl.CommandQueue):
-        seed_point_array (numpy.ndarray):
-        mask_array (numpy.ndarray):
-        uv_array (numpy.ndarray):
-        mapping_array (numpy.ndarray):
-        count_array (numpy.ndarray):
-        link_array (numpy.ndarray):
-        label_array (numpy.ndarray):
-        verbose (bool):
-        
-    Returns:
-        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, \
-        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer:
-            seed_point_buffer, uv_buffer, mask_buffer, \
-            mapping_buffer, count_buffer, link_buffer, label_buffer
-    """
-     # Buffers to GPU memory
-    COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
-    COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR
-    seed_point_buffer = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=seed_point_array)
-    uv_buffer         = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=uv_array)
-    mask_buffer       = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=mask_array)
-    mapping_buffer    = cl.Buffer(context, COPY_READ_WRITE, hostbuf=mapping_array)
-    count_buffer      = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=count_array)
-    link_buffer       = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=link_array)
-    label_buffer      = cl.Buffer(context, COPY_READ_WRITE, hostbuf=label_array)
-    return (seed_point_buffer, uv_buffer, mask_buffer, 
-            mapping_buffer, count_buffer, link_buffer, label_buffer)

@@ -181,7 +181,7 @@ class Mapping(Core):
                 self.trace.build_info_dict(),
                 self.geodata.basin_mask_array,
                 self.preprocess.uv_array,
-                self.trace.slt_array, 
+                self.trace.slt_array[:,:,0], 
                 self.mapping_array, self.count_array, self.link_array, 
                 self.state.verbose 
                 )
