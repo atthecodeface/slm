@@ -403,6 +403,7 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn,
     # Set the GPU kernel
     kernel = getattr(program,cl_kernel_fn)
     # Designate buffered arrays
+    pdebug(buffer_dict)
     kernel.set_args(*list(buffer_dict.values()))
     kernel.set_scalar_arg_dtypes( [None]*len(buffer_dict) )
     
