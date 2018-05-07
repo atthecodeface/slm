@@ -331,6 +331,7 @@ class Preprocess(Core):
             self.conditioned_gradient_vector_field()
         else:
             self.raw_gradient_vector_field()
+        # POSSIBLE BUG - may want to leave flat pixels (zero u & v) unmasked
         self.mask_nan_uv()
         self.print('**Preprocess end**\n')  
   
@@ -356,13 +357,13 @@ class Preprocess(Core):
             
         self.roi_gradx_array, self.roi_grady_array \
             = compute_topo_gradient_field(self.geodata.roi_array.astype(np.float32))
-        self.u_array, self.v_array \
+        u_array, v_array \
             = compute_gradient_velocity_field(self.roi_gradx_array, self.roi_grady_array)
-
+        
         if do_fixes:
             self.where_looped_array, self.n_loops = \
                 find_and_fix_loops(self.geodata.roi_array,
-                                   self.u_array, self.v_array,
+                                   u_array, v_array,
                                    self.geodata.x_roi_n_pixel_centers,
                                    self.geodata.y_roi_n_pixel_centers,
                                    self.geodata.roi_nx, self.geodata.roi_ny,
@@ -375,27 +376,27 @@ class Preprocess(Core):
                           self.blockages_array.astype(np.uint8),
                           self.where_blocked_neighbors_array.astype(np.uint32),
                           self.blocked_neighbors_array.astype(np.uint8),
-                          self.u_array, self.v_array,
+                          u_array, v_array,
                           self.state.verbose)
          
         if self.do_normalize_speed:
-            self.speed_array = set_speed_field(self.u_array,self.v_array)
-            (self.u_array, self.v_array) \
-                = normalize_velocity_field(self.u_array,self.v_array,self.speed_array)
+            speed_array = set_speed_field(u_array,v_array)
+            (u_array, v_array) \
+                = normalize_velocity_field(u_array,v_array,speed_array)
         else:
-            (self.u_array, self.v_array) \
-                = unnormalize_velocity_field(self.u_array,self.v_array,self.speed_array)
-        (self.u_array, self.v_array) \
-            = pad_arrays(self.u_array,self.v_array,self.geodata.pad_width)
-        
+            (u_array, v_array) \
+                = unnormalize_velocity_field(u_array,v_array,speed_array)
+            
+        self.uv_array = np.stack( pad_arrays(u_array,v_array,self.geodata.pad_width), 
+                                  axis=2 ).copy().astype(dtype=np.float32)
+                                                    
     def mask_nan_uv(self):
         self.print('Mask out bad uv pixels...', end='')
-        self.geodata.basin_mask_array[np.isnan(self.u_array) 
-                                      | np.isnan(self.v_array)] = True
-        self.geodata.basin_fatmask_array[np.isnan(self.u_array) 
-                                         | np.isnan(self.v_array)] = True
-        self.u_array[self.geodata.basin_mask_array] = 0.0
-        self.v_array[self.geodata.basin_mask_array] = 0.0
+        self.geodata.basin_mask_array[np.isnan(self.uv_array[:,:,0]) 
+                                      | np.isnan(self.uv_array[:,:,1])] = True
+        self.geodata.basin_fatmask_array[np.isnan(self.uv_array[:,:,0]) 
+                                         | np.isnan(self.uv_array[:,:,1])] = True
+        self.uv_array[self.geodata.basin_mask_array] = [0.0,0.0]
         self.print('done')
         
     def raw_gradient_vector_field(self):
@@ -404,7 +405,15 @@ class Preprocess(Core):
         """     
         self.print('Compute raw gradient vector field')  
         (self.roi_gradx_array,self.roi_grady_array) = derivatives(self.geodata.roi_array)
-        self.speed_array = set_speed_field(self.u_array, self.v_array)
+        u_array, v_array \
+            = compute_gradient_velocity_field(self.roi_gradx_array, self.roi_grady_array)
+        speed_array = set_speed_field(u_array, v_array)
+        (u_array, v_array) \
+            = normalize_velocity_field(u_array,v_array,speed_array)
+        (u_array, v_array) \
+            = pad_arrays(u_array,v_array,self.geodata.pad_width)
+        self.uv_array = np.stack( (u_array, v_array), axis=2
+                                                    ).copy().astype(dtype=np.float32)
 
     def find_blockages(self):
         """

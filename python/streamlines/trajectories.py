@@ -25,7 +25,7 @@ import warnings
 pdebug = print
 
 def integrate_trajectories(cl_src_path, which_cl_platform, which_cl_device, info_dict, 
-                           mask_array, u_array, v_array, mapping_array, 
+                           mask_array, uv_array, mapping_array, 
                            do_trace_downstream, do_trace_upstream, verbose):
     """
     Trace each streamline from its corresponding seed point using 2nd-order Runge-Kutta 
@@ -52,8 +52,7 @@ def integrate_trajectories(cl_src_path, which_cl_platform, which_cl_device, info
         which_cl_device (int):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         do_trace_downstream (bool):
         do_trace_upstream (bool):
@@ -122,7 +121,7 @@ def integrate_trajectories(cl_src_path, which_cl_platform, which_cl_device, info
         = gpu_integrate(device, context, queue, cl_kernel_source,
                         info_dict, trace_do_chunks, chunk_size, 
                         seed_point_array, mask_array, 
-                        u_array, v_array, mapping_array, verbose)
+                        uv_array, mapping_array, verbose)
     # Streamline stats
     pixel_size = info_dict['pixel_size']
     traj_stats_df = compute_stats(traj_length_array,traj_nsteps_array,pixel_size,verbose)
@@ -175,7 +174,7 @@ def choose_chunks(seed_point_array, info_dict, n_chunks,
 def gpu_integrate(device, context, queue, cl_kernel_source, 
                   info_dict, trace_do_chunks, chunk_size, 
                   seed_point_array, mask_array,
-                  u_array, v_array, mapping_array, verbose):
+                  uv_array, mapping_array, verbose):
     """
     Carry out GPU/OpenCL device computations in chunks.
     This function is the basic wrapper interfacing Python with the GPU/OpenCL device.
@@ -204,8 +203,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         chunk_size (int):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         verbose (bool):  
         
@@ -222,7 +220,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
      chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer) \
         = prepare_memory(context, info_dict['n_seed_points'],
                          chunk_size, info_dict['max_n_steps'],
-                         seed_point_array, mask_array, u_array, v_array, 
+                         seed_point_array, mask_array, uv_array, 
                          mapping_array, verbose)
     
     # Downstream and upstream passes aka streamline integrations from
@@ -315,7 +313,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
 
 def prepare_memory(context, n_seed_points, chunk_size, max_traj_length, 
                    seed_point_array, mask_array, 
-                   u_array, v_array, mapping_array, verbose):
+                   uv_array, mapping_array, verbose):
     """
     Create Numpy array and PyOpenCL buffers to allow CPU-GPU data transfer.
     
@@ -325,8 +323,7 @@ def prepare_memory(context, n_seed_points, chunk_size, max_traj_length,
         max_traj_length (int):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         verbose (bool):
         
@@ -342,7 +339,6 @@ def prepare_memory(context, n_seed_points, chunk_size, max_traj_length,
     """
     # PyOpenCL array for seed points
     # Buffer for mask, (u,v) velocity array and more
-    uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32)
     traj_nsteps_array  = np.zeros([n_seed_points,2], dtype=np.uint16)
     traj_length_array  = np.zeros([n_seed_points,2], dtype=np.float32)
 

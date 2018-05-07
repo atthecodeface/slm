@@ -18,7 +18,7 @@ __all__ = ['segment_channels','segment_hillslopes','subsegment_flanks',
 pdebug = print
 
 def segment_channels( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
-                          mask_array, u_array, v_array,
+                          mask_array, uv_array,
                           mapping_array, count_array, link_array, label_array, verbose ):
         
     """
@@ -30,8 +30,7 @@ def segment_channels( cl_src_path, which_cl_platform, which_cl_device, info_dict
         which_cl_device (int):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         count_array (numpy.ndarray):
         link_array (numpy.ndarray):
@@ -62,7 +61,7 @@ def segment_channels( cl_src_path, which_cl_platform, which_cl_device, info_dict
     # Do integrations on the GPU
     cl_kernel_fn = 'segment_downchannels'
     gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
-                seed_point_array, mask_array, u_array,v_array, 
+                seed_point_array, mask_array, uv_array, 
                 mapping_array, count_array, link_array, label_array, verbose)
 
     # Relabel channel segments in simple sequence 1,2,3,... 
@@ -79,7 +78,7 @@ def segment_channels( cl_src_path, which_cl_platform, which_cl_device, info_dict
     return n_segments
 
 def segment_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
-                        mask_array, u_array, v_array,
+                        mask_array, uv_array,
                         mapping_array, count_array, link_array, label_array, verbose ):
         
     """
@@ -91,8 +90,7 @@ def segment_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_di
         which_cl_device (int):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         count_array (numpy.ndarray):
         link_array (numpy.ndarray):
@@ -123,14 +121,14 @@ def segment_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_di
     # Do integrations on the GPU
     cl_kernel_fn = 'segment_hillslopes'
     gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
-                seed_point_array, mask_array, u_array,v_array, 
+                seed_point_array, mask_array, uv_array, 
                 mapping_array, count_array, link_array, label_array, verbose)
 
     # Done
     vprint(verbose,'...done')  
 
 def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
-                       mask_array, u_array, v_array,
+                       mask_array, uv_array,
                        mapping_array, channel_label_array, link_array, label_array, 
                        verbose ):
         
@@ -143,8 +141,7 @@ def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dic
         which_cl_device (int):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         channel_label_array (numpy.ndarray):
         link_array (numpy.ndarray):
@@ -178,7 +175,7 @@ def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dic
     if ( seed_point_array.shape[0]>0 ):
         cl_kernel_fn = 'subsegment_channel_edges'
         gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
-                    seed_point_array, mask_array, u_array,v_array, 
+                    seed_point_array, mask_array, uv_array, 
                     mapping_array, channel_label_array, link_array, label_array, verbose)
         
     # Trace downstream from all non-left-flank hillslope pixels
@@ -188,7 +185,7 @@ def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dic
     # Do integrations on the GPU
     cl_kernel_fn = 'subsegment_flanks'
     gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, info_dict, 
-                seed_point_array, mask_array, u_array,v_array, 
+                seed_point_array, mask_array, uv_array, 
                 mapping_array, channel_label_array, link_array, label_array, verbose)
         
     
@@ -196,7 +193,7 @@ def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dic
     vprint(verbose,'...done')  
   
 def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
-                seed_point_array, mask_array, u_array, v_array, 
+                seed_point_array, mask_array, uv_array, 
                 mapping_array, count_array, link_array, label_array, verbose):
     """
     Carry out GPU computation.
@@ -210,8 +207,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
         info_dict (numpy.ndarray):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         slt_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         count_array (numpy.ndarray):
@@ -225,7 +221,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     (seed_point_buffer, uv_buffer, mask_buffer, 
      mapping_buffer, count_buffer, link_buffer, label_buffer) \
         = prepare_memory(context, queue, 
-                         seed_point_array, mask_array, u_array,v_array, 
+                         seed_point_array, mask_array, uv_array, 
                          mapping_array, count_array, link_array, label_array, verbose)    
     # Compile the CL code
     global_size = [seed_point_array.shape[0],1]
@@ -268,7 +264,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     cl.enqueue_copy(queue, label_array, label_buffer)
     queue.finish()   
     
-def prepare_memory(context,queue, seed_point_array, mask_array, u_array,v_array, 
+def prepare_memory(context,queue, seed_point_array, mask_array, uv_array, 
                    mapping_array, count_array, link_array, label_array, verbose):
     """
     Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
@@ -278,8 +274,7 @@ def prepare_memory(context,queue, seed_point_array, mask_array, u_array,v_array,
         queue (pyopencl.CommandQueue):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         count_array (numpy.ndarray):
         link_array (numpy.ndarray):
@@ -292,8 +287,6 @@ def prepare_memory(context,queue, seed_point_array, mask_array, u_array,v_array,
             seed_point_buffer, uv_buffer, mask_buffer, \
             mapping_buffer, count_buffer, link_buffer, label_buffer
     """
-    # Buffer for mask, (u,v) velocity array and more 
-    uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32)
      # Buffers to GPU memory
     COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
     COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR

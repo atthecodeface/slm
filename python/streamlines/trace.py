@@ -212,7 +212,7 @@ class Trace(Core):
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.build_info_dict(),
                 self.geodata.basin_mask_array,
-                self.preprocess.u_array,self.preprocess.v_array,
+                self.preprocess.uv_array,
                 self.mapping_array,
                 self.do_trace_downstream, self.do_trace_upstream, 
                 self.state.verbose
@@ -233,7 +233,7 @@ class Trace(Core):
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.build_info_dict(),
                 self.geodata.basin_mask_array,
-                self.preprocess.u_array,self.preprocess.v_array,
+                self.preprocess.uv_array,
                 self.mapping_array,
                 self.do_trace_downstream, self.do_trace_upstream, 
                 self.traj_stats_df,

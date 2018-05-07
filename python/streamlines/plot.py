@@ -764,13 +764,12 @@ class Plot(Core):
         x_pixel_centers_array,y_pixel_centers_array \
             = np.meshgrid(self.geodata.x_roi_n_pixel_centers,
                           self.geodata.y_roi_n_pixel_centers)
-#         pdebug(x_pixel_centers_array.shape,self.preprocess.u_array.T.shape)
         axes.streamplot(x_pixel_centers_array,y_pixel_centers_array,
-                      np.ma.array(self.preprocess.u_array,
+                      np.ma.array(self.preprocess.uv_array[:,:,0],
                                   mask=self.geodata.basin_mask_array).T[
                         self.geodata.pad_width:-self.geodata.pad_width,
                         self.geodata.pad_width:-self.geodata.pad_width],
-                      np.ma.array(self.preprocess.v_array,
+                      np.ma.array(self.preprocess.uv_array[:,:,1],
                                   mask=self.geodata.basin_mask_array).T[
                         self.geodata.pad_width:-self.geodata.pad_width,
                         self.geodata.pad_width:-self.geodata.pad_width], 
@@ -803,12 +802,12 @@ class Plot(Core):
             decimation_factor = 10*int(max_dim//40/10.0+0.5)
             u = decimate( 
                     decimate(
-                            self.preprocess.u_array,
+                            self.preprocess.uv_array[:,:,0],
                                 decimation_factor,axis=0,n=2), 
                                     decimation_factor,axis=1,n=2)
             v = decimate( 
                     decimate(
-                            self.preprocess.v_array,
+                            self.preprocess.uv_array[:,:,1],
                             decimation_factor,axis=0,n=2), 
                                 decimation_factor,axis=1,n=2)
             m = decimate( 
@@ -817,8 +816,8 @@ class Plot(Core):
                             decimation_factor,axis=0,n=2), 
                                 decimation_factor,axis=1,n=2)
         else:
-            u = self.preprocess.u_array
-            v = self.preprocess.v_array
+            u = self.preprocess.uv_array[:,:,0]
+            v = self.preprocess.uv_array[:,:,1]
             m = ~self.geodata.basin_mask_array
         # Normalize for clarity
         speed = np.hypot(u,v)

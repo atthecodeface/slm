@@ -46,7 +46,7 @@ def create_seeds(mask, pad_width, n_work_items, n_seed_points=None,
         np.random.seed(rng_seed)
         np.random.shuffle(seed_point_array)
     # Truncate if we only want to visualize a subset of streamlines across the DTM
-    if n_seed_points is not None:
+    if n_seed_points is not None and n_seed_points>0:
         seed_point_array = seed_point_array[:n_seed_points].copy().astype(np.float32)
     else:
         n_seed_points = seed_point_array.shape[0]

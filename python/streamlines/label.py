@@ -17,7 +17,7 @@ __all__ = ['label_confluences','gpu_compute','prepare_memory']
 pdebug = print
 
 def label_confluences( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
-                       mask_array, u_array, v_array, slt_array,
+                       mask_array, uv_array, slt_array,
                        mapping_array, count_array, link_array, verbose ):
         
     """
@@ -29,8 +29,7 @@ def label_confluences( cl_src_path, which_cl_platform, which_cl_device, info_dic
         which_cl_device (int):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         slt_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         count_array (numpy.ndarray):
@@ -59,14 +58,14 @@ def label_confluences( cl_src_path, which_cl_platform, which_cl_device, info_dic
     # Do integrations on the GPU
     cl_kernel_fn = 'label_confluences'
     gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
-                 seed_point_array, mask_array, u_array,v_array, 
+                 seed_point_array, mask_array, uv_array, 
                  slt_array, mapping_array, count_array, link_array, verbose)
     
     # Done
     vprint(verbose,'...done')  
     
 def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
-                seed_point_array, mask_array, u_array, v_array, 
+                seed_point_array, mask_array, uv_array, 
                 slt_array, mapping_array, count_array, link_array, verbose):
     """
     Carry out GPU computation.
@@ -80,8 +79,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
         info_dict (numpy.ndarray):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         slt_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         count_array (numpy.ndarray):
@@ -94,7 +92,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     (seed_point_buffer, uv_buffer, mask_buffer, 
      slt_buffer, mapping_buffer, count_buffer, link_buffer) \
         = prepare_memory(context, queue,
-                         seed_point_array, mask_array, u_array,v_array, 
+                         seed_point_array, mask_array, uv_array, 
                          slt_array, mapping_array, count_array, link_array, verbose)    
     # Compile the CL code
     global_size = [seed_point_array.shape[0],1]
@@ -139,7 +137,7 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     cl.enqueue_copy(queue, link_array, link_buffer)
     queue.finish()   
     
-def prepare_memory(context,queue, seed_point_array, mask_array, u_array,v_array, 
+def prepare_memory(context,queue, seed_point_array, mask_array, uv_array, 
                    slt_array, mapping_array, count_array, link_array, verbose):
     """
     Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
@@ -149,8 +147,7 @@ def prepare_memory(context,queue, seed_point_array, mask_array, u_array,v_array,
         queue (pyopencl.CommandQueue):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         slt_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         count_array (numpy.ndarray):
@@ -164,7 +161,6 @@ def prepare_memory(context,queue, seed_point_array, mask_array, u_array,v_array,
             slt_buffer, mapping_buffer, count_buffer, link_buffer
     """
     # Buffer for mask, (u,v) velocity array and more 
-    uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32)
     tmp_slt_array = slt_array[:,:,0].copy().astype(dtype=np.float32)
      # Buffers to GPU memory
     COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR

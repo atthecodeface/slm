@@ -123,7 +123,7 @@ class Mapping(Core):
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.trace.build_info_dict(),
                 self.geodata.basin_mask_array,
-                self.preprocess.u_array, self.preprocess.v_array,
+                self.preprocess.uv_array,
                 self.mapping_array, 
                 self.state.verbose 
                 )
@@ -146,7 +146,7 @@ class Mapping(Core):
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.trace.build_info_dict(),
                 self.geodata.basin_mask_array,
-                self.preprocess.u_array, self.preprocess.v_array,
+                self.preprocess.uv_array,
                 self.mapping_array, 
                 self.state.verbose 
                 )
@@ -159,7 +159,7 @@ class Mapping(Core):
                             self.state.cl_device, 
                             self.trace.build_info_dict(),
                             self.geodata.basin_mask_array,
-                            self.preprocess.u_array, self.preprocess.v_array,
+                            self.preprocess.uv_array,
                             self.mapping_array, self.count_array, self.link_array, 
                             self.state.verbose 
                             )
@@ -170,7 +170,7 @@ class Mapping(Core):
                             self.state.cl_device, 
                             self.trace.build_info_dict(),
                             self.geodata.basin_mask_array,
-                            self.preprocess.u_array, self.preprocess.v_array,
+                            self.preprocess.uv_array,
                             self.mapping_array, self.count_array, self.link_array, 
                             self.state.verbose 
                             )
@@ -180,7 +180,7 @@ class Mapping(Core):
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.trace.build_info_dict(),
                 self.geodata.basin_mask_array,
-                self.preprocess.u_array, self.preprocess.v_array,
+                self.preprocess.uv_array,
                 self.trace.slt_array, 
                 self.mapping_array, self.count_array, self.link_array, 
                 self.state.verbose 
@@ -193,7 +193,7 @@ class Mapping(Core):
                     self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                     self.trace.build_info_dict(),
                     self.geodata.basin_mask_array,
-                    self.preprocess.u_array, self.preprocess.v_array,
+                    self.preprocess.uv_array,
                     self.mapping_array,self.count_array,self.link_array,self.label_array,
                     self.state.verbose 
                     )
@@ -210,7 +210,7 @@ class Mapping(Core):
                             self.state.cl_device, 
                             self.trace.build_info_dict(),
                             self.geodata.basin_mask_array,
-                            self.preprocess.u_array, self.preprocess.v_array,
+                            self.preprocess.uv_array,
                             self.mapping_array,self.count_array,self.link_array,
                             self.state.verbose 
                             )
@@ -220,7 +220,7 @@ class Mapping(Core):
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.trace.build_info_dict(),
                 self.geodata.basin_mask_array,
-                self.preprocess.u_array, self.preprocess.v_array,
+                self.preprocess.uv_array,
                 self.mapping_array,self.count_array,self.link_array,self.label_array,
                 self.state.verbose 
                 )
@@ -230,7 +230,7 @@ class Mapping(Core):
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.trace.build_info_dict(),
                 self.geodata.basin_mask_array,
-                self.preprocess.u_array, self.preprocess.v_array,
+                self.preprocess.uv_array,
                 self.mapping_array,
                 self.channel_label_array,self.link_array,self.label_array,
                 self.state.verbose 
@@ -265,7 +265,7 @@ class Mapping(Core):
                 self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
                 self.trace.build_info_dict(),
                 self.geodata.basin_mask_array,
-                self.preprocess.u_array, self.preprocess.v_array,
+                self.preprocess.uv_array,
                 self.mapping_array,
                 self.label_array, traj_length_array,
                 self.state.verbose 

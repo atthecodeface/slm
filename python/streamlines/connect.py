@@ -14,14 +14,13 @@ import warnings
 from streamlines import pocl
 from streamlines.useful import vprint, pick_seeds
 
-__all__ = ['connect_channel_pixels','map_channel_heads',
-           'gpu_compute','prepare_memory']
+__all__ = ['connect_channel_pixels','map_channel_heads','gpu_compute']
 
 pdebug = print
 
 def connect_channel_pixels( 
         cl_src_path, which_cl_platform, which_cl_device, info_dict, 
-        mask_array, u_array, v_array, mapping_array, verbose ):
+        mask_array, uv_array, mapping_array, verbose ):
     """
     Connect missing links between channel pixels.
     
@@ -31,8 +30,7 @@ def connect_channel_pixels(
         which_cl_device (int):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         verbose (bool):
     """
@@ -61,14 +59,14 @@ def connect_channel_pixels(
     # Do integrations on the GPU
     cl_kernel_fn = 'connect_channels'
     gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict, 
-                 seed_point_array, mask_array, u_array,v_array, mapping_array, verbose)
+                 seed_point_array, mask_array, uv_array, mapping_array, verbose)
     
     # Done
     vprint(verbose,'...done')  
 
 def map_channel_heads( 
         cl_src_path, which_cl_platform, which_cl_device, info_dict, 
-        mask_array, u_array, v_array, mapping_array, verbose ):
+        mask_array, uv_array, mapping_array, verbose ):
     """
     Find channel head pixels.
     
@@ -78,8 +76,7 @@ def map_channel_heads(
         which_cl_device (int):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         verbose (bool):
     """
@@ -110,7 +107,7 @@ def map_channel_heads(
     # Do integrations on the GPU
     cl_kernel_fn = 'map_channel_heads'
     gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
-                 seed_point_array, mask_array, u_array,v_array, mapping_array, verbose)
+                 seed_point_array, mask_array, uv_array, mapping_array, verbose)
     
     vprint(verbose,'pruning...')
     # Trace downstream from all provisional channel head pixels
@@ -120,14 +117,14 @@ def map_channel_heads(
     # Do integrations on the GPU
     cl_kernel_fn = 'prune_channel_heads'
     gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict, 
-                 seed_point_array, mask_array, u_array,v_array, mapping_array, verbose)
+                 seed_point_array, mask_array, uv_array, mapping_array, verbose)
     
     # Done
     vprint(verbose,'...done')  
     
 
 def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict, 
-                seed_point_array, mask_array, u_array,v_array, mapping_array, verbose):
+                seed_point_array, mask_array, uv_array, mapping_array, verbose):
     """
     Carry out GPU computation.
     
@@ -140,8 +137,7 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
         info_dict (numpy.ndarray):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         verbose (bool):  
         
@@ -149,8 +145,8 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
         
     # Prepare memory, buffers 
     (seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer) \
-        = prepare_memory(context, queue, seed_point_array, mask_array, 
-                         u_array,v_array, mapping_array, verbose)    
+        = pocl.prepare_buffers(context, queue, seed_point_array, mask_array, 
+                               uv_array, mapping_array, verbose)    
     # Compile the CL code
     global_size = [seed_point_array.shape[0],1]
     info_dict['n_seed_points'] = global_size[0]
@@ -191,33 +187,3 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
     cl.enqueue_copy(queue, mapping_array, mapping_buffer)
     queue.finish()   
     
-def prepare_memory(context, queue,
-                  seed_point_array, mask_array, u_array,v_array, mapping_array, verbose):
-    """
-    Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
-    
-    Args:
-        context (pyopencl.Context):
-        queue (pyopencl.CommandQueue):
-        seed_point_array (numpy.ndarray):
-        mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
-        mapping_array (numpy.ndarray):
-        verbose (bool):
-        
-    Returns:
-        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer:
-            seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer
-    """
-    # Buffer for mask, (u,v) velocity array and more
-    uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32)
-    # Buffers to GPU memory
-    COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
-    COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR
-    seed_point_buffer = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=seed_point_array)
-    uv_buffer         = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=uv_array)
-    mask_buffer       = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=mask_array)
-    mapping_buffer    = cl.Buffer(context, COPY_READ_WRITE, hostbuf=mapping_array)
-    return (seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer)
-

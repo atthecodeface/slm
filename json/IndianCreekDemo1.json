@@ -38,6 +38,7 @@
 	},
 
 	"trace": {
+		"n_trajectory_seed_points" : 0,
 		"subpixel_seed_point_density" : 1,
 		"max_length" : 30.0,
 		"integration_halt_threshold" : 0.05,

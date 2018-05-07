@@ -27,7 +27,7 @@ pdebug = print
 
 def integrate_fields( 
         cl_src_path, which_cl_platform, which_cl_device, info_dict, 
-        mask_array, u_array, v_array, mapping_array, 
+        mask_array, uv_array, mapping_array, 
         do_trace_downstream, do_trace_upstream, traj_stats_df, verbose
      ):
     """
@@ -55,8 +55,7 @@ def integrate_fields(
         which_cl_device (int):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         do_trace_downstream (bool):
         do_trace_upstream (bool):
@@ -126,7 +125,7 @@ def integrate_fields(
     (rtn_slc_array, rtn_slt_array, rtn_sla_array, mapping_array) \
         = gpu_integrate(device, context, queue, cl_kernel_source,
                          info_dict, n_global,
-                         seed_point_array, mask_array, u_array, v_array, mapping_array,
+                         seed_point_array, mask_array, uv_array, mapping_array,
                          verbose)
     # Streamline stats
     pixel_size = info_dict['pixel_size']
@@ -147,7 +146,7 @@ def integrate_fields(
 
 def gpu_integrate(device, context, queue, cl_kernel_source, 
                   info_dict, n_global, 
-                  seed_point_array, mask_array, u_array,v_array, mapping_array, verbose):
+                  seed_point_array, mask_array, uv_array, mapping_array, verbose):
     """
     Carry out GPU/OpenCL device computations in chunks.
     This function is the basic wrapper interfacing Python with the GPU/OpenCL device.
@@ -175,8 +174,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         chunk_size (int):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         verbose (bool):  
         
@@ -189,7 +187,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     (slc_array, slt_array, 
      seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer, slc_buffer, slt_buffer) \
         = prepare_memory(context, seed_point_array, mask_array, 
-                         u_array,v_array, mapping_array, verbose)
+                         uv_array, mapping_array, verbose)
     roi_nxy = slc_array.shape
     rtn_slc_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.uint32)
     rtn_slt_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
@@ -279,7 +277,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     return (slc, slt, sla, mapping_array)
 
 def prepare_memory(context, seed_point_array, mask_array, 
-                   u_array,v_array, mapping_array, verbose):
+                   uv_array, mapping_array, verbose):
     """
     Create Numpy array and PyOpenCL buffers to allow CPU-GPU data transfer.
     
@@ -287,8 +285,7 @@ def prepare_memory(context, seed_point_array, mask_array,
         context (pyopencl.Context):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
-        u_array (numpy.ndarray):
-        v_array (numpy.ndarray):
+        uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
         verbose (bool):
         
@@ -303,8 +300,6 @@ def prepare_memory(context, seed_point_array, mask_array,
     # PyOpenCL array for seed points
     # Buffer for mask, (u,v) velocity array and more
     roi_nxy = mask_array.shape
-#     n_padded_seed_points = seed_point_array.shape[0]
-    uv_array = np.stack((u_array,v_array),axis=2).copy().astype(dtype=np.float32)
     slc_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32)
     slt_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32)
 
