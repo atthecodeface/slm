@@ -54,6 +54,7 @@ def label_confluences( cl_src_path, which_cl_platform, which_cl_device, info_dic
     is_thinchannel = info_dict['is_thinchannel']
     seed_point_array \
         = pick_seeds(mask=mask_array, map=mapping_array, flag=is_thinchannel, pad=pad)
+        
     # Prepare memory, buffers 
     array_dict = { 'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
                    'mask':       {'array': mask_array,       'rwf': 'RO'}, 
@@ -63,6 +64,7 @@ def label_confluences( cl_src_path, which_cl_platform, which_cl_device, info_dic
                    'count':      {'array': count_array,      'rwf': 'RW'}, 
                    'link':       {'array': link_array,       'rwf': 'RW'} }
     info_dict['n_seed_points'] = seed_point_array.shape[0]
+    
     # Do integrations on the GPU
     cl_kernel_fn = 'label_confluences'
     pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 

@@ -59,6 +59,7 @@ def count_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_di
         = mapping_array[(mapping_array&is_thinchannel)==is_thinchannel]^is_thinchannel
     seed_point_array \
         = pick_seeds(mask=mask_array, map=mapping_array, flag=is_channelhead, pad=pad)
+        
     # Specify arrays & CL buffers 
     array_dict = {' seed_point': {'array': seed_point_array, 'rwf': 'RO'},
                    'mask':       {'array': mask_array,       'rwf': 'RO'}, 
@@ -67,6 +68,7 @@ def count_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_di
                    'count':      {'array': count_array,      'rwf': 'RW'}, 
                    'link':       {'array': link_array,       'rwf': 'RW'} }
     info_dict['n_seed_points'] = seed_point_array.shape[0]
+    
     # Do integrations on the GPU
     cl_kernel_fn = 'count_downchannels'
     pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
@@ -116,8 +118,7 @@ def flag_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_dic
         = mapping_array[(mapping_array&is_thinchannel)==is_thinchannel]^is_thinchannel
     count_array *= 0
     seed_point_array \
-        = pick_seeds(mask=mask_array, map=mapping_array, flag=is_channelhead, 
-                     pad=pad)
+        = pick_seeds(mask=mask_array, map=mapping_array, flag=is_channelhead, pad=pad)
 
     # Specify arrays & CL buffers 
     array_dict = {' seed_point': {'array': seed_point_array, 'rwf': 'RO'},
@@ -127,6 +128,7 @@ def flag_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_dic
                    'count':      {'array': count_array,      'rwf': 'RW'}, 
                    'link':       {'array': link_array,       'rwf': 'RW'} }
     info_dict['n_seed_points'] = seed_point_array.shape[0]
+    
     # Do integrations on the GPU
     cl_kernel_fn = 'flag_downchannels'
     pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
@@ -172,8 +174,7 @@ def link_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_dict,
     pad            = info_dict['pad_width']
     is_thinchannel = info_dict['is_thinchannel']
     seed_point_array \
-        = pick_seeds(mask=mask_array, map=~mapping_array, flag=is_thinchannel, 
-                     pad=pad)    
+        = pick_seeds(mask=mask_array, map=~mapping_array, flag=is_thinchannel, pad=pad)    
         
     # Specify arrays & CL buffers 
     array_dict = {' seed_point': {'array': seed_point_array, 'rwf': 'RO'},
@@ -183,6 +184,7 @@ def link_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_dict,
                    'count':      {'array': count_array,      'rwf': 'RW'}, 
                    'link':       {'array': link_array,       'rwf': 'RW'} }
     info_dict['n_seed_points'] = seed_point_array.shape[0]
+    
     # Do integrations on the GPU
     cl_kernel_fn = 'link_hillslopes'
     pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 

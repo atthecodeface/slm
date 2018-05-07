@@ -221,10 +221,6 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         kernel = program.integrate_fields
         
         # Designate buffered arrays
-#         buffer_list = [seed_point_buffer, mask_buffer, 
-#                        uv_buffer, mapping_buffer, slc_buffer, slt_buffer]
-#         kernel.set_args(*buffer_list)
-#         kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
         kernel.set_args(*list(buffer_dict.values()))
         kernel.set_scalar_arg_dtypes( [None]*len(buffer_dict) )
         

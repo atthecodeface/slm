@@ -56,12 +56,14 @@ def connect_channel_pixels(
     if ( seed_point_array.shape[0]==0 ):
         vprint(verbose,'no channel pixels found...exiting')
         return
+    
     # Specify arrays & CL buffers 
     array_dict = { 'seed_point':  {'array': seed_point_array, 'rwf': 'RO'},
                    'mask':        {'array': mask_array,       'rwf': 'RO'}, 
                    'uv':          {'array': uv_array,         'rwf': 'RO'}, 
                    'mapping':     {'array': mapping_array,    'rwf': 'RW'} }
     info_dict['n_seed_points'] = seed_point_array.shape[0]
+    
     # Do integrations on the GPU
     cl_kernel_fn = 'connect_channels'
     pocl.gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, 
@@ -99,23 +101,23 @@ def map_channel_heads(
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
 
-    pad = info_dict['pad_width']
     # Pre-designate every channel pixel as a channel head
     #   - and expect to eliminate all non-heads during the GPU compute
     is_channel     = info_dict['is_channel']
     is_thinchannel = info_dict['is_thinchannel']
     is_channelhead = info_dict['is_channelhead']
     mapping_array[(mapping_array&is_thinchannel)==is_thinchannel] |= is_channelhead
+    pad = info_dict['pad_width']
         
     # Trace downstream from all non-masked pixels
-    seed_point_array \
-        = pick_seeds(mask=mask_array, flag=is_channel, pad=pad)
+    seed_point_array = pick_seeds(mask=mask_array, flag=is_channel, pad=pad)
     # Specify arrays & CL buffers 
     array_dict = { 'seed_point':  {'array': seed_point_array, 'rwf': 'RO'},
                    'mask':        {'array': mask_array,       'rwf': 'RO'}, 
                    'uv':          {'array': uv_array,         'rwf': 'RO'}, 
                    'mapping':     {'array': mapping_array,    'rwf': 'RW'} }
     info_dict['n_seed_points'] = seed_point_array.shape[0]
+    
     # Do integrations on the GPU
     cl_kernel_fn = 'map_channel_heads'
     pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
@@ -129,6 +131,7 @@ def map_channel_heads(
     # Specify arrays & CL buffers 
     array_dict['seed_point']['array'] = seed_point_array
     info_dict['n_seed_points'] = seed_point_array.shape[0]
+    
     # Do integrations on the GPU
     cl_kernel_fn = 'prune_channel_heads'
     pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 

@@ -56,6 +56,7 @@ def segment_channels( cl_src_path, which_cl_platform, which_cl_device, info_dict
     is_channelhead = info_dict['is_channelhead']
     seed_point_array \
         = pick_seeds(mask=mask_array, map=mapping_array, flag=is_channelhead, pad=pad)
+        
     # Prepare memory, buffers 
     array_dict = { 'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
                    'mask':       {'array': mask_array,       'rwf': 'RO'}, 
@@ -65,6 +66,7 @@ def segment_channels( cl_src_path, which_cl_platform, which_cl_device, info_dict
                    'link':       {'array': link_array,       'rwf': 'RO'}, 
                    'label':      {'array': label_array,      'rwf': 'RW'} }
     info_dict['n_seed_points'] = seed_point_array.shape[0]
+    
     # Do integrations on the GPU
     cl_kernel_fn = 'segment_downchannels'
     pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
@@ -123,6 +125,7 @@ def segment_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_di
     is_channelhead = info_dict['is_channelhead']
     flag = is_channelhead
     seed_point_array = pick_seeds(mask=mask_array, map=~mapping_array, flag=flag,pad=pad)
+    
     # Prepare memory, buffers 
     array_dict = { 'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
                    'mask':       {'array': mask_array,       'rwf': 'RO'}, 
@@ -132,6 +135,7 @@ def segment_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_di
                    'link':       {'array': link_array,       'rwf': 'RO'}, 
                    'label':      {'array': label_array,      'rwf': 'RW'} }
     info_dict['n_seed_points'] = seed_point_array.shape[0]
+    
     # Do integrations on the GPU
     cl_kernel_fn = 'segment_hillslopes'
     pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
@@ -183,6 +187,7 @@ def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dic
     is_leftflank       = info_dict['is_leftflank']
     flag = is_channelhead | is_majorconfluence
     seed_point_array = pick_seeds(mask=mask_array, map=mapping_array, flag=flag, pad=pad)
+    
     # Specify arrays & CL buffers 
     array_dict = { 'seed_point':    {'array': seed_point_array,    'rwf': 'RO'},
                    'mask':          {'array': mask_array,          'rwf': 'RO'}, 
@@ -192,6 +197,7 @@ def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dic
                    'link':          {'array': link_array,          'rwf': 'RO'}, 
                    'label':         {'array': label_array,         'rwf': 'RW'} }
     info_dict['n_seed_points'] = seed_point_array.shape[0]
+    
     # Do integrations on the GPU
     if ( info_dict['n_seed_points']>0 ):
         cl_kernel_fn = 'subsegment_channel_edges'
@@ -203,6 +209,7 @@ def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dic
     seed_point_array = pick_seeds(mask=mask_array, map=~mapping_array, flag=flag,pad=pad)
     array_dict['seed_point']['array'] = seed_point_array
     info_dict['n_seed_points'] = seed_point_array.shape[0]
+    
     # Do integrations on the GPU
     cl_kernel_fn = 'subsegment_flanks'
     pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 

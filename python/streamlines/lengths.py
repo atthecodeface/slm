@@ -67,6 +67,7 @@ def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_dic
                    'label':      {'array': label_array,      'rwf': 'RO'}, 
                    'traj_length':{'array': traj_length_array,'rwf': 'RW'} }
     info_dict['n_seed_points'] = seed_point_array.shape[0]
+    
     # Do integrations on the GPU
     cl_kernel_fn = 'hillslope_lengths'
     pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 

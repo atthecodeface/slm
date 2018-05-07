@@ -116,12 +116,14 @@ def integrate_trajectories(cl_src_path, which_cl_platform, which_cl_device, info
                         do_trace_downstream,do_trace_upstream,verbose)
     compile_options = pocl.set_compile_options(info_dict,'INTEGRATE_TRAJECTORY')
     vprint(verbose,'Compile options:\n',compile_options)
+    
     # Do integrations on the GPU
     (streamline_arrays_list, traj_nsteps_array, traj_length_array) \
         = gpu_integrate(device, context, queue, cl_kernel_source,
                         info_dict, trace_do_chunks, chunk_size, 
                         seed_point_array, mask_array, 
                         uv_array, mapping_array, verbose)
+        
     # Streamline stats
     pixel_size = info_dict['pixel_size']
     traj_stats_df = compute_stats(traj_length_array,traj_nsteps_array,pixel_size,verbose)
