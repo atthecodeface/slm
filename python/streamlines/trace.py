@@ -136,6 +136,7 @@ class Trace(Core):
                                   if self.subpixel_seed_point_density>1 else 1.0)
         info_dict = {
             'debug' :                   np.bool8(self.state.debug),
+            'verbose' :                 np.bool8(self.state.verbose),
             'n_trajectory_seed_points': np.uint32(self.n_trajectory_seed_points),
             'n_seed_points' :           np.uint32(0),
             'n_padded_seed_points' :    np.uint32(0),

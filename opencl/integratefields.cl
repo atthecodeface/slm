@@ -67,7 +67,7 @@ __kernel void integrate_fields( __global const float2 *seed_point_array,
     // global_id plus the chunk SEEDS_CHUNK_OFFSET is a seed point index
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u),
                seed_idx = (SEEDS_CHUNK_OFFSET)+global_id;
-
+#ifdef VERBOSE
     // Report how kernel instances are distributed
     if (global_id==0 || global_id==get_global_offset(0u)) {
         printf("\n  >>> on GPU/OpenCL device: id=%d offset=%d ",
@@ -78,6 +78,7 @@ __kernel void integrate_fields( __global const float2 *seed_point_array,
                 get_local_size(0u)*get_num_groups(0u),
                 get_global_size(0u));
     }
+#endif
     if (seed_idx>=N_SEED_POINTS) {
         // This is a "padding" seed, so let's bail
         return;

@@ -167,6 +167,8 @@ def set_compile_options(info_dict, kernel_def, downup_sign=1,
         ]
         if info_dict['debug']:
             rtn_list += ['-D', 'DEBUG']
+        if info_dict['verbose']:
+            rtn_list += ['-D', 'VERBOSE']
         return rtn_list
 
     else:
@@ -230,6 +232,8 @@ def set_compile_options(info_dict, kernel_def, downup_sign=1,
         ]
         if info_dict['debug']:
             rtn_list += ['-D', 'DEBUG']
+        if info_dict['verbose']:
+            rtn_list += ['-D', 'VERBOSE']
         return rtn_list
 
 def report_kernel_info(device,kernel,verbose):
@@ -371,7 +375,6 @@ def prepare_buffers(context, array_dict, verbose):
             })
         elif array_info[1]['rwf']=='WO':
             flags = WRITE_ONLY
-            pdebug(array_info[0],array_info[1]['array'].nbytes)
             buffer_dict.update({
                 array_info[0]: cl.Buffer(context, flags, array_info[1]['array'].nbytes)
             })

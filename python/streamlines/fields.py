@@ -187,6 +187,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     slc_array     = np.zeros((roi_nxy[0],roi_nxy[1]), dtype=np.uint32)
     slt_array     = np.zeros((roi_nxy[0],roi_nxy[1]), dtype=np.uint32)
     rtn_slc_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.uint32)
+    # Note the returned slt array is FLOAT32 but the GPU computes are done on UINT32
     rtn_slt_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
     rtn_sla_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
     array_dict = { 'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
@@ -200,7 +201,7 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     # Downstream and upstream passes aka streamline integrations from
     #   chunks of seed points aka subsets of the total set
     global_size = [n_global,1]
-    local_size = [info_dict['n_work_items'],1]
+    local_size  = [info_dict['n_work_items'],1]
     vprint(verbose,
            'Seed point buffer size = {}*8 bytes'.
            format(buffer_dict['seed_point'].size/8))

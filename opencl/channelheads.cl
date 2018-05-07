@@ -40,7 +40,7 @@ __kernel void map_channel_heads(
     // For every non-masked pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
-    // Report how kernel instances are distributed
+#ifdef VERBOSE
     // Report how kernel instances are distributed
     if (global_id==0 || global_id==get_global_offset(0u)) {
         printf("\n  >>> on GPU/OpenCL device: id=%d offset=%d ",
@@ -51,6 +51,7 @@ __kernel void map_channel_heads(
                 get_local_size(0u)*get_num_groups(0u),
                 get_global_size(0u));
     }
+#endif
     if (global_id>=N_SEED_POINTS) {
         // This is a "padding" seed, so let's bail
         return;
@@ -160,6 +161,7 @@ __kernel void prune_channel_heads(
 #endif
         return;
     }
+#ifdef VERBOSE
     // Report how kernel instances are distributed
     if (global_id==0 || global_id==get_global_offset(0u)) {
         printf("\n  >>> on GPU/OpenCL device: id=%d offset=%d ",
@@ -170,6 +172,7 @@ __kernel void prune_channel_heads(
                 get_local_size(0u)*get_num_groups(0u),
                 get_global_size(0u));
     }
+#endif
     __private uint idx;
     __private uint flag = 0;
     const float2 vec = seed_point_array[global_id];

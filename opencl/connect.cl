@@ -37,6 +37,7 @@ __kernel void connect_channels(
         // This is a "padding" seed, so let's bail
         return;
     }
+#ifdef VERBOSE
     // Report how kernel instances are distributed
     if (global_id==0 || global_id==get_global_offset(0u)) {
         printf("\n  >>> on GPU/OpenCL device: id=%d offset=%d ",
@@ -47,6 +48,7 @@ __kernel void connect_channels(
                 get_local_size(0u)*get_num_groups(0u),
                 get_global_size(0u));
     }
+#endif
     const float2 current_seed_point_vec = seed_point_array[global_id];
     __private uint idx, prev_idx, n_steps = 0u, step=0u;
     __private float l_trajectory = 0.0f, dl = 0.0f, dt = DT_MAX;
@@ -165,6 +167,7 @@ __kernel void push_to_exit(
     // For every channel but not thin-channel pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+#ifdef VERBOSE
     // Report how kernel instances are distributed
     if (global_id==0 || global_id==get_global_offset(0u)) {
         printf("\n  >>> on GPU/OpenCL device: id=%d offset=%d ",
@@ -175,6 +178,7 @@ __kernel void push_to_exit(
                 get_local_size(0u)*get_num_groups(0u),
                 get_global_size(0u));
     }
+#endif
     if (global_id>=N_SEED_POINTS) {
         // This is a "padding" seed, so let's bail
         return;

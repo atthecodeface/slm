@@ -63,6 +63,7 @@ __kernel void label_confluences(
         // This is a "padding" seed, so let's bail
         return;
     }
+#ifdef VERBOSE
     // Report how kernel instances are distributed
     if (global_id==0 || global_id==get_global_offset(0u)) {
         printf("\n  >>> on GPU/OpenCL device: id=%d offset=%d ",
@@ -73,6 +74,7 @@ __kernel void label_confluences(
                 get_local_size(0u)*get_num_groups(0u),
                 get_global_size(0u));
     }
+#endif
     __private uchar n_inflows=0u, n_equal_dominant_inflows=0u;
     __private uint i, idx, nbr_idx, inflows_list[8], equal_dominant_inflows_list[8],
                    dominant_slt_index=0u;

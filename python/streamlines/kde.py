@@ -59,11 +59,7 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     bin_dy       = info_dict['bin_dy']
     pdf_dy       = info_dict['pdf_dy']
     stddev_y     = np.std(sl_array[1,:])
-    
-#     tmp_sl_array = sl_array.T.copy()
-#     sl_array =tmp_sl_array
-#     pdebug('bin_dy',bin_dy,'pdf_dx',pdf_dy,'ratio',pdf_dy/bin_dy)
-        
+            
     # Set up kernel filter
     # Silverman hack for now
 #     kdf_width_x = 1.06*stddev_x*np.power(n_data,-0.2)*20
@@ -74,20 +70,6 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     info_dict['n_kdf_part_points_x']= 2*(np.uint32(np.floor(kdf_width_x/bin_dx))//2)
     info_dict['kdf_width_y'] = kdf_width_y
     info_dict['n_kdf_part_points_y']= 2*(np.uint32(np.floor(kdf_width_y/bin_dy))//2)
-    
-#     pdebug('\n stddev_x',stddev_x)
-#     pdebug('\n stddev_y',stddev_y)
-#     pdebug('\n kdf_width_x',info_dict['kdf_width_x'])
-#     pdebug('\n kdf_width_y',info_dict['kdf_width_y'])
-#     pdebug('\n x_min',info_dict['x_min'])
-#     pdebug('\n x_max',info_dict['x_max'])
-#     pdebug('\n y_min',info_dict['y_min'])
-#     pdebug('\n y_max',info_dict['y_max'])
-#     pdebug('\n n_kdf_part_points_x',info_dict['n_kdf_part_points_x'])
-#     pdebug('\n n_kdf_part_points_y',info_dict['n_kdf_part_points_y'])
-#     pdebug('\n n_data',info_dict['n_data'])
-#     pdebug('\n n_hist_bins/n_pdf_points',
-#            info_dict['n_hist_bins']//info_dict['n_pdf_points'])
             
     vprint(verbose,'histogram...',end='')
     # Histogram
@@ -205,6 +187,7 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_di
     n_hist_bins  = info_dict['n_hist_bins']
     n_data       = info_dict['n_data']
     n_pdf_points = info_dict['n_pdf_points']
+    info_dict['verbose'] = verbose
         
     if action=='histogram':
         # Compute histogram
