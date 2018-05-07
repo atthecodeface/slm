@@ -145,7 +145,7 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
         
     # Prepare memory, buffers 
     array_info_dict = {'seed_point':  {'array': seed_point_array, 'rwf': 'RO'},
-                       'mask':        {'array': mask_array,       'rwf': 'RW'}, 
+                       'mask':        {'array': mask_array,       'rwf': 'RO'}, 
                        'uv':          {'array': uv_array,         'rwf': 'RO'}, 
                        'mapping':     {'array': mapping_array,    'rwf': 'RW'} }
     buffer_dict = pocl.prepare_buffers(context, array_info_dict, verbose)    
@@ -186,7 +186,5 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
     
     # Fetch the data back from the GPU and finish
     cl.enqueue_copy(queue, mapping_array, buffer_dict['mapping'])
-    # Mask array set as RW so we should copy back - wasn't done until now - BUG?
-#     cl.enqueue_copy(queue, mask_array,    buffer_dict['mask'])
     queue.finish()   
     
