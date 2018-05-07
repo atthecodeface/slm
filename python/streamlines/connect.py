@@ -144,9 +144,17 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
     """
         
     # Prepare memory, buffers 
-    (seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer) \
-        = pocl.prepare_buffers(context, queue, seed_point_array, mask_array, 
-                               uv_array, mapping_array, verbose)    
+    array_info_dict = {'seed_point':  {'array': seed_point_array, 'rwf': 'RO'},
+                       'uv':          {'array': uv_array,         'rwf': 'RO'}, 
+                       'mask':        {'array': mask_array,       'rwf': 'RW'}, 
+                       'mapping':     {'array': mapping_array,    'rwf': 'RW'} }
+    pdebug(mapping_array.dtype,
+           mapping_array.flags,
+           mapping_array.__array_interface__['data'][0])
+    pdebug(array_info_dict['mapping']['array'].dtype,
+           array_info_dict['mapping']['array'].flags,
+           array_info_dict['mapping']['array'].__array_interface__['data'][0])
+    buffer_dict = pocl.prepare_buffers(context, array_info_dict, verbose)    
     # Compile the CL code
     global_size = [seed_point_array.shape[0],1]
     info_dict['n_seed_points'] = global_size[0]
@@ -159,9 +167,8 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
     # Set the GPU kernel
     kernel = getattr(program,cl_kernel_fn)
     # Designate buffered arrays
-    buffer_list = [seed_point_buffer, mask_buffer,uv_buffer,mapping_buffer]
-    kernel.set_args(*buffer_list)
-    kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
+    kernel.set_args(*list(buffer_dict.values()))
+    kernel.set_scalar_arg_dtypes( [None]*len(buffer_dict) )
     
     # Specify this integration job's parameters
     n_work_items        = info_dict['n_work_items']
@@ -184,6 +191,8 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, info_dict,
     queue.finish()   
     
     # Fetch the data back from the GPU and finish
-    cl.enqueue_copy(queue, mapping_array, mapping_buffer)
+    cl.enqueue_copy(queue, mapping_array, buffer_dict['mapping'])
+    pdebug(mapping_array)
+    stop
     queue.finish()   
     

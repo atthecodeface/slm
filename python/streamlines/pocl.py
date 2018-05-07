@@ -339,34 +339,32 @@ def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size,
                             int(np.ceil(work_left/n_work_items)) ))
     return cumulative_time
 
-def prepare_buffers(context, queue,
-                   seed_point_array, mask_array, uv_array, mapping_array, verbose):
+def prepare_buffers(context, array_info_dict, verbose):
     """
     Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
     
     Args:
         context (pyopencl.Context):
-        queue (pyopencl.CommandQueue):
-        seed_point_array (numpy.ndarray):
-        mask_array (numpy.ndarray):
-        uv_array (numpy.ndarray):
-        mapping_array (numpy.ndarray):
+        array_info_dict (dict):
         verbose (bool):
         
     Returns:
-        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer:
-            seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer
+        dict: buffer_dict
     """
     # Buffers to GPU memory
     COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
     COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR
-    seed_point_buffer = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=seed_point_array)
-    uv_buffer         = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=uv_array)
-    mask_buffer       = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=mask_array)
-    mapping_buffer    = cl.Buffer(context, COPY_READ_WRITE, hostbuf=mapping_array)
-    return (seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer)
+    # The following could be packed into a list comprehension but would be
+    #   rather harder to read in that form
+    buffer_dict = {}
+    for array_info in array_info_dict.items():
+        flags = COPY_READ_ONLY if array_info[1]['rwf']=='RO' else COPY_READ_WRITE
+        buffer_dict.update({
+            array_info[0]: cl.Buffer(context, flags, hostbuf=array_info[1]['array'])
+        })
+    return buffer_dict
 
-def prepare_memory(context, queue,
+def prepare_memory(context,
                     seed_point_array, mask_array, uv_array, 
                     mapping_array, count_array, link_array, verbose):
     """
@@ -374,7 +372,6 @@ def prepare_memory(context, queue,
     
     Args:
         context (pyopencl.Context):
-        queue (pyopencl.CommandQueue):
         seed_point_array (numpy.ndarray):
         mask_array (numpy.ndarray):
         uv_array (numpy.ndarray):
