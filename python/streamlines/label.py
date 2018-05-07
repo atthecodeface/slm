@@ -89,14 +89,14 @@ def gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, info_dict
     """
     # Prepare memory, buffers 
     # Buffer for mask, (u,v) velocity array and more 
-    array_info_dict = {'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
-                       'mask':       {'array': mask_array,       'rwf': 'RO'}, 
-                       'uv':         {'array': uv_array,         'rwf': 'RO'}, 
-                       'dn_slt':     {'array': dn_slt_array,     'rwf': 'RO'}, 
-                       'mapping':    {'array': mapping_array,    'rwf': 'RW'}, 
-                       'count':      {'array': count_array,      'rwf': 'RW'}, 
-                       'link':       {'array': link_array,       'rwf': 'RW'} }
-    buffer_dict = pocl.prepare_buffers(context, array_info_dict, verbose)    
+    array_dict = { 'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
+                   'mask':       {'array': mask_array,       'rwf': 'RO'}, 
+                   'uv':         {'array': uv_array,         'rwf': 'RO'}, 
+                   'dn_slt':     {'array': dn_slt_array,     'rwf': 'RO'}, 
+                   'mapping':    {'array': mapping_array,    'rwf': 'RW'}, 
+                   'count':      {'array': count_array,      'rwf': 'RW'}, 
+                   'link':       {'array': link_array,       'rwf': 'RW'} }
+    buffer_dict = pocl.prepare_buffers(context, array_dict, verbose)    
     # Compile the CL code
     global_size = [seed_point_array.shape[0],1]
     info_dict['n_seed_points'] = global_size[0]

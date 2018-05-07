@@ -8,6 +8,7 @@ import numpy as np
 from os import environ
 from streamlines import state
 from streamlines.useful import vprint
+import warnings
 
 environ['PYOPENCL_COMPILER_OUTPUT']='0'
 
@@ -16,7 +17,8 @@ __all__ = ['prepare_cl_context','choose_platform_and_device',
            'make_cl_dtype',
            'set_compile_options', 
            'report_kernel_info', 'report_device_info', 'report_build_log',
-           'adaptive_enqueue_nd_range_kernel']
+           'adaptive_enqueue_nd_range_kernel',
+           'prepare_buffers', 'gpu_compute']
 
 pdebug = print
 
@@ -339,13 +341,13 @@ def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size,
                             int(np.ceil(work_left/n_work_items)) ))
     return cumulative_time
 
-def prepare_buffers(context, array_info_dict, verbose):
+def prepare_buffers(context, array_dict, verbose):
     """
     Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
     
     Args:
         context (pyopencl.Context):
-        array_info_dict (dict):
+        array_dict (dict):
         verbose (bool):
         
     Returns:
@@ -357,10 +359,70 @@ def prepare_buffers(context, array_info_dict, verbose):
     # The following could be packed into a list comprehension but would be
     #   rather harder to read in that form
     buffer_dict = {}
-    for array_info in array_info_dict.items():
+    for array_info in array_dict.items():
         flags = COPY_READ_ONLY if array_info[1]['rwf']=='RO' else COPY_READ_WRITE
         buffer_dict.update({
             array_info[0]: cl.Buffer(context, flags, hostbuf=array_info[1]['array'])
         })
     return buffer_dict
 
+def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, 
+                info_dict, array_dict, verbose):
+    """
+    Carry out GPU computation.
+    
+    Args:
+        device (pyopencl.Device):
+        context (pyopencl.Context):
+        queue (pyopencl.CommandQueue):
+        cl_kernel_source (str):
+        cl_kernel_fn (str):
+        info_dict (dict):
+        array_dict (dict):
+        verbose (bool):  
+        
+    """
+        
+    # Prepare memory, buffers 
+    buffer_dict = prepare_buffers(context, array_dict, verbose)    
+
+    # Specify this integration job's parameters
+    global_size         = [info_dict['n_seed_points'],1]
+    n_work_items        = info_dict['n_work_items']
+    local_size          = [n_work_items,1]
+    chunk_size_factor   = info_dict['chunk_size_factor']
+    max_time_per_kernel = info_dict['max_time_per_kernel']
+
+    # Compile the CL code
+    compile_options = set_compile_options(info_dict, cl_kernel_fn, downup_sign=1)
+    vprint(verbose,'Compile options:\n', compile_options)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        program = cl.Program(context, cl_kernel_source).build(options=compile_options)
+    report_build_log(program, device, verbose)
+    # Set the GPU kernel
+    kernel = getattr(program,cl_kernel_fn)
+    # Designate buffered arrays
+    kernel.set_args(*list(buffer_dict.values()))
+    kernel.set_scalar_arg_dtypes( [None]*len(buffer_dict) )
+    
+    # Do the GPU compute
+    vprint(verbose,
+           '#### GPU/OpenCL computation: {0} work items... ####'.format(global_size[0]))
+    report_kernel_info(device,kernel,verbose)
+    elapsed_time \
+        = adaptive_enqueue_nd_range_kernel( queue, kernel, global_size, 
+                                            local_size, n_work_items,
+                                            chunk_size_factor=chunk_size_factor,
+                                            max_time_per_kernel=max_time_per_kernel,
+                                            verbose=verbose )
+    vprint(verbose,
+           '#### ...elapsed time for {1} work items: {0:.3f}s ####'
+           .format(elapsed_time,global_size[0]))
+    queue.finish()   
+    
+    # Fetch the data back from the GPU and finish
+    for array_info in array_dict.items():
+        if array_info[1]['rwf']=='RW':
+            cl.enqueue_copy(queue, array_info[1]['array'], buffer_dict[array_info[0]])
+            queue.finish()   
