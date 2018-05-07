@@ -214,15 +214,26 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         
     # Prepare memory, buffers 
     streamline_arrays_list = [[],[]]
-    (traj_nsteps_array, traj_length_array, 
-     chunk_trajcs_array, chunk_nsteps_array, chunk_length_array, 
-     seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer, 
-     chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer) \
-        = prepare_memory(context, info_dict['n_seed_points'],
-                         chunk_size, info_dict['max_n_steps'],
-                         seed_point_array, mask_array, uv_array, 
-                         mapping_array, verbose)
-    
+    ns = info_dict['n_seed_points']
+    nl = info_dict['max_n_steps']
+    traj_nsteps_array  = np.zeros([ns,2], dtype=np.uint16)
+    traj_length_array  = np.zeros([ns,2], dtype=np.float32)
+    # Chunk-sized temporary arrays
+    # Use "bag o' bytes" buffer for huge trajectories array. Write (by GPU) only.
+    chunk_trajcs_array = np.zeros([chunk_size,nl,2], dtype=np.int8)
+    chunk_nsteps_array = np.zeros([chunk_size], dtype=traj_nsteps_array.dtype)
+    chunk_length_array = np.zeros([chunk_size], dtype=traj_length_array.dtype)
+    array_dict = { 'seed_point':   {'array': seed_point_array,  'rwf': 'RO'},
+                   'mask':         {'array': mask_array,        'rwf': 'RO'}, 
+                   'uv':           {'array': uv_array,          'rwf': 'RO'}, 
+                   'mapping':      {'array': mapping_array,     'rwf': 'RW'}, 
+                   'chunk_trajcs': {'array': chunk_trajcs_array,'rwf': 'WO'},
+                   'chunk_nsteps': {'array': chunk_nsteps_array,'rwf': 'WO'}, 
+                   'chunk_length': {'array': chunk_length_array,'rwf': 'WO'}, 
+                   'traj_nsteps':  {'array': traj_nsteps_array, 'rwf': 'NB'}, 
+                   'traj_length':  {'array': traj_length_array, 'rwf': 'NB'} }
+    buffer_dict = pocl.prepare_buffers(context, array_dict, verbose)
+         
     # Downstream and upstream passes aka streamline integrations from
     #   chunks of seed points aka subsets of the total set
     n_work_items = info_dict['n_work_items']
@@ -239,7 +250,8 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         # Specify this integration job's parameters
         global_size = [n_chunk_ki,1]
         vprint(verbose,
-               'Seed point buffer size = {}*8 bytes'.format(seed_point_buffer.size/8))
+               'Seed point buffer size = {}*8 bytes'
+               .format(buffer_dict['seed_point'].size/8))
         local_size = [info_dict['n_work_items'],1]
         info_dict['downup_sign'] = downup_sign
         info_dict['seeds_chunk_offset'] = seeds_chunk_offset
@@ -257,10 +269,8 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         kernel = program.integrate_trajectory
         
         # Designate buffered arrays
-        buffer_list = [seed_point_buffer, mask_buffer, uv_buffer, mapping_buffer, 
-                       chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer]
-        kernel.set_args(*buffer_list)
-        kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
+        kernel.set_args(*list(buffer_dict.values()))
+        kernel.set_scalar_arg_dtypes( [None]*len(buffer_dict) )
         
         # Trace the streamlines on the GPU    
         vprint(verbose,
@@ -278,13 +288,11 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         queue.finish()   
         
         # Copy GPU-computed results back to CPU
-        cl.enqueue_copy(queue, chunk_trajcs_array, chunk_trajcs_buffer)
-        queue.finish()   
-        cl.enqueue_copy(queue, chunk_nsteps_array, chunk_nsteps_buffer)
-        queue.finish()   
-        cl.enqueue_copy(queue, chunk_length_array, chunk_length_buffer)
-        queue.finish()   
-                
+        for array_info in array_dict.items():
+            if 'W' in array_info[1]['rwf']:
+                cl.enqueue_copy(queue, array_info[1]['array'], buffer_dict[array_info[0]])
+                queue.finish()
+
         ##################################
                         
         # This is part going to be slow...
@@ -308,73 +316,19 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     vprint(verbose,'Streamlines actual array allocation:  size={}'.format(state.neatly(
         np.sum(traj_nsteps_array[:,:])*np.dtype(chunk_trajcs_array.dtype).itemsize)))
    
-    n = info_dict['n_seed_points']
-    return (streamline_arrays_list[0:n], traj_nsteps_array[0:n], traj_length_array[0:n])
+    return (streamline_arrays_list[0:ns],traj_nsteps_array[0:ns],traj_length_array[0:ns])
 
-def prepare_memory(context, n_seed_points, chunk_size, max_traj_length, 
-                   seed_point_array, mask_array, 
-                   uv_array, mapping_array, verbose):
-    """
-    Create Numpy array and PyOpenCL buffers to allow CPU-GPU data transfer.
-    
-    Args:
-        context (pyopencl.Context):
-        chunk_size (int):
-        max_traj_length (int):
-        seed_point_array (numpy.ndarray):
-        mask_array (numpy.ndarray):
-        uv_array (numpy.ndarray):
-        mapping_array (numpy.ndarray):
-        verbose (bool):
-        
-    Returns:
-        numpy.ndarray, numpy.ndarray,\
-        numpy.ndarray, numpy.ndarray, numpy.ndarray, \
-        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, \
-        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer:
-        traj_nsteps_array, traj_length_array, 
-        chunk_trajcs_array, chunk_nsteps_array, chunk_length_array,
-        seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer,
-        chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer
-    """
-    # PyOpenCL array for seed points
-    # Buffer for mask, (u,v) velocity array and more
-    traj_nsteps_array  = np.zeros([n_seed_points,2], dtype=np.uint16)
-    traj_length_array  = np.zeros([n_seed_points,2], dtype=np.float32)
 
-    # Chunk-sized temporary arrays
-    # Use "bag o' bytes" buffer for huge trajectories array. Write (by GPU) only.
-    chunk_trajcs_array = np.zeros([chunk_size,max_traj_length,2], dtype=np.int8)
-    chunk_nsteps_array = np.zeros([chunk_size], dtype=traj_nsteps_array.dtype)
-    chunk_length_array = np.zeros([chunk_size], dtype=traj_length_array.dtype)
-    
-    # Buffers to GPU memory
-    COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
-    COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR
-    WRITE_ONLY      = cl.mem_flags.WRITE_ONLY
-    seed_point_buffer   = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=seed_point_array)
-    mask_buffer         = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=mask_array)
-    uv_buffer           = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=uv_array)
-    mapping_buffer      = cl.Buffer(context, COPY_READ_WRITE, hostbuf=mapping_array)
-    chunk_nsteps_buffer = cl.Buffer(context, WRITE_ONLY, chunk_nsteps_array.nbytes )
-    chunk_length_buffer = cl.Buffer(context, WRITE_ONLY, chunk_length_array.nbytes )
-    chunk_trajcs_buffer = cl.Buffer(context, WRITE_ONLY, chunk_trajcs_array.nbytes )     
-    vprint(verbose,'Array sizes:\n',
-           'ROI-type =', mask_array.shape, '\n',
-           'uv =',       uv_array.shape)
-    vprint(verbose,'Streamlines virtual array allocation:  ',
-                 '   dims={0}'.format(
-                     (n_seed_points, chunk_trajcs_array.shape[1],2)), 
-                 '  size={}'.format(state.neatly(
-                     n_seed_points*chunk_trajcs_array.shape[1]*2
-                        *np.dtype(chunk_trajcs_array.dtype).itemsize)))
-    vprint(verbose,'Streamlines array allocation per chunk:',
-                     '   dims={0}'.format(chunk_trajcs_array.shape), 
-                     '  size={}'.format(state.neatly(
-      chunk_trajcs_array.size*np.dtype(chunk_trajcs_array.dtype).itemsize)))
-
-    return (traj_nsteps_array, traj_length_array, 
-            chunk_trajcs_array, chunk_nsteps_array, chunk_length_array,
-            seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer,
-            chunk_trajcs_buffer, chunk_nsteps_buffer, chunk_length_buffer)
-
+#     vprint(verbose,'Array sizes:\n',
+#            'ROI-type =', mask_array.shape, '\n',
+#            'uv =',       uv_array.shape)
+#     vprint(verbose,'Streamlines virtual array allocation:  ',
+#                  '   dims={0}'.format(
+#                      (n_seed_points, chunk_trajcs_array.shape[1],2)), 
+#                  '  size={}'.format(state.neatly(
+#                      n_seed_points*chunk_trajcs_array.shape[1]*2
+#                         *np.dtype(chunk_trajcs_array.dtype).itemsize)))
+#     vprint(verbose,'Streamlines array allocation per chunk:',
+#                      '   dims={0}'.format(chunk_trajcs_array.shape), 
+#                      '  size={}'.format(state.neatly(
+#       chunk_trajcs_array.size*np.dtype(chunk_trajcs_array.dtype).itemsize)))

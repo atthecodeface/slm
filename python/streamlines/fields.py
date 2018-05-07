@@ -20,7 +20,7 @@ from streamlines import pocl
 from streamlines import state
 from streamlines.useful import vprint, create_seeds
 
-__all__ = ['integrate_fields','gpu_integrate','prepare_memory']
+__all__ = ['integrate_fields','gpu_integrate']
 
 import warnings
 pdebug = print
@@ -182,23 +182,28 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         numpy.ndarray, numpy.ndarray, numpy.ndarray:
         rtn_slc_array, rtn_slt_array, rtn_sla_array
     """
-        
-    # Prepare memory, buffers 
-    (slc_array, slt_array, 
-     seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer, slc_buffer, slt_buffer) \
-        = prepare_memory(context, seed_point_array, mask_array, 
-                         uv_array, mapping_array, verbose)
-    roi_nxy = slc_array.shape
+
+    roi_nxy = mask_array.shape
+    slc_array     = np.zeros((roi_nxy[0],roi_nxy[1]), dtype=np.uint32)
+    slt_array     = np.zeros((roi_nxy[0],roi_nxy[1]), dtype=np.uint32)
     rtn_slc_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.uint32)
     rtn_slt_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
     rtn_sla_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
-    
+    array_dict = { 'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
+                   'mask':       {'array': mask_array,       'rwf': 'RO'}, 
+                   'uv':         {'array': uv_array,         'rwf': 'RO'}, 
+                   'mapping':    {'array': mapping_array,    'rwf': 'RW'}, 
+                   'slc':        {'array': slc_array,        'rwf': 'RW'}, 
+                   'slt':        {'array': slt_array,        'rwf': 'RW'} }
+    buffer_dict =  pocl.prepare_buffers(context, array_dict, verbose)
+
     # Downstream and upstream passes aka streamline integrations from
     #   chunks of seed points aka subsets of the total set
     global_size = [n_global,1]
     local_size = [info_dict['n_work_items'],1]
     vprint(verbose,
-           'Seed point buffer size = {}*8 bytes'.format(seed_point_buffer.size/8))
+           'Seed point buffer size = {}*8 bytes'.
+           format(buffer_dict['seed_point'].size/8))
     # Downstream then upstream loop
     for downup_idx, downup_sign in [[0,+1.0],[1,-1.0]]:
         info_dict['downup_sign'] = downup_sign
@@ -216,10 +221,12 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
         kernel = program.integrate_fields
         
         # Designate buffered arrays
-        buffer_list = [seed_point_buffer, mask_buffer, 
-                       uv_buffer, mapping_buffer, slc_buffer, slt_buffer]
-        kernel.set_args(*buffer_list)
-        kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
+#         buffer_list = [seed_point_buffer, mask_buffer, 
+#                        uv_buffer, mapping_buffer, slc_buffer, slt_buffer]
+#         kernel.set_args(*buffer_list)
+#         kernel.set_scalar_arg_dtypes( [None]*len(buffer_list) )
+        kernel.set_args(*list(buffer_dict.values()))
+        kernel.set_scalar_arg_dtypes( [None]*len(buffer_dict) )
         
         # Trace the streamlines on the GPU
         n_work_items        = info_dict['n_work_items']
@@ -238,11 +245,11 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
                '#### ...elapsed time for {1} work items: {0:.3f}s ####'
                .format(elapsed_time,global_size[0]))
         queue.finish()   
-        
+
         # Copy back the streamline length, distance density grid
-        cl.enqueue_copy(queue, slc_array, slc_buffer)
+        cl.enqueue_copy(queue, slc_array, buffer_dict['slc'])
         queue.finish()   
-        cl.enqueue_copy(queue, slt_array, slt_buffer)
+        cl.enqueue_copy(queue, slt_array, buffer_dict['slt'])
         queue.finish()   
                 
         ##################################
@@ -256,12 +263,12 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
             # Zero the GPU slt, slc arrays before using in the next pass
             slc_array.fill(0)
             slt_array.fill(0.0)
-            cl.enqueue_copy(queue, slc_buffer,slc_array)
+            cl.enqueue_copy(queue, buffer_dict['slc'],slc_array)
             queue.finish()   
-            cl.enqueue_copy(queue, slt_buffer,slt_array)
+            cl.enqueue_copy(queue, buffer_dict['slt'],slt_array)
             queue.finish()   
 
-    cl.enqueue_copy(queue, mapping_array, mapping_buffer)
+    cl.enqueue_copy(queue, mapping_array,  buffer_dict['mapping'])
     queue.finish()   
     
     # Compute average streamline lengths (sla) from total lengths (slt) and counts (slc)
@@ -276,48 +283,3 @@ def gpu_integrate(device, context, queue, cl_kernel_source,
     
     return (slc, slt, sla, mapping_array)
 
-def prepare_memory(context, seed_point_array, mask_array, 
-                   uv_array, mapping_array, verbose):
-    """
-    Create Numpy array and PyOpenCL buffers to allow CPU-GPU data transfer.
-    
-    Args:
-        context (pyopencl.Context):
-        seed_point_array (numpy.ndarray):
-        mask_array (numpy.ndarray):
-        uv_array (numpy.ndarray):
-        mapping_array (numpy.ndarray):
-        verbose (bool):
-        
-    Returns:
-        numpy.ndarray, numpy.ndarray, \
-        pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, pyopencl.Buffer, \
-        pyopencl.Buffer, pyopencl.Buffer:
-        slc_array, slt_array, 
-        seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer, 
-        slc_buffer, slt_buffer
-    """
-    # PyOpenCL array for seed points
-    # Buffer for mask, (u,v) velocity array and more
-    roi_nxy = mask_array.shape
-    slc_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32)
-    slt_array = np.zeros((roi_nxy[0], roi_nxy[1]), dtype=np.uint32)
-
-    # Buffers to GPU memory
-    COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
-    COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR
-    WRITE_ONLY      = cl.mem_flags.WRITE_ONLY
-    seed_point_buffer   = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=seed_point_array)
-    mask_buffer         = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=mask_array)
-    uv_buffer           = cl.Buffer(context, COPY_READ_ONLY,  hostbuf=uv_array)
-    mapping_buffer      = cl.Buffer(context, COPY_READ_WRITE, hostbuf=mapping_array)
-    slc_buffer          = cl.Buffer(context, COPY_READ_WRITE, hostbuf=slc_array)
-    slt_buffer          = cl.Buffer(context, COPY_READ_WRITE, hostbuf=slt_array)
-    vprint(verbose,'Array sizes:\n',
-           'ROI-type =', mask_array.shape, '\n',
-           'uv =', uv_array.shape, '\n',
-           'slx-type = ',slc_array.shape)
-
-    return (slc_array, slt_array, 
-            seed_point_buffer, uv_buffer, mask_buffer, mapping_buffer, 
-            slc_buffer, slt_buffer)

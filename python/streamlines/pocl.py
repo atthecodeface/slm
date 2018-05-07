@@ -356,14 +356,27 @@ def prepare_buffers(context, array_dict, verbose):
     # Buffers to GPU memory
     COPY_READ_ONLY  = cl.mem_flags.READ_ONLY  | cl.mem_flags.COPY_HOST_PTR
     COPY_READ_WRITE = cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR
+    WRITE_ONLY      = cl.mem_flags.WRITE_ONLY
     # The following could be packed into a list comprehension but would be
     #   rather harder to read in that form
     buffer_dict = {}
     for array_info in array_dict.items():
-        flags = COPY_READ_ONLY if array_info[1]['rwf']=='RO' else COPY_READ_WRITE
-        buffer_dict.update({
-            array_info[0]: cl.Buffer(context, flags, hostbuf=array_info[1]['array'])
-        })
+        if 'R' in array_info[1]['rwf']:
+            if array_info[1]['rwf']=='RO':
+                flags = COPY_READ_ONLY
+            elif array_info[1]['rwf']=='RW':
+                flags = COPY_READ_WRITE 
+            buffer_dict.update({
+                array_info[0]: cl.Buffer(context, flags, hostbuf=array_info[1]['array'])
+            })
+        elif array_info[1]['rwf']=='WO':
+            flags = WRITE_ONLY
+            pdebug(array_info[0],array_info[1]['array'].nbytes)
+            buffer_dict.update({
+                array_info[0]: cl.Buffer(context, flags, array_info[1]['array'].nbytes)
+            })
+        else:
+            pass
     return buffer_dict
 
 def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, 
@@ -403,7 +416,6 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn,
     # Set the GPU kernel
     kernel = getattr(program,cl_kernel_fn)
     # Designate buffered arrays
-    pdebug(buffer_dict)
     kernel.set_args(*list(buffer_dict.values()))
     kernel.set_scalar_arg_dtypes( [None]*len(buffer_dict) )
     
@@ -424,6 +436,6 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn,
     
     # Fetch the data back from the GPU and finish
     for array_info in array_dict.items():
-        if array_info[1]['rwf']=='RW':
+        if 'W' in array_info[1]['rwf']:
             cl.enqueue_copy(queue, array_info[1]['array'], buffer_dict[array_info[0]])
             queue.finish()   

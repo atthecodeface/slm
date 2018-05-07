@@ -56,8 +56,7 @@ def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_dic
     is_midslope = info_dict['is_midslope']
     pixel_size = info_dict['pixel_size']
     flag = is_midslope
-    seed_point_array \
-        = pick_seeds(mask=mask_array, map=mapping_array, flag=flag, pad=pad)
+    seed_point_array = pick_seeds(mask=mask_array, map=mapping_array, flag=flag, pad=pad)
     if ( seed_point_array.shape[0]!=traj_length_array.shape[0] ):
         print('\nMismatched midslope point arrays: ',
               seed_point_array.shape,traj_length_array.shape)
