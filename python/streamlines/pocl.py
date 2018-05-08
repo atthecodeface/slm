@@ -12,7 +12,8 @@ import warnings
 
 os.environ['PYOPENCL_COMPILER_OUTPUT']='0'
 
-__all__ = ['prepare_cl_context','choose_platform_and_device',
+__all__ = ['Initialize_cl',
+           'prepare_cl_context','choose_platform_and_device',
            'prepare_cl_queue', 'prepare_cl',
            'make_cl_dtype',
            'set_compile_options', 
@@ -244,6 +245,118 @@ def set_compile_options(info_dict, kernel_def, downup_sign=1,
         if info_dict['debug']:
             rtn_list += ['-D', 'DEBUG']
         if info_dict['verbose']:
+            rtn_list += ['-D', 'VERBOSE']
+        return rtn_list
+
+def set_compile_options_alt(info, kernel_def, downup_sign=1,
+                        job_type='integration'):
+    """
+    Convert info obj data into a list of '-D' compiler macros.
+    
+    Args:
+        info (obj): container for myriad parameters controlling
+            trace() and mapping() workflow and corresponding GPU/OpenCL device operation
+        kernel_def (str): name of the kernel in the program source string; 
+            is used by #ifdef kernel-wrapper commands in the OpenCL codes
+        downup_sign (bool): flag used to indicate desired sense of streamline integration,
+               with +1 for downstream and -1 for upstream ['integration' mode]
+        job_type (str): switch between 'integration' (default) and 'kde'
+        
+    Returns:
+        list:
+            compile options
+    """
+    if job_type=='kde':
+        rtn_list = [
+            '-D','KERNEL_{}'.format(kernel_def.upper()),
+            '-D','KDF_BANDWIDTH={}f'.format(info.kdf_bandwidth),
+            '-D','KDF_IS_{}'.format(info.kdf_kernel.upper()),
+            '-D','N_DATA={}u'.format(info.n_data),
+            '-D','N_HIST_BINS={}u'.format(info.n_hist_bins),
+            '-D','N_PDF_POINTS={}u'.format(info.n_pdf_points),
+            '-D','X_MIN={}f'.format(info.x_min),
+            '-D','X_MAX={}f'.format(info.x_max),
+            '-D','X_RANGE={}f'.format(info.x_range),
+            '-D','BIN_DX={}f'.format(info.bin_dx),
+            '-D','PDF_DX={}f'.format(info.pdf_dx),
+            '-D','KDF_WIDTH_X={}f'.format(info.kdf_width_x),
+            '-D','N_KDF_PART_POINTS_X={}u'.format(info.n_kdf_part_points_x),
+            '-D','Y_MIN={}f'.format(info.y_min),
+            '-D','Y_MAX={}f'.format(info.y_max),
+            '-D','Y_RANGE={}f'.format(info.y_range),
+            '-D','BIN_DY={}f'.format(info.bin_dy),
+            '-D','PDF_DY={}f'.format(info.pdf_dy),
+            '-D','KDF_WIDTH_Y={}f'.format(info.kdf_width_y),
+            '-D','N_KDF_PART_POINTS_Y={}u'.format(info.n_kdf_part_points_y)
+        ]
+        if info.debug:
+            rtn_list += ['-D', 'DEBUG']
+        if info.verbose:
+            rtn_list += ['-D', 'VERBOSE']
+        return rtn_list
+
+    else:
+        rtn_list = [
+        '-D','KERNEL_{}'.format(kernel_def.upper()),
+        '-D','N_SEED_POINTS={}u'.format(info.n_seed_points),
+        '-D','DOWNUP_SIGN={}'.format(downup_sign),
+        '-D','INTEGRATOR_STEP_FACTOR={}f'.format( 
+                                            info.integrator_step_factor),
+        '-D','MAX_INTEGRATION_STEP_ERROR={}f'.format(
+                                info.max_integration_step_error),
+        '-D','ADJUSTED_MAX_ERROR={}f'.format( info.adjusted_max_error),
+        '-D','MAX_LENGTH={}f'.format(info.max_length),
+        '-D','PIXEL_SIZE={}f'.format(info.pixel_size),
+        '-D','INTEGRATION_HALT_THRESHOLD={}f'.format(
+                                info.integration_halt_threshold),
+        '-D','PAD_WIDTH={}u'.format(info.pad_width),
+        '-D','PAD_WIDTH_PP5={}f'.format(info.pad_width_pp5),
+        '-D','NX={}u'.format(info.nx),
+        '-D','NY={}u'.format(info.ny),
+        '-D','NXF={}f'.format(info.nxf),
+        '-D','NYF={}f'.format(info.nyf),
+        '-D','NX_PADDED={}u'.format(info.nx_padded),
+        '-D','NY_PADDED={}u'.format(info.ny_padded),
+        '-D','NXY_PADDED={}u'.format(info.nxy_padded),
+        '-D','X_MAX={}f'.format(info.x_max),
+        '-D','Y_MAX={}f'.format(info.y_max),
+        '-D','GRID_SCALE={}f'.format(info.grid_scale),
+        '-D','COMBO_FACTOR={}f'.format(info.combo_factor*downup_sign),
+        '-D','DT_MAX={}f'.format(info.dt_max),
+        '-D','MAX_N_STEPS={}u'.format(info.max_n_steps),
+        '-D','TRAJECTORY_RESOLUTION={}u'.format(info.trajectory_resolution),
+        '-D','SEEDS_CHUNK_OFFSET={}u'.format(info.seeds_chunk_offset),
+        '-D','SUBPIXEL_SEED_POINT_DENSITY={}u'.format(
+                                        info.subpixel_seed_point_density),
+        '-D','SUBPIXEL_SEED_HALFSPAN={}f'.format(
+                                        info.subpixel_seed_halfspan),
+        '-D','SUBPIXEL_SEED_STEP={}f'.format(info.subpixel_seed_step),
+        '-D','JITTER_MAGNITUDE={}f'.format(info.jitter_magnitude),
+        '-D','INTERCHANNEL_MAX_N_STEPS={}u'.format(
+                                             info.interchannel_max_n_steps),
+        '-D','SEGMENTATION_THRESHOLD={}u'.format(
+                                            info.segmentation_threshold),
+        '-D','LEFT_FLANK_ADDITION={}u'.format(info.left_flank_addition),
+        '-D','IS_CHANNEL={}u'.format(info.is_channel),
+        '-D','IS_THINCHANNEL={}u'.format(info.is_thinchannel),
+        '-D','IS_INTERCHANNEL={}u'.format(info.is_interchannel),
+        '-D','IS_CHANNELHEAD={}u'.format(info.is_channelhead),
+        '-D','IS_CHANNELTAIL={}u'.format(info.is_channeltail),
+        '-D','IS_MAJORCONFLUENCE={}u'.format(info.is_majorconfluence),
+        '-D','IS_MINORCONFLUENCE={}u'.format(info.is_minorconfluence),
+        '-D','IS_MAJORINFLOW={}u'.format(info.is_majorinflow),
+        '-D','IS_MINORINFLOW={}u'.format(info.is_minorinflow),
+        '-D','IS_LEFTFLANK={}u'.format(info.is_leftflank),
+        '-D','IS_RIGHTFLANK={}u'.format(info.is_rightflank),
+        '-D','IS_MIDSLOPE={}u'.format(info.is_midslope),
+        '-D','IS_RIDGE={}u'.format(info.is_ridge),
+        '-D','WAS_CHANNELHEAD={}u'.format(info.was_channelhead),
+        '-D','IS_LOOP={}u'.format(info.is_loop),
+        '-D','IS_BLOCKAGE={}u'.format(info.is_blockage)
+        ]
+        if info.debug:
+            rtn_list += ['-D', 'DEBUG']
+        if info.verbose:
             rtn_list += ['-D', 'VERBOSE']
         return rtn_list
 

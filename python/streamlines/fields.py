@@ -28,7 +28,7 @@ class Fields():
                     cl_src_path         = None,
                     which_cl_platform   = None,
                     which_cl_device     = None,
-                    info_dict           = None,
+                    info                = None,
                     mask_array          = None,
                     uv_array            = None,
                     mapping_array       = None,
@@ -41,7 +41,7 @@ class Fields():
             cl_src_path (str):
             which_cl_platform (int):
             which_cl_device (int):
-            info_dict (numpy.ndarray):
+            info (obj):
             mask_array (numpy.ndarray):
             uv_array (numpy.ndarray):
             mapping_array (numpy.ndarray):
@@ -51,7 +51,7 @@ class Fields():
         self.cl_src_path         = cl_src_path
         self.which_cl_platform   = which_cl_platform
         self.which_cl_device     = which_cl_device
-        self.info_dict           = info_dict
+        self.info                = info
         self.mask_array          = mask_array
         self.uv_array            = uv_array
         self.mapping_array       = mapping_array
@@ -69,7 +69,7 @@ class Fields():
         object variables. 
         
         Workflow parameters are transferred here bundled in the Numpy structure array 
-        info_dict, which is parsed as well as passed on to gpu_integrate.
+        info, which is parsed as well as passed on to gpu_integrate.
         
         The tasks undertaken by this function are to:
            1) prepare the OpenCL context, device and kernel source string
@@ -84,7 +84,7 @@ class Fields():
         cl_src_path         = self.cl_src_path
         which_cl_platform   = self.which_cl_platform
         which_cl_device     = self.which_cl_device
-        info_dict           = self.info_dict
+        info                = self.info
         mask_array          = self.mask_array
         uv_array            = self.uv_array
         mapping_array       = self.mapping_array
@@ -102,11 +102,11 @@ class Fields():
         for cl_file in cl_files:
             with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
                 cl_kernel_source += fp.read()
-        n_padded_seed_points = info_dict['n_padded_seed_points']
+        n_padded_seed_points = info.n_padded_seed_points
     
         # Memory check - not really needed 
         gpu_traj_memory_limit = (device.get_info(cl.device_info.GLOBAL_MEM_SIZE) 
-                                 *info_dict['gpu_memory_limit_pc'])//100
+                                 *info.gpu_memory_limit_pc)//100
         full_traj_memory_request = (mask_array.shape[0]*mask_array.shape[1]
                                     *np.dtype(np.float32).itemsize*2*3)    
         vprint(self.verbose,
@@ -117,18 +117,18 @@ class Fields():
                   .format(neatly(full_traj_memory_request)))
          
         # Seed point selection, padding and shuffling
-        pad_width                = info_dict['pad_width']
-        n_work_items             = info_dict['n_work_items']
-        do_shuffle               = info_dict['do_shuffle']
-        shuffle_rng_seed         = info_dict['shuffle_rng_seed']
+        pad_width                = info.pad_width
+        n_work_items             = info.n_work_items
+        do_shuffle               = info.do_shuffle
+        shuffle_rng_seed         = info.shuffle_rng_seed
         (self.seed_point_array, 
-                  info_dict['n_seed_points'], info_dict['n_padded_seed_points']) \
+                  info.n_seed_points, info.n_padded_seed_points) \
             = create_seeds(mask_array, pad_width, n_work_items, 
                            do_shuffle=do_shuffle, rng_seed=shuffle_rng_seed,
                            verbose=self.verbose)
         
         # Prep for GPU compute
-        n_global = info_dict['n_padded_seed_points']
+        n_global = info.n_padded_seed_points
         pad_length = np.uint32(np.round(n_global/n_work_items))*n_work_items-n_global
         if pad_length>0:
             padding_array = -np.ones([pad_length,2], dtype=np.float32)
@@ -136,14 +136,14 @@ class Fields():
                    'Chunk size adjustment for {0} CL work items/group: {1}->{2}...'
                  .format(n_work_items, n_global, n_global+pad_length))
         n_global += pad_length
-        compile_options = pocl.set_compile_options(info_dict,'INTEGRATE_FIELDS')
-        vprint(self.verbose,'Compile options:\n',compile_options)
+#         compile_options = pocl.set_compile_options(info,'INTEGRATE_FIELDS')
+#         vprint(self.verbose,'Compile options:\n',compile_options)
         
         # Do integrations on the GPU
         self.gpu_integrate(device, context, queue, cl_kernel_source, n_global)
         
         # Streamline stats
-        pixel_size = info_dict['pixel_size']
+        pixel_size = info.pixel_size
         dds =  traj_stats_df['ds']['downstream','mean']
         uds =  traj_stats_df['ds']['upstream','mean']
         # slt: sum of line lengths crossing a pixel * number of line-points per pixel
@@ -185,7 +185,7 @@ class Fields():
         """
 
         # Shorthand
-        info_dict           = self.info_dict
+        info                = self.info
         seed_point_array    = self.seed_point_array
         mask_array          = self.mask_array
         uv_array            = self.uv_array
@@ -210,21 +210,21 @@ class Fields():
         # Downstream and upstream passes aka streamline integrations from
         #   chunks of seed points aka subsets of the total set
         global_size         = [n_global,1]
-        local_size          = [info_dict['n_work_items'],1]
-        n_work_items        = info_dict['n_work_items']
-        chunk_size_factor   = info_dict['chunk_size_factor']
-        max_time_per_kernel = info_dict['max_time_per_kernel']
+        local_size          = [info.n_work_items,1]
+        n_work_items        = info.n_work_items
+        chunk_size_factor   = info.chunk_size_factor
+        max_time_per_kernel = info.max_time_per_kernel
         vprint(self.verbose,
                'Seed point buffer size = {}*8 bytes'.
                format(buffer_dict['seed_point'].size/8))
         # Downstream then upstream loop
         for downup_idx, downup_sign in [[0,+1.0],[1,-1.0]]:
-            info_dict['downup_sign'] = downup_sign
+            info.downup_sign = downup_sign
             
             ##################################
             
             # Compile the CL code
-            compile_options = pocl.set_compile_options(info_dict, 'INTEGRATE_FIELDS', 
+            compile_options = pocl.set_compile_options_alt(info, 'INTEGRATE_FIELDS', 
                                                        downup_sign=downup_sign)
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
@@ -289,5 +289,5 @@ class Fields():
         # sla: sum of line lengths / count of lines
         sla[slc==0] = 0.0
         sla[slc>0]  = slt[slc>0]/slc[slc>0]
-        slt[slc>0]  = slt[slc>0]/info_dict['subpixel_seed_point_density']**2
+        slt[slc>0]  = slt[slc>0]/info.subpixel_seed_point_density**2
         

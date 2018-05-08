@@ -16,9 +16,92 @@ from streamlines.core import Core
 from streamlines.trajectories import Trajectories
 from streamlines.fields import Fields
 
-__all__ = ['Trace']
+__all__ = ['Info','Trace']
 
 pdebug = print
+
+class Info():    
+    def __init__(self, trace, n_seed_points=None):
+        state = trace.state
+        geodata = trace.geodata
+        if trace.max_length==np.float32(0.0):
+            max_length = np.finfo(numpy.float32).max
+        else:
+            max_length = trace.max_length
+        max_n_steps = np.uint32(trace.max_length/trace.integrator_step_factor)
+        if trace.interchannel_max_n_steps==0:
+            interchannel_max_n_steps = max_n_steps
+        else:
+            interchannel_max_n_steps = trace.interchannel_max_n_steps
+         
+        grid_scale = np.sqrt(np.float32(geodata.roi_nx*geodata.roi_ny))
+        nxf = np.float32(geodata.roi_nx)
+        nyf = np.float32(geodata.roi_ny)
+        dt_max = min(min(1.0/nxf,1.0/nyf),0.1)
+        subpixel_seed_span = 1.0-1.0/np.float32(trace.subpixel_seed_point_density)
+        subpixel_seed_step \
+            = subpixel_seed_span/(np.float32(trace.subpixel_seed_point_density)-1.0 
+                                  if trace.subpixel_seed_point_density>1 else 1.0)
+        self.debug =                   np.bool8(state.debug)
+        self.verbose =                 np.bool8(state.verbose)
+        self.n_trajectory_seed_points= np.uint32(trace.n_trajectory_seed_points)
+        self.n_seed_points =           np.uint32(0)
+        self.n_padded_seed_points =    np.uint32(0)
+        self.do_shuffle =              np.bool8(trace.do_shuffle_seed_points)
+        self.shuffle_rng_seed =        np.uint32(trace.shuffle_rng_seed)
+        self.downup_sign =             np.float32(np.nan)
+        self.gpu_memory_limit_pc =        np.uint32(state.gpu_memory_limit_pc)
+        self.n_work_items =               np.uint32(state.n_work_items)
+        self.chunk_size_factor =          np.uint32(state.chunk_size_factor)
+        self.max_time_per_kernel =        np.float32(state.max_time_per_kernel)
+        self.integrator_step_factor =     np.float32(trace.integrator_step_factor)
+        self.max_integration_step_error = np.float32(trace.max_integration_step_error)
+        self.adjusted_max_error =         np.float32(0.85*np.sqrt(
+                                                  trace.max_integration_step_error))
+        self.max_length =   np.float32(max_length/geodata.roi_pixel_size)
+        self.pixel_size =   np.float32(geodata.roi_pixel_size)
+        self.integration_halt_threshold = np.float32(trace.integration_halt_threshold)
+        self.pad_width =    np.uint32(geodata.pad_width)
+        self.pad_width_pp5= np.float32(geodata.pad_width)+0.5
+        self.nx =           np.uint32(geodata.roi_nx)
+        self.ny =           np.uint32(geodata.roi_ny)
+        self.nxf =          np.float32(nxf)
+        self.nyf =          np.float32(nyf)
+        self.nx_padded =    np.uint32(geodata.roi_nx+2*geodata.pad_width)
+        self.ny_padded =    np.uint32(geodata.roi_ny+2*geodata.pad_width)
+        self.nxy_padded =   np.uint32( (geodata.roi_nx+2*geodata.pad_width)
+                                      *(geodata.roi_ny+2*geodata.pad_width) )
+        self.x_max =        np.float32(nxf-0.5)
+        self.y_max =        np.float32(nyf-0.5)
+        self.grid_scale =   np.float32(grid_scale)
+        self.combo_factor = np.float32(grid_scale*trace.integrator_step_factor)
+        self.dt_max =       np.float32(dt_max)
+        self.max_n_steps =  np.uint32(max_n_steps)
+        self.trajectory_resolution =    np.uint32(trace.trajectory_resolution)
+        self.seeds_chunk_offset =       np.uint32(0)
+        self.subpixel_seed_point_density = np.uint32(trace.subpixel_seed_point_density)
+        self.subpixel_seed_halfspan =   np.float32(subpixel_seed_span/2.0)
+        self.subpixel_seed_step =       np.float32(subpixel_seed_step)
+        self.jitter_magnitude =         np.float32(trace.jitter_magnitude)
+        self.interchannel_max_n_steps = np.uint32(interchannel_max_n_steps)
+        self.segmentation_threshold =   np.uint32(trace.segmentation_threshold)
+        self.left_flank_addition= np.uint32(trace.left_flank_addition)
+        self.is_channel =         np.uint32(trace.is_channel)
+        self.is_thinchannel =     np.uint32(trace.is_thinchannel)
+        self.is_interchannel =    np.uint32(trace.is_interchannel)
+        self.is_channelhead =     np.uint32(trace.is_channelhead)
+        self.is_channeltail =     np.uint32(trace.is_channeltail)
+        self.is_majorconfluence = np.uint32(trace.is_majorconfluence)
+        self.is_minorconfluence = np.uint32(trace.is_minorconfluence)
+        self.is_majorinflow =     np.uint32(trace.is_majorinflow)
+        self.is_minorinflow =     np.uint32(trace.is_minorinflow)
+        self.is_leftflank =       np.uint32(trace.is_leftflank)
+        self.is_rightflank =      np.uint32(trace.is_rightflank)
+        self.is_midslope =        np.uint32(trace.is_midslope)
+        self.is_ridge =           np.uint32(trace.is_ridge)
+        self.was_channelhead =    np.uint32(trace.was_channelhead)
+        self.is_loop =            np.uint32(trace.is_loop)
+        self.is_blockage =        np.uint32(trace.is_blockage)
 
 class Trace(Core):
     """
@@ -102,7 +185,7 @@ class Trace(Core):
         self.compute_fields()
         # Done
         self.print('**Trace end**\n', flush=True)  
-        
+                            
     def build_info_dict(self, n_seed_points=None):
         """
         TBD.
@@ -198,12 +281,11 @@ class Trace(Core):
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
         """
-        self.info_dict = self.build_info_dict()
         trajectories = Trajectories(
                     cl_src_path         = self.state.cl_src_path,
                     which_cl_platform   = self.state.cl_platform,
                     which_cl_device     = self.state.cl_device,
-                    info_dict           = self.info_dict,
+                    info                = Info(self),
                     mask_array          = self.geodata.basin_mask_array,
                     uv_array            = self.preprocess.uv_array,
                     mapping_array       = self.mapping_array,
@@ -221,12 +303,11 @@ class Trace(Core):
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
         """
-        self.info_dict = self.build_info_dict()
         fields = Fields(
                     cl_src_path         = self.state.cl_src_path,
                     which_cl_platform   = self.state.cl_platform,
                     which_cl_device     = self.state.cl_device,
-                    info_dict           = self.info_dict,
+                    info                = Info(self),
                     mask_array          = self.geodata.basin_mask_array,
                     uv_array            = self.preprocess.uv_array,
                     mapping_array       = self.mapping_array,

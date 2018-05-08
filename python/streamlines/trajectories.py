@@ -28,7 +28,7 @@ class Trajectories():
                     cl_src_path         = None,
                     which_cl_platform   = None,
                     which_cl_device     = None,
-                    info_dict           = None,
+                    info                = None,
                     mask_array          = None,
                     uv_array            = None,
                     mapping_array       = None,
@@ -42,7 +42,7 @@ class Trajectories():
             cl_src_path (str):
             which_cl_platform (int):
             which_cl_device (int):
-            info_dict (numpy.ndarray):
+            info (obj):
             mask_array (numpy.ndarray):
             uv_array (numpy.ndarray):
             mapping_array (numpy.ndarray):
@@ -53,7 +53,7 @@ class Trajectories():
         self.cl_src_path         = cl_src_path
         self.which_cl_platform   = which_cl_platform
         self.which_cl_device     = which_cl_device
-        self.info_dict           = info_dict
+        self.info                = info
         self.mask_array          = mask_array
         self.uv_array            = uv_array
         self.mapping_array       = mapping_array
@@ -71,8 +71,8 @@ class Trajectories():
         As such it acts on a set of parameters passed as arguments here rather than by 
         accessing object variables. 
         
-        Workflow parameters are transferred here bundled in the Numpy structure array 
-        info_dict, which is parsed as well as passed on to gpu_compute_trajectories.
+        Workflow parameters are transferred here bundled in the info object,
+        which is parsed as well as passed on to gpu_compute_trajectories.
         
         The tasks undertaken by this function are to:
            1) prepare the OpenCL context, device and kernel source string
@@ -87,7 +87,7 @@ class Trajectories():
         cl_src_path         = self.cl_src_path
         which_cl_platform   = self.which_cl_platform
         which_cl_device     = self.which_cl_device
-        info_dict           = self.info_dict
+        info                = self.info
         mask_array          = self.mask_array
         uv_array            = self.uv_array
         mapping_array       = self.mapping_array
@@ -106,18 +106,18 @@ class Trajectories():
                 cl_kernel_source += fp.read()
                 
         # Seed point selection, padding and shuffling
-        n_trajectory_seed_points = info_dict['n_trajectory_seed_points']
-        pad_width                = info_dict['pad_width']
-        n_work_items             = info_dict['n_work_items']
-        do_shuffle               = info_dict['do_shuffle']
-        shuffle_rng_seed         = info_dict['shuffle_rng_seed']
+        n_trajectory_seed_points = info.n_trajectory_seed_points
+        pad_width                = info.pad_width
+        n_work_items             = info.n_work_items
+        do_shuffle               = info.do_shuffle
+        shuffle_rng_seed         = info.shuffle_rng_seed
         self.seed_point_array, n_seed_points, n_padded_seed_points \
             = create_seeds(mask_array, pad_width, n_work_items, 
                            n_seed_points=n_trajectory_seed_points, 
                            do_shuffle=do_shuffle, rng_seed=shuffle_rng_seed,
                            verbose=self.verbose)
-        info_dict['n_seed_points']        = n_seed_points
-        info_dict['n_padded_seed_points'] = n_padded_seed_points
+        info.n_seed_points        = n_seed_points
+        info.n_padded_seed_points = n_padded_seed_points
         
         # Mapping flag array - not likely already defined, but just in case...
         if mapping_array is None:
@@ -125,9 +125,9 @@ class Trajectories():
     
         # Chunkification
         gpu_traj_memory_limit = (device.get_info(cl.device_info.GLOBAL_MEM_SIZE) 
-                                 *info_dict['gpu_memory_limit_pc'])//100
+                                 *info.gpu_memory_limit_pc)//100
         full_traj_memory_request = (n_seed_points*np.dtype(np.uint8).itemsize
-                                    *info_dict['max_n_steps']*2)
+                                    *info.max_n_steps*2)
         n_chunks_required = max(1,int(np.ceil(
                             full_traj_memory_request/gpu_traj_memory_limit)) )
                 
@@ -140,14 +140,14 @@ class Trajectories():
         vprint(self.verbose,' => {}'.format('no need to chunkify' if n_chunks_required==1
                         else 'need to split into {} chunks'.format(n_chunks_required) ))
         self.choose_chunks(n_chunks_required)
-        compile_options = pocl.set_compile_options(info_dict,'INTEGRATE_TRAJECTORY')
-        vprint(self.verbose,'Compile options:\n',compile_options)
+#         compile_options = pocl.set_compile_options_alt(info,'INTEGRATE_TRAJECTORY')
+#         vprint(self.verbose,'Compile options:\n',compile_options)
         
         # Do integrations on the GPU
         self.gpu_compute_trajectories( device, context, queue, cl_kernel_source )
             
         # Streamline stats
-        pixel_size = info_dict['pixel_size']
+        pixel_size = info.pixel_size
         self.traj_stats_df = compute_stats(self.traj_length_array, self.traj_nsteps_array,
                                       pixel_size, self.verbose)
         dds = self.traj_stats_df['ds']['downstream','mean']
@@ -165,9 +165,9 @@ class Trajectories():
             n_chunks (int):
             
         """
-        n_seed_points        = self.info_dict['n_seed_points']
-        n_padded_seed_points = self.info_dict['n_padded_seed_points']
-        n_work_items         = self.info_dict['n_work_items']
+        n_seed_points        = self.info.n_seed_points
+        n_padded_seed_points = self.info.n_padded_seed_points
+        n_work_items         = self.info.n_work_items
         
         self.chunk_size = int(np.round(n_padded_seed_points/n_chunks))
         n_global = n_padded_seed_points
@@ -214,7 +214,7 @@ class Trajectories():
 
         """
         # Shorthand
-        info_dict           = self.info_dict
+        info                = self.info
         seed_point_array    = self.seed_point_array
         mask_array          = self.mask_array
         uv_array            = self.uv_array
@@ -222,8 +222,8 @@ class Trajectories():
         
         # Prepare memory, buffers 
         streamline_arrays_list = [[],[]]
-        ns = info_dict['n_seed_points']
-        nl = info_dict['max_n_steps']
+        ns = info.n_seed_points
+        nl = info.max_n_steps
         traj_nsteps_array  = np.zeros([ns,2], dtype=np.uint16)
         traj_length_array  = np.zeros([ns,2], dtype=np.float32)
         # Chunk-sized temporary arrays
@@ -244,9 +244,9 @@ class Trajectories():
              
         # Downstream and upstream passes aka streamline integrations from
         #   chunks of seed points aka subsets of the total set
-        n_work_items = info_dict['n_work_items']
-        chunk_size_factor = info_dict['chunk_size_factor']
-        max_time_per_kernel = info_dict['max_time_per_kernel']
+        n_work_items = info.n_work_items
+        chunk_size_factor = info.chunk_size_factor
+        max_time_per_kernel = info.max_time_per_kernel
         for downup_str, downup_idx, downup_sign, chunk_idx, \
             seeds_chunk_offset, n_chunk_seeds, n_chunk_ki in [td[1:] \
                 for td in self.trace_do_chunks if td[0]]:
@@ -261,14 +261,14 @@ class Trajectories():
             vprint(self.verbose,
                    'Seed point buffer size = {}*8 bytes'
                    .format(buffer_dict['seed_point'].size/8))
-            local_size = [info_dict['n_work_items'],1]
-            info_dict['downup_sign'] = downup_sign
-            info_dict['seeds_chunk_offset'] = seeds_chunk_offset
+            local_size = [info.n_work_items,1]
+            info.downup_sign = downup_sign
+            info.seeds_chunk_offset = seeds_chunk_offset
             
             ##################################
             
             # Compile the CL code
-            compile_options = pocl.set_compile_options(info_dict, 'INTEGRATE_TRAJECTORY', 
+            compile_options = pocl.set_compile_options_alt(info, 'INTEGRATE_TRAJECTORY', 
                                                        downup_sign=downup_sign)
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
