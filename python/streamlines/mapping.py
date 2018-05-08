@@ -17,7 +17,7 @@ environ['PYTHONUNBUFFERED']='True'
 from streamlines.core import Core
 from streamlines import connect, countlink, label, segment, lengths
 from streamlines.trace import Info
-from pocl import Initialize_cl
+from streamlines.pocl import Initialize_cl
 
 __all__ = ['Mapping']
 

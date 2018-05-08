@@ -13,24 +13,24 @@ environ['PYTHONUNBUFFERED']='True'
 from streamlines.core import Core
 from streamlines import kde
 
-__all__ = ['Analysis','Univariate_distribution','Bivariate_distribution']
+__all__ = ['Info','Univariate_distribution','Bivariate_distribution','Analysis']
 
 pdebug = print
 
 class Info():    
-    def __init__(self, obj, is_one_d=True):
+    def __init__(self, kde, is_one_d=True):
         
-        self.debug =         np.bool8(obj.debug)
-        self.kdf_bandwidth = np.float32(obj.bandwidth)
-        self.kdf_kernel =    obj.kernel
-        self.n_data =        np.uint32(obj.n_data)
-        self.n_hist_bins =   np.uint32(obj.n_hist_bins)
-        self.n_pdf_points =  np.uint32(obj.n_pdf_points)
-        self.x_min =         np.float32(obj.logx_min)
-        self.x_max =         np.float32(obj.logx_max)
-        self.x_range =       np.float32(obj.x_range)
-        self.bin_dx =        np.float32(obj.bin_dx)
-        self.pdf_dx =        np.float32(obj.pdf_dx)
+        self.debug =         np.bool8(kde.debug)
+        self.kdf_bandwidth = np.float32(kde.bandwidth)
+        self.kdf_kernel =    kde.kernel
+        self.n_data =        np.uint32(kde.n_data)
+        self.n_hist_bins =   np.uint32(kde.n_hist_bins)
+        self.n_pdf_points =  np.uint32(kde.n_pdf_points)
+        self.x_min =         np.float32(kde.logx_min)
+        self.x_max =         np.float32(kde.logx_max)
+        self.x_range =       np.float32(kde.x_range)
+        self.bin_dx =        np.float32(kde.bin_dx)
+        self.pdf_dx =        np.float32(kde.pdf_dx)
         self.kdf_width_x =   np.float32(0.0)
         self.n_kdf_part_points_x = np.uint32(0)
         
@@ -43,11 +43,11 @@ class Info():
             self.kdf_width_y =         np.float32(0.0)
             self.n_kdf_part_points_y = np.uint32(0)
         else:
-            self.y_min =         np.float32(obj.logy_min)
-            self.y_max =         np.float32(obj.logy_max)
-            self.y_range =       np.float32(obj.y_range)
-            self.bin_dy =        np.float32(obj.bin_dy)
-            self.pdf_dy =        np.float32(obj.pdf_dy)
+            self.y_min =         np.float32(kde.logy_min)
+            self.y_max =         np.float32(kde.logy_max)
+            self.y_range =       np.float32(kde.y_range)
+            self.bin_dy =        np.float32(kde.bin_dy)
+            self.pdf_dy =        np.float32(kde.pdf_dy)
             self.kdf_width_y =         np.float32(0.0)
             self.n_kdf_part_points_y = np.uint32(0)
             

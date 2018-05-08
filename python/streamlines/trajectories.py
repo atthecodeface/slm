@@ -136,8 +136,6 @@ class Trajectories():
         vprint(self.verbose,' => {}'.format('no need to chunkify' if n_chunks_required==1
                         else 'need to split into {} chunks'.format(n_chunks_required) ))
         self.choose_chunks(n_chunks_required)
-#         compile_options = pocl.set_compile_options_alt(info,'INTEGRATE_TRAJECTORY')
-#         vprint(self.verbose,'Compile options:\n',compile_options)
         
         # Do integrations on the GPU
         self.gpu_compute_trajectories( device, context, queue, cl_kernel_source )
@@ -266,6 +264,7 @@ class Trajectories():
             # Compile the CL code
             compile_options = pocl.set_compile_options(info, 'INTEGRATE_TRAJECTORY', 
                                                        downup_sign=downup_sign)
+            vprint(self.verbose,'Compile options:\n',compile_options)
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 program = cl.Program(context,

@@ -132,8 +132,6 @@ class Fields():
                    'Chunk size adjustment for {0} CL work items/group: {1}->{2}...'
                  .format(n_work_items, n_global, n_global+pad_length))
         n_global += pad_length
-#         compile_options = pocl.set_compile_options(info,'INTEGRATE_FIELDS')
-#         vprint(self.verbose,'Compile options:\n',compile_options)
         
         # Do integrations on the GPU
         self.gpu_integrate(device, context, queue, cl_kernel_source, n_global)
@@ -222,6 +220,7 @@ class Fields():
             # Compile the CL code
             compile_options = pocl.set_compile_options(info, 'INTEGRATE_FIELDS', 
                                                        downup_sign=downup_sign)
+            vprint(self.verbose,'Compile options:\n',compile_options)
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 program = cl.Program(context,
