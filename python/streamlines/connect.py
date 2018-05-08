@@ -18,16 +18,14 @@ __all__ = ['connect_channel_pixels','map_channel_heads']
 
 pdebug = print
 
-def connect_channel_pixels(cl_state, info, mask_array, uv_array, mapping_array, verbose):
+def connect_channel_pixels(cl_state, info, data, verbose):
     """
     Connect missing links between channel pixels.
     
     Args:
         cl_state (obj):
         info (obj):
-        mask_array (numpy.ndarray):
-        uv_array (numpy.ndarray):
-        mapping_array (numpy.ndarray):
+        data (obj):
         verbose (bool):
     """
     vprint(verbose,'Connecting channel pixels...')
@@ -42,16 +40,16 @@ def connect_channel_pixels(cl_state, info, mask_array, uv_array, mapping_array, 
     is_channel = info.is_channel
     
     # Trace downstream from all channel pixels
-    seed_point_array = pick_seeds(map=mapping_array, flag=is_channel, pad=pad)
+    seed_point_array = pick_seeds(map=data.mapping_array, flag=is_channel, pad=pad)
     if ( seed_point_array.shape[0]==0 ):
         vprint(verbose,'no channel pixels found...exiting')
         return
     
     # Specify arrays & CL buffers 
     array_dict = { 'seed_point':  {'array': seed_point_array, 'rwf': 'RO'},
-                   'mask':        {'array': mask_array,       'rwf': 'RO'}, 
-                   'uv':          {'array': uv_array,         'rwf': 'RO'}, 
-                   'mapping':     {'array': mapping_array,    'rwf': 'RW'} }
+                   'mask':        {'array': data.mask_array,       'rwf': 'RO'}, 
+                   'uv':          {'array': data.uv_array,         'rwf': 'RO'}, 
+                   'mapping':     {'array': data.mapping_array,    'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
@@ -61,16 +59,14 @@ def connect_channel_pixels(cl_state, info, mask_array, uv_array, mapping_array, 
     # Done
     vprint(verbose,'...done')  
 
-def map_channel_heads(cl_state, info, mask_array, uv_array, mapping_array, verbose ):
+def map_channel_heads(cl_state, info, data, verbose):
     """
     Find channel head pixels.
     
     Args:
         cl_state (obj):
         info (obj):
-        mask_array (numpy.ndarray):
-        uv_array (numpy.ndarray):
-        mapping_array (numpy.ndarray):
+        data (obj):
         verbose (bool):
     """
     vprint(verbose,'Mapping channel heads...')
@@ -86,16 +82,17 @@ def map_channel_heads(cl_state, info, mask_array, uv_array, mapping_array, verbo
     is_channel     = info.is_channel
     is_thinchannel = info.is_thinchannel
     is_channelhead = info.is_channelhead
-    mapping_array[(mapping_array&is_thinchannel)==is_thinchannel] |= is_channelhead
+    data.mapping_array[(data.mapping_array&is_thinchannel)==is_thinchannel] \
+                            |= is_channelhead
     pad = info.pad_width
         
     # Trace downstream from all non-masked pixels
-    seed_point_array = pick_seeds(mask=mask_array, flag=is_channel, pad=pad)
+    seed_point_array = pick_seeds(mask=data.mask_array, flag=is_channel, pad=pad)
     # Specify arrays & CL buffers 
     array_dict = { 'seed_point':  {'array': seed_point_array, 'rwf': 'RO'},
-                   'mask':        {'array': mask_array,       'rwf': 'RO'}, 
-                   'uv':          {'array': uv_array,         'rwf': 'RO'}, 
-                   'mapping':     {'array': mapping_array,    'rwf': 'RW'} }
+                   'mask':        {'array': data.mask_array,       'rwf': 'RO'}, 
+                   'uv':          {'array': data.uv_array,         'rwf': 'RO'}, 
+                   'mapping':     {'array': data.mapping_array,    'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
@@ -105,8 +102,8 @@ def map_channel_heads(cl_state, info, mask_array, uv_array, mapping_array, verbo
     vprint(verbose,'pruning...')
     
     # Trace downstream from all provisional channel head pixels
-    seed_point_array \
-        = pick_seeds(mask=mask_array, map=mapping_array, flag=is_channelhead, pad=pad)
+    seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
+                                  flag=is_channelhead, pad=pad)
     # Specify arrays & CL buffers 
     array_dict['seed_point']['array'] = seed_point_array
     info.n_seed_points = seed_point_array.shape[0]

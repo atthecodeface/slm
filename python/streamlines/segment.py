@@ -16,22 +16,15 @@ __all__ = ['segment_channels','segment_hillslopes','subsegment_flanks']
 
 pdebug = print
 
-def segment_channels( cl_state, info, 
-                      mask_array, uv_array,
-                      mapping_array, count_array, link_array, label_array, verbose ):
+def segment_channels( cl_state, info, data, verbose ):
         
     """
     Label channel confluences.
     
     Args:
         cl_state (obj):
-        info (numpy.ndarray):
-        mask_array (numpy.ndarray):
-        uv_array (numpy.ndarray):
-        mapping_array (numpy.ndarray):
-        count_array (numpy.ndarray):
-        link_array (numpy.ndarray):
-        label_array (numpy.ndarray):
+        info (obj):
+        data (obj):
         verbose (bool):
         
     """
@@ -47,16 +40,17 @@ def segment_channels( cl_state, info,
     pad            = info.pad_width
     is_channelhead = info.is_channelhead
     seed_point_array \
-        = pick_seeds(mask=mask_array, map=mapping_array, flag=is_channelhead, pad=pad)
+        = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
+                     flag=is_channelhead, pad=pad)
         
     # Prepare memory, buffers 
     array_dict = { 'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
-                   'mask':       {'array': mask_array,       'rwf': 'RO'}, 
-                   'uv':         {'array': uv_array,         'rwf': 'RO'}, 
-                   'mapping':    {'array': mapping_array,    'rwf': 'RW'}, 
-                   'count':      {'array': count_array,      'rwf': 'RO'}, 
-                   'link':       {'array': link_array,       'rwf': 'RO'}, 
-                   'label':      {'array': label_array,      'rwf': 'RW'} }
+                   'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
+                   'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
+                   'mapping':    {'array': data.mapping_array,    'rwf': 'RW'}, 
+                   'count':      {'array': data.count_array,      'rwf': 'RO'}, 
+                   'link':       {'array': data.link_array,       'rwf': 'RO'}, 
+                   'label':      {'array': data.label_array,      'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
@@ -65,10 +59,11 @@ def segment_channels( cl_state, info,
 
     # Relabel channel segments in simple sequence 1,2,3,... 
     #  instead of using array indices as labels
-    channel_segments_array = label_array[label_array>0 & (~mask_array)].ravel()
+    channel_segments_array \
+        = data.label_array[data.label_array>0 & (~data.mask_array)].ravel()
     channel_segment_labels_array = np.unique(channel_segments_array)
     for idx,label in enumerate(channel_segment_labels_array):
-        label_array[label_array==label]=idx+1
+        data.label_array[data.label_array==label]=idx+1
     n_segments = idx+1
     vprint(verbose, ' number of segments={}...'.format(n_segments),end='')
 
@@ -76,22 +71,15 @@ def segment_channels( cl_state, info,
     vprint(verbose,'...done')  
     return n_segments
 
-def segment_hillslopes( cl_state, info, 
-                        mask_array, uv_array,
-                        mapping_array, count_array, link_array, label_array, verbose ):
+def segment_hillslopes( cl_state, info, data, verbose ):
         
     """
     Label hillslope pixels.
     
     Args:
         cl_state (obj):
-        info (numpy.ndarray):
-        mask_array (numpy.ndarray):
-        uv_array (numpy.ndarray):
-        mapping_array (numpy.ndarray):
-        count_array (numpy.ndarray):
-        link_array (numpy.ndarray):
-        label_array (numpy.ndarray):
+        info (obj):
+        data (obj):
         verbose (bool):
         
     """
@@ -108,16 +96,17 @@ def segment_hillslopes( cl_state, info,
     pad            = info.pad_width
     is_channelhead = info.is_channelhead
     flag           = is_channelhead
-    seed_point_array = pick_seeds(mask=mask_array, map=~mapping_array, flag=flag,pad=pad)
+    seed_point_array = pick_seeds(mask=data.mask_array, map=~data.mapping_array, 
+                                  flag=flag,pad=pad)
     
     # Prepare memory, buffers 
     array_dict = { 'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
-                   'mask':       {'array': mask_array,       'rwf': 'RO'}, 
-                   'uv':         {'array': uv_array,         'rwf': 'RO'}, 
-                   'mapping':    {'array': mapping_array,    'rwf': 'RW'}, 
-                   'count':      {'array': count_array,      'rwf': 'RO'}, 
-                   'link':       {'array': link_array,       'rwf': 'RO'}, 
-                   'label':      {'array': label_array,      'rwf': 'RW'} }
+                   'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
+                   'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
+                   'mapping':    {'array': data.mapping_array,    'rwf': 'RW'}, 
+                   'count':      {'array': data.count_array,      'rwf': 'RO'}, 
+                   'link':       {'array': data.link_array,       'rwf': 'RO'}, 
+                   'label':      {'array': data.label_array,      'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
@@ -127,23 +116,15 @@ def segment_hillslopes( cl_state, info,
     # Done
     vprint(verbose,'...done')  
 
-def subsegment_flanks( cl_state, info, 
-                       mask_array, uv_array,
-                       mapping_array, channel_label_array, link_array, label_array, 
-                       verbose ):
+def subsegment_flanks( cl_state, info, data, verbose ):
         
     """
     Subsegment left (and implicitly right) flanks.
     
     Args:
         cl_state (obj):
-        info (numpy.ndarray):
-        mask_array (numpy.ndarray):
-        uv_array (numpy.ndarray):
-        mapping_array (numpy.ndarray):
-        channel_label_array (numpy.ndarray):
-        link_array (numpy.ndarray):
-        label_array (numpy.ndarray):
+        info (obj):
+        data (obj):
         verbose (bool):
         
     """
@@ -162,16 +143,17 @@ def subsegment_flanks( cl_state, info,
     is_thinchannel     = info.is_thinchannel
     is_leftflank       = info.is_leftflank
     flag               = is_channelhead | is_majorconfluence
-    seed_point_array = pick_seeds(mask=mask_array, map=mapping_array, flag=flag, pad=pad)
+    seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
+                                  flag=flag, pad=pad)
     
     # Specify arrays & CL buffers 
     array_dict = { 'seed_point':    {'array': seed_point_array,    'rwf': 'RO'},
-                   'mask':          {'array': mask_array,          'rwf': 'RO'}, 
-                   'uv':            {'array': uv_array,            'rwf': 'RO'}, 
-                   'mapping':       {'array': mapping_array,       'rwf': 'RW'}, 
-                   'channel_label': {'array': channel_label_array, 'rwf': 'RO'}, 
-                   'link':          {'array': link_array,          'rwf': 'RO'}, 
-                   'label':         {'array': label_array,         'rwf': 'RW'} }
+                   'mask':          {'array': data.mask_array,          'rwf': 'RO'}, 
+                   'uv':            {'array': data.uv_array,            'rwf': 'RO'}, 
+                   'mapping':       {'array': data.mapping_array,       'rwf': 'RW'}, 
+                   'channel_label': {'array': data.channel_label_array, 'rwf': 'RO'}, 
+                   'link':          {'array': data.link_array,          'rwf': 'RO'}, 
+                   'label':         {'array': data.label_array,         'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
@@ -181,7 +163,8 @@ def subsegment_flanks( cl_state, info,
             
     # Trace downstream from all non-left-flank hillslope pixels
     flag = is_leftflank | is_thinchannel
-    seed_point_array = pick_seeds(mask=mask_array, map=~mapping_array, flag=flag,pad=pad)
+    seed_point_array = pick_seeds(mask=data.mask_array, map=~data.mapping_array, 
+                                  flag=flag,pad=pad)
     array_dict['seed_point']['array'] = seed_point_array
     info.n_seed_points = seed_point_array.shape[0]
     

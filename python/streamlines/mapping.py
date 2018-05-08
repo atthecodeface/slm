@@ -16,7 +16,7 @@ environ['PYTHONUNBUFFERED']='True'
 
 from streamlines.core import Core
 from streamlines import connect, countlink, label, segment, lengths
-from streamlines.trace import Info
+from streamlines.trace import Info, Data
 from streamlines.pocl import Initialize_cl
 
 __all__ = ['Mapping']
@@ -47,7 +47,7 @@ class Mapping(Core):
         self.print('\n**Mapping begin**') 
         
         # Shorthand
-        self.mapping_array = self.trace.mapping_array
+        self.prepare()
          
         # Use downstream slt,sla pdfs to designate pixels as channels
         #    - no GPU invocation
@@ -110,175 +110,128 @@ class Mapping(Core):
         self.print('**Mapping end**\n')  
       
       
-    def map_channels(self):
-        self.print('Channels...',end='')  
+    def prepare(self):
+        self.print('Preparing...',end='')  
         # Shorthand
         try:
             self.mapping_array
         except:
-            self.mapping_array = self.trace.mapping_array
+            self.mapping_array = self.trace.mapping_array 
+        try:
+            self.data
+        except:
+            self.data = Data( mask_array    = self.geodata.basin_mask_array,
+                              uv_array      = self.preprocess.uv_array,
+                              mapping_array = self.trace.mapping_array )  
+        self.verbose = self.state.verbose
+        self.print('done')    
+            
+    def map_channels(self):
+        self.print('Channels...',end='')  
         jpdf = self.analysis.jpdf_dsla_dslt
         # Designate channel pixels according to dsla pdf analysis
-        self.mapping_array[jpdf.mode_cluster_ij_list[1][:,0],
-                           jpdf.mode_cluster_ij_list[1][:,1]] = self.trace.is_channel
+        self.data.mapping_array[jpdf.mode_cluster_ij_list[1][:,0],
+                                jpdf.mode_cluster_ij_list[1][:,1]] \
+                            = self.trace.is_channel
         self.print('done')  
 
     def connect_channel_pixels(self):
-        connect.connect_channel_pixels(
-                self.cl_state, 
-                Info(self.trace),
-                self.geodata.basin_mask_array,
-                self.preprocess.uv_array,
-                self.mapping_array, 
-                self.state.verbose 
-                )
+        connect.connect_channel_pixels(self.cl_state, Info(self.trace), self.data,
+                                       self.verbose)
         
     def thin_channels(self):
         self.print('Thinning channels...',end='')  
         is_channel = self.trace.is_channel
         is_interchannel = self.trace.is_interchannel
-        channel_array = np.zeros(self.mapping_array.shape, dtype=np.bool)
-        channel_array[  ((self.mapping_array & is_channel)==is_channel)
-                      | ((self.mapping_array & is_interchannel)==is_interchannel)
+        channel_array = np.zeros(self.data.mapping_array.shape, dtype=np.bool)
+        channel_array[  ((self.data.mapping_array & is_channel)==is_channel)
+                      | ((self.data.mapping_array & is_interchannel)==is_interchannel)
                      ] = True
         self.print('skeletonizing...',end='')  
         channel_array = skeletonize(channel_array)
-        self.mapping_array[channel_array] |= self.trace.is_thinchannel
+        self.data.mapping_array[channel_array] |= self.trace.is_thinchannel
         self.print('done')  
 
     def map_channel_heads(self):
-        connect.map_channel_heads(
-                self.cl_state, 
-                Info(self.trace),
-                self.geodata.basin_mask_array,
-                self.preprocess.uv_array,
-                self.mapping_array, 
-                self.state.verbose 
-                )
+        connect.map_channel_heads(self.cl_state, Info(self.trace), self.data, 
+                                  self.verbose)
         
     def count_downchannels(self):
-        self.count_array = np.zeros(self.mapping_array.shape,dtype=np.uint32)
-        self.link_array  = np.zeros(self.mapping_array.shape, dtype=np.uint32)
-        countlink.count_downchannels(
-                            self.cl_state, 
-                            Info(self.trace),
-                            self.geodata.basin_mask_array,
-                            self.preprocess.uv_array,
-                            self.mapping_array, self.count_array, self.link_array, 
-                            self.state.verbose 
-                            )
+        self.data.count_array = np.zeros(self.mapping_array.shape,dtype=np.uint32)
+        self.data.link_array  = np.zeros(self.mapping_array.shape, dtype=np.uint32)
+        countlink.count_downchannels(self.cl_state, Info(self.trace), self.data, 
+                                     self.verbose)
 
     def flag_downchannels(self):
-        countlink.flag_downchannels(
-                            self.cl_state, 
-                            Info(self.trace),
-                            self.geodata.basin_mask_array,
-                            self.preprocess.uv_array,
-                            self.mapping_array, self.count_array, self.link_array, 
-                            self.state.verbose 
-                            )
+        countlink.flag_downchannels(self.cl_state, Info(self.trace), self.data,
+                                    self.verbose)
 
     def label_confluences(self):
-        label.label_confluences(
-                            self.cl_state,
-                            Info(self.trace), 
-                            self.geodata.basin_mask_array,
-                            self.preprocess.uv_array,
-                            self.trace.slt_array[:,:,0], 
-                            self.mapping_array, self.count_array, self.link_array, 
-                            self.state.verbose 
-                            )
+        self.data.dn_slt_array = self.trace.slt_array[:,:,0]
+        label.label_confluences(self.cl_state, Info(self.trace), self.data, 
+                                self.verbose)
 
     def segment_downchannels(self):
-        self.label_array = np.zeros(self.mapping_array.shape, dtype=np.uint32)
-        self.n_segments \
-            = segment.segment_channels(
-                    self.cl_state,
-                    Info(self.trace),
-                    self.geodata.basin_mask_array,
-                    self.preprocess.uv_array,
-                    self.mapping_array,self.count_array,self.link_array,self.label_array,
-                    self.state.verbose 
-                    )
+        self.data.label_array = np.zeros(self.mapping_array.shape, dtype=np.uint32)
+        self.n_segments = segment.segment_channels(self.cl_state, Info(self.trace), 
+                                                   self.data, self.verbose)
         # Save the channel-only segment labeling for now
-        self.channel_label_array = self.label_array.copy().astype(np.uint32)
+        self.data.channel_label_array = self.data.label_array.copy().astype(np.uint32)
         is_majorconfluence = self.trace.is_majorconfluence
 #         pdebug('Major confluences',self.label_array[(~self.geodata.basin_mask_array) 
 #                  & ((self.mapping_array & is_majorconfluence)==is_majorconfluence)])
 #         pdebug('Unique labels:',np.unique(self.label_array))
         
     def link_hillslopes(self):
-        countlink.link_hillslopes(
-                            self.cl_state,
-                            Info(self.trace),
-                            self.geodata.basin_mask_array,
-                            self.preprocess.uv_array,
-                            self.mapping_array,self.count_array,self.link_array,
-                            self.state.verbose 
-                            )
+        countlink.link_hillslopes(self.cl_state, Info(self.trace), self.data,
+                                  self.verbose)
 
     def segment_hillslopes(self):
-        segment.segment_hillslopes(
-                self.cl_state,
-                Info(self.trace),
-                self.geodata.basin_mask_array,
-                self.preprocess.uv_array,
-                self.mapping_array,self.count_array,self.link_array,self.label_array,
-                self.state.verbose 
-                )
+        segment.segment_hillslopes(self.cl_state, Info(self.trace), self.data, 
+                                   self.verbose )
 
     def subsegment_flanks(self):
-        segment.subsegment_flanks(
-                self.cl_state,
-                Info(self.trace),
-                self.geodata.basin_mask_array,
-                self.preprocess.uv_array,
-                self.mapping_array,
-                self.channel_label_array,self.link_array,self.label_array,
-                self.state.verbose 
-                )
-        self.label_array = self.label_array.astype(dtype=np.int32)
-        self.label_array[self.label_array<0] \
-            = -(self.label_array[self.label_array<0] + self.trace.left_flank_addition)
+        segment.subsegment_flanks(self.cl_state, Info(self.trace), self.data, 
+                                  self.verbose)
+        self.data.label_array = self.data.label_array.astype(dtype=np.int32)
+        self.data.label_array[self.data.label_array<0] \
+            = - (  self.data.label_array[self.data.label_array<0] 
+                 + self.trace.left_flank_addition )
         is_leftflank = self.trace.is_leftflank
+        self.label_array = self.data.label_array
         
     def map_midslope(self):
         self.print('Midslopes...',end='')  
         dsla = self.trace.sla_array[:,:,0]
         usla = self.trace.sla_array[:,:,1]
-        mask = self.geodata.basin_mask_array
+        mask = self.data.mask_array
 
         midslope_array = np.zeros_like(dsla, dtype=np.bool)
         midslope_array[ (~mask) & (np.fabs(
             gaussian_filter((np.arctan2(dsla,usla)-np.pi/4), self.midslope_filter_sigma))
                              <=self.midslope_threshold)] = True
-        self.mapping_array[midslope_array] \
-            = self.mapping_array[midslope_array] | self.trace.is_midslope
+        self.data.mapping_array[midslope_array] \
+            = self.data.mapping_array[midslope_array] | self.trace.is_midslope
         self.print('done')  
 
     def measure_hillslope_lengths(self):
-        traj_label_array = (self.label_array[
-                                (self.mapping_array&self.trace.is_midslope)>0
-                    ].astype(np.int32)).ravel().copy()
-#         pdebug('traj_label_array',traj_label_array.shape,traj_label_array)
-        traj_length_array= 0.0*traj_label_array.copy().astype(dtype=np.float32)
+        self.data.traj_label_array = (self.data.label_array[
+                                       (self.data.mapping_array&self.trace.is_midslope)>0
+                                                ].astype(np.int32)).ravel().copy()
+        # BUG sort of - cleaner ways to create a zero array than this
+        self.data.traj_length_array \
+            = 0.0*self.data.traj_label_array.copy().astype(dtype=np.float32)
         
-        lengths.hillslope_lengths(
-                self.cl_state,
-                Info(self.trace),
-                self.geodata.basin_mask_array,
-                self.preprocess.uv_array,
-                self.mapping_array,
-                self.label_array, traj_length_array,
-                self.state.verbose 
-                )
-        unique_labels = np.unique(traj_label_array)
+        lengths.hillslope_lengths(self.cl_state, Info(self.trace), self.data, 
+                                  self.verbose)
+
+        unique_labels = np.unique(self.data.traj_label_array)
         self.hillslope_labels \
             = unique_labels[unique_labels!=0].astype(np.int32)
-        df  = pd.DataFrame(np.zeros((traj_length_array.shape[0],), 
+        df  = pd.DataFrame(np.zeros((self.data.traj_length_array.shape[0],), 
                                     dtype=[('label', np.int32), ('length', np.float32)]))
-        df['label']  = traj_label_array
-        df['length'] = traj_length_array
+        df['label']  = self.data.traj_label_array
+        df['length'] = self.data.traj_length_array
         df = df[df.label!=0]
         self.hillslope_length_df = df
         
@@ -290,9 +243,10 @@ class Mapping(Core):
         stats_df.set_index('label',inplace=True)
         self.hillslope_stats_df = stats_df
         
-        self.hillslope_length_array = np.zeros_like(self.label_array, dtype=np.float32)
+        self.hillslope_length_array \
+            = np.zeros_like(self.data.label_array, dtype=np.float32)
         for idx,row in stats_df.iterrows():     
-            self.hillslope_length_array[self.label_array==idx] = row['mean [m]']
+            self.hillslope_length_array[self.data.label_array==idx] = row['mean [m]']
 
     def map_hillslope_lengths(self):
         self.print('Mapping hillslope lengths...',end='',flush=True)

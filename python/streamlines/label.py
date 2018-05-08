@@ -16,22 +16,15 @@ __all__ = ['label_confluences']
 
 pdebug = print
 
-def label_confluences( cl_state, info, 
-                       mask_array, uv_array, dn_slt_array,
-                       mapping_array, count_array, link_array, verbose ):
+def label_confluences( cl_state, info, data, verbose ):
         
     """
     Label channel confluences.
     
     Args:
         cl_state (obj):
-        info (numpy.ndarray):
-        mask_array (numpy.ndarray):
-        uv_array (numpy.ndarray):
-        dn_slt_array (numpy.ndarray):
-        mapping_array (numpy.ndarray):
-        count_array (numpy.ndarray):
-        link_array (numpy.ndarray):
+        info (obj):
+        data (obj):
         verbose (bool):
         
     """
@@ -46,16 +39,17 @@ def label_confluences( cl_state, info,
     pad            = info.pad_width
     is_thinchannel = info.is_thinchannel
     seed_point_array \
-        = pick_seeds(mask=mask_array, map=mapping_array, flag=is_thinchannel, pad=pad)
+        = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
+                     flag=is_thinchannel, pad=pad)
         
     # Prepare memory, buffers 
     array_dict = { 'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
-                   'mask':       {'array': mask_array,       'rwf': 'RO'}, 
-                   'uv':         {'array': uv_array,         'rwf': 'RO'}, 
-                   'dn_slt':     {'array': dn_slt_array,     'rwf': 'RO'}, 
-                   'mapping':    {'array': mapping_array,    'rwf': 'RW'}, 
-                   'count':      {'array': count_array,      'rwf': 'RW'}, 
-                   'link':       {'array': link_array,       'rwf': 'RW'} }
+                   'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
+                   'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
+                   'dn_slt':     {'array': data.dn_slt_array,     'rwf': 'RO'}, 
+                   'mapping':    {'array': data.mapping_array,    'rwf': 'RW'}, 
+                   'count':      {'array': data.count_array,      'rwf': 'RW'}, 
+                   'link':       {'array': data.link_array,       'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU

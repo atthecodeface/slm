@@ -16,21 +16,15 @@ __all__ = ['hillslope_lengths']
 
 pdebug = print
 
-def hillslope_lengths( cl_state, info, 
-                       mask_array, uv_array,
-                       mapping_array, label_array, traj_length_array, verbose ):
+def hillslope_lengths( cl_state, info, data, verbose ):
         
     """
     Measure mean (half) hillslope lengths.
     
     Args:
         cl_state (obj):
-        info (numpy.ndarray):
-        mask_array  (numpy.ndarray):
-        uv_array (numpy.ndarray):
-        mapping_array (numpy.ndarray):
-        label_array   (numpy.ndarray):
-        traj_length_array (numpy.ndarray):
+        info (obj):
+        data (obj):
         verbose (bool):
         
     """
@@ -49,16 +43,17 @@ def hillslope_lengths( cl_state, info,
     is_midslope = info.is_midslope
     pixel_size  = info.pixel_size
     flag        = is_midslope
-    seed_point_array = pick_seeds(mask=mask_array, map=mapping_array, flag=flag, pad=pad)
-    if ( seed_point_array.shape[0]!=traj_length_array.shape[0] ):
+    seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
+                                  flag=flag, pad=pad)
+    if ( seed_point_array.shape[0]!=data.traj_length_array.shape[0] ):
         print('\nMismatched midslope point arrays: ',
               seed_point_array.shape,traj_length_array.shape)
     array_dict = { 'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
-                   'mask':       {'array': mask_array,       'rwf': 'RO'}, 
-                   'uv':         {'array': uv_array,         'rwf': 'RO'}, 
-                   'mapping':    {'array': mapping_array,    'rwf': 'RO'}, 
-                   'label':      {'array': label_array,      'rwf': 'RO'}, 
-                   'traj_length':{'array': traj_length_array,'rwf': 'RW'} }
+                   'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
+                   'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
+                   'mapping':    {'array': data.mapping_array,    'rwf': 'RO'}, 
+                   'label':      {'array': data.label_array,      'rwf': 'RO'}, 
+                   'traj_length':{'array': data.traj_length_array,'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
@@ -66,6 +61,6 @@ def hillslope_lengths( cl_state, info,
     pocl.gpu_compute(cl_state, info, array_dict, verbose)
     
     # Scale by pixel size and by two because we measured only half lengths
-    traj_length_array *= pixel_size*2
+    data.traj_length_array *= pixel_size*2
     # Done
     vprint(verbose,'...done')  
