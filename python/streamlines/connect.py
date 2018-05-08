@@ -18,16 +18,13 @@ __all__ = ['connect_channel_pixels','map_channel_heads']
 
 pdebug = print
 
-def connect_channel_pixels( 
-        cl_src_path, which_cl_platform, which_cl_device, info_dict, 
-        mask_array, uv_array, mapping_array, verbose ):
+def connect_channel_pixels( cl_state, info_dict, 
+                            mask_array, uv_array, mapping_array, verbose ):
     """
     Connect missing links between channel pixels.
     
     Args:
-        cl_src_path (str):
-        which_cl_platform (int):
-        which_cl_device (int):
+        cl_state (obj):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
         uv_array (numpy.ndarray):
@@ -36,23 +33,17 @@ def connect_channel_pixels(
     """
     vprint(verbose,'Connecting channel pixels...')
     # Prepare CL essentials
-    platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
-    queue = cl.CommandQueue(context,
-                            properties=cl.command_queue_properties.PROFILING_ENABLE)
-    cl_files = ['essentials.cl','updatetraj.cl','computestep.cl',
-                'rungekutta.cl','connect.cl']
-    cl_kernel_source = ''
-    for cl_file in cl_files:
-        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
-            cl_kernel_source += fp.read()
+    cl_state.kernel_source \
+        = pocl.read_kernel_source(cl_state.src_path,['essentials.cl','updatetraj.cl',
+                                                     'computestep.cl','rungekutta.cl',
+                                                     'connect.cl'])
             
     # Generate a list (array) of seed points from the set of channel pixels
-    pad = info_dict['pad_width']
+    pad        = info_dict['pad_width']
     is_channel = info_dict['is_channel']
     
     # Trace downstream from all channel pixels
-    seed_point_array \
-        = pick_seeds(map=mapping_array, flag=is_channel, pad=pad)
+    seed_point_array = pick_seeds(map=mapping_array, flag=is_channel, pad=pad)
     if ( seed_point_array.shape[0]==0 ):
         vprint(verbose,'no channel pixels found...exiting')
         return
@@ -65,23 +56,18 @@ def connect_channel_pixels(
     info_dict['n_seed_points'] = seed_point_array.shape[0]
     
     # Do integrations on the GPU
-    cl_kernel_fn = 'connect_channels'
-    pocl.gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, 
-                     info_dict, array_dict, verbose)
+    cl_state.kernel_fn = 'connect_channels'
+    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
     
     # Done
     vprint(verbose,'...done')  
 
-def map_channel_heads( 
-        cl_src_path, which_cl_platform, which_cl_device, info_dict, 
-        mask_array, uv_array, mapping_array, verbose ):
+def map_channel_heads(cl_state, info_dict, mask_array, uv_array, mapping_array, verbose ):
     """
     Find channel head pixels.
     
     Args:
-        cl_src_path (str):
-        which_cl_platform (int):
-        which_cl_device (int):
+        cl_state (obj):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
         uv_array (numpy.ndarray):
@@ -91,15 +77,10 @@ def map_channel_heads(
     vprint(verbose,'Mapping channel heads...')
     
     # Prepare CL essentials
-    platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
-    queue = cl.CommandQueue(context,
-                            properties=cl.command_queue_properties.PROFILING_ENABLE)
-    cl_files = ['essentials.cl','updatetraj.cl','computestep.cl',
-                'rungekutta.cl','channelheads.cl']
-    cl_kernel_source = ''
-    for cl_file in cl_files:
-        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
-            cl_kernel_source += fp.read()
+    cl_state.kernel_source \
+        = pocl.read_kernel_source(cl_state.src_path,['essentials.cl','updatetraj.cl',
+                                                     'computestep.cl','rungekutta.cl',
+                                                     'channelheads.cl'])
 
     # Pre-designate every channel pixel as a channel head
     #   - and expect to eliminate all non-heads during the GPU compute
@@ -119,9 +100,8 @@ def map_channel_heads(
     info_dict['n_seed_points'] = seed_point_array.shape[0]
     
     # Do integrations on the GPU
-    cl_kernel_fn = 'map_channel_heads'
-    pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
-                     info_dict, array_dict, verbose)
+    cl_state.kernel_fn = 'map_channel_heads'
+    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
     
     vprint(verbose,'pruning...')
     
@@ -133,9 +113,8 @@ def map_channel_heads(
     info_dict['n_seed_points'] = seed_point_array.shape[0]
     
     # Do integrations on the GPU
-    cl_kernel_fn = 'prune_channel_heads'
-    pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
-                     info_dict, array_dict, verbose)
+    cl_state.kernel_fn = 'prune_channel_heads'
+    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
     
     # Done
     vprint(verbose,'...done')  

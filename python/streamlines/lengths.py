@@ -16,7 +16,7 @@ __all__ = ['hillslope_lengths']
 
 pdebug = print
 
-def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
+def hillslope_lengths( cl_state, info_dict, 
                        mask_array, uv_array,
                        mapping_array, label_array, traj_length_array, verbose ):
         
@@ -24,9 +24,7 @@ def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_dic
     Measure mean (half) hillslope lengths.
     
     Args:
-        cl_src_path (str):
-        which_cl_platform (int):
-        which_cl_device   (int):
+        cl_state (obj):
         info_dict (numpy.ndarray):
         mask_array  (numpy.ndarray):
         uv_array (numpy.ndarray):
@@ -39,15 +37,10 @@ def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_dic
     vprint(verbose,'Measuring hillslope lengths...')
     
     # Prepare CL essentials
-    platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
-    queue = cl.CommandQueue(context,
-                            properties=cl.command_queue_properties.PROFILING_ENABLE)
-    cl_files = ['essentials.cl','updatetraj.cl','computestep.cl',
-                'rungekutta.cl','lengths.cl']
-    cl_kernel_source = ''
-    for cl_file in cl_files:
-        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
-            cl_kernel_source += fp.read()
+    cl_state.kernel_source \
+        = pocl.read_kernel_source(cl_state.src_path,['essentials.cl','updatetraj.cl',
+                                                     'computestep.cl','rungekutta.cl',
+                                                     'lengths.cl'])
             
     # Trace downstream from midslope pixels to thin channel pixels, 
     #   measuring streamline distance; double and scale by pixel width 
@@ -69,9 +62,8 @@ def hillslope_lengths( cl_src_path, which_cl_platform, which_cl_device, info_dic
     info_dict['n_seed_points'] = seed_point_array.shape[0]
     
     # Do integrations on the GPU
-    cl_kernel_fn = 'hillslope_lengths'
-    pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
-                     info_dict, array_dict, verbose)
+    cl_state.kernel_fn = 'hillslope_lengths'
+    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
     
     # Scale by pixel size and by two because we measured only half lengths
     traj_length_array *= pixel_size*2

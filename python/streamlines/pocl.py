@@ -5,12 +5,12 @@ Prep PyOpenCL kernel
 import pyopencl as cl
 import pyopencl.tools as cltools
 import numpy as np
-from os import environ
+import os
 from streamlines import state
 from streamlines.useful import vprint
 import warnings
 
-environ['PYOPENCL_COMPILER_OUTPUT']='0'
+os.environ['PYOPENCL_COMPILER_OUTPUT']='0'
 
 __all__ = ['prepare_cl_context','choose_platform_and_device',
            'prepare_cl_queue', 'prepare_cl',
@@ -21,6 +21,17 @@ __all__ = ['prepare_cl_context','choose_platform_and_device',
            'prepare_buffers', 'gpu_compute']
 
 pdebug = print
+
+class Initialize_cl():
+    def __init__(self, cl_src_path, which_cl_platform, which_cl_device ):
+        # Prepare CL essentials
+        self.platform, self.device, self.context \
+            = prepare_cl_context(which_cl_platform,which_cl_device)
+        self.queue = cl.CommandQueue(self.context,
+                                properties=cl.command_queue_properties.PROFILING_ENABLE)
+        self.src_path      = cl_src_path
+        self.kernel_source = None
+        self.kernel_fn     = ''
 
 def prepare_cl_context(cl_platform=0, cl_device=2):
     """
@@ -65,13 +76,13 @@ def choose_platform_and_device(cl_platform='env',cl_device='env'):
             cl_device = 2
     return cl_platform, cl_device
 
-def prepare_cl_queue(context=None, cl_kernel_source=None, compile_options=[]):
+def prepare_cl_queue(context=None, kernel_source=None, compile_options=[]):
     """
     Build PyOpenCL program and prepare command queue.
     
     Args:
         context (pyopencl.Context): GPU/OpenCL device context
-        cl_kernel_source (str): OpenCL kernel code string
+        kernel_source (str): OpenCL kernel code string
     
     Returns:
         pyopencl.Program, pyopencl.CommandQueue: 
@@ -82,18 +93,18 @@ def prepare_cl_queue(context=None, cl_kernel_source=None, compile_options=[]):
 #                        '-cl-unsafe-math-optimizations',
 #                        '-cl-no-signed-zeros',
 #                        '-cl-finite-math-only']
-    program = cl.Program(context, cl_kernel_source).build(cache_dir=False,
+    program = cl.Program(context, kernel_source).build(cache_dir=False,
                                                           options=compile_options)
     queue = cl.CommandQueue(context)
     return program, queue
 
-def prepare_cl(cl_platform=0, cl_device=2, cl_kernel_source=None, compile_options=[]):
+def prepare_cl(cl_platform=0, cl_device=2, kernel_source=None, compile_options=[]):
     """
     Prepare PyOpenCL stuff.
     
     Args:
         cl_device (int):
-        cl_kernel_source (str): OpenCL kernel code string
+        kernel_source (str): OpenCL kernel code string
     
     Returns:
         pyopencl.Platform, pyopencl.Device, pyopencl.Context, pyopencl.Program, \
@@ -102,7 +113,7 @@ def prepare_cl(cl_platform=0, cl_device=2, cl_kernel_source=None, compile_option
             PyOpenCL command queue
     """
     platform,device,context = prepare_cl_context(cl_platform,cl_device)
-    program,queue = prepare_cl_queue(context,cl_kernel_source,compile_options)
+    program,queue = prepare_cl_queue(context,kernel_source,compile_options)
     return platform, device, context, program, queue
 
 def make_cl_dtype(device,name,dtype):
@@ -345,6 +356,13 @@ def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size,
                             int(np.ceil(work_left/n_work_items)) ))
     return cumulative_time
 
+def read_kernel_source(cl_src_path, cl_files):
+    kernel_source = ''
+    for cl_file in cl_files:
+        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
+            kernel_source += fp.read()
+    return kernel_source
+
 def prepare_buffers(context, array_dict, verbose):
     """
     Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.
@@ -382,23 +400,24 @@ def prepare_buffers(context, array_dict, verbose):
             pass
     return buffer_dict
 
-def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn, 
-                info_dict, array_dict, verbose):
+def gpu_compute(cl_state, info_dict, array_dict, verbose):
     """
     Carry out GPU computation.
     
     Args:
-        device (pyopencl.Device):
-        context (pyopencl.Context):
-        queue (pyopencl.CommandQueue):
-        cl_kernel_source (str):
-        cl_kernel_fn (str):
+        cl_state (obj):
         info_dict (dict):
         array_dict (dict):
         verbose (bool):  
         
     """
-        
+    # Shorthand
+    device        = cl_state.device
+    context       = cl_state.context
+    queue         = cl_state.queue
+    kernel_source = cl_state.kernel_source
+    kernel_fn     = cl_state.kernel_fn
+                     
     # Prepare memory, buffers 
     buffer_dict = prepare_buffers(context, array_dict, verbose)    
 
@@ -410,14 +429,14 @@ def gpu_compute(device,context,queue, cl_kernel_source,cl_kernel_fn,
     max_time_per_kernel = info_dict['max_time_per_kernel']
 
     # Compile the CL code
-    compile_options = set_compile_options(info_dict, cl_kernel_fn, downup_sign=1)
+    compile_options = set_compile_options(info_dict, kernel_fn, downup_sign=1)
     vprint(verbose,'Compile options:\n', compile_options)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        program = cl.Program(context, cl_kernel_source).build(options=compile_options)
+        program = cl.Program(context, kernel_source).build(options=compile_options)
     report_build_log(program, device, verbose)
     # Set the GPU kernel
-    kernel = getattr(program,cl_kernel_fn)
+    kernel = getattr(program,kernel_fn)
     # Designate buffered arrays
     kernel.set_args(*list(buffer_dict.values()))
     kernel.set_scalar_arg_dtypes( [None]*len(buffer_dict) )

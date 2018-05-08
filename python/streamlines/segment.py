@@ -16,7 +16,7 @@ __all__ = ['segment_channels','segment_hillslopes','subsegment_flanks']
 
 pdebug = print
 
-def segment_channels( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
+def segment_channels( cl_state, info_dict, 
                       mask_array, uv_array,
                       mapping_array, count_array, link_array, label_array, verbose ):
         
@@ -24,9 +24,7 @@ def segment_channels( cl_src_path, which_cl_platform, which_cl_device, info_dict
     Label channel confluences.
     
     Args:
-        cl_src_path (str):
-        which_cl_platform (int):
-        which_cl_device (int):
+        cl_state (obj):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
         uv_array (numpy.ndarray):
@@ -40,15 +38,9 @@ def segment_channels( cl_src_path, which_cl_platform, which_cl_device, info_dict
     vprint(verbose,'Segmenting channels...')
     
     # Prepare CL essentials
-    platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
-    queue = cl.CommandQueue(context,
-                            properties=cl.command_queue_properties.PROFILING_ENABLE)
-    cl_files = ['essentials.cl','updatetraj.cl',
-                'rungekutta.cl','segment.cl']
-    cl_kernel_source = ''
-    for cl_file in cl_files:
-        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
-            cl_kernel_source += fp.read()
+    cl_state.kernel_source \
+        = pocl.read_kernel_source(cl_state.src_path,['essentials.cl','updatetraj.cl',
+                                                     'rungekutta.cl','segment.cl'])
             
     # Trace downstream from all channel heads until masked boundary is reachedd
     #    /or/ if a major confluence is reached, only keeping going if dominant
@@ -68,9 +60,8 @@ def segment_channels( cl_src_path, which_cl_platform, which_cl_device, info_dict
     info_dict['n_seed_points'] = seed_point_array.shape[0]
     
     # Do integrations on the GPU
-    cl_kernel_fn = 'segment_downchannels'
-    pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
-                     info_dict, array_dict, verbose)
+    cl_state.kernel_fn = 'segment_downchannels'
+    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
 
     # Relabel channel segments in simple sequence 1,2,3,... 
     #  instead of using array indices as labels
@@ -85,7 +76,7 @@ def segment_channels( cl_src_path, which_cl_platform, which_cl_device, info_dict
     vprint(verbose,'...done')  
     return n_segments
 
-def segment_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
+def segment_hillslopes( cl_state, info_dict, 
                         mask_array, uv_array,
                         mapping_array, count_array, link_array, label_array, verbose ):
         
@@ -93,9 +84,7 @@ def segment_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_di
     Label hillslope pixels.
     
     Args:
-        cl_src_path (str):
-        which_cl_platform (int):
-        which_cl_device (int):
+        cl_state (obj):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
         uv_array (numpy.ndarray):
@@ -109,15 +98,10 @@ def segment_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_di
     vprint(verbose,'Segmenting hillslopes...')
     
     # Prepare CL essentials
-    platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
-    queue = cl.CommandQueue(context,
-                            properties=cl.command_queue_properties.PROFILING_ENABLE)
-    cl_files = ['essentials.cl','updatetraj.cl','computestep.cl',
-                'rungekutta.cl','segment.cl']
-    cl_kernel_source = ''
-    for cl_file in cl_files:
-        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
-            cl_kernel_source += fp.read()
+    cl_state.kernel_source \
+        = pocl.read_kernel_source(cl_state.src_path,['essentials.cl','updatetraj.cl',
+                                                     'computestep.cl','rungekutta.cl',
+                                                     'segment.cl'])
             
     # Trace downstream from all channel heads until masked boundary is reachedd
     #    /or/ if a major confluence is reached, only keeping going if dominant
@@ -137,14 +121,13 @@ def segment_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_di
     info_dict['n_seed_points'] = seed_point_array.shape[0]
     
     # Do integrations on the GPU
-    cl_kernel_fn = 'segment_hillslopes'
-    pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
-                     info_dict, array_dict, verbose)
+    cl_state.kernel_fn = 'segment_hillslopes'
+    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
 
     # Done
     vprint(verbose,'...done')  
 
-def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
+def subsegment_flanks( cl_state, info_dict, 
                        mask_array, uv_array,
                        mapping_array, channel_label_array, link_array, label_array, 
                        verbose ):
@@ -153,9 +136,7 @@ def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dic
     Subsegment left (and implicitly right) flanks.
     
     Args:
-        cl_src_path (str):
-        which_cl_platform (int):
-        which_cl_device (int):
+        cl_state (obj):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
         uv_array (numpy.ndarray):
@@ -169,15 +150,10 @@ def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dic
     vprint(verbose,'Subsegmenting flanks...')
     
     # Prepare CL essentials
-    platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
-    queue = cl.CommandQueue(context,
-                            properties=cl.command_queue_properties.PROFILING_ENABLE)
-    cl_files = ['essentials.cl','updatetraj.cl','computestep.cl',
-                'rungekutta.cl','segment.cl']
-    cl_kernel_source = ''
-    for cl_file in cl_files:
-        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
-            cl_kernel_source += fp.read()
+    cl_state.kernel_source \
+        = pocl.read_kernel_source(cl_state.src_path,['essentials.cl','updatetraj.cl',
+                                                     'computestep.cl','rungekutta.cl',
+                                                     'segment.cl'])
             
     # Trace downstream from all major confluences /or/ channel heads
     pad                = info_dict['pad_width']
@@ -200,10 +176,9 @@ def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dic
     
     # Do integrations on the GPU
     if ( info_dict['n_seed_points']>0 ):
-        cl_kernel_fn = 'subsegment_channel_edges'
-        pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
-                         info_dict, array_dict, verbose)
-        
+        cl_state.kernel_fn = 'subsegment_channel_edges'
+        pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
+            
     # Trace downstream from all non-left-flank hillslope pixels
     flag = is_leftflank | is_thinchannel
     seed_point_array = pick_seeds(mask=mask_array, map=~mapping_array, flag=flag,pad=pad)
@@ -211,9 +186,8 @@ def subsegment_flanks( cl_src_path, which_cl_platform, which_cl_device, info_dic
     info_dict['n_seed_points'] = seed_point_array.shape[0]
     
     # Do integrations on the GPU
-    cl_kernel_fn = 'subsegment_flanks'
-    pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
-                     info_dict, array_dict, verbose)
+    cl_state.kernel_fn = 'subsegment_flanks'
+    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
     
     # Done
     vprint(verbose,'...done')  

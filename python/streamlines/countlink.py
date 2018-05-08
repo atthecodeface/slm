@@ -18,7 +18,7 @@ __all__ = ['count_downchannels','flag_downchannels','link_hillslopes']
 
 pdebug = print
 
-def count_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
+def count_downchannels( cl_state, info_dict, 
                         mask_array, uv_array, 
                         mapping_array, count_array, link_array, verbose ):
         
@@ -26,9 +26,7 @@ def count_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_di
     Integrate and count downstream designating downstream links & thin channel status.
     
     Args:
-        cl_src_path (str):
-        which_cl_platform (int):
-        which_cl_device (int):
+        cl_state (obj):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
         uv_array (numpy.ndarray):
@@ -41,15 +39,10 @@ def count_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_di
     vprint(verbose,'Counting down channels...')
     
     # Prepare CL essentials
-    platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
-    queue = cl.CommandQueue(context,
-                            properties=cl.command_queue_properties.PROFILING_ENABLE)
-    cl_files = ['essentials.cl','updatetraj.cl','computestep.cl',
-                'rungekutta.cl','countlink.cl']
-    cl_kernel_source = ''
-    for cl_file in cl_files:
-        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
-            cl_kernel_source += fp.read()
+    cl_state.kernel_source \
+        = pocl.read_kernel_source(cl_state.src_path,['essentials.cl','updatetraj.cl',
+                                                     'computestep.cl','rungekutta.cl',
+                                                     'countlink.cl'])
             
     # Generate a list (array) of seed points from the set of channel heads
     pad            = info_dict['pad_width']
@@ -70,14 +63,13 @@ def count_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_di
     info_dict['n_seed_points'] = seed_point_array.shape[0]
     
     # Do integrations on the GPU
-    cl_kernel_fn = 'count_downchannels'
-    pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
-                     info_dict, array_dict, verbose)
+    cl_state.kernel_fn = 'count_downchannels'
+    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
     
     # Done
     vprint(verbose,'...done')  
 
-def flag_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
+def flag_downchannels( cl_state, info_dict, 
                        mask_array, uv_array, 
                        mapping_array, count_array, link_array, verbose ):
         
@@ -85,10 +77,7 @@ def flag_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_dic
     Integrate downstream along channels & count pixel steps as we go.
     
     Args:
-        cl_src_path (str):
-        which_cl_platform (int):
-        which_cl_device (int):
-        info_dict (numpy.ndarray):
+        cl_state (obj):
         mask_array (numpy.ndarray):
         uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
@@ -100,15 +89,9 @@ def flag_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_dic
     vprint(verbose,'Flagging down channels...')
     
     # Prepare CL essentials
-    platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
-    queue = cl.CommandQueue(context,
-                            properties=cl.command_queue_properties.PROFILING_ENABLE)
-    cl_files = ['essentials.cl','updatetraj.cl',
-                'rungekutta.cl','countlink.cl']
-    cl_kernel_source = ''
-    for cl_file in cl_files:
-        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
-            cl_kernel_source += fp.read()
+    cl_state.kernel_source \
+        = pocl.read_kernel_source(cl_state.src_path,['essentials.cl','updatetraj.cl',
+                                                     'rungekutta.cl','countlink.cl'])
             
     # Generate a list (array) of seed points from the set of channel heads
     pad            = info_dict['pad_width']
@@ -130,14 +113,13 @@ def flag_downchannels( cl_src_path, which_cl_platform, which_cl_device, info_dic
     info_dict['n_seed_points'] = seed_point_array.shape[0]
     
     # Do integrations on the GPU
-    cl_kernel_fn = 'flag_downchannels'
-    pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
-                     info_dict, array_dict, verbose)
+    cl_state.kernel_fn = 'flag_downchannels'
+    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
     
     # Done
     vprint(verbose,'...done')  
 
-def link_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_dict, 
+def link_hillslopes( cl_state, info_dict, 
                      mask_array, uv_array, 
                      mapping_array, count_array, link_array, verbose ):
         
@@ -145,9 +127,7 @@ def link_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_dict,
     Link hillslope pixels downstream.
     
     Args:
-        cl_src_path (str):
-        which_cl_platform (int):
-        which_cl_device (int):
+        cl_state (obj):
         info_dict (numpy.ndarray):
         mask_array (numpy.ndarray):
         uv_array (numpy.ndarray):
@@ -160,15 +140,10 @@ def link_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_dict,
     vprint(verbose,'Linking hillslopes...')
     
     # Prepare CL essentials
-    platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
-    queue = cl.CommandQueue(context,
-                            properties=cl.command_queue_properties.PROFILING_ENABLE)
-    cl_files = ['essentials.cl','updatetraj.cl','computestep.cl',
-                'rungekutta.cl','countlink.cl']
-    cl_kernel_source = ''
-    for cl_file in cl_files:
-        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
-            cl_kernel_source += fp.read()
+    cl_state.kernel_source \
+        = pocl.read_kernel_source(cl_state.src_path,['essentials.cl','updatetraj.cl',
+                                                     'computestep.cl','rungekutta.cl',
+                                                     'countlink.cl'])
             
     # Generate a list (array) of seed points from all non-thin-channel pixels
     pad            = info_dict['pad_width']
@@ -186,9 +161,8 @@ def link_hillslopes( cl_src_path, which_cl_platform, which_cl_device, info_dict,
     info_dict['n_seed_points'] = seed_point_array.shape[0]
     
     # Do integrations on the GPU
-    cl_kernel_fn = 'link_hillslopes'
-    pocl.gpu_compute(device, context, queue, cl_kernel_source,cl_kernel_fn, 
-                     info_dict, array_dict, verbose)
+    cl_state.kernel_fn = 'link_hillslopes'
+    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
     
     # Done
     vprint(verbose,'...done')  
