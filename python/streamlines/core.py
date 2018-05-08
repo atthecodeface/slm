@@ -21,6 +21,7 @@ the :mod:`core <streamlines.core>` class:
 from json import dumps
 import numpy as np
 import os
+import sys
 import streamlines
 pdebug = print
 
@@ -139,3 +140,9 @@ class Core():
     def print(self, *args, **kwargs):
         if self.state.verbose:
             print(*args, **kwargs)
+
+    def vprint(self, *args, **kwargs):
+        if self.state.verbose:
+            print(*args, **kwargs, flush=True)
+            # Try to really force this line to print before the GPU prints anything
+            sys.stdout.flush()

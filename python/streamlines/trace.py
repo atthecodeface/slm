@@ -12,7 +12,8 @@ import timeit
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
 from streamlines.core import Core
-from streamlines.trajectories import integrate_trajectories
+
+from streamlines.trajectories import Trajectories
 from streamlines.fields import integrate_fields
 
 __all__ = ['Trace']
@@ -96,9 +97,9 @@ class Trace(Core):
                                        self.geodata.roi_ny+2*self.geodata.pad_width),
                                        dtype=np.uint32)
         # Integrate streamlines downstream and upstream
-        self.trajectories()
+        self.compute_trajectories()
         # Map mean streamline integrations downstream and upstream
-        self.fields()
+        self.compute_fields()
         # Done
         self.print('**Trace end**\n', flush=True)  
         
@@ -110,12 +111,6 @@ class Trace(Core):
             numpy.ndarray: info_dict
         """
 
-#         if n_seed_points is None:
-#             n_seed_points = self.n_seed_points
-#             n_padded_seed_points = self.n_padded_seed_points
-#         else:
-#             n_seed_points = 0
-#             n_padded_seed_points = 0
         if self.max_length==np.float32(0.0):
             max_length = np.finfo(numpy.float32).max
         else:
@@ -198,7 +193,7 @@ class Trace(Core):
         }
         return info_dict
 
-    def trajectories(self):
+    def compute_trajectories(self):
         """
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
@@ -207,20 +202,26 @@ class Trace(Core):
             numpy.ndarray, numpy.ndarray, numpy.ndarray: 
             streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df
         """
-        (self.seed_point_array, self.streamline_arrays_list,
-         self.traj_nsteps_array, self.traj_length_array, self.traj_stats_df) \
-            = integrate_trajectories(
-                self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
-                self.build_info_dict(),
-                self.geodata.basin_mask_array,
-                self.preprocess.uv_array,
-                self.mapping_array,
-                self.do_trace_downstream, self.do_trace_upstream, 
-                self.state.verbose
+        self.info_dict = self.build_info_dict()
+        trajectories = Trajectories(
+                    cl_src_path         = self.state.cl_src_path,
+                    which_cl_platform   = self.state.cl_platform,
+                    which_cl_device     = self.state.cl_device,
+                    info_dict           = self.info_dict,
+                    mask_array          = self.geodata.basin_mask_array,
+                    uv_array            = self.preprocess.uv_array,
+                    mapping_array       = self.mapping_array,
+                    do_trace_downstream = self.do_trace_downstream,
+                    do_trace_upstream   = self.do_trace_upstream,
+                    verbose             = self.state.verbose
             )
-        return
+        trajectories.integrate()
+        # Only preserve what we need from the trajectories class instance
+        self.seed_point_array       = trajectories.seed_point_array
+        self.streamline_arrays_list = trajectories.streamline_arrays_list
+        self.traj_stats_df          = trajectories.traj_stats_df
 
-    def fields(self):
+    def compute_fields(self):
         """
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
@@ -240,4 +241,3 @@ class Trace(Core):
                 self.traj_stats_df,
                 self.state.verbose
             )
-        return
