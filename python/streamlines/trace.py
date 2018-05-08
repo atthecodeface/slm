@@ -14,7 +14,7 @@ environ['PYTHONUNBUFFERED']='True'
 from streamlines.core import Core
 
 from streamlines.trajectories import Trajectories
-from streamlines.fields import integrate_fields
+from streamlines.fields import Fields
 
 __all__ = ['Trace']
 
@@ -197,10 +197,6 @@ class Trace(Core):
         """
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
-        Returns:
-            list, numpy.ndarray, numpy.ndarray, pandas.DataFrame,
-            numpy.ndarray, numpy.ndarray, numpy.ndarray: 
-            streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df
         """
         self.info_dict = self.build_info_dict()
         trajectories = Trajectories(
@@ -213,8 +209,7 @@ class Trace(Core):
                     mapping_array       = self.mapping_array,
                     do_trace_downstream = self.do_trace_downstream,
                     do_trace_upstream   = self.do_trace_upstream,
-                    verbose             = self.state.verbose
-            )
+                    verbose             = self.state.verbose )
         trajectories.integrate()
         # Only preserve what we need from the trajectories class instance
         self.seed_point_array       = trajectories.seed_point_array
@@ -225,19 +220,22 @@ class Trace(Core):
         """
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
-        Returns:
-            list, numpy.ndarray, numpy.ndarray, pandas.DataFrame,
-            numpy.ndarray, numpy.ndarray, numpy.ndarray: 
-            slc_array, slt_array, sla_array
         """
-        (self.slc_array, self.slt_array, self.sla_array) \
-            = integrate_fields(
-                self.state.cl_src_path, self.state.cl_platform, self.state.cl_device, 
-                self.build_info_dict(),
-                self.geodata.basin_mask_array,
-                self.preprocess.uv_array,
-                self.mapping_array,
-                self.do_trace_downstream, self.do_trace_upstream, 
-                self.traj_stats_df,
-                self.state.verbose
-            )
+        self.info_dict = self.build_info_dict()
+        fields = Fields(
+                    cl_src_path         = self.state.cl_src_path,
+                    which_cl_platform   = self.state.cl_platform,
+                    which_cl_device     = self.state.cl_device,
+                    info_dict           = self.info_dict,
+                    mask_array          = self.geodata.basin_mask_array,
+                    uv_array            = self.preprocess.uv_array,
+                    mapping_array       = self.mapping_array,
+                    traj_stats_df       = self.traj_stats_df,
+                    verbose             = self.state.verbose )
+        fields.integrate()
+        # Only preserve what we need from the trajectories class instance
+        self.slc_array = fields.slc_array
+        self.slt_array = fields.slt_array
+        self.sla_array = fields.sla_array
+        
+        

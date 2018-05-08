@@ -8,7 +8,6 @@ Basins of interest can be delimited by masking.
 """
 
 import pyopencl as cl
-import pyopencl.array
 import numpy as np
 import os
 os.environ['PYTHONUNBUFFERED']='True'
@@ -37,7 +36,7 @@ class Trajectories():
                     do_trace_upstream   = True,
                     verbose             = False ):
         """
-        Initialize
+        Initialize.
         
         Args:
             cl_src_path (str):
@@ -82,7 +81,7 @@ class Trajectories():
            4) post-process the streamline total length (slt) array (scale, sqrt)
               and compute streamline trajectories statistics
         """
-        vprint(self.verbose,'Integrating trajectories'+'...')
+        vprint(self.verbose,'Integrating trajectories...')
         
         # Shorthand
         cl_src_path         = self.cl_src_path
@@ -328,9 +327,11 @@ class Trajectories():
         for downup_idx in [0,1]:
             streamline_arrays_list[downup_idx] \
                 = np.array(streamline_arrays_list[downup_idx])
-        vprint(self.verbose,'Streamlines actual array allocation:  size={}'.format(neatly(
-            np.sum(traj_nsteps_array[:,:])*np.dtype(chunk_trajcs_array.dtype).itemsize)))
+        vprint(self.verbose,
+               'Streamlines actual array allocation:  size={}'.format(neatly(
+           np.sum(traj_nsteps_array[:,:])*np.dtype(chunk_trajcs_array.dtype).itemsize)))
        
+       # Do copy() to force array truncation rather than return of a truncated view
         self.streamline_arrays_list = streamline_arrays_list[0:ns].copy()
         self.traj_nsteps_array      = traj_nsteps_array[0:ns].copy()
         self.traj_length_array      = traj_length_array[0:ns].copy()
