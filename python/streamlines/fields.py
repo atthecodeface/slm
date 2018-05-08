@@ -29,10 +29,7 @@ class Fields():
                     which_cl_device,
                     cl_src_path         = None,
                     info                = None,
-                    mask_array          = None,
-                    uv_array            = None,
-                    mapping_array       = None,
-                    traj_stats_df       = None,
+                    data                = None,
                     verbose             = False ):
         """
         Initialize.
@@ -42,10 +39,7 @@ class Fields():
             which_cl_platform (int):
             which_cl_device (int):
             info (obj):
-            mask_array (numpy.ndarray):
-            uv_array (numpy.ndarray):
-            mapping_array (numpy.ndarray):
-            traj_stats_df (pandas.DataFrame):
+            data (obj):
             verbose (bool):
         """
         self.platform, self.device, self.context \
@@ -54,10 +48,7 @@ class Fields():
                                 properties=cl.command_queue_properties.PROFILING_ENABLE)
         self.cl_src_path         = cl_src_path
         self.info                = info
-        self.mask_array          = mask_array
-        self.uv_array            = uv_array
-        self.mapping_array       = mapping_array
-        self.traj_stats_df       = traj_stats_df
+        self.data                = data
         self.verbose             = verbose
         
     def integrate(self):
@@ -85,10 +76,10 @@ class Fields():
         # Shorthand
         cl_src_path         = self.cl_src_path
         info                = self.info
-        mask_array          = self.mask_array
-        uv_array            = self.uv_array
-        mapping_array       = self.mapping_array
-        traj_stats_df       = self.traj_stats_df
+        mask_array          = self.data.mask_array
+        uv_array            = self.data.uv_array
+        mapping_array       = self.data.mapping_array
+        traj_stats_df       = self.data.traj_stats_df
 
         # Prepare CL essentials
         device        = self.device
@@ -117,8 +108,7 @@ class Fields():
         n_work_items             = info.n_work_items
         do_shuffle               = info.do_shuffle
         shuffle_rng_seed         = info.shuffle_rng_seed
-        (self.seed_point_array, 
-                  info.n_seed_points, info.n_padded_seed_points) \
+        (self.data.seed_point_array, info.n_seed_points, info.n_padded_seed_points) \
             = create_seeds(mask_array, pad_width, n_work_items, 
                            do_shuffle=do_shuffle, rng_seed=shuffle_rng_seed,
                            verbose=self.verbose)
@@ -142,10 +132,10 @@ class Fields():
         uds =  traj_stats_df['ds']['upstream','mean']
         # slt: sum of line lengths crossing a pixel * number of line-points per pixel
         # slt: <=> sum of line-points per pixel
-        self.slt_array[:,:,0] = self.slt_array[:,:,0]*(dds/pixel_size)
-        self.slt_array[:,:,1] = self.slt_array[:,:,1]*(uds/pixel_size)
+        self.data.slt_array[:,:,0] = self.data.slt_array[:,:,0]*(dds/pixel_size)
+        self.data.slt_array[:,:,1] = self.data.slt_array[:,:,1]*(uds/pixel_size)
         # slt:  => sum of line-points per meter
-        self.slt_array = np.sqrt(self.slt_array) #*np.exp(-1/4) # *(3/4)
+        self.data.slt_array = np.sqrt(self.data.slt_array) #*np.exp(-1/4) # *(3/4)
         # slt:  =>  sqrt(area)
     
         # Done
@@ -180,19 +170,19 @@ class Fields():
 
         # Shorthand
         info                = self.info
-        seed_point_array    = self.seed_point_array
-        mask_array          = self.mask_array
-        uv_array            = self.uv_array
-        mapping_array       = self.mapping_array
+        seed_point_array    = self.data.seed_point_array
+        mask_array          = self.data.mask_array
+        uv_array            = self.data.uv_array
+        mapping_array       = self.data.mapping_array
         
         # Prepare memory, buffers 
         roi_nxy = mask_array.shape
         slc_array     = np.zeros((roi_nxy[0],roi_nxy[1]), dtype=np.uint32)
         slt_array     = np.zeros((roi_nxy[0],roi_nxy[1]), dtype=np.uint32)
-        self.slc_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.uint32)
+        self.data.slc_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.uint32)
         # Note the returned slt array is FLOAT32 but the GPU computes are done on UINT32
-        self.slt_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
-        self.sla_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
+        self.data.slt_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
+        self.data.sla_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.float32)
         array_dict = { 'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
                        'mask':       {'array': mask_array,       'rwf': 'RO'}, 
                        'uv':         {'array': uv_array,         'rwf': 'RO'}, 
@@ -261,9 +251,9 @@ class Fields():
                     
             # Copy out the slc, slt results for this pass only
             # Count of streamlines entering per pixel width: n/meter
-            self.slc_array[:,:,downup_idx] += slc_array
+            self.data.slc_array[:,:,downup_idx] += slc_array
             # Average streamline length of streamlines entering each pixel: meters
-            self.slt_array[:,:,downup_idx] += slt_array.astype(np.float32)
+            self.data.slt_array[:,:,downup_idx] += slt_array.astype(np.float32)
             if downup_idx==0:
                 # Zero the GPU slt, slc arrays before using in the next pass
                 slc_array.fill(0)
@@ -278,7 +268,7 @@ class Fields():
         
         # Compute average streamline lengths (sla) from total lengths (slt) & counts (slc)
         # Shorthand
-        (slc,sla,slt) = (self.slc_array,self.sla_array,self.slt_array)
+        (slc,sla,slt) = (self.data.slc_array, self.data.sla_array, self.data.slt_array)
         # slc: count of lines crossing a pixel * number of line-points per pixel
         # slt: sum of line lengths crossing a pixel * number of line-points per pixel
         # sla: sum of line lengths / count of lines

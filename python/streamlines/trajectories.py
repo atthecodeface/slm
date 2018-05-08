@@ -29,9 +29,7 @@ class Trajectories():
                     which_cl_device,
                     cl_src_path         = None,
                     info                = None,
-                    mask_array          = None,
-                    uv_array            = None,
-                    mapping_array       = None,
+                    data                = None,
                     do_trace_downstream = True,
                     do_trace_upstream   = True,
                     verbose             = False ):
@@ -43,9 +41,7 @@ class Trajectories():
             which_cl_device (int):
             cl_src_path (str):
             info (obj):
-            mask_array (numpy.ndarray):
-            uv_array (numpy.ndarray):
-            mapping_array (numpy.ndarray):
+            data (obj):
             do_trace_downstream (bool):
             do_trace_upstream (bool):
             verbose (bool):
@@ -56,9 +52,7 @@ class Trajectories():
                                 properties=cl.command_queue_properties.PROFILING_ENABLE)
         self.cl_src_path         = cl_src_path
         self.info                = info
-        self.mask_array          = mask_array
-        self.uv_array            = uv_array
-        self.mapping_array       = mapping_array
+        self.data                = data
         self.do_trace_downstream = do_trace_downstream
         self.do_trace_upstream   = do_trace_upstream
         self.verbose             = verbose
@@ -88,9 +82,9 @@ class Trajectories():
         # Shorthand
         cl_src_path         = self.cl_src_path
         info                = self.info
-        mask_array          = self.mask_array
-        uv_array            = self.uv_array
-        mapping_array       = self.mapping_array
+        mask_array          = self.data.mask_array
+        uv_array            = self.data.uv_array
+        mapping_array       = self.data.mapping_array
 
         # Prepare CL essentials
         device        = self.device
@@ -107,7 +101,7 @@ class Trajectories():
         n_work_items             = info.n_work_items
         do_shuffle               = info.do_shuffle
         shuffle_rng_seed         = info.shuffle_rng_seed
-        self.seed_point_array, n_seed_points, n_padded_seed_points \
+        self.data.seed_point_array, n_seed_points, n_padded_seed_points \
             = create_seeds(mask_array, pad_width, n_work_items, 
                            n_seed_points=n_trajectory_seed_points, 
                            do_shuffle=do_shuffle, rng_seed=shuffle_rng_seed,
@@ -142,10 +136,11 @@ class Trajectories():
             
         # Streamline stats
         pixel_size = info.pixel_size
-        self.traj_stats_df = compute_stats(self.traj_length_array, self.traj_nsteps_array,
-                                      pixel_size, self.verbose)
-        dds = self.traj_stats_df['ds']['downstream','mean']
-        uds = self.traj_stats_df['ds']['upstream','mean']
+        self.data.traj_stats_df = compute_stats(self.data.traj_length_array, 
+                                                self.data.traj_nsteps_array,
+                                                pixel_size, self.verbose)
+        dds = self.data.traj_stats_df['ds']['downstream','mean']
+        uds = self.data.traj_stats_df['ds']['upstream','mean']
             
         # Done
         vprint(self.verbose,'...done')
@@ -209,10 +204,10 @@ class Trajectories():
         """
         # Shorthand
         info                = self.info
-        seed_point_array    = self.seed_point_array
-        mask_array          = self.mask_array
-        uv_array            = self.uv_array
-        mapping_array       = self.mapping_array
+        seed_point_array    = self.data.seed_point_array
+        mask_array          = self.data.mask_array
+        uv_array            = self.data.uv_array
+        mapping_array       = self.data.mapping_array
         
         # Prepare memory, buffers 
         streamline_arrays_list = [[],[]]
@@ -327,9 +322,9 @@ class Trajectories():
            np.sum(traj_nsteps_array[:,:])*np.dtype(chunk_trajcs_array.dtype).itemsize)))
        
        # Do copy() to force array truncation rather than return of a truncated view
-        self.streamline_arrays_list = streamline_arrays_list[0:ns].copy()
-        self.traj_nsteps_array      = traj_nsteps_array[0:ns].copy()
-        self.traj_length_array      = traj_length_array[0:ns].copy()
+        self.data.streamline_arrays_list = streamline_arrays_list[0:ns].copy()
+        self.data.traj_nsteps_array      = traj_nsteps_array[0:ns].copy()
+        self.data.traj_length_array      = traj_length_array[0:ns].copy()
         
     
     #     vprint(self.verbose,'Array sizes:\n',

@@ -20,6 +20,17 @@ __all__ = ['Info','Trace']
 
 pdebug = print
 
+class Data():    
+    def __init__(self,
+                 mask_array          = None,
+                 uv_array            = None,
+                 mapping_array       = None,
+                 traj_stats_df       = None):
+        self.mask_array          = mask_array
+        self.uv_array            = uv_array
+        self.mapping_array       = mapping_array
+        self.traj_stats_df       = traj_stats_df
+        
 class Info():    
     def __init__(self, trace, n_seed_points=None):
         state = trace.state
@@ -192,38 +203,40 @@ class Trace(Core):
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
         """
+        data = Data( mask_array    = self.geodata.basin_mask_array,
+                     uv_array      = self.preprocess.uv_array,
+                     mapping_array = self.mapping_array )
         trajectories = Trajectories(self.state.cl_platform, self.state.cl_device,
                                     cl_src_path         = self.state.cl_src_path,
                                     info                = Info(self),
-                                    mask_array          = self.geodata.basin_mask_array,
-                                    uv_array            = self.preprocess.uv_array,
-                                    mapping_array       = self.mapping_array,
+                                    data                = data,
                                     do_trace_downstream = self.do_trace_downstream,
                                     do_trace_upstream   = self.do_trace_upstream,
                                     verbose             = self.state.verbose )
         trajectories.integrate()
         # Only preserve what we need from the trajectories class instance
-        self.seed_point_array       = trajectories.seed_point_array
-        self.streamline_arrays_list = trajectories.streamline_arrays_list
-        self.traj_stats_df          = trajectories.traj_stats_df
+        self.seed_point_array       = trajectories.data.seed_point_array
+        self.streamline_arrays_list = trajectories.data.streamline_arrays_list
+        self.traj_stats_df          = trajectories.data.traj_stats_df
 
     def compute_fields(self):
         """
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
         """
+        data = Data( mask_array    = self.geodata.basin_mask_array,
+                     uv_array      = self.preprocess.uv_array,
+                     mapping_array = self.mapping_array,
+                     traj_stats_df = self.traj_stats_df )
         fields = Fields(self.state.cl_platform, self.state.cl_device,
                         cl_src_path         = self.state.cl_src_path,
                         info                = Info(self),
-                        mask_array          = self.geodata.basin_mask_array,
-                        uv_array            = self.preprocess.uv_array,
-                        mapping_array       = self.mapping_array,
-                        traj_stats_df       = self.traj_stats_df,
+                        data                = data,
                         verbose             = self.state.verbose )
         fields.integrate()
         # Only preserve what we need from the trajectories class instance
-        self.slc_array = fields.slc_array
-        self.slt_array = fields.slt_array
-        self.sla_array = fields.sla_array
+        self.slc_array = fields.data.slc_array
+        self.slt_array = fields.data.slt_array
+        self.sla_array = fields.data.sla_array
         
         
