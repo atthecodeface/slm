@@ -42,7 +42,7 @@ def label_confluences( cl_state, info, data, verbose ):
                      flag=is_thinchannel, pad=pad)
         
     # Prepare memory, buffers 
-    array_dict = { 'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
+    array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
                    'dn_slt':     {'array': data.dn_slt_array,     'rwf': 'RO'}, 

@@ -43,7 +43,7 @@ def segment_channels( cl_state, info, data, verbose ):
                      flag=is_channelhead, pad=pad)
         
     # Prepare memory, buffers 
-    array_dict = { 'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
+    array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':    {'array': data.mapping_array,    'rwf': 'RW'}, 
@@ -98,7 +98,7 @@ def segment_hillslopes( cl_state, info, data, verbose ):
                                   flag=flag,pad=pad)
     
     # Prepare memory, buffers 
-    array_dict = { 'seed_point': {'array': seed_point_array, 'rwf': 'RO'},
+    array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':    {'array': data.mapping_array,    'rwf': 'RW'}, 
@@ -144,7 +144,7 @@ def subsegment_flanks( cl_state, info, data, verbose ):
                                   flag=flag, pad=pad)
     
     # Specify arrays & CL buffers 
-    array_dict = { 'seed_point':    {'array': seed_point_array,    'rwf': 'RO'},
+    array_dict = { 'seed_point':    {'array': seed_point_array,         'rwf': 'RO'},
                    'mask':          {'array': data.mask_array,          'rwf': 'RO'}, 
                    'uv':            {'array': data.uv_array,            'rwf': 'RO'}, 
                    'mapping':       {'array': data.mapping_array,       'rwf': 'RW'}, 

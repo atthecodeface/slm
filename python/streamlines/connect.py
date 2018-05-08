@@ -46,7 +46,7 @@ def connect_channel_pixels(cl_state, info, data, verbose):
         return
     
     # Specify arrays & CL buffers 
-    array_dict = { 'seed_point':  {'array': seed_point_array, 'rwf': 'RO'},
+    array_dict = { 'seed_point':  {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':        {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':          {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':     {'array': data.mapping_array,    'rwf': 'RW'} }
@@ -89,7 +89,7 @@ def map_channel_heads(cl_state, info, data, verbose):
     # Trace downstream from all non-masked pixels
     seed_point_array = pick_seeds(mask=data.mask_array, flag=is_channel, pad=pad)
     # Specify arrays & CL buffers 
-    array_dict = { 'seed_point':  {'array': seed_point_array, 'rwf': 'RO'},
+    array_dict = { 'seed_point':  {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':        {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':          {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':     {'array': data.mapping_array,    'rwf': 'RW'} }

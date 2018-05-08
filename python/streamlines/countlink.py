@@ -43,17 +43,17 @@ def count_downchannels( cl_state, info, data, verbose ):
     data.mapping_array[(data.mapping_array&is_thinchannel)==is_thinchannel] \
        = data.mapping_array[(data.mapping_array&is_thinchannel)==is_thinchannel] \
                                 ^is_thinchannel
-    data.seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
-                                       flag=is_channelhead, pad=pad)
+    seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
+                                  flag=is_channelhead, pad=pad)
         
     # Specify arrays & CL buffers 
-    array_dict = {' seed_point': {'array': data.seed_point_array, 'rwf': 'RO'},
+    array_dict = {' seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':    {'array': data.mapping_array,    'rwf': 'RW'}, 
                    'count':      {'array': data.count_array,      'rwf': 'RW'}, 
                    'link':       {'array': data.link_array,       'rwf': 'RW'} }
-    info.n_seed_points = data.seed_point_array.shape[0]
+    info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'count_downchannels'
@@ -88,17 +88,17 @@ def flag_downchannels( cl_state, info, data, verbose ):
         = data.mapping_array[(data.mapping_array&is_thinchannel)==is_thinchannel]\
                                 ^is_thinchannel
     data.count_array *= 0
-    data.seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
-                                       flag=is_channelhead, pad=pad)
+    seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
+                                  flag=is_channelhead, pad=pad)
 
     # Specify arrays & CL buffers 
-    array_dict = {' seed_point': {'array': data.seed_point_array, 'rwf': 'RO'},
+    array_dict = {' seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':    {'array': data.mapping_array,    'rwf': 'RW'}, 
                    'count':      {'array': data.count_array,      'rwf': 'RW'}, 
                    'link':       {'array': data.link_array,       'rwf': 'RW'} }
-    info.n_seed_points = data.seed_point_array.shape[0]
+    info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'flag_downchannels'
@@ -133,13 +133,13 @@ def link_hillslopes( cl_state, info, data, verbose ):
                                   flag=is_thinchannel, pad=pad)    
         
     # Specify arrays & CL buffers 
-    array_dict = {' seed_point': {'array': data.seed_point_array, 'rwf': 'RO'},
+    array_dict = {' seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':    {'array': data.mapping_array,    'rwf': 'RW'}, 
                    'count':      {'array': data.count_array,      'rwf': 'RW'}, 
                    'link':       {'array': data.link_array,       'rwf': 'RW'} }
-    info.n_seed_points = data.seed_point_array.shape[0]
+    info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'link_hillslopes'

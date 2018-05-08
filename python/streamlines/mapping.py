@@ -251,6 +251,7 @@ class Mapping(Core):
     def map_hillslope_lengths(self):
         self.print('Mapping hillslope lengths...',end='',flush=True)
         sys.stdout.flush()
+        
         hsl = np.flipud(self.hillslope_length_array.T)
         hsl_bool = hsl.astype(np.bool)
         hsl_clipped = np.ma.array(hsl, mask=~hsl_bool)
@@ -265,6 +266,7 @@ class Mapping(Core):
                             /self.geodata.roi_pixel_size)
         median_disk = disk(median_radius)
         mean_disk   = disk(mean_radius)
+        
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.print('median filtering with {0}m ({1}-pixel) diameter disk...'
@@ -278,6 +280,7 @@ class Mapping(Core):
                        end='',flush=True) 
             sys.stdout.flush()
             hsl_median_nm = mean(hsl_median,mean_disk)
+            
         self.hillslope_length_smoothed_array \
             = ((hsl_median_nm[self.geodata.pad_width:-self.geodata.pad_width,
                               self.geodata.pad_width:-self.geodata.pad_width]
