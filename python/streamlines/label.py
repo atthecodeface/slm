@@ -17,7 +17,6 @@ __all__ = ['label_confluences']
 pdebug = print
 
 def label_confluences( cl_state, info, data, verbose ):
-        
     """
     Label channel confluences.
     

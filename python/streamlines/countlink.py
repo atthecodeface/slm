@@ -19,7 +19,6 @@ __all__ = ['count_downchannels','flag_downchannels','link_hillslopes']
 pdebug = print
 
 def count_downchannels( cl_state, info, data, verbose ):
-        
     """
     Integrate and count downstream designating downstream links & thin channel status.
     
@@ -63,8 +62,7 @@ def count_downchannels( cl_state, info, data, verbose ):
     # Done
     vprint(verbose,'...done')  
 
-def flag_downchannels( cl_state, info, data, verbose ):
-        
+def flag_downchannels( cl_state, info, data, verbose ):    
     """
     Integrate downstream along channels & count pixel steps as we go.
     
@@ -110,7 +108,6 @@ def flag_downchannels( cl_state, info, data, verbose ):
     vprint(verbose,'...done')  
 
 def link_hillslopes( cl_state, info, data, verbose ):
-        
     """
     Link hillslope pixels downstream.
     

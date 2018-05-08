@@ -17,7 +17,6 @@ __all__ = ['segment_channels','segment_hillslopes','subsegment_flanks']
 pdebug = print
 
 def segment_channels( cl_state, info, data, verbose ):
-        
     """
     Label channel confluences.
     
@@ -72,7 +71,6 @@ def segment_channels( cl_state, info, data, verbose ):
     return n_segments
 
 def segment_hillslopes( cl_state, info, data, verbose ):
-        
     """
     Label hillslope pixels.
     
@@ -117,7 +115,6 @@ def segment_hillslopes( cl_state, info, data, verbose ):
     vprint(verbose,'...done')  
 
 def subsegment_flanks( cl_state, info, data, verbose ):
-        
     """
     Subsegment left (and implicitly right) flanks.
     
