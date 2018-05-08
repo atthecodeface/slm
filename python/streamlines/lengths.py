@@ -16,7 +16,7 @@ __all__ = ['hillslope_lengths']
 
 pdebug = print
 
-def hillslope_lengths( cl_state, info_dict, 
+def hillslope_lengths( cl_state, info, 
                        mask_array, uv_array,
                        mapping_array, label_array, traj_length_array, verbose ):
         
@@ -25,7 +25,7 @@ def hillslope_lengths( cl_state, info_dict,
     
     Args:
         cl_state (obj):
-        info_dict (numpy.ndarray):
+        info (numpy.ndarray):
         mask_array  (numpy.ndarray):
         uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
@@ -45,10 +45,10 @@ def hillslope_lengths( cl_state, info_dict,
     # Trace downstream from midslope pixels to thin channel pixels, 
     #   measuring streamline distance; double and scale by pixel width 
     #   to estimate hillslope length for that midslope pixel
-    pad = info_dict['pad_width']
-    is_midslope = info_dict['is_midslope']
-    pixel_size = info_dict['pixel_size']
-    flag = is_midslope
+    pad         = info.pad_width
+    is_midslope = info.is_midslope
+    pixel_size  = info.pixel_size
+    flag        = is_midslope
     seed_point_array = pick_seeds(mask=mask_array, map=mapping_array, flag=flag, pad=pad)
     if ( seed_point_array.shape[0]!=traj_length_array.shape[0] ):
         print('\nMismatched midslope point arrays: ',
@@ -59,11 +59,11 @@ def hillslope_lengths( cl_state, info_dict,
                    'mapping':    {'array': mapping_array,    'rwf': 'RO'}, 
                    'label':      {'array': label_array,      'rwf': 'RO'}, 
                    'traj_length':{'array': traj_length_array,'rwf': 'RW'} }
-    info_dict['n_seed_points'] = seed_point_array.shape[0]
+    info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'hillslope_lengths'
-    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, verbose)
     
     # Scale by pixel size and by two because we measured only half lengths
     traj_length_array *= pixel_size*2

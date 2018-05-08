@@ -25,9 +25,9 @@ pdebug = print
 
 class Trajectories():
     def __init__(   self,
+                    which_cl_platform,
+                    which_cl_device,
                     cl_src_path         = None,
-                    which_cl_platform   = None,
-                    which_cl_device     = None,
                     info                = None,
                     mask_array          = None,
                     uv_array            = None,
@@ -39,9 +39,9 @@ class Trajectories():
         Initialize.
         
         Args:
-            cl_src_path (str):
             which_cl_platform (int):
             which_cl_device (int):
+            cl_src_path (str):
             info (obj):
             mask_array (numpy.ndarray):
             uv_array (numpy.ndarray):
@@ -50,9 +50,11 @@ class Trajectories():
             do_trace_upstream (bool):
             verbose (bool):
         """
+        self.platform, self.device, self.context \
+            = pocl.prepare_cl_context(which_cl_platform, which_cl_device)
+        self.queue = cl.CommandQueue(self.context,
+                                properties=cl.command_queue_properties.PROFILING_ENABLE)
         self.cl_src_path         = cl_src_path
-        self.which_cl_platform   = which_cl_platform
-        self.which_cl_device     = which_cl_device
         self.info                = info
         self.mask_array          = mask_array
         self.uv_array            = uv_array
@@ -85,25 +87,19 @@ class Trajectories():
         
         # Shorthand
         cl_src_path         = self.cl_src_path
-        which_cl_platform   = self.which_cl_platform
-        which_cl_device     = self.which_cl_device
         info                = self.info
         mask_array          = self.mask_array
         uv_array            = self.uv_array
         mapping_array       = self.mapping_array
-    
+
         # Prepare CL essentials
-        platform, device, context= pocl.prepare_cl_context(which_cl_platform,
-                                                           which_cl_device)
-        queue = cl.CommandQueue(context,
-                                properties=cl.command_queue_properties.PROFILING_ENABLE)
-        cl_files = ['rng.cl','essentials.cl',
+        device        = self.device
+        context       = self.context
+        queue         = self.queue
+        cl_kernel_source \
+            = pocl.read_kernel_source(cl_src_path,['rng.cl','essentials.cl',
                     'writearray.cl','updatetraj.cl','computestep.cl',
-                    'rungekutta.cl','trajectory.cl','integratetraj.cl']
-        cl_kernel_source = ''
-        for cl_file in cl_files:
-            with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
-                cl_kernel_source += fp.read()
+                    'rungekutta.cl','trajectory.cl','integratetraj.cl'])
                 
         # Seed point selection, padding and shuffling
         n_trajectory_seed_points = info.n_trajectory_seed_points
@@ -268,7 +264,7 @@ class Trajectories():
             ##################################
             
             # Compile the CL code
-            compile_options = pocl.set_compile_options_alt(info, 'INTEGRATE_TRAJECTORY', 
+            compile_options = pocl.set_compile_options(info, 'INTEGRATE_TRAJECTORY', 
                                                        downup_sign=downup_sign)
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")

@@ -16,7 +16,7 @@ __all__ = ['segment_channels','segment_hillslopes','subsegment_flanks']
 
 pdebug = print
 
-def segment_channels( cl_state, info_dict, 
+def segment_channels( cl_state, info, 
                       mask_array, uv_array,
                       mapping_array, count_array, link_array, label_array, verbose ):
         
@@ -25,7 +25,7 @@ def segment_channels( cl_state, info_dict,
     
     Args:
         cl_state (obj):
-        info_dict (numpy.ndarray):
+        info (numpy.ndarray):
         mask_array (numpy.ndarray):
         uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
@@ -44,8 +44,8 @@ def segment_channels( cl_state, info_dict,
             
     # Trace downstream from all channel heads until masked boundary is reachedd
     #    /or/ if a major confluence is reached, only keeping going if dominant
-    pad = info_dict['pad_width']
-    is_channelhead = info_dict['is_channelhead']
+    pad            = info.pad_width
+    is_channelhead = info.is_channelhead
     seed_point_array \
         = pick_seeds(mask=mask_array, map=mapping_array, flag=is_channelhead, pad=pad)
         
@@ -57,11 +57,11 @@ def segment_channels( cl_state, info_dict,
                    'count':      {'array': count_array,      'rwf': 'RO'}, 
                    'link':       {'array': link_array,       'rwf': 'RO'}, 
                    'label':      {'array': label_array,      'rwf': 'RW'} }
-    info_dict['n_seed_points'] = seed_point_array.shape[0]
+    info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'segment_downchannels'
-    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, verbose)
 
     # Relabel channel segments in simple sequence 1,2,3,... 
     #  instead of using array indices as labels
@@ -76,7 +76,7 @@ def segment_channels( cl_state, info_dict,
     vprint(verbose,'...done')  
     return n_segments
 
-def segment_hillslopes( cl_state, info_dict, 
+def segment_hillslopes( cl_state, info, 
                         mask_array, uv_array,
                         mapping_array, count_array, link_array, label_array, verbose ):
         
@@ -85,7 +85,7 @@ def segment_hillslopes( cl_state, info_dict,
     
     Args:
         cl_state (obj):
-        info_dict (numpy.ndarray):
+        info (numpy.ndarray):
         mask_array (numpy.ndarray):
         uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
@@ -105,9 +105,9 @@ def segment_hillslopes( cl_state, info_dict,
             
     # Trace downstream from all channel heads until masked boundary is reachedd
     #    /or/ if a major confluence is reached, only keeping going if dominant
-    pad            = info_dict['pad_width']
-    is_channelhead = info_dict['is_channelhead']
-    flag = is_channelhead
+    pad            = info.pad_width
+    is_channelhead = info.is_channelhead
+    flag           = is_channelhead
     seed_point_array = pick_seeds(mask=mask_array, map=~mapping_array, flag=flag,pad=pad)
     
     # Prepare memory, buffers 
@@ -118,16 +118,16 @@ def segment_hillslopes( cl_state, info_dict,
                    'count':      {'array': count_array,      'rwf': 'RO'}, 
                    'link':       {'array': link_array,       'rwf': 'RO'}, 
                    'label':      {'array': label_array,      'rwf': 'RW'} }
-    info_dict['n_seed_points'] = seed_point_array.shape[0]
+    info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'segment_hillslopes'
-    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, verbose)
 
     # Done
     vprint(verbose,'...done')  
 
-def subsegment_flanks( cl_state, info_dict, 
+def subsegment_flanks( cl_state, info, 
                        mask_array, uv_array,
                        mapping_array, channel_label_array, link_array, label_array, 
                        verbose ):
@@ -137,7 +137,7 @@ def subsegment_flanks( cl_state, info_dict,
     
     Args:
         cl_state (obj):
-        info_dict (numpy.ndarray):
+        info (numpy.ndarray):
         mask_array (numpy.ndarray):
         uv_array (numpy.ndarray):
         mapping_array (numpy.ndarray):
@@ -156,12 +156,12 @@ def subsegment_flanks( cl_state, info_dict,
                                                      'segment.cl'])
             
     # Trace downstream from all major confluences /or/ channel heads
-    pad                = info_dict['pad_width']
-    is_channelhead     = info_dict['is_channelhead']
-    is_majorconfluence = info_dict['is_majorconfluence']
-    is_thinchannel     = info_dict['is_thinchannel']
-    is_leftflank       = info_dict['is_leftflank']
-    flag = is_channelhead | is_majorconfluence
+    pad                = info.pad_width
+    is_channelhead     = info.is_channelhead
+    is_majorconfluence = info.is_majorconfluence
+    is_thinchannel     = info.is_thinchannel
+    is_leftflank       = info.is_leftflank
+    flag               = is_channelhead | is_majorconfluence
     seed_point_array = pick_seeds(mask=mask_array, map=mapping_array, flag=flag, pad=pad)
     
     # Specify arrays & CL buffers 
@@ -172,22 +172,22 @@ def subsegment_flanks( cl_state, info_dict,
                    'channel_label': {'array': channel_label_array, 'rwf': 'RO'}, 
                    'link':          {'array': link_array,          'rwf': 'RO'}, 
                    'label':         {'array': label_array,         'rwf': 'RW'} }
-    info_dict['n_seed_points'] = seed_point_array.shape[0]
+    info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
-    if ( info_dict['n_seed_points']>0 ):
+    if ( info.n_seed_points>0 ):
         cl_state.kernel_fn = 'subsegment_channel_edges'
-        pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
+        pocl.gpu_compute(cl_state, info, array_dict, verbose)
             
     # Trace downstream from all non-left-flank hillslope pixels
     flag = is_leftflank | is_thinchannel
     seed_point_array = pick_seeds(mask=mask_array, map=~mapping_array, flag=flag,pad=pad)
     array_dict['seed_point']['array'] = seed_point_array
-    info_dict['n_seed_points'] = seed_point_array.shape[0]
+    info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'subsegment_flanks'
-    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, verbose)
     
     # Done
     vprint(verbose,'...done')  

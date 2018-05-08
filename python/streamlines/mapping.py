@@ -16,6 +16,7 @@ environ['PYTHONUNBUFFERED']='True'
 
 from streamlines.core import Core
 from streamlines import connect, countlink, label, segment, lengths
+from streamlines.trace import Info
 from pocl import Initialize_cl
 
 __all__ = ['Mapping']
@@ -125,7 +126,7 @@ class Mapping(Core):
     def connect_channel_pixels(self):
         connect.connect_channel_pixels(
                 self.cl_state, 
-                self.trace.build_info_dict(),
+                Info(self.trace),
                 self.geodata.basin_mask_array,
                 self.preprocess.uv_array,
                 self.mapping_array, 
@@ -148,7 +149,7 @@ class Mapping(Core):
     def map_channel_heads(self):
         connect.map_channel_heads(
                 self.cl_state, 
-                self.trace.build_info_dict(),
+                Info(self.trace),
                 self.geodata.basin_mask_array,
                 self.preprocess.uv_array,
                 self.mapping_array, 
@@ -160,7 +161,7 @@ class Mapping(Core):
         self.link_array  = np.zeros(self.mapping_array.shape, dtype=np.uint32)
         countlink.count_downchannels(
                             self.cl_state, 
-                            self.trace.build_info_dict(),
+                            Info(self.trace),
                             self.geodata.basin_mask_array,
                             self.preprocess.uv_array,
                             self.mapping_array, self.count_array, self.link_array, 
@@ -170,7 +171,7 @@ class Mapping(Core):
     def flag_downchannels(self):
         countlink.flag_downchannels(
                             self.cl_state, 
-                            self.trace.build_info_dict(),
+                            Info(self.trace),
                             self.geodata.basin_mask_array,
                             self.preprocess.uv_array,
                             self.mapping_array, self.count_array, self.link_array, 
@@ -180,7 +181,7 @@ class Mapping(Core):
     def label_confluences(self):
         label.label_confluences(
                             self.cl_state,
-                            self.trace.build_info_dict(), 
+                            Info(self.trace), 
                             self.geodata.basin_mask_array,
                             self.preprocess.uv_array,
                             self.trace.slt_array[:,:,0], 
@@ -193,7 +194,7 @@ class Mapping(Core):
         self.n_segments \
             = segment.segment_channels(
                     self.cl_state,
-                    self.trace.build_info_dict(),
+                    Info(self.trace),
                     self.geodata.basin_mask_array,
                     self.preprocess.uv_array,
                     self.mapping_array,self.count_array,self.link_array,self.label_array,
@@ -209,7 +210,7 @@ class Mapping(Core):
     def link_hillslopes(self):
         countlink.link_hillslopes(
                             self.cl_state,
-                            self.trace.build_info_dict(),
+                            Info(self.trace),
                             self.geodata.basin_mask_array,
                             self.preprocess.uv_array,
                             self.mapping_array,self.count_array,self.link_array,
@@ -219,7 +220,7 @@ class Mapping(Core):
     def segment_hillslopes(self):
         segment.segment_hillslopes(
                 self.cl_state,
-                self.trace.build_info_dict(),
+                Info(self.trace),
                 self.geodata.basin_mask_array,
                 self.preprocess.uv_array,
                 self.mapping_array,self.count_array,self.link_array,self.label_array,
@@ -229,7 +230,7 @@ class Mapping(Core):
     def subsegment_flanks(self):
         segment.subsegment_flanks(
                 self.cl_state,
-                self.trace.build_info_dict(),
+                Info(self.trace),
                 self.geodata.basin_mask_array,
                 self.preprocess.uv_array,
                 self.mapping_array,
@@ -264,7 +265,7 @@ class Mapping(Core):
         
         lengths.hillslope_lengths(
                 self.cl_state,
-                self.trace.build_info_dict(),
+                Info(self.trace),
                 self.geodata.basin_mask_array,
                 self.preprocess.uv_array,
                 self.mapping_array,

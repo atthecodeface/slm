@@ -16,7 +16,7 @@ __all__ = ['Initialize_cl',
            'prepare_cl_context','choose_platform_and_device',
            'prepare_cl_queue', 'prepare_cl',
            'make_cl_dtype',
-           'set_compile_options', 
+           'set_compile_options', 'set_compile_options_old', 
            'report_kernel_info', 'report_device_info', 'report_build_log',
            'adaptive_enqueue_nd_range_kernel',
            'prepare_buffers', 'gpu_compute']
@@ -136,7 +136,7 @@ def make_cl_dtype(device,name,dtype):
     processed_dtype, c_decl = cltools.match_dtype_to_c_struct(device, name, dtype)
     return processed_dtype, cltools.get_or_register_dtype(name, processed_dtype), c_decl
 
-def set_compile_options(info_dict, kernel_def, downup_sign=1,
+def set_compile_options_old(info_dict, kernel_def, downup_sign=1,
                         job_type='integration'):
     """
     Convert the info struct into a list of '-D' compiler macros.
@@ -248,7 +248,7 @@ def set_compile_options(info_dict, kernel_def, downup_sign=1,
             rtn_list += ['-D', 'VERBOSE']
         return rtn_list
 
-def set_compile_options_alt(info, kernel_def, downup_sign=1,
+def set_compile_options(info, kernel_def, downup_sign=1,
                         job_type='integration'):
     """
     Convert info obj data into a list of '-D' compiler macros.
@@ -300,15 +300,12 @@ def set_compile_options_alt(info, kernel_def, downup_sign=1,
         '-D','KERNEL_{}'.format(kernel_def.upper()),
         '-D','N_SEED_POINTS={}u'.format(info.n_seed_points),
         '-D','DOWNUP_SIGN={}'.format(downup_sign),
-        '-D','INTEGRATOR_STEP_FACTOR={}f'.format( 
-                                            info.integrator_step_factor),
-        '-D','MAX_INTEGRATION_STEP_ERROR={}f'.format(
-                                info.max_integration_step_error),
+        '-D','INTEGRATOR_STEP_FACTOR={}f'.format(info.integrator_step_factor),
+        '-D','MAX_INTEGRATION_STEP_ERROR={}f'.format(info.max_integration_step_error),
         '-D','ADJUSTED_MAX_ERROR={}f'.format( info.adjusted_max_error),
         '-D','MAX_LENGTH={}f'.format(info.max_length),
         '-D','PIXEL_SIZE={}f'.format(info.pixel_size),
-        '-D','INTEGRATION_HALT_THRESHOLD={}f'.format(
-                                info.integration_halt_threshold),
+        '-D','INTEGRATION_HALT_THRESHOLD={}f'.format(info.integration_halt_threshold),
         '-D','PAD_WIDTH={}u'.format(info.pad_width),
         '-D','PAD_WIDTH_PP5={}f'.format(info.pad_width_pp5),
         '-D','NX={}u'.format(info.nx),
@@ -326,16 +323,12 @@ def set_compile_options_alt(info, kernel_def, downup_sign=1,
         '-D','MAX_N_STEPS={}u'.format(info.max_n_steps),
         '-D','TRAJECTORY_RESOLUTION={}u'.format(info.trajectory_resolution),
         '-D','SEEDS_CHUNK_OFFSET={}u'.format(info.seeds_chunk_offset),
-        '-D','SUBPIXEL_SEED_POINT_DENSITY={}u'.format(
-                                        info.subpixel_seed_point_density),
-        '-D','SUBPIXEL_SEED_HALFSPAN={}f'.format(
-                                        info.subpixel_seed_halfspan),
+        '-D','SUBPIXEL_SEED_POINT_DENSITY={}u'.format(info.subpixel_seed_point_density),
+        '-D','SUBPIXEL_SEED_HALFSPAN={}f'.format(info.subpixel_seed_halfspan),
         '-D','SUBPIXEL_SEED_STEP={}f'.format(info.subpixel_seed_step),
         '-D','JITTER_MAGNITUDE={}f'.format(info.jitter_magnitude),
-        '-D','INTERCHANNEL_MAX_N_STEPS={}u'.format(
-                                             info.interchannel_max_n_steps),
-        '-D','SEGMENTATION_THRESHOLD={}u'.format(
-                                            info.segmentation_threshold),
+        '-D','INTERCHANNEL_MAX_N_STEPS={}u'.format(info.interchannel_max_n_steps),
+        '-D','SEGMENTATION_THRESHOLD={}u'.format(info.segmentation_threshold),
         '-D','LEFT_FLANK_ADDITION={}u'.format(info.left_flank_addition),
         '-D','IS_CHANNEL={}u'.format(info.is_channel),
         '-D','IS_THINCHANNEL={}u'.format(info.is_thinchannel),
@@ -513,13 +506,14 @@ def prepare_buffers(context, array_dict, verbose):
             pass
     return buffer_dict
 
-def gpu_compute(cl_state, info_dict, array_dict, verbose):
+
+def gpu_compute(cl_state, info, array_dict, verbose):
     """
     Carry out GPU computation.
     
     Args:
         cl_state (obj):
-        info_dict (dict):
+        info (dict):
         array_dict (dict):
         verbose (bool):  
         
@@ -530,26 +524,23 @@ def gpu_compute(cl_state, info_dict, array_dict, verbose):
     queue         = cl_state.queue
     kernel_source = cl_state.kernel_source
     kernel_fn     = cl_state.kernel_fn
-                     
+    
     # Prepare memory, buffers 
     buffer_dict = prepare_buffers(context, array_dict, verbose)    
 
     # Specify this integration job's parameters
-    global_size         = [info_dict['n_seed_points'],1]
-    n_work_items        = info_dict['n_work_items']
-    local_size          = [n_work_items,1]
-    chunk_size_factor   = info_dict['chunk_size_factor']
-    max_time_per_kernel = info_dict['max_time_per_kernel']
+    global_size         = [info.n_seed_points,1]
+    local_size          = [info.n_work_items,1]
 
     # Compile the CL code
-    compile_options = set_compile_options(info_dict, kernel_fn, downup_sign=1)
+    compile_options = set_compile_options(info, kernel_fn, downup_sign=1)
     vprint(verbose,'Compile options:\n', compile_options)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         program = cl.Program(context, kernel_source).build(options=compile_options)
     report_build_log(program, device, verbose)
     # Set the GPU kernel
-    kernel = getattr(program,kernel_fn)
+    kernel = getattr(program, kernel_fn)
     # Designate buffered arrays
     kernel.set_args(*list(buffer_dict.values()))
     kernel.set_scalar_arg_dtypes( [None]*len(buffer_dict) )
@@ -557,12 +548,12 @@ def gpu_compute(cl_state, info_dict, array_dict, verbose):
     # Do the GPU compute
     vprint(verbose,
            '#### GPU/OpenCL computation: {0} work items... ####'.format(global_size[0]))
-    report_kernel_info(device,kernel,verbose)
+    report_kernel_info(device, kernel, verbose)
     elapsed_time \
         = adaptive_enqueue_nd_range_kernel( queue, kernel, global_size, 
-                                            local_size, n_work_items,
-                                            chunk_size_factor=chunk_size_factor,
-                                            max_time_per_kernel=max_time_per_kernel,
+                                            local_size, info.n_work_items,
+                                            chunk_size_factor=info.chunk_size_factor,
+                                            max_time_per_kernel=info.max_time_per_kernel,
                                             verbose=verbose )
     vprint(verbose,
            '#### ...elapsed time for {1} work items: {0:.3f}s ####'

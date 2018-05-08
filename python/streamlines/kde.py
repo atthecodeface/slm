@@ -233,7 +233,7 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info_di
     local_size = None
 #     pdebug('global_size',global_size)
     # Compile the CL code
-    compile_options = pocl.set_compile_options(info_dict, cl_kernel_fn, job_type='kde')
+    compile_options = pocl.set_compile_options_old(info_dict, cl_kernel_fn, job_type='kde')
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         program = cl.Program(context, cl_kernel_source).build(options=compile_options)

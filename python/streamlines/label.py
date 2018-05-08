@@ -16,7 +16,7 @@ __all__ = ['label_confluences']
 
 pdebug = print
 
-def label_confluences( cl_state, info_dict, 
+def label_confluences( cl_state, info, 
                        mask_array, uv_array, dn_slt_array,
                        mapping_array, count_array, link_array, verbose ):
         
@@ -25,7 +25,7 @@ def label_confluences( cl_state, info_dict,
     
     Args:
         cl_state (obj):
-        info_dict (numpy.ndarray):
+        info (numpy.ndarray):
         mask_array (numpy.ndarray):
         uv_array (numpy.ndarray):
         dn_slt_array (numpy.ndarray):
@@ -43,8 +43,8 @@ def label_confluences( cl_state, info_dict,
                                                      'label.cl'])
             
     # Check all thin channel pixels
-    pad = info_dict['pad_width']
-    is_thinchannel = info_dict['is_thinchannel']
+    pad            = info.pad_width
+    is_thinchannel = info.is_thinchannel
     seed_point_array \
         = pick_seeds(mask=mask_array, map=mapping_array, flag=is_thinchannel, pad=pad)
         
@@ -56,11 +56,11 @@ def label_confluences( cl_state, info_dict,
                    'mapping':    {'array': mapping_array,    'rwf': 'RW'}, 
                    'count':      {'array': count_array,      'rwf': 'RW'}, 
                    'link':       {'array': link_array,       'rwf': 'RW'} }
-    info_dict['n_seed_points'] = seed_point_array.shape[0]
+    info.n_seed_points = seed_point_array.shape[0]
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'label_confluences'
-    pocl.gpu_compute(cl_state, info_dict, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, verbose)
     
     # Done
     vprint(verbose,'...done')  
