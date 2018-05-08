@@ -17,7 +17,40 @@ __all__ = ['Analysis','Univariate_distribution','Bivariate_distribution']
 
 pdebug = print
 
-
+class Info():    
+    def __init__(self, obj, is_one_d=True):
+        
+        self.debug =         np.bool8(obj.debug)
+        self.kdf_bandwidth = np.float32(obj.bandwidth)
+        self.kdf_kernel =    obj.kernel
+        self.n_data =        np.uint32(obj.n_data)
+        self.n_hist_bins =   np.uint32(obj.n_hist_bins)
+        self.n_pdf_points =  np.uint32(obj.n_pdf_points)
+        self.x_min =         np.float32(obj.logx_min)
+        self.x_max =         np.float32(obj.logx_max)
+        self.x_range =       np.float32(obj.x_range)
+        self.bin_dx =        np.float32(obj.bin_dx)
+        self.pdf_dx =        np.float32(obj.pdf_dx)
+        self.kdf_width_x =   np.float32(0.0)
+        self.n_kdf_part_points_x = np.uint32(0)
+        
+        if is_one_d:
+            self.y_min =         np.float32(0.0)
+            self.y_max =         np.float32(1.0)
+            self.y_range =       np.float32(1.0)
+            self.bin_dy =        np.float32(1.0/2000)
+            self.pdf_dy =        np.float32(1.0/200)
+            self.kdf_width_y =         np.float32(0.0)
+            self.n_kdf_part_points_y = np.uint32(0)
+        else:
+            self.y_min =         np.float32(obj.logy_min)
+            self.y_max =         np.float32(obj.logy_max)
+            self.y_range =       np.float32(obj.y_range)
+            self.bin_dy =        np.float32(obj.bin_dy)
+            self.pdf_dy =        np.float32(obj.pdf_dy)
+            self.kdf_width_y =         np.float32(0.0)
+            self.n_kdf_part_points_y = np.uint32(0)
+            
 class Univariate_distribution():
     """
     Class for making and recording kernel-density estimate of univariate 
@@ -87,7 +120,8 @@ class Univariate_distribution():
         self.cl_platform = cl_platform
         self.cl_device = cl_device
         
-        self.info_dict = {}       
+        self.info_dict = {} 
+        self.info = None      
              
         self.debug = debug
         self.verbose = verbose
@@ -142,27 +176,28 @@ class Univariate_distribution():
         self.kernel = kernel
         self.bandwidth = bandwidth
         # hack
-        if kernel=='gaussian':
+        if self.kernel=='gaussian':
             self.bandwidth /= 2.0
         available_kernels = ['tophat','triangle','epanechnikov','cosine','gaussian']
-        if kernel not in available_kernels:
+        if self.kernel not in available_kernels:
             raise ValueError('PDF kernel "{}" is not among those available: {}'
-                             .format(kernel, available_kernels))
-        x_range = self.logx_max-self.logx_min;
-        bin_dx = x_range/self.n_hist_bins
-        pdf_dx = x_range/self.n_pdf_points
+                             .format(self.kernel, available_kernels))
+        self.x_range = self.logx_max-self.logx_min;
+        self.bin_dx = self.x_range/self.n_hist_bins
+        self.pdf_dx = self.x_range/self.n_pdf_points
+        self.info = Info(self, is_one_d=True)
         self.info_dict = {
             'debug' :         np.bool8(self.debug),
             'kdf_bandwidth' : np.float32(self.bandwidth),
-            'kdf_kernel' :    kernel,
+            'kdf_kernel' :    self.kernel,
             'n_data' :        np.uint32(self.n_data),
             'n_hist_bins' :   np.uint32(self.n_hist_bins),
             'n_pdf_points' :  np.uint32(self.n_pdf_points),
             'x_min' :         np.float32(self.logx_min),
             'x_max' :         np.float32(self.logx_max),
-            'x_range' :       np.float32(x_range),
-            'bin_dx' :        np.float32(bin_dx),
-            'pdf_dx' :        np.float32(pdf_dx),
+            'x_range' :       np.float32(self.x_range),
+            'bin_dx' :        np.float32(self.bin_dx),
+            'pdf_dx' :        np.float32(self.pdf_dx),
             'kdf_width_x' :   np.float32(0.0),
             'n_kdf_part_points_x' : np.uint32(0),
             'y_min' :         np.float32(0.0),
@@ -176,10 +211,10 @@ class Univariate_distribution():
         self.kde['pdf'] = kde.estimate_univariate_pdf(self.cl_src_path, 
                                                         self.cl_platform, 
                                                         self.cl_device, 
-                                                        self.info_dict,
+                                                        self.info,
                                                         self.logx_data, 
                                                         self.verbose)
-        self.kde['cdf'] = np.cumsum(self.kde['pdf'])*bin_dx
+        self.kde['cdf'] = np.cumsum(self.kde['pdf'])*self.bin_dx
         if not np.isclose(self.kde['cdf'][-1], 1.0, rtol=5e-3):
             self.print(
                 'Error/imprecision when computing cumulative probability distribution:',
@@ -336,12 +371,13 @@ class Bivariate_distribution():
         self.pixel_size = pixel_size
         self.cl_src_path = cl_src_path
         self.cl_platform = cl_platform
-        self.cl_device = cl_device
-        
-        self.info_dict = {}      
+        self.cl_device = cl_device  
              
         self.debug = debug
         self.verbose = verbose
+        
+        self.info_dict = {}      
+        self.info = None  
 
     def print(self, *args, **kwargs):
         if self.verbose:
@@ -367,45 +403,46 @@ class Bivariate_distribution():
         self.kernel = kernel
         self.bandwidth = bandwidth
         available_kernels = ['tophat','triangle','epanechnikov','cosine','gaussian']
-        if kernel not in available_kernels:
+        if self.kernel not in available_kernels:
             raise ValueError('PDF kernel "{}" is not among those available: {}'
-                             .format(kernel, available_kernels))
-        x_range = self.logx_max-self.logx_min;
-        bin_dx = x_range/self.n_hist_bins
-        pdf_dx = x_range/self.n_pdf_points
-        y_range = self.logy_max-self.logy_min;
-        bin_dy = y_range/self.n_hist_bins
-        pdf_dy = y_range/self.n_pdf_points
-        
+                             .format(self.kernel, available_kernels))
+        self.x_range = self.logx_max-self.logx_min;
+        self.bin_dx = self.x_range/self.n_hist_bins
+        self.pdf_dx = self.x_range/self.n_pdf_points
+        self.y_range = self.logy_max-self.logy_min;
+        self.bin_dy = self.y_range/self.n_hist_bins
+        self.pdf_dy = self.y_range/self.n_pdf_points
+
+        self.info = Info(self, is_one_d=False)        
         self.info_dict = {
             'debug' :         np.bool8(self.debug),
             'kdf_bandwidth' : np.float32(self.bandwidth),
-            'kdf_kernel' :    kernel,
+            'kdf_kernel' :    self.kernel,
             'n_data' :        np.uint32(self.n_data),
             'n_hist_bins' :   np.uint32(self.n_hist_bins),
             'n_pdf_points' :  np.uint32(self.n_pdf_points),
             'x_min' :         np.float32(self.logx_min),
             'x_max' :         np.float32(self.logx_max),
-            'x_range' :       np.float32(x_range),
-            'bin_dx' :        np.float32(bin_dx),
-            'pdf_dx' :        np.float32(pdf_dx),
+            'x_range' :       np.float32(self.x_range),
+            'bin_dx' :        np.float32(self.bin_dx),
+            'pdf_dx' :        np.float32(self.pdf_dx),
             'kdf_width_x' :   np.float32(0.0),
             'n_kdf_part_points_x' : np.uint32(0),
             'y_min' :         np.float32(self.logy_min),
             'y_max' :         np.float32(self.logy_max),
-            'y_range' :       np.float32(y_range),
-            'bin_dy' :        np.float32(bin_dy),
-            'pdf_dy' :        np.float32(pdf_dy),
+            'y_range' :       np.float32(self.y_range),
+            'bin_dy' :        np.float32(self.bin_dy),
+            'pdf_dy' :        np.float32(self.pdf_dy),
             'kdf_width_y' :         np.float32(0.0),
             'n_kdf_part_points_y' : np.uint32(0)
         }
         self.kde['pdf'] = kde.estimate_bivariate_pdf(   self.cl_src_path, 
                                                         self.cl_platform, 
                                                         self.cl_device, 
-                                                        self.info_dict,
+                                                        self.info,
                                                         self.logxy_data, 
                                                         self.verbose  )
-        self.kde['cdf'] = np.cumsum(self.kde['pdf'])*bin_dx
+        self.kde['cdf'] = np.cumsum(self.kde['pdf'])*self.bin_dx
 #         if not np.isclose(self.kde['cdf'][-1], 1.0, rtol=5e-3):
 #             self.print(
 #                 'Error/imprecision when computing cumulative probability distribution:',
