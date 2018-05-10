@@ -61,7 +61,7 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     stddev_y     = np.std(sl_array[1,:])
             
     # Set up kernel filter
-    # Silverman hack for now
+    # Silverman hack turned off
 #     kdf_width_x = 1.06*stddev_x*np.power(n_data,-0.2)*20
 #     kdf_width_y = 1.06*stddev_y*np.power(n_data,-0.2)*20
     kdf_width_x = stddev_x*bandwidth*3
@@ -136,8 +136,8 @@ def estimate_univariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     stddev       = np.std(sl_array)
     
     # Set up kernel filter
-    # Silverman hack for now
-    kdf_width_x = 1.06*stddev*np.power(n_data,-0.2)*8
+    # Hacked Silverman hack - why is 8x good?
+    kdf_width_x = 1.06*stddev*np.power(n_data,-0.2)*5
     info.kdf_width_x = kdf_width_x
     info.n_kdf_part_points_x = np.uint32(np.floor(kdf_width_x/pdf_dx))//2
         
@@ -230,7 +230,6 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info,
             buffer_list = [histogram_buffer, pdf_buffer]
         
     local_size = None
-#     pdebug('global_size',global_size)
     # Compile the CL code
     compile_options = pocl.set_compile_options(info, cl_kernel_fn, job_type='kde')
     with warnings.catch_warnings():
@@ -238,7 +237,6 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info,
         program = cl.Program(context, cl_kernel_source).build(options=compile_options)
     pocl.report_build_log(program, device, verbose)
     # Set the GPU kernel
-#     pdebug(compile_options)
     kernel = getattr(program,cl_kernel_fn)
     # Designate buffered arrays
     kernel.set_args(*buffer_list)

@@ -34,13 +34,14 @@ def segment_channels( cl_state, info, data, verbose ):
         = pocl.read_kernel_source(cl_state.src_path,['essentials.cl','updatetraj.cl',
                                                      'rungekutta.cl','segment.cl'])
             
-    # Trace downstream from all channel heads until masked boundary is reachedd
+    # Trace downstream from all channel heads until masked boundary is reached
     #    /or/ if a major confluence is reached, only keeping going if dominant
     pad            = info.pad_width
     is_channelhead = info.is_channelhead
+    flag           = is_channelhead
     seed_point_array \
         = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
-                     flag=is_channelhead, pad=pad)
+                     flag=flag, pad=pad)
         
     # Prepare memory, buffers 
     array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},
@@ -89,7 +90,7 @@ def segment_hillslopes( cl_state, info, data, verbose ):
                                                      'computestep.cl','rungekutta.cl',
                                                      'segment.cl'])
             
-    # Trace downstream from all channel heads until masked boundary is reachedd
+    # Trace downstream from all channel heads until masked boundary is reached
     #    /or/ if a major confluence is reached, only keeping going if dominant
     pad            = info.pad_width
     is_channelhead = info.is_channelhead
@@ -133,13 +134,14 @@ def subsegment_flanks( cl_state, info, data, verbose ):
                                                      'computestep.cl','rungekutta.cl',
                                                      'segment.cl'])
             
-    # Trace downstream from all major confluences /or/ channel heads
+    # Trace downstream from all major confluences /or/ channel heads (former and current)
     pad                = info.pad_width
     is_channelhead     = info.is_channelhead
+    was_channelhead    = info.was_channelhead
     is_majorconfluence = info.is_majorconfluence
     is_thinchannel     = info.is_thinchannel
     is_leftflank       = info.is_leftflank
-    flag               = is_channelhead | is_majorconfluence
+    flag               = is_channelhead | was_channelhead | is_majorconfluence
     seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
                                   flag=flag, pad=pad)
     

@@ -46,7 +46,7 @@ def hillslope_lengths( cl_state, info, data, verbose ):
                                   flag=flag, pad=pad)
     if ( seed_point_array.shape[0]!=data.traj_length_array.shape[0] ):
         print('\nMismatched midslope point arrays: ',
-              seed_point_array.shape,traj_length_array.shape)
+              seed_point_array.shape,data.traj_length_array.shape)
     array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 

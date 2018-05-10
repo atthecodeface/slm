@@ -220,7 +220,7 @@ class Mapping(Core):
                                                 ].astype(np.int32)).ravel().copy()
         # BUG sort of - cleaner ways to create a zero array than this
         self.data.traj_length_array \
-            = 0.0*self.data.traj_label_array.copy().astype(dtype=np.float32)
+            = np.zeros_like(self.data.traj_label_array,dtype=np.float32)
         
         lengths.hillslope_lengths(self.cl_state, Info(self.trace), self.data, 
                                   self.verbose)

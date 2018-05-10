@@ -31,6 +31,8 @@
 		"dtm_file" : "GeoTIFF",
 		"data_path" :["$SLMDATA"],		
 		"no_data_values" : [-99999,0],
+        "roi_x_bounds" : [],
+        "roi_y_bounds" : [],
 		"h_min" : "none",
 		"pad_width" : 1,
 
@@ -57,8 +59,6 @@
 		"max_length" : 500.0,
 		"interchannel_max_n_steps" : 200,
 		"integration_halt_threshold" : 0.01,
-		"COARSEintegration_halt_threshold" : 0.05,
-		"IDEALintegration_halt_threshold" : 0.01,
 		"trajectory_resolution" : 128,
 		
 		"jitter_magnitude" : 2.5,
@@ -69,8 +69,7 @@
 		"do_trace_upstream" : true,
 		"do_trace_downstream" : true,
 		
-		"segmentation_threshold" : 50,
-		"left_flank_addition" : 2147483648
+		"segmentation_threshold" : 50
 	},
 
 	"analysis": {
@@ -199,7 +198,8 @@
         "do_plot_marginal_pdf_dslc":   false,
         "do_plot_marginal_pdf_uslc":   false,
 		"do_plot_joint_pdf_dsla_usla": false,
-        "do_plot_joint_pdf_dsla_dslt": true,
+        "do_plot_joint_pdf_dsla_dslt": false,
+        "do_plot_joint_pdf_dslt_dsla": true,
         "do_plot_joint_pdf_usla_uslt": false,
         "do_plot_joint_pdf_uslt_dslt": false,
         "do_plot_joint_pdf_dsla_dslc": false,

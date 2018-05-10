@@ -43,7 +43,7 @@ __kernel void hillslope_lengths(
         __global       float  *traj_length_array
    )
 {
-    // For every non-thin-channel pixel
+    // For every mid-slope pixel
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
 #ifdef VERBOSE
@@ -66,15 +66,24 @@ __kernel void hillslope_lengths(
     __private float dl=0.0f, dt=DT_MAX, l_trajectory=0.0f;
     __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
                      vec = seed_point_array[global_id], prev_vec, next_vec;
+    __private bool moved_off_midslope = false;
 
     // Remember here
     idx = get_array_idx(vec);
     hillslope_idx = idx;
     // Integrate downstream until a channel pixel (or masked pixel) is reached
-    while (((~mapping_array[idx])&IS_THINCHANNEL) && !mask_array[idx]
-           && n_steps<(MAX_N_STEPS-1)) {
+    while (((~mapping_array[idx])&IS_THINCHANNEL) && n_steps<(MAX_N_STEPS-1)) {
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);
+        if (mask_array[idx]) return;
+        if (!moved_off_midslope && ((~mapping_array[idx])&IS_MIDSLOPE)) {
+            // Flag when we've moved off the initial band of mid-slope pixels
+            moved_off_midslope = true;
+        } else if (moved_off_midslope && ((mapping_array[idx])&IS_MIDSLOPE)) {
+            // Bail if we cross another mid-slope pixel, meaning that mid-slope
+            //   mapping isn't working for this streamlines
+            return;
+        }
         if (lengths_runge_kutta_step(&dt, &dl, &l_trajectory, &dxy1_vec, &dxy2_vec,
                                      &vec, &prev_vec,  &next_vec, &n_steps, &idx)) {
             break;

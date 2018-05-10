@@ -78,15 +78,12 @@ __kernel void segment_downchannels(
     // Continue stepping downstream until a dominant confluence
     //    or a masked pixel is reached
     while (!mask_array[idx] && prev_idx!=idx) {
-        if ((mapping_array[idx]) & IS_MAJORCONFLUENCE) {
-            if ((mapping_array[prev_idx]) & IS_MAJORINFLOW) {
-                if (count_array[idx]>=segmentation_counter) {
-                    segment_label = idx;
-                    segmentation_counter += SEGMENTATION_THRESHOLD;
-                }
-            } else {
-                break;
-            }
+        if (   (count_array[idx]>=segmentation_counter*3/2)
+            || (      ((mapping_array[idx]) & IS_MAJORCONFLUENCE)
+                   && ((mapping_array[prev_idx]) & IS_MAJORINFLOW)
+                   && (count_array[idx]>=segmentation_counter) )  ){
+            segment_label = idx;
+            segmentation_counter += SEGMENTATION_THRESHOLD;
         }
         // Label here with the current segment's label
         atomic_xchg(&label_array[idx],segment_label);

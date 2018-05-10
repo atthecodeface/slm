@@ -360,7 +360,7 @@ class Plot(Core):
 #         self.plot_compound_markers(axes, is_minorinflow,     ['yellow','black'])
 #         self.plot_compound_markers(axes, is_majorinflow,     ['green','black'])
         self.plot_compound_markers(axes, is_channeltail,     ['lightgreen','black'])
-#         self.plot_compound_markers(axes, is_channelhead,     ['orange','black'])
+        self.plot_compound_markers(axes, is_channelhead,     ['orange','black'])
 #         self.plot_compound_markers(axes, was_channelhead,    ['red','black'], msf=0.5)
 #         self.plot_compound_markers(axes, is_midslope,        ['purple','black'])
 #         self.plot_compound_markers(axes, is_ridge,        ['purple','black'])
@@ -440,9 +440,15 @@ class Plot(Core):
 
     def plot_hillslope_lengths(self, cmap='jet', #cmap='rainbow', 
                                do_shaded_relief=True,
+                               z_min=None,z_max=None, 
                                colorbar_aspect=0.07):
-        tmp_array = (self.mapping.hillslope_length_array.copy().astype(np.float32))
-        self.plot_gridded_data(tmp_array,
+#         tmp_array = (self.mapping.hillslope_length_array.copy().astype(np.float32))
+        if z_min is None:
+            z_min = np.percentile(self.mapping.hillslope_length_array, 1.0)
+        if z_max is None:
+            z_max = np.percentile(self.mapping.hillslope_length_array,99.0)        
+        grid_array = np.clip(self.mapping.hillslope_length_array,z_min,z_max)
+        self.plot_gridded_data(grid_array,
                                cmap,  # rainbow
                                fig_name='hillslope_length',
                                window_title='hillslope length',
@@ -934,6 +940,8 @@ class Plot(Core):
             self.plot_joint_pdf_usla_uslt()
         if self.do_plot_joint_pdf_dsla_dslt:
             self.plot_joint_pdf_dsla_dslt()
+        if self.do_plot_joint_pdf_dslt_dsla:
+            self.plot_joint_pdf_dslt_dsla()
         if self.do_plot_joint_pdf_uslt_dslt:
             self.plot_joint_pdf_uslt_dslt()
         if self.do_plot_joint_pdf_usla_uslc:
@@ -959,8 +967,8 @@ class Plot(Core):
         legend = []
         
         # Generate curves
+#         legend += ['']
         legend += ['kde pdf']
-        legend += ['mode']
         pdf = marginal_distbn.kde['pdf']
         pdf_list = [ pdf ]
         y_max = pdf_list[0].max()
@@ -996,7 +1004,12 @@ class Plot(Core):
         pdf = marginal_distbn.kde['pdf']
         norm_pdf = norm.pdf(np.log(x_vec),loc,scale)
         detrended_pdf = pdf/norm_pdf
-        pdf_max = detrended_pdf[marginal_distbn.kde['mode_i']]
+        detrended_pdf \
+            /= max(detrended_pdf[marginal_distbn.kde['mode_i']//4
+                                 :marginal_distbn.kde['channel_threshold_i']])
+        pdf_max = max(norm_pdf[marginal_distbn.kde['mode_i']],
+                      detrended_pdf[marginal_distbn.kde['channel_threshold_i']])
+#         pdf_max = norm_pdf[marginal_distbn.kde['mode_i']]
         pdf_ysf_list +=  [ pdf_max ]
         pdf_list += [ y_max*detrended_pdf/pdf_max ]
         line_colors += ['darkblue']
@@ -1011,27 +1024,25 @@ class Plot(Core):
         # Do the plotting
         plt.plot(x_vec, pdf_list[0], color=line_colors[0], alpha=line_alphas[0], 
                   linestyle=line_styles[0] )
-        plt.plot(marginal_distbn.kde['mode_x'],
-                 marginal_distbn.kde['pdf'][marginal_distbn.kde['mode_i'],0],
-                 '^', color=line_colors[0],ms=12,alpha=0.8)
         [plt.plot(x_vec, pdf, color=line_colors[idx+1], alpha=line_alphas[idx+1], 
                   linestyle=line_styles[idx+1])  for idx,pdf in enumerate(pdf_list[1:])]
         
-        axes.set_xlim(xmin=x_min*0.999, xmax=x_max*1.001)
-        axes.set_ylim(ymin=-y_max/100,ymax=y_max*1.3)
-
         try:
             x= marginal_distbn.kde['channel_threshold_x']
             y= y_max*detrended_pdf[marginal_distbn.kde['channel_threshold_i'],0] \
                         /pdf_max
-            legend += ['transition']
-            plt.plot(x,y,'v', color=line_colors[len(pdf_list)-1],ms=12,alpha=0.8)
+#             legend += ['transition']
+#             plt.plot(x,y,'v', color=line_colors[len(pdf_list)-1],ms=12,alpha=0.8)
             legend += ['threshold']
             plt.plot([x,x],[-0.1,1.0*axes.get_ylim()[1]],'--', 
                      color='blue', linewidth=3, alpha=0.7)
         except:
             self.print('Cannot plot threshold: none found')
 
+#         plt.plot(marginal_distbn.kde['mode_x'],
+#                  marginal_distbn.kde['pdf'][marginal_distbn.kde['mode_i'],0],
+#                  '^', color=line_colors[0],ms=12,alpha=0.8)
+        
         # Presentation
         axes.grid(color='gray', linestyle='dotted', linewidth=0.5, which='both')
         x_ticks = self._choose_ticks(x_min,x_max)
@@ -1040,8 +1051,12 @@ class Plot(Core):
         axes.set_ylabel(y_label)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            axes.legend(legend, loc='upper right',fontsize=14,framealpha=0.97)
-        
+            axes.legend(legend, loc='upper left',fontsize=14,framealpha=0.97)
+
+        axes.set_xlim(xmin=0.99, xmax=x_max*1.001)
+        axes.set_ylim(ymin=0,ymax=y_max*1.1)
+
+
         # Display & record
         force_display(fig)
         self._record_fig(fig_name,fig)        
@@ -1143,18 +1158,23 @@ class Plot(Core):
                                title=title, x_label=x_label,y_label=y_label)
 
     def plot_joint_pdf(self, bivariate_distribution, fig_name=None,
-                        title='', x_label='', y_label='', 
+                        title='', x_label='', y_label='', swap_xy=False,
                         do_plot_mode=[True,False], do_plot_near_mode=[False,False]):
         """
         TBD
         """
         # Preparation
-        x_mesh = bivariate_distribution.x_mesh
-        y_mesh = bivariate_distribution.y_mesh
-        x_vec = bivariate_distribution.x_vec
-        y_vec = bivariate_distribution.y_vec
+        if not swap_xy:
+            x_mesh = bivariate_distribution.x_mesh
+            y_mesh = bivariate_distribution.y_mesh
+            x_vec = bivariate_distribution.x_vec
+            y_vec = bivariate_distribution.y_vec
+        else:
+            y_mesh = bivariate_distribution.x_mesh
+            x_mesh = bivariate_distribution.y_mesh
+            y_vec = bivariate_distribution.x_vec
+            x_vec = bivariate_distribution.y_vec
         mode_xy_list = bivariate_distribution.kde['mode_xy_list']
-        near_mode_vec_list = bivariate_distribution.kde['near_mode_vec_list']
         x_min = x_mesh.min()
         x_max = x_mesh.max()
         y_min = y_mesh.min()
@@ -1167,7 +1187,10 @@ class Plot(Core):
         legend = []
 
         # Pdfs
-        kde_pdf = bivariate_distribution.kde['pdf'].copy()
+        if not swap_xy:
+            kde_pdf = bivariate_distribution.kde['pdf'].copy()
+        else:
+            kde_pdf = bivariate_distribution.kde['pdf'].copy().T
 #         kde_pdf = kde_pdf*np.power(y_mesh,self.joint_distbn_viz_tilt)
         kde_pdf = np.power(kde_pdf,self.joint_distbn_viz_scale)
         
@@ -1177,71 +1200,27 @@ class Plot(Core):
         axes.contour(x_vec,y_vec, kde_pdf.T, self.joint_distbn_n_contours,
                      colors='k',linewidths=1,alpha=0.5, antialiased=True)
         
-#         # Plot cluster of points around each hillslope mode
-#         for mode_idx,near_mode_vec in enumerate(near_mode_vec_list):
-#             if not do_plot_near_mode[mode_idx]:
-#                 continue
-#             legend += ['_no_legend_']
-#             (mx,mxc,msx,mewx,mi,msi,mewi,mc,msc,ma) = self.joint_distbn_markers[mode_idx]
-#             if near_mode_vec is not None:
-#                 axes.plot(near_mode_vec[:,0],near_mode_vec[:,1],mc,ms=msc,alpha=ma)
-#             break
-
-
-#         # Mode-mode linking line
-#         legend += ['_no_legend_']
-#         mode_to_mode_expt = ( np.log(mode_xy_list[1][1]/mode_xy_list[0][1])
-#                    /np.log(mode_xy_list[1][0]/mode_xy_list[0][0]) )
-#         x = x_vec[(x_vec>mode_xy_list[0][0]) & (x_vec<mode_xy_list[1][0])]
-#         y_hsl = bivariate_distribution.channel_threshold
-#         x_hsl = mode_xy_list[0][0]*np.power(bivariate_distribution.channel_threshold
-#                                             /mode_xy_list[0][1], 1/mode_to_mode_expt)
-#         axes.plot(x,np.power(x/mode_xy_list[0][0],mode_to_mode_expt)*mode_xy_list[0][1],
-#                   linestyle='solid', color='indigo', linewidth=1.5, alpha=0.5)
-
-#         # Plot cross @ channel mode
-#         mode_idx = 1
-#         mode_xy = mode_xy_list[mode_idx]
-#         if do_plot_mode[mode_idx]:
-#             (mx,mxc,msx,mewx,mi,msi,mewi,mc,msc,ma) = self.joint_distbn_markers[mode_idx]
-#             if mode_xy is not None:
-#                 legend += ['_no_legend_']
-#                 axes.plot(mode_xy[0],mode_xy[1],mi,ms=msx,mew=mewx)
-#                 legend += ['channel mode']
-#                 axes.plot(mode_xy[0],mode_xy[1],mx,color=mxc,ms=msi,mew=mewi)
-#         
-#         # Extras
-#         axes.grid(color='gray', linestyle='dotted', linewidth=0.5, which='both')
-
-
         # Plot channel threshold line for sqrt(A_e)
         try:
             legend += [r'threshold $\sqrt{A_e^*}=$'
                        +'{:.0f}m'.format(np.round(
                            bivariate_distribution.channel_threshold,0))]
-            axes.plot(x_vec,x_vec*0+bivariate_distribution.channel_threshold,
-                      '--', color='blue',linewidth=3,alpha=1.0)
+            if not swap_xy:
+                axes.plot(x_vec,x_vec*0+bivariate_distribution.channel_threshold,
+                          '--', color='blue',linewidth=3,alpha=1.0)
+            else:
+                axes.plot(y_vec*0+bivariate_distribution.channel_threshold,y_vec,
+                          '--', color='blue',linewidth=3,alpha=1.0)
         except:
             pass
-        
-#         # Intercept
-#         legend += [r'intercept $\,L_m=$'+'{:0.0f}m'.format(np.round(x_hsl,0))]
-# #         legend += ['_no_legend_']
-#         axes.plot(x_hsl,y_hsl,'.', color='indigo', ms=20, alpha=0.9)
-
-#         # Plot channel threshold line for L_m
-#         try:
-#             legend += [r'transition $L_m^*=$'+'{:.0f}m'.format(np.round(x_hsl*2,0))]
-#             line,_ = axes.plot(y_vec*0+x_hsl*2,y_vec, 
-#                                '-.', color='indigo',linewidth=3,alpha=1.0)
-#             line.set_dashes([3, 1, 1, 1])
-#         except:
-#             pass
 
         # Plot cross @ hillslope mode
         cross_alpha=0.6
         mode_idx = 0
-        mode_xy = mode_xy_list[mode_idx]
+        if not swap_xy:
+            mode_xy = mode_xy_list[mode_idx]
+        else:
+            mode_xy = np.flipud(mode_xy_list[mode_idx])
         if do_plot_mode[mode_idx]:
             (mx,mxc,msx,mewx,mi,msi,mewi,mc,msc,ma) = self.joint_distbn_markers[mode_idx]
             if mode_xy is not None:
@@ -1251,14 +1230,23 @@ class Plot(Core):
                 axes.plot(mode_xy[0],mode_xy[1],mx,color=mxc,ms=msi,mew=mewi)
                  
         # Linear trend x=y
-        legend += [r'hillslope $\sqrt{A_e} = L_m$']
-        x = x_vec[x_vec<bivariate_distribution.channel_threshold]
-        axes.plot(x,x,'-.', color='crimson', linewidth=2, alpha=0.7)
+        h_grad = mode_xy[1]/mode_xy[0]
+        if not swap_xy:
+            h_grad_str = '{0:1.1}'.format(h_grad)
+            legend += [r'hillslope $\sqrt{A_e} =$'+h_grad_str+'$L_m $']
+            x = x_vec[x_vec<bivariate_distribution.channel_threshold]
+        else:
+            h_grad_str = '{0:0.2}'.format(h_grad)
+            legend += [r'hillslope $L_m =$'+h_grad_str+'$\sqrt{A_e}$']
+            x = x_vec[y_vec<bivariate_distribution.channel_threshold]
+        axes.plot(x,x*h_grad,'-.', color='crimson',linewidth=2,alpha=0.7)
 
         # Presentation
+#         loc = 'lower right'
+        loc = 'upper left'
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            axes.legend(legend, loc='upper left',fontsize=12,framealpha=0.97)
+            axes.legend(legend, loc=loc,fontsize=12,framealpha=0.97)
         axes.xaxis.set_major_locator(ticker.LogLocator(base=10.0, numticks=15))
         axes.yaxis.set_major_locator(ticker.LogLocator(base=10.0, numticks=15))
         axes.set_xlabel(x_label)
@@ -1268,7 +1256,7 @@ class Plot(Core):
         plt.xticks(x_ticks,x_ticks)
         plt.yticks(y_ticks,y_ticks)
         try:
-            axes.set_xlim(xmin=x_min*0.999,xmax=x_max*1.001)
+            axes.set_xlim(xmin=0.999,xmax=x_max*1.001)
             axes.set_ylim(ymin=y_min*0.999,ymax=y_max*1.001)
         except:
             self.print('x,y min,max not provided')
@@ -1324,6 +1312,23 @@ class Plot(Core):
             self.print('"'+title+'" not computed: cannot plot')
             return
         self.plot_joint_pdf(joint_distbn, fig_name=fig_name,
+                            title=title, x_label=x_label, y_label=y_label,
+                            do_plot_mode=[True,True], do_plot_near_mode=[True,True])
+
+    def plot_joint_pdf_dslt_dsla(self):
+        """
+        TBD
+        """
+        fig_name = 'joint_pdf_dslt_dsla'
+        title = r'Downstreamline length distribution $f(\log\sqrt{A_{ed}},\log(L_{md}))$'
+        x_label = r'Downstreamline root equiv area  $\sqrt{A_{ed}}$ [m]'
+        y_label = r'Downstreamline mean length  $L_{md}$ [m]'
+        try:
+            joint_distbn = self.analysis.jpdf_dsla_dslt
+        except:
+            self.print('"'+title+'" not computed: cannot plot')
+            return
+        self.plot_joint_pdf(joint_distbn, fig_name=fig_name, swap_xy=True,
                             title=title, x_label=x_label, y_label=y_label,
                             do_plot_mode=[True,True], do_plot_near_mode=[True,True])
 

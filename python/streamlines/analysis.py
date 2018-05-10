@@ -263,7 +263,7 @@ class Univariate_distribution():
         self.print('kde modes: {0}, {1}'.format(np.round(self.kde['mode_x'],2),
                                          np.round(self.kde['bimode_x'],2)))
 
-    def choose_threshold(self):
+    def locate_threshold(self):
         x_vec = self.x_vec
         pdf = self.kde['pdf']
         cdf = self.kde['cdf']
@@ -481,6 +481,7 @@ class Bivariate_distribution():
         if mode_idx==1:
             try:
                 self.channel_threshold = marginal_distbn.kde['channel_threshold_x']
+#                 self.channel_threshold = 500
             except:
                 pdebug('Error: Guessing channel threshold')
                 self.channel_threshold = 2*self.kde['mode_xy_list'][1][0]
@@ -638,7 +639,7 @@ class Analysis(Core):
             raise NameError('KDE method "{}" not recognized'.format(method))
         uv_distbn.find_modes()
         uv_distbn.statistics()
-        uv_distbn.choose_threshold()
+        uv_distbn.locate_threshold()
         return uv_distbn
    
     def compute_marginal_distribn_dsla(self):

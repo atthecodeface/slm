@@ -1,0 +1,42 @@
+{
+	"state": {
+	},
+
+	"geodata": {
+		"title" : "Skunk Creek, CA, USA, UTM Zone 10N",
+		"dtm_file" : "Skunk_DTM_res1m_fill_sinks0p01deg.tif",
+		"data_path" :["$SLMDATA","Skunk"],		
+		"no_data_values" : [-99999,0],
+        "roi_x_bounds" : [],
+        "roi_y_bounds" : []
+	},
+	
+	"preprocess": {
+	},
+
+	"trace": {
+		"segmentation_threshold" : 50
+	},
+
+	"analysis": {
+		"search_cdf_min" : 0.93,
+		"pdf_sla_min": 1,
+		"pdf_slc_min": 1,
+		"joint_distbn_kde_bandwidth" : 0.25
+	},
+
+	"mapping": {
+		"hillslope_length_median_radius" : 50,
+		"hillslope_length_mean_radius" : 100,
+        "joint_distbn_mode2_tilt" : 3,
+		"midslope_filter_sigma" : 2.0
+	},
+	
+
+	"plot": {
+	},
+	
+	"export": {
+		"export_path" : ["$SLMXPT","Skunk"]
+	}
+}
