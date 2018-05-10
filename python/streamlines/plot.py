@@ -988,30 +988,31 @@ class Plot(Core):
         line_styles += ['-.']
         line_alphas += [0.9]
         
-#         if self.marginal_distbn_viz_tilt!=0.0 and self.marginal_distbn_viz_scale!=0.0:
-#             legend += ['scaled & tilted']
-#             pdf = np.power(marginal_distbn.kde['pdf,
-#                            self.marginal_distbn_viz_scale) \
-#                                   *np.power(x_vec,self.marginal_distbn_viz_tilt)
-#             pdf_max = pdf.max() 
-#             pdf_ysf_list += [ pdf_max ]
-#             pdf_list += [ y_max*pdf/pdf_max ]
-#             line_colors += ['darkgreen']
-#             line_styles += ['-']
-#             line_alphas += [1]
+#         legend += ['detrended']
+#         pdf = marginal_distbn.kde['pdf']
+#         norm_pdf = norm.pdf(np.log(x_vec),loc,scale)
+#         pdf_max = norm_pdf[marginal_distbn.kde['mode_i']]
+#         detrended_pdf = pdf/norm_pdf
+#         detrended_pdf_max = max(detrended_pdf[marginal_distbn.kde['mode_i']//4
+#                                  :marginal_distbn.kde['channel_threshold_i']])[0]
+# #         detrended_pdf /= detrended_pdf_max/pdf_max
+# #         pdebug(norm_pdf.T,detrended_pdf.T)
+#         pdf_ysf_list +=  [ pdf]
+#         pdf_list += [ y_max ]
+#         line_colors += ['darkblue']
+#         line_styles += ['-']
+#         line_alphas += [1]
                                  
         legend += ['detrended']
         pdf = marginal_distbn.kde['pdf']
         norm_pdf = norm.pdf(np.log(x_vec),loc,scale)
         detrended_pdf = pdf/norm_pdf
         detrended_pdf \
-            /= max(detrended_pdf[marginal_distbn.kde['mode_i']//4
+            /= max(detrended_pdf[marginal_distbn.kde['mode_i']
                                  :marginal_distbn.kde['channel_threshold_i']])
-        pdf_max = max(norm_pdf[marginal_distbn.kde['mode_i']],
-                      detrended_pdf[marginal_distbn.kde['channel_threshold_i']])
-#         pdf_max = norm_pdf[marginal_distbn.kde['mode_i']]
+        pdf_max = norm_pdf[marginal_distbn.kde['mode_i']]
         pdf_ysf_list +=  [ pdf_max ]
-        pdf_list += [ y_max*detrended_pdf/pdf_max ]
+        pdf_list += [ y_max*detrended_pdf ]
         line_colors += ['darkblue']
         line_styles += ['-']
         line_alphas += [1]
