@@ -224,7 +224,8 @@ __kernel void subsegment_channel_edges(
         // This is a "padding" seed, so let's bail
         return;
     }
-    __private uint idx, prev_idx, left_idx, segment_label=0u, prev_x,prev_y, x,y, n_turns;
+    __private uint idx, prev_idx, left_idx, segment_label=0u,
+            prev_x,prev_y, x,y, n_turns, n_steps;
     __private char dx,dy, rotated_dx,rotated_dy;
     __private float2 vec = seed_point_array[global_id];
 
@@ -234,7 +235,7 @@ __kernel void subsegment_channel_edges(
     // Step downstream off channel head / major confluence pixel
     idx = link_array[prev_idx];
     // Even if this pixel is masked, we still need to try to subsegment
-    while (prev_idx!=idx) {
+    while (prev_idx!=idx && n_steps++<MAX_N_STEPS) {
 
         prev_x = prev_idx/NY_PADDED;
         prev_y = prev_idx%NY_PADDED;
@@ -269,10 +270,17 @@ __kernel void subsegment_channel_edges(
         prev_idx = idx;
         idx = link_array[idx];
         // Stop if we've reached the next major confluence pixel, or the mask
-        if (!mask_array[idx] && (   ((mapping_array[prev_idx]) & IS_MAJORCONFLUENCE)
-                                 || ((mapping_array[prev_idx]) & IS_MAJORINFLOW)
-                                 || ((mapping_array[prev_idx]) & IS_MINORINFLOW)
-                                 ) ) {
+//        if (!mask_array[idx] && (   ((mapping_array[prev_idx]) & IS_MAJORCONFLUENCE)
+//                                 || ((mapping_array[prev_idx]) & IS_MAJORINFLOW)
+//                                 || ((mapping_array[prev_idx]) & IS_MINORINFLOW)
+//                                 ) ) {
+//            break;
+//        }
+        if (mask_array[idx]) {
+            break;
+        } else if (   ((mapping_array[prev_idx]) & IS_MAJORCONFLUENCE)
+                   || ((mapping_array[prev_idx]) & IS_MAJORINFLOW)
+                   || ((mapping_array[prev_idx]) & IS_MINORINFLOW) ) {
             break;
         }
     }
