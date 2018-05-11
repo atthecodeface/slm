@@ -18,16 +18,11 @@
 
 	"geodata": {
 		"title" : "Gabilan Mesa",
-		"RAWdtm_file" : "Gabilan_DTM1_res1m.tif",
-		"dtm_file"    : "Gabilan_DTM2_res1m_fill_sinks1deg.tif",
-		"data_path" :["$SLMDATA","GabilanMesa"],		
+		"dtm_file"    : "Gabilan_DTM2_resampled1m_fillsinks0p01deg.tif",
+		"data_path" :["$SLMDATA","Gabilan Mesa ROI2"],		
 		"no_data_values" : [-99999,0],
 		"roi_x_bounds" : [],
-		"roi_y_bounds" : [],
-		"TSTroi_x_bounds" : [400,450],
-		"TSTroi_y_bounds" : [300,350],
-		"FULLroi_x_bounds" : [0,920],
-		"FULLroi_y_bounds" : [0,859]
+		"roi_y_bounds" : []
 	},
 	
 	"preprocess": {

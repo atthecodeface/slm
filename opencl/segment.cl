@@ -276,11 +276,10 @@ __kernel void subsegment_channel_edges(
 //                                 ) ) {
 //            break;
 //        }
-        if (mask_array[idx]) {
-            break;
-        } else if (   ((mapping_array[prev_idx]) & IS_MAJORCONFLUENCE)
-                   || ((mapping_array[prev_idx]) & IS_MAJORINFLOW)
-                   || ((mapping_array[prev_idx]) & IS_MINORINFLOW) ) {
+        if (mask_array[idx]
+            || (    ((mapping_array[prev_idx]) & IS_MAJORCONFLUENCE)
+                 || ((mapping_array[prev_idx]) & IS_MAJORINFLOW)
+                 || ((mapping_array[prev_idx]) & IS_MINORINFLOW) ) ) {
             break;
         }
     }
