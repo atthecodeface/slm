@@ -16,7 +16,7 @@ __all__ = ['Initialize_cl',
            'prepare_cl_context','choose_platform_and_device',
            'prepare_cl_queue', 'prepare_cl',
            'make_cl_dtype',
-           'set_compile_options', 'set_compile_options_old', 
+           'set_compile_options', 
            'report_kernel_info', 'report_device_info', 'report_build_log',
            'adaptive_enqueue_nd_range_kernel',
            'prepare_buffers', 'gpu_compute']
@@ -393,7 +393,6 @@ def prepare_buffers(context, array_dict, verbose):
         else:
             pass
     return buffer_dict
-
 
 def gpu_compute(cl_state, info, array_dict, verbose):
     """
