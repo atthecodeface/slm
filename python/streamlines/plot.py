@@ -345,6 +345,7 @@ class Plot(Core):
         is_midslope        = self.trace.is_midslope
         is_ridge           = self.trace.is_ridge
         was_channelhead    = self.trace.was_channelhead
+        is_subsegmenthead  = self.trace.is_subsegmenthead
         
         basin_mask_array = self.geodata.basin_mask_array
         
@@ -361,7 +362,7 @@ class Plot(Core):
 #         self.plot_compound_markers(axes, is_majorinflow,     ['green','black'])
         self.plot_compound_markers(axes, is_channeltail,     ['lightgreen','black'])
         self.plot_compound_markers(axes, is_channelhead,     ['orange','black'])
-#         self.plot_compound_markers(axes, was_channelhead,    ['red','black'], msf=0.5)
+#         self.plot_compound_markers(axes, is_subsegmenthead,  ['red','black'], msf=0.5)
 #         self.plot_compound_markers(axes, is_midslope,        ['purple','black'])
 #         self.plot_compound_markers(axes, is_ridge,        ['purple','black'])
         

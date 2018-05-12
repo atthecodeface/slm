@@ -1,56 +1,15 @@
-{
-	"state": {
-		"do_reload_state" : false,	
-		
-		"do_geodata" : true,	
-		"do_preprocess" : true,	
-		"do_condition" : true,	
-		"do_trace" : true,	
-		"do_postprocess" : false,	
-		"do_analysis" : false,
-		"do_plot" : false,	
-		"do_save_state" : false,	
-		"do_export" : false,
-		
-		"do_rw_savez" : true,
-		"do_rw_hdf5" : false
-	},
-
+{	
 	"geodata": {
 		"title" : "Gabilan Mesa",
 		"dtm_file" : "Gabilan_DTM0_resampled1m_fillsinks0p01deg.tif",
-		"data_path" :["$SLMDATA","Gabilan Mesa full DTM"],		
-		"no_data_values" : [-99999,0],
-		"roi_x_bounds" : [],
-		"roi_y_bounds" : []
+		"data_path" : ["$SLMDATA","GabilanMesa"]
 	},
 	
-	"preprocess": {
-	},
-
-	"trace": {
-	},
-
 	"analysis": {
-		"joint_distbn_kde_bandwidth" : 0.25,
-		"pdf_sla_min": 1,
-		"Xpdf_sla_max": 300,
-		"pdf_slc_min": 1,
-		"Xpdf_slc_max": 20000
-	},
-
-	"plot": {
-		"do_plot_streamlines" : true,
-		"do_plot_flow_maps" : true,
-		"plot_interpolation_method" : "none"
+		"joint_distbn_kde_bandwidth" : 0.3
 	},
 	
 	"export": {
-		"export_path" : ["$SLMXPT","GabilanMesa1"],
-		"format" : ["png"],
-		"options" : {
-			"dpi":80, 
-			"bbox_inches":"tight"
-			}
+		"export_path" : ["$SLMXPT","GabilanMesa1"]
 	}
 }

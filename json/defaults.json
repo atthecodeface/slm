@@ -46,7 +46,6 @@
 		
 		"vecsum_threshold" : 0.95,
 		"divergence_threshold" : -0.5,
-		"Xdivergence_threshold" : -2.9,
 		"curl_threshold" : 0.0
 	},
 

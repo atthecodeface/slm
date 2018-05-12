@@ -111,6 +111,7 @@ class Info():
         self.is_midslope =         np.uint32(trace.is_midslope)
         self.is_ridge =            np.uint32(trace.is_ridge)
         self.was_channelhead =     np.uint32(trace.was_channelhead)
+        self.is_subsegmenthead =   np.uint32(trace.is_subsegmenthead)
         self.is_loop =             np.uint32(trace.is_loop)
         self.is_blockage =         np.uint32(trace.is_blockage)
 
@@ -166,8 +167,9 @@ class Trace(Core):
             'is_midslope',        # 2048
             'is_ridge',           # 4028
             'was_channelhead',    # 8196
-            'is_loop',            # 16384
-            'is_blockage'         # 32768
+            'is_subsegmenthead',  # 16384
+            'is_loop',            # 32768
+            'is_blockage'         # 65536
             ]
         [setattr(self,flag,2**idx) for idx,flag in enumerate(flags)]
         

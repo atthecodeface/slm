@@ -40,8 +40,7 @@ def segment_channels( cl_state, info, data, verbose ):
     is_channelhead = info.is_channelhead
     flag           = is_channelhead
     seed_point_array \
-        = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
-                     flag=flag, pad=pad)
+        = pick_seeds(mask=data.mask_array, map=data.mapping_array, flag=flag, pad=pad)
         
     # Prepare memory, buffers 
     array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},
@@ -90,11 +89,11 @@ def segment_hillslopes( cl_state, info, data, verbose ):
                                                      'computestep.cl','rungekutta.cl',
                                                      'segment.cl'])
             
-    # Trace downstream from all channel heads until masked boundary is reached
-    #    /or/ if a major confluence is reached, only keeping going if dominant
+    # Trace downstream from hillslope pixels aka non-thinchannel pixels
     pad            = info.pad_width
-    is_channelhead = info.is_channelhead
-    flag           = is_channelhead
+    is_thinchannel = info.is_thinchannel
+    flag           = is_thinchannel
+    # Note ~ complement of mapping_array
     seed_point_array = pick_seeds(mask=data.mask_array, map=~data.mapping_array, 
                                   flag=flag,pad=pad)
     
@@ -102,7 +101,7 @@ def segment_hillslopes( cl_state, info, data, verbose ):
     array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
-                   'mapping':    {'array': data.mapping_array,    'rwf': 'RW'}, 
+                   'mapping':    {'array': data.mapping_array,    'rwf': 'RO'}, 
                    'count':      {'array': data.count_array,      'rwf': 'RO'}, 
                    'link':       {'array': data.link_array,       'rwf': 'RO'}, 
                    'label':      {'array': data.label_array,      'rwf': 'RW'} }
@@ -134,14 +133,12 @@ def subsegment_flanks( cl_state, info, data, verbose ):
                                                      'computestep.cl','rungekutta.cl',
                                                      'segment.cl'])
             
-    # Trace downstream from all major confluences /or/ channel heads
+    # Trace downstream from all major confluences /or/ channel heads    
     pad                = info.pad_width
-    is_channelhead     = info.is_channelhead
-    was_channelhead    = info.was_channelhead
-    is_majorconfluence = info.is_majorconfluence
+    is_subsegmenthead  = info.is_subsegmenthead
     is_thinchannel     = info.is_thinchannel
     is_leftflank       = info.is_leftflank
-    flag               = is_channelhead | is_majorconfluence
+    flag               = is_subsegmenthead
     seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
                                   flag=flag, pad=pad)
     

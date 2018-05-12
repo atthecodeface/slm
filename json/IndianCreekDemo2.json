@@ -1,119 +1,28 @@
 {
-	"state": {
-		"do_reload_state" : false,	
-		
-		"do_geodata" : true,	
-		"do_preprocess" : true,	
-		"do_condition" : true,	
-		"do_trace" : true,	
-		"do_postprocess" : false,	
-		"do_analysis" : false,
-		"do_plot" : false,	
-		"do_save_state" : false,	
-		"do_export" : false,
-
-		"do_rw_savez" : true,
-		"do_rw_hdf5" : false
-	},
-
 	"geodata": {
 		"title" : "Indian Creek, Ohio, USA, UTM Zone 17N",
 		"dtm_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg.tif",
-		"data_path" :["$SLMDATA","IndianCreek"],		
-		"no_data_values" : [-99999,0],
-
-		"basins_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed3k.tif",
-		"basins" : [1131,1132],
-		"Zroi_x_bounds" : [1000,1600],
-		"Zroi_y_bounds" : [300,800],
-		"Yroi_x_bounds" : [1000,1600],
-		"Yroi_y_bounds" : [600,1200],
+		"data_path" :["$SLMDATA","IndianCreek"],	
 		"roi_x_bounds" : [300,500],
-		"roi_y_bounds" : [30,230],
-		
-		"do_basin_masking" : true
-
-	},
-	
-	"comment_typical": {
+		"roi_y_bounds" : [30,230],	
 		"basins_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed3k.tif",
-		"basins" : [1131,1132],
-		"roi_x_bounds" : [300,500],
-		"roi_y_bounds" : [30,250],
+		"basins" : [1131,1132],		
 		"do_basin_masking" : true
-	},
-	
-	"comment_big": {
-		"basins_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed30k.tif",
-		"basins these are wrong" : "[161,162,163,164,165,166]",
-		"roi_x_bounds" : [300,2500],
-		"roi_y_bounds" : [30,1560],
-		"do_basin_masking" : false
 	},
 	
 	"preprocess": {
-		"do_simple_gradient_vector_field" : true,
-		"vecsum_threshold" : 0.95,
-		"divergence_threshold" : -1.0,
-		"curl_threshold" : 0.0
+		"Xdivergence_threshold" : -1.0
 	},
 
 	"trace": {
-		"seed_point_spacing" : 1,
-		"max_length" : 300
+		"Xmax_length" : 300
 	},
 
 	"analysis": {
-		"joint_distbn_kde_bandwidth" : 0.25,
-		"pdf_sla_min": 1,
-		"Xpdf_sla_max": 500,
-		"pdf_slt_min": 1,
-		"Xpdf_slt_max": 90
-	},
-
-	"plot": {
-		"do_plot_dtm" : false, 
-		"do_plot_roi" : false,
-		"do_plot_streamlines" : false,
-		"do_plot_flow_maps" : false,
-		"do_plot_segments" : false,
-		"do_plot_channels" : true,
-		"do_plot_hillslope_lengths" : false,
-		"do_plot_hillslope_lengths_contoured" : true,
-		"do_plot_hillslope_distributions" : false,
-		
-		"plot_interpolation_method" : "none",
-		"plot_streamline_limit" : 1500,
-
-		"shaded_relief_hillshade_alpha" : 0.3,
-		"shaded_relief_color_alpha" : 0.3,
-
-		"downstreamline_color" : "blue",
-		"upstreamline_color" : "red",
-		
-		"gradient_vector_color" : "black",
-		"gradient_vector_alpha" : 0.5,
-		"gradient_vector_scale" : 50,
-
-		"streamline_point_marker" : "-",
-		"streamline_point_size" : 0.5,
-		"streamline_point_alpha" : 0.7,
-		
-		"seed_point_marker" : "D",
-		"seed_point_marker_size" : 0.5,
-		
-		"blockage_marker_size" : 20,
-		"loops_marker_size" : 20,
-		
-		"do_plot_distributions": true
+		"joint_distbn_kde_bandwidth" : 0.25
 	},
 	
 	"export": {
-		"export_path" : ["$SLMXPT","IndianCreekDemo2"],
-		"format" : ["png"],
-		"options" : {
-			"dpi":80, 
-			"bbox_inches":"tight"
-			}
+		"export_path" : ["$SLMXPT","IndianCreekDemo2"]
 	}
 }

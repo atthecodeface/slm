@@ -96,9 +96,9 @@ def _str2bool(arg):
         bool:  command line parameter
 
     """
-    if arg.lower() in ('yes', 'true', 't', 'y', '1'):
+    if arg.lower() in ('yes', 'true', 't', 'y', '1', 'on'):
         return True
-    elif arg.lower() in ('no', 'false', 'f', 'n', '0'):
+    elif arg.lower() in ('no', 'false', 'f', 'n', '0', 'off'):
         return False
     else:
         raise ArgumentTypeError('Boolean cmd line argument expected')

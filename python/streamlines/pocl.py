@@ -232,6 +232,7 @@ def set_compile_options(info, kernel_def, downup_sign=1,
         '-D','IS_MIDSLOPE={}u'.format(info.is_midslope),
         '-D','IS_RIDGE={}u'.format(info.is_ridge),
         '-D','WAS_CHANNELHEAD={}u'.format(info.was_channelhead),
+        '-D','IS_SUBSEGMENTHEAD={}u'.format(info.is_subsegmenthead),
         '-D','IS_LOOP={}u'.format(info.is_loop),
         '-D','IS_BLOCKAGE={}u'.format(info.is_blockage)
         ]
@@ -421,7 +422,7 @@ def gpu_compute(cl_state, info, array_dict, verbose):
 
     # Compile the CL code
     compile_options = set_compile_options(info, kernel_fn, downup_sign=1)
-    vprint(verbose,'Compile options:\n', compile_options)
+#     vprint(verbose,'Compile options:\n', compile_options)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         program = cl.Program(context, kernel_source).build(options=compile_options)

@@ -1,87 +1,20 @@
 {
-	"state": {
-		"do_reload_state" : false,	
-		
-		"do_geodata" : true,	
-		"do_preprocess" : true,	
-		"do_condition" : true,	
-		"do_trace" : true,	
-		"do_postprocess" : false,	
-		"do_analysis" : false,
-		"do_plot" : false,	
-		"do_save_state" : false,	
-		"do_export" : false,
-
-		"do_rw_savez" : true,
-		"do_rw_hdf5" : false
-	},
-
 	"geodata": {
 		"title" : "Indian Creek, Ohio, USA, UTM Zone 17N",
 		"dtm_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg.tif",
 		"data_path" :["$SLMDATA","IndianCreek"],		
-		"no_data_values" : [-99999,0],
-		"SMALLroi_x_bounds" : [1030,1270],
-		"SMALLroi_y_bounds" : [400,750],
 		"roi_x_bounds" : [550,1300],
 		"roi_y_bounds" : [400,850],
-		"BIGroi_x_bounds" : [300,1300],
-		"BIGroi_y_bounds" : [30,1230],
-		"HUGEroi_x_bounds" : [300,1500],
-		"HUGEroi_y_bounds" : [15,1530],
 		"h_min" : 500.0,
-
 		"basins_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed3k.tif",
 		"do_basin_masking" : false
-	},
-	
-	"comment_small": {
-		"basins_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed3k.tif",
-		"basins" : [1131,1132],
-		"roi_x_bounds" : [300,500],
-		"roi_y_bounds" : [30,250],
-		"do_basin_masking" : true
-	},
-	
-	"comment_big": {
-		"basins_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed30k.tif",
-		"basins these are wrong" : "[161,162,163,164,165,166]",
-		"roi_x_bounds" : [300,3400],
-		"roi_y_bounds" : [15,1530],
-		"do_basin_masking" : false
-	},
-	
-	"preprocess": {
-	},
-
-	"trace": {
 	},
 
 	"analysis": {
-		"joint_distbn_kde_bandwidth" : 2.0,
-		"pdf_sla_min": 1,
-		"Xpdf_sla_max": 300,
-		"pdf_slc_min": 1,
-		"Xpdf_slc_max": 20000
-	},
-
-	"plot": {
-		"do_plot_streamlines" : true,
-		"do_plot_distributions": true,
-				
-		"plot_interpolation_method" : "none",
-		
-		"gradient_vector_color" : "black",
-		"gradient_vector_alpha" : 0.5,
-		"gradient_vector_scale" : 50
+		"joint_distbn_kde_bandwidth" : 2.0
 	},
 	
 	"export": {
-		"export_path" : ["$SLMXPT","IndianCreekDemo3"],
-		"format" : ["png"],
-		"options" : {
-			"dpi":80, 
-			"bbox_inches":"tight"
-			}
+		"export_path" : ["$SLMXPT","IndianCreekDemo3"]
 	}
 }

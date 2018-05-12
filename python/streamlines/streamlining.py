@@ -122,7 +122,7 @@ class Streamlining(Core):
 
         for item in kwargs.items():
             if item[0]=='do_plot':
-                if item[1]=='0' or item[1].lower()=='off' or item[1].lower()=='false':
+                if item[1]=='0' or item[1]=='off' or item[1]=='false':
                     self.state.do_plot=False
                 elif item[1]=='maps':
                     self.state.do_plot=True

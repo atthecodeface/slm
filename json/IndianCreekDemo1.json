@@ -1,6 +1,5 @@
 {
 	"state": {
-		"do_reload_state" : false,	
 		
 		"do_geodata" : true,	
 		"do_preprocess" : true,	
@@ -24,12 +23,8 @@
 		"TINYroi_y_bounds" : [240,244],
 		"roi_x_bounds" : [690,715],
 		"roi_y_bounds" : [240,261],
-				
 		"basins_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed30k.tif",
 		"basins" : [161,162,163,164,165,166],
-		"basins_file_comment" : "",
-		"basins_comment" : "",
-		
 		"do_basin_masking" : false
 	},
 
@@ -77,6 +72,8 @@
 	},
 
 	"plot": {
+		"do_plot_distributions": false,
+		
 		"do_plot_dtm" : false,
 		"do_plot_roi" : false,
 		"do_plot_streamlines" : true,
@@ -123,17 +120,10 @@
 				
 		"gradient_vector_color" : "black",
 		"gradient_vector_alpha" : 0.5,
-		"gradient_vector_scale" : 50,
-
-		"do_plot_distributions": false		
+		"gradient_vector_scale" : 50		
 	},
 
 	"export": {
-		"export_path" : ["$SLMXPT","IndianCreekDemo1"],
-		"format" : ["png"],
-		"options" : {
-			"dpi":80, 
-			"bbox_inches":"tight"
-			}
+		"export_path" : ["$SLMXPT","IndianCreekDemo1"]
 	}
 }

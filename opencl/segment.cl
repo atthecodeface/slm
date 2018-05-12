@@ -39,7 +39,7 @@ __kernel void segment_downchannels(
         __global const float2 *seed_point_array,
         __global const bool   *mask_array,
         __global const float2 *uv_array,
-        __global const uint   *mapping_array,
+        __global       uint   *mapping_array,
         __global const uint   *count_array,
         __global const uint   *link_array,
         __global       uint   *label_array
@@ -73,23 +73,29 @@ __kernel void segment_downchannels(
     // Label this stream segment, starting with the head pixel
     segment_label = prev_idx;
     atomic_xchg(&label_array[prev_idx],segment_label);
+    atomic_or(&mapping_array[prev_idx],IS_SUBSEGMENTHEAD);
     // Step downstream
     idx = link_array[prev_idx];
     // Continue stepping downstream until a dominant confluence
     //    or a masked pixel is reached
+//    __private bool is_initial = true;
     while (!mask_array[idx] && prev_idx!=idx) {
         if (   (count_array[idx]>=segmentation_counter*3/2)
             || (      ((mapping_array[idx]) & IS_MAJORCONFLUENCE)
                    && ((mapping_array[prev_idx]) & IS_MAJORINFLOW)
-                   && (count_array[idx]>=segmentation_counter) )  ){
+                   && (count_array[idx]>=segmentation_counter) )
+//            || is_initial
+            ) {
             segment_label = idx;
             segmentation_counter += SEGMENTATION_THRESHOLD;
+            atomic_or(&mapping_array[idx],IS_SUBSEGMENTHEAD);
         }
         // Label here with the current segment's label
         atomic_xchg(&label_array[idx],segment_label);
         // Continue downstream
         prev_idx = idx;
         idx = link_array[idx];
+//        is_initial = false;
     }
     return;
 }
@@ -155,6 +161,9 @@ __kernel void segment_hillslopes(
     // Remember here
     idx = get_array_idx(vec);
     hillslope_idx = idx;
+//#ifdef DEBUG
+//    printf("%d\n",idx);
+//#endif
     // Integrate downstream until a channel pixel (or masked pixel) is reached
     while (!mask_array[idx] && ((~mapping_array[idx])&IS_THINCHANNEL)
            && n_steps<(MAX_N_STEPS)) {
@@ -205,7 +214,7 @@ __kernel void subsegment_channel_edges(
         __global       uint   *label_array
    )
 {
-    // For every channel head and major confluence pixel...
+    // For every subsegment head pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
 #ifdef VERBOSE
@@ -232,9 +241,10 @@ __kernel void subsegment_channel_edges(
     // Remember here
     prev_idx = get_array_idx(vec);
     segment_label = channel_label_array[prev_idx];
-    // Step downstream off channel head / major confluence pixel
+    // Step downstream off subsegment head pixel
     idx = link_array[prev_idx];
     // Even if this pixel is masked, we still need to try to subsegment
+    n_steps = 0u;
     while (prev_idx!=idx && n_steps++<MAX_N_STEPS) {
 
         prev_x = prev_idx/NY_PADDED;
@@ -261,9 +271,9 @@ __kernel void subsegment_channel_edges(
                     }
                 } else {
                     atomic_or(&mapping_array[left_idx],IS_LEFTFLANK);
-#ifdef DEBUG
-                    printf("labeling left flank addition @ %d,%d\n",x,y);
-#endif
+//#ifdef DEBUG
+//                    printf("labeling left flank addition @ %d,%d\n",x,y);
+//#endif
                     atomic_or(&label_array[left_idx],LEFT_FLANK_ADDITION);
                 }
             }
@@ -272,16 +282,7 @@ __kernel void subsegment_channel_edges(
         // Step further downstream if necessary
         prev_idx = idx;
         idx = link_array[idx];
-//        if (!mask_array[idx] && (   ((mapping_array[prev_idx]) & IS_MAJORCONFLUENCE)
-//                                 || ((mapping_array[prev_idx]) & IS_MAJORINFLOW)
-//                                 || ((mapping_array[prev_idx]) & IS_MINORINFLOW)
-//                                 ) ) {
-//            break;
-//        }
-        if (mask_array[idx]
-            || (    ((mapping_array[prev_idx]) & IS_MAJORCONFLUENCE)
-                 || ((mapping_array[prev_idx]) & IS_MAJORINFLOW)
-                 || ((mapping_array[prev_idx]) & IS_MINORINFLOW) ) ) {
+        if (mask_array[idx] || (mapping_array[prev_idx] & IS_SUBSEGMENTHEAD) ) {
             break;
         }
     }
@@ -341,7 +342,7 @@ __kernel void subsegment_flanks(
         // This is a "padding" seed, so let's bail
         return;
     }
-    __private uint idx, hillslope_idx, n_steps=0u;
+    __private uint idx, hillslope_idx, n_steps;
     __private float dl=0.0f, dt=DT_MAX;
     __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
                      vec = seed_point_array[global_id], next_vec;
@@ -350,6 +351,7 @@ __kernel void subsegment_flanks(
     idx = get_array_idx(vec);
     hillslope_idx = idx;
     // Integrate downstream until thin channel or left-flank pixel is reached
+    n_steps = 0u;
     while (!mask_array[idx] && ((~mapping_array[idx])&IS_LEFTFLANK)
             && ((~mapping_array[idx])&IS_THINCHANNEL) && n_steps<(MAX_N_STEPS)) {
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
@@ -363,7 +365,6 @@ __kernel void subsegment_flanks(
         //   the source hillslope pixel
         // No need for atomic here since we're writing to the source pixel
         label_array[hillslope_idx] |= LEFT_FLANK_ADDITION;
-//        atomic_or(&label_array[hillslope_idx],LEFT_FLANK_ADDITION);
     }
     return;
 }
