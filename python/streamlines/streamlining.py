@@ -135,8 +135,8 @@ class Streamlining(Core):
                     self.state.do_plot=True
                     imported_parameters['plot']['do_plot_maps']=True
                     imported_parameters['plot']['do_plot_distributions']=True
-                else:
-                    self.state.do_plot=False
+                elif item[1] is not None:
+                    self.state.do_plot = item[1]
             elif item[1] is not None:
                 setattr(self.state, item[0],item[1])
         self.state.obj_list=[self.state]

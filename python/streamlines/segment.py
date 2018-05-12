@@ -134,14 +134,14 @@ def subsegment_flanks( cl_state, info, data, verbose ):
                                                      'computestep.cl','rungekutta.cl',
                                                      'segment.cl'])
             
-    # Trace downstream from all major confluences /or/ channel heads (former and current)
+    # Trace downstream from all major confluences /or/ channel heads
     pad                = info.pad_width
     is_channelhead     = info.is_channelhead
     was_channelhead    = info.was_channelhead
     is_majorconfluence = info.is_majorconfluence
     is_thinchannel     = info.is_thinchannel
     is_leftflank       = info.is_leftflank
-    flag               = is_channelhead | was_channelhead | is_majorconfluence
+    flag               = is_channelhead | is_majorconfluence
     seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
                                   flag=flag, pad=pad)
     
