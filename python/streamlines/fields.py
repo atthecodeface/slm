@@ -130,10 +130,16 @@ class Fields():
         pixel_size = info.pixel_size
         dds =  traj_stats_df['ds']['downstream','mean']
         uds =  traj_stats_df['ds']['upstream','mean']
+        # slc: simple counter of streamline points in a pixel
+        # slt: total streamline lengths running across a pixel
         # slt: sum of line lengths crossing a pixel * number of line-points per pixel
-        # slt: <=> sum of line-points per pixel
+        # slt: <=> sum of line-points per pixel integrator_step_factor
+#         dds = info.integrator_step_factor
+#         uds = info.integrator_step_factor
         self.data.slt_array[:,:,0] = self.data.slt_array[:,:,0]*(dds/pixel_size)
         self.data.slt_array[:,:,1] = self.data.slt_array[:,:,1]*(uds/pixel_size)
+#         self.data.slt_array[:,:,0] = self.data.slt_array[:,:,0]*(dds/pixel_size)
+#         self.data.slt_array[:,:,1] = self.data.slt_array[:,:,1]*(uds/pixel_size)
         # slt:  => sum of line-points per meter
         self.data.slt_array = np.sqrt(self.data.slt_array) #*np.exp(-1/4) # *(3/4)
         # slt:  =>  sqrt(area)

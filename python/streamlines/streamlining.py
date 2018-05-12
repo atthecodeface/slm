@@ -135,10 +135,12 @@ class Streamlining(Core):
                     self.state.do_plot=True
                     imported_parameters['plot']['do_plot_maps']=True
                     imported_parameters['plot']['do_plot_distributions']=True
+                else:
+                    self.state.do_plot=False
             elif item[1] is not None:
                 setattr(self.state, item[0],item[1])
         self.state.obj_list=[self.state]
-        
+                
         self.state.parameters_path = parameters_path
         self.state.parameters_file = parameters_file
         self.geodata = Geodata(self.state,imported_parameters)

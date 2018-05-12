@@ -112,7 +112,6 @@
 		
 		"downstreamline_color" : "blue",
 		"upstreamline_color" : "red",
-		"XXXupstreamline_color" : "olivedrab",
 		
 		"streamline_point_marker" : "-",
 		"streamline_point_size" : 1,

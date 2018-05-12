@@ -1213,7 +1213,9 @@ class Plot(Core):
                 axes.plot(y_vec*0+bivariate_distribution.channel_threshold,y_vec,
                           '--', color='blue',linewidth=3,alpha=1.0)
         except:
-            pass
+            print('Problem with channel threshold @ {}'
+                  .format(bivariate_distribution.channel_threshold))
+            return
 
         # Plot cross @ hillslope mode
         cross_alpha=0.6

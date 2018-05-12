@@ -14,10 +14,9 @@
 		"do_preprocess" : true,	
 		"do_condition" : true,	
 		"do_trace" : true,	
-		"do_postprocess" : false,	
-		"do_analysis" : false,
-		"do_mapping" : false,
-		"do_plot" : false,	
+		"do_analysis" : true,
+		"do_mapping" : true,
+		"do_plot" : true,
 		"do_save_state" : false,	
 		"do_export" : false,
 		"do_rw_savez" : false,
@@ -92,7 +91,9 @@
 		"marginal_distbn_kde_bandwidth" : 0.2,
 		"search_cdf_min" : 0.95,
 		
-		"pdf_slt_min": 0.5,
+		"pdf_sla_min": 1,
+		"pdf_slc_min": 1,
+		"pdf_slt_min": 1,
         "do_joint_distribn_dsla_dslt": true,
         "do_joint_distribn_usla_uslt": false,
         "do_joint_distribn_uslt_dslt": false,
@@ -113,7 +114,10 @@
 		"hillslope_length_mean_radius" : 50
 	},
 
-	"plot": {
+	"plot": {	
+		"do_plot_maps" : true,	
+		"do_plot_distributions" : true,	
+		
 		"do_plot_dtm" : false,
 		"do_plot_roi" : false,
 		"do_plot_streamlines" : true,
@@ -139,7 +143,6 @@
 		"do_plot_colorized_streamlines" : false,
 		"do_plot_merged_streamline_density_bands" : false,
 							
-		
 		"plot_window_size_factor" : 2.7,
 		"plot_window_pdf_size_factor" : 2.7,
 		"plot_window_width" :  3.0,
@@ -190,7 +193,6 @@
 		"shuffle_random_seed" : 1,
 		"random_cmap_seed" : 1,
 		
-		"do_plot_distributions": true,
         "do_plot_marginal_pdf_dsla":   false,
         "do_plot_marginal_pdf_usla":   false,
         "do_plot_marginal_pdf_dslt":   true,

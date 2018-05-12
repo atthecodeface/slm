@@ -1,70 +1,16 @@
 {
-	"state": {
-		"do_reload_state" : false,	
-		
-		"do_geodata" : true,	
-		"do_preprocess" : true,	
-		"do_condition" : true,	
-		"do_trace" : true,	
-		"do_postprocess" : false,	
-		"do_analysis" : false,
-		"do_plot" : false,	
-		"do_save_state" : false,	
-		"do_export" : false,
-		
-		"do_rw_savez" : true,
-		"do_rw_hdf5" : false
-	},
-
 	"geodata": {
 		"title" : "Guadalupe Mountains, NM, USA, UTM Zone 17N",
 		"dtm_file" : "Guadalupe_DTM0_res2m_fill_sinks1deg.tif",
 		"data_path" :["$SLMDATA","GuadalupeMtns"],		
-		"no_data_values" : [-99999,0],
         "roi_x_bounds" : [1400,1542],
         "roi_y_bounds" : [1400,1640],  
-
 		"basins_file" : "Guadalupe_DTM0_res2m_fill_sinks1deg_watershed3k.tif",
         "basins" : [701,702],
 		"do_basin_masking" : true
 	},
 	
-	"preprocess": {
-	},
-
-	"trace": {
-	},
-
-	"mapping": {
-	},
-
-	"analysis": {
-		"joint_distbn_kde_bandwidth" : 1.0,
-		"pdf_sla_min": 1,
-		"Xpdf_sla_max": 1000,
-		"pdf_slc_min": 1,
-		"Xpdf_slc_max": 30000
-	},
-
-	"plot": {
-		"do_plot_streamlines" : true,
-		"do_plot_flow_maps" : true,
-		
-		"plot_interpolation_method" : "none",
-		
-		"shaded_relief_color_alpha" : 0.55,
-		"shaded_relief_hillshade_alpha" : 0.3,
-		
-		"gradient_vector_alpha" : 0.5,
-		"gradient_vector_scale" : 50
-	},
-	
 	"export": {
-		"export_path" : ["$SLMXPT","GuadalupeDemo1"],
-		"format" : ["png"],
-		"options" : {
-			"dpi":80, 
-			"bbox_inches":"tight"
-			}
+		"export_path" : ["$SLMXPT","GuadalupeDemo1"]
 	}
 }
