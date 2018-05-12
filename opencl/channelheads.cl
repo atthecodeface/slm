@@ -64,7 +64,7 @@ __kernel void map_channel_heads(
     idx = get_array_idx(vec);
     prev_idx = idx;
     // Integrate downstream one pixel
-    while (prev_idx==idx && !mask_array[idx] && n_steps<(MAX_N_STEPS-1)) {
+    while (prev_idx==idx && !mask_array[idx] && n_steps<(MAX_N_STEPS)) {
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);
         channelheads_runge_kutta_step(&dt, &dl, &dxy1_vec, &dxy2_vec,
@@ -73,13 +73,13 @@ __kernel void map_channel_heads(
     // If need be, integrate further downstream until a IS_THINCHANNEL pixel is reached
     n_steps = 0u;
     while (!mask_array[idx] && !(mapping_array[idx] & IS_THINCHANNEL)
-           && n_steps<(MAX_N_STEPS-1)) {
+           && n_steps<(MAX_N_STEPS)) {
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);
         channelheads_runge_kutta_step(&dt, &dl, &dxy1_vec, &dxy2_vec,
                                       &vec, &next_vec, &n_steps, &idx);
     }
-    if (n_steps>=(MAX_N_STEPS-1)) {
+    if (n_steps>=(MAX_N_STEPS)) {
 //        printf("stuck...");
         return;
     }

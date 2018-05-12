@@ -69,7 +69,7 @@ __kernel void count_downchannels(
     atomic_or(&mapping_array[idx],IS_THINCHANNEL);
     // Integrate downstream until the masked boundary is reached or n_steps too big
     // HACK: factor 100x
-    while (!mask_array[idx] && n_steps<100*(MAX_N_STEPS-1)) {
+    while (!mask_array[idx] && n_steps<100*(MAX_N_STEPS)) {
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);
         if (countlink_runge_kutta_step(&dt, &dl, &dxy1_vec, &dxy2_vec,
@@ -224,7 +224,7 @@ __kernel void link_hillslopes(
     prev_idx = idx;
     // Integrate downstream one pixel
     // HACK: factor 100x
-    while (prev_idx==idx && !mask_array[idx] && n_steps<100*(MAX_N_STEPS-1)) {
+    while (prev_idx==idx && !mask_array[idx] && n_steps<100*(MAX_N_STEPS)) {
         prev_idx = idx;
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);

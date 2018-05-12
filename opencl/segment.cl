@@ -157,7 +157,7 @@ __kernel void segment_hillslopes(
     hillslope_idx = idx;
     // Integrate downstream until a channel pixel (or masked pixel) is reached
     while (!mask_array[idx] && ((~mapping_array[idx])&IS_THINCHANNEL)
-           && n_steps<(MAX_N_STEPS-1)) {
+           && n_steps<(MAX_N_STEPS)) {
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);
         if (segment_runge_kutta_step(&dt, &dl, &dxy1_vec, &dxy2_vec,
@@ -261,6 +261,9 @@ __kernel void subsegment_channel_edges(
                     }
                 } else {
                     atomic_or(&mapping_array[left_idx],IS_LEFTFLANK);
+#ifdef DEBUG
+                    printf("labeling left flank addition @ %d,%d\n",x,y);
+#endif
                     atomic_or(&label_array[left_idx],LEFT_FLANK_ADDITION);
                 }
             }
@@ -269,7 +272,6 @@ __kernel void subsegment_channel_edges(
         // Step further downstream if necessary
         prev_idx = idx;
         idx = link_array[idx];
-        // Stop if we've reached the next major confluence pixel, or the mask
 //        if (!mask_array[idx] && (   ((mapping_array[prev_idx]) & IS_MAJORCONFLUENCE)
 //                                 || ((mapping_array[prev_idx]) & IS_MAJORINFLOW)
 //                                 || ((mapping_array[prev_idx]) & IS_MINORINFLOW)
@@ -349,7 +351,7 @@ __kernel void subsegment_flanks(
     hillslope_idx = idx;
     // Integrate downstream until thin channel or left-flank pixel is reached
     while (!mask_array[idx] && ((~mapping_array[idx])&IS_LEFTFLANK)
-            && ((~mapping_array[idx])&IS_THINCHANNEL) && n_steps<(MAX_N_STEPS-1)) {
+            && ((~mapping_array[idx])&IS_THINCHANNEL) && n_steps<(MAX_N_STEPS)) {
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);
         if (segment_runge_kutta_step(&dt, &dl, &dxy1_vec, &dxy2_vec,

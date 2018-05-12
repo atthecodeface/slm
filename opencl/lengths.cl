@@ -72,7 +72,7 @@ __kernel void hillslope_lengths(
     idx = get_array_idx(vec);
     hillslope_idx = idx;
     // Integrate downstream until a channel pixel (or masked pixel) is reached
-    while (((~mapping_array[idx])&IS_THINCHANNEL) && n_steps<(MAX_N_STEPS-1)) {
+    while (((~mapping_array[idx])&IS_THINCHANNEL) && n_steps<(MAX_N_STEPS)) {
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);
         if (mask_array[idx]) return;

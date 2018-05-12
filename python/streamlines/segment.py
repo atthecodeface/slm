@@ -35,7 +35,7 @@ def segment_channels( cl_state, info, data, verbose ):
                                                      'rungekutta.cl','segment.cl'])
             
     # Trace downstream from all channel heads until masked boundary is reached
-    #    /or/ if a major confluence is reached, only keeping going if dominant
+    #    /or/ a major confluence is reached, only keeping going if dominant
     pad            = info.pad_width
     is_channelhead = info.is_channelhead
     flag           = is_channelhead

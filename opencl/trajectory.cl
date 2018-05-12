@@ -58,7 +58,7 @@ static inline void trajectory_record( __global const float2 *uv_array,
     idx = get_array_idx(vec);
     // Loop downstream until the pixel is masked, i.e., we've exited the basin or grid,
     //   or if the streamline is too long (l or n)
-    while (!mask_array[idx] && (l_trajectory<MAX_LENGTH && n_steps<(MAX_N_STEPS-1))) {
+    while (!mask_array[idx] && (l_trajectory<MAX_LENGTH && n_steps<(MAX_N_STEPS))) {
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);
         if (!mask_array[idx]) {
