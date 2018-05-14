@@ -11,6 +11,7 @@
 
 	"analysis": {
 		"search_cdf_min" : 0.93,
+		"marginal_distbn_kde_bandwidth" : 0.25,
 		"joint_distbn_kde_bandwidth" : 0.25
 	},
 
@@ -19,6 +20,10 @@
 		"hillslope_length_mean_radius" : 100,
         "joint_distbn_mode2_tilt" : 3,
 		"midslope_filter_sigma" : 2.0
+	},
+
+	"plot": {
+        "contour_hsl_n_contours" : 19
 	},
 	
 	"export": {

@@ -8,8 +8,8 @@
 	"analysis": {
 		"joint_distbn_kde_bandwidth" : 0.15
 	},
-	
+		
 	"export": {
-		"export_path" : ["$SLMXPT","GabilanMesa3"]
+		"export_path" : ["$SLMXPT","GabilanMesa1"]
 	}
 }

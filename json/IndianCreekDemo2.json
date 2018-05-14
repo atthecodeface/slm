@@ -9,17 +9,14 @@
 		"basins" : [1131,1132],		
 		"do_basin_masking" : true
 	},
-	
-	"preprocess": {
-		"Xdivergence_threshold" : -1.0
-	},
-
-	"trace": {
-		"Xmax_length" : 300
-	},
 
 	"analysis": {
 		"joint_distbn_kde_bandwidth" : 0.25
+	},
+
+	"plot": {
+        "mhsl_pdf_x_stretch" : 1.0,
+        "contour_hsl_n_contours" : 20
 	},
 	
 	"export": {

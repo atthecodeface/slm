@@ -9,6 +9,15 @@
 		"search_cdf_min" : 0.90,
 		"joint_distbn_kde_bandwidth" : 0.25
 	},
+
+	"plot": {
+        "mhsl_pdf_x_stretch" : 0.7,
+        "plot_hsl_colorbar_aspect" : 0.05,
+        "contour_hsl_n_contours" : 21,
+        "contour_hsl_z_min" : 10,
+        "contour_hsl_z_max" : 110,
+        "contour_hsl_colorbar_aspect" : 0.05
+	},
 	
 	"export": {
 		"export_path" : ["$SLMXPT","Ikawa1"]

@@ -13,6 +13,10 @@
 	"analysis": {
 		"joint_distbn_kde_bandwidth" : 0.25
 	},
+
+	"plot": {
+        "mhsl_pdf_x_stretch" : 1.2
+	},
 	
 	"export": {
 		"export_path" : ["$SLMXPT","GuadalupeDemo3"]

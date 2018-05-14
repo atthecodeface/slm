@@ -9,6 +9,10 @@
         "basins" : [701,702],
 		"do_basin_masking" : true
 	},
+
+	"analysis": {
+		"joint_distbn_kde_bandwidth" : 0.5
+	},
 	
 	"export": {
 		"export_path" : ["$SLMXPT","GuadalupeDemo1"]

@@ -65,7 +65,7 @@ __kernel void segment_downchannels(
         return;
     }
     __private uint idx, prev_idx, segment_label=0u,
-                   segmentation_counter=SEGMENTATION_THRESHOLD;
+                   segmentation_counter=0u;
     __private float2 vec = seed_point_array[global_id];
 
     // Remember here
@@ -78,17 +78,20 @@ __kernel void segment_downchannels(
     idx = link_array[prev_idx];
     // Continue stepping downstream until a dominant confluence
     //    or a masked pixel is reached
-//    __private bool is_initial = true;
-    while (!mask_array[idx] && prev_idx!=idx) {
-        if (   (count_array[idx]>=segmentation_counter*3/2)
-            || (      ((mapping_array[idx]) & IS_MAJORCONFLUENCE)
-                   && ((mapping_array[prev_idx]) & IS_MAJORINFLOW)
-                   && (count_array[idx]>=segmentation_counter) )
-//            || is_initial
-            ) {
+    while (!mask_array[idx] && prev_idx!=idx
+            && (mapping_array[idx] & IS_SUBSEGMENTHEAD)==0) {
+        if (  ((mapping_array[idx]) & IS_MAJORCONFLUENCE)
+           && ((mapping_array[prev_idx]) & IS_MAJORINFLOW)
+           && (count_array[idx]>=segmentation_counter) ) {
             segment_label = idx;
             segmentation_counter += SEGMENTATION_THRESHOLD;
-            atomic_or(&mapping_array[idx],IS_SUBSEGMENTHEAD);
+//            if ((mapping_array[prev_idx]&IS_SUBSEGMENTHEAD)!=0)
+                atomic_or(&mapping_array[idx],IS_SUBSEGMENTHEAD);
+        } else if ( count_array[idx]>=segmentation_counter+SEGMENTATION_THRESHOLD/2 ) {
+                segment_label = idx;
+                segmentation_counter = count_array[idx]+SEGMENTATION_THRESHOLD;
+//                if ((mapping_array[prev_idx]&IS_SUBSEGMENTHEAD)!=0)
+                    atomic_or(&mapping_array[idx],IS_SUBSEGMENTHEAD);
         }
         // Label here with the current segment's label
         atomic_xchg(&label_array[idx],segment_label);
@@ -166,7 +169,7 @@ __kernel void segment_hillslopes(
 //#endif
     // Integrate downstream until a channel pixel (or masked pixel) is reached
     while (!mask_array[idx] && ((~mapping_array[idx])&IS_THINCHANNEL)
-           && n_steps<(MAX_N_STEPS)) {
+           && n_steps<MAX_N_STEPS) {
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);
         if (segment_runge_kutta_step(&dt, &dl, &dxy1_vec, &dxy2_vec,
@@ -353,7 +356,7 @@ __kernel void subsegment_flanks(
     // Integrate downstream until thin channel or left-flank pixel is reached
     n_steps = 0u;
     while (!mask_array[idx] && ((~mapping_array[idx])&IS_LEFTFLANK)
-            && ((~mapping_array[idx])&IS_THINCHANNEL) && n_steps<(MAX_N_STEPS)) {
+            && ((~mapping_array[idx])&IS_THINCHANNEL) && n_steps<MAX_N_STEPS) {
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);
         if (segment_runge_kutta_step(&dt, &dl, &dxy1_vec, &dxy2_vec,

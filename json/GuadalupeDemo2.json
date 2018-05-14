@@ -3,15 +3,17 @@
 		"title" : "Guadalupe Mountains, NM, USA, UTM Zone 17N",
 		"dtm_file" : "Guadalupe_DTM0_res2m_fill_sinks1deg.tif",
 		"data_path" : ["$SLMDATA","GuadalupeMtns"],		
+        "Xroi_x_bounds" : [0,250],
+        "Xroi_y_bounds" : [50,200], 
         "roi_x_bounds" : [0,900],
-        "roi_y_bounds" : [0,652], 
-		"basins_file" : "Guadalupe_DTM0_res2m_fill_sinks1deg_watershed3k.tif",
-        "basins" : [701,702],
-		"do_basin_masking" : false
+        "roi_y_bounds" : [0,652]
 	},
 	
 	"analysis": {
-		"joint_distbn_kde_bandwidth" : 0.25
+		"joint_distbn_kde_bandwidth" : 0.2
+	},
+
+	"plot": {
 	},
 	
 	"export": {

@@ -8,8 +8,12 @@
 	"analysis": {
 		"joint_distbn_kde_bandwidth" : 0.3
 	},
+
+	"plot": {
+        "contour_hsl_n_contours" : 13
+	},
 	
 	"export": {
-		"export_path" : ["$SLMXPT","GabilanMesa1"]
+		"export_path" : ["$SLMXPT","GabilanMesa3"]
 	}
 }

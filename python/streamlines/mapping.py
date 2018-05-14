@@ -15,7 +15,8 @@ from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
 from streamlines.core import Core
-from streamlines import connect, countlink, label, segment, lengths
+from streamlines import connect, channelheads, countlink, label, \
+                        segment, linkhillslopes, lengths
 from streamlines.trace import Info, Data
 from streamlines.pocl import Initialize_cl
 
@@ -143,25 +144,27 @@ class Mapping(Core):
         self.print('Thinning channels...',end='')  
         is_channel = self.trace.is_channel
         is_interchannel = self.trace.is_interchannel
-        channel_array = np.zeros(self.data.mapping_array.shape, dtype=np.bool)
+        channel_array = np.zeros_like(self.data.mapping_array, dtype=np.bool)
         channel_array[  ((self.data.mapping_array & is_channel)==is_channel)
                       | ((self.data.mapping_array & is_interchannel)==is_interchannel)
                      ] = True
         self.print('skeletonizing...',end='')  
-        channel_array = skeletonize(channel_array)
-        self.data.mapping_array[channel_array] |= self.trace.is_thinchannel
+        skeleton_array = skeletonize(channel_array)
+        self.data.mapping_array[skeleton_array] |= self.trace.is_thinchannel
         self.print('done')  
 
     def map_channel_heads(self):
-        connect.map_channel_heads(self.cl_state, Info(self.trace), self.data, 
-                                  self.verbose)
+        channelheads.map_channel_heads(self.cl_state, Info(self.trace), self.data, 
+                                       self.verbose)
+#         channelheads.prune_channel_heads(self.cl_state, Info(self.trace), self.data, 
+#                                          self.verbose)
         
     def count_downchannels(self):
-        self.data.count_array = np.zeros(self.mapping_array.shape,dtype=np.uint32)
-        self.data.link_array  = np.zeros(self.mapping_array.shape, dtype=np.uint32)
+        self.data.count_array = np.zeros_like(self.mapping_array, dtype=np.uint32)
+        self.data.link_array  = np.zeros_like(self.mapping_array, dtype=np.uint32)
         countlink.count_downchannels(self.cl_state, Info(self.trace), self.data, 
                                      self.verbose)
-
+        
     def flag_downchannels(self):
         countlink.flag_downchannels(self.cl_state, Info(self.trace), self.data,
                                     self.verbose)
@@ -172,7 +175,7 @@ class Mapping(Core):
                                 self.verbose)
 
     def segment_downchannels(self):
-        self.data.label_array = np.zeros(self.mapping_array.shape, dtype=np.uint32)
+        self.data.label_array = np.zeros_like(self.mapping_array, dtype=np.uint32)
         self.n_segments = segment.segment_channels(self.cl_state, Info(self.trace), 
                                                    self.data, self.verbose)
         # Save the channel-only segment labeling for now
@@ -183,8 +186,8 @@ class Mapping(Core):
 #         pdebug('Unique labels:',np.unique(self.label_array))
         
     def link_hillslopes(self):
-        countlink.link_hillslopes(self.cl_state, Info(self.trace), self.data,
-                                  self.verbose)
+        linkhillslopes.link_hillslopes(self.cl_state, Info(self.trace), self.data,
+                                       self.verbose)
 
     def segment_hillslopes(self):
         segment.segment_hillslopes(self.cl_state, Info(self.trace), self.data, 

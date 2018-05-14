@@ -346,6 +346,7 @@ class Plot(Core):
         is_ridge           = self.trace.is_ridge
         was_channelhead    = self.trace.was_channelhead
         is_subsegmenthead  = self.trace.is_subsegmenthead
+        is_loop            = self.trace.is_loop
         
         basin_mask_array = self.geodata.basin_mask_array
         
@@ -355,14 +356,14 @@ class Plot(Core):
 
         grid_array = (self.mapping.mapping_array & is_midslope).copy().astype(np.bool)
         mask_array = basin_mask_array | ~(grid_array)
-        self.plot_simple_grid(grid_array, mask_array, axes, cmap='Reds', alpha=0.8)
+        self.plot_simple_grid(grid_array, mask_array, axes, cmap='Greens', alpha=0.8)
         
 #         self.plot_compound_markers(axes, is_majorconfluence, ['blue','black'])
-#         self.plot_compound_markers(axes, is_minorinflow,     ['yellow','black'])
-#         self.plot_compound_markers(axes, is_majorinflow,     ['green','black'])
-        self.plot_compound_markers(axes, is_channeltail,     ['lightgreen','black'])
-        self.plot_compound_markers(axes, is_channelhead,     ['orange','black'])
-#         self.plot_compound_markers(axes, is_subsegmenthead,  ['red','black'], msf=0.5)
+#         self.plot_compound_markers(axes, is_loop,     ['pink','black'])
+        self.plot_compound_markers(axes, is_channeltail,     ['cyan','black'], msf=1.5)
+#         self.plot_compound_markers(axes, was_channelhead,     ['purple','black'], msf=0.5)
+#         self.plot_compound_markers(axes, is_subsegmenthead,  ['orange','black'], msf=0.5)
+#         self.plot_compound_markers(axes, is_channelhead,     ['red','black'], msf=0.5)
 #         self.plot_compound_markers(axes, is_midslope,        ['purple','black'])
 #         self.plot_compound_markers(axes, is_ridge,        ['purple','black'])
         
@@ -439,18 +440,36 @@ class Plot(Core):
                                do_shaded_relief=do_shaded_relief, 
                                do_flip_cmap=False, do_balance_cmap=False)
 
-    def plot_hillslope_lengths(self, cmap='jet', #cmap='rainbow', 
-                               do_shaded_relief=True,
+    def plot_hillslope_lengths(self, cmap=None,
                                z_min=None,z_max=None, 
-                               colorbar_aspect=0.07):
-#         tmp_array = (self.mapping.hillslope_length_array.copy().astype(np.float32))
+                               do_shaded_relief=None,
+                               colorbar_aspect=None):
+        if cmap is None:
+            cmap = self.plot_hsl_cmap
+        if colorbar_aspect is None:
+            colorbar_aspect = self.plot_hsl_colorbar_aspect
+        if do_shaded_relief is None:
+            do_shaded_relief = self.plot_hsl_do_shaded_relief
         if z_min is None:
-            z_min = np.percentile(self.mapping.hillslope_length_array, 1.0)
+            if self.plot_hsl_z_min=='full':
+                z_min = np.percentile(self.mapping.hillslope_length_smoothed_array, 0.0)
+            elif self.plot_hsl_z_min=='auto':
+                z_min = np.percentile(self.mapping.hillslope_length_smoothed_array, 1.0)
+            else:
+                z_min = self.plot_hsl_z_min
         if z_max is None:
-            z_max = np.percentile(self.mapping.hillslope_length_array,99.0)        
+            if self.plot_hsl_z_max=='full':
+                z_max = np.percentile(self.mapping.hillslope_length_smoothed_array,100.0)  
+            elif self.plot_hsl_z_max=='auto':
+                z_max = np.percentile(self.mapping.hillslope_length_smoothed_array,99.0)  
+            else:
+                z_max = self.plot_hsl_z_max     
         grid_array = np.clip(self.mapping.hillslope_length_array,z_min,z_max)
+        mask_array = np.zeros_like(grid_array).astype(np.bool)            
+        mask_array[self.mapping.label_array==0] = True
         self.plot_gridded_data(grid_array,
                                cmap,  # rainbow
+                               mask_array=mask_array,
                                fig_name='hillslope_length',
                                window_title='hillslope length',
                                do_flip_cmap=False, do_balance_cmap=False,
@@ -459,10 +478,12 @@ class Plot(Core):
                                colorbar_title='mean hillslope length [m]',
                                colorbar_aspect=colorbar_aspect)
     
-    def plot_hillslope_distributions(self, x_stretch=1.0):
+    def plot_hillslope_distributions(self, x_stretch=None):
         df = self.mapping.hillslope_stats_df
         kde_min_labels = 20
-
+        if x_stretch is None:
+            x_stretch = self.mhsl_pdf_x_stretch
+            
         name = 'hillslope_mean'
         fig,_ = self._new_figure(window_title=name)
         if df.shape[0]>kde_min_labels:
@@ -506,6 +527,7 @@ class Plot(Core):
                             grid_array,
                             gridded_cmap, 
                             fig_name=None,
+                            mask_array=None,
                             window_title='',
                             do_flip_cmap=False,
                             do_balance_cmap=True,
@@ -516,12 +538,15 @@ class Plot(Core):
         """
         TBD
         """
-        if self.geodata.do_basin_masking:                
-            mask_array = self.geodata.basin_mask_array[
+        if mask_array is None:
+            mask_array = np.zeros_like(grid_array).astype(np.bool)            
+        mask_array = mask_array[self.geodata.pad_width:-self.geodata.pad_width,
+                                self.geodata.pad_width:-self.geodata.pad_width]
+        if self.geodata.do_basin_masking:
+            mask_array |= self.geodata.basin_mask_array[
                 self.geodata.pad_width:-self.geodata.pad_width,
                 self.geodata.pad_width:-self.geodata.pad_width]
-        else:
-            mask_array = np.zeros_like(self.geodata.roi_array).astype(np.bool)
+            
         if self.seed_point_marker_size==0:
             seed_point_marker = 'g,'
             seed_point_marker_size = 1
@@ -578,26 +603,44 @@ class Plot(Core):
             cbar.set_label(colorbar_title)
         self._record_fig(fig_name,fig)
 
-    def plot_hillslope_lengths_contoured(self,cmap='jet', #cmap='rainbow',
+    def plot_hillslope_lengths_contoured(self,cmap=None,
                                          do_colorbar=True, 
                                          colorbar_title='mean hillslope length [m]',
                                          n_contours=None,
                                          z_min=None,z_max=None,
-                                         do_shaded_relief=True, 
+                                         do_shaded_relief=None,
+                                         colorbar_aspect=None,
                                          contour_label_suffix='m',
-                                         contour_label_fontsize=12,
-                                         colorbar_aspect=0.07):
+                                         contour_label_fontsize=12):
         """
         Streamlines, points on semi-transparent shaded relief
         """
         fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
                                     y_pixel_scale=self.geodata.roi_pixel_size)
+        if cmap is None:
+            cmap = self.contour_hsl_cmap
+        if colorbar_aspect is None:
+            colorbar_aspect = self.contour_hsl_colorbar_aspect
+        if do_shaded_relief is None:
+            do_shaded_relief = self.contour_hsl_do_shaded_relief
         if z_min is None:
-            z_min = np.percentile(self.mapping.hillslope_length_smoothed_array, 1.0)
+            if self.contour_hsl_z_min=='full':
+                z_min = np.percentile(self.mapping.hillslope_length_smoothed_array, 0.0)
+            elif self.contour_hsl_z_min=='auto':
+                z_min = np.percentile(self.mapping.hillslope_length_smoothed_array, 1.0)
+            else:
+                z_min = self.contour_hsl_z_min
         if z_max is None:
-            z_max = np.percentile(self.mapping.hillslope_length_smoothed_array,99.0)        
+            if self.contour_hsl_z_max=='full':
+                z_max = np.percentile(self.mapping.hillslope_length_smoothed_array,100.0)  
+            elif self.contour_hsl_z_max=='auto':
+                z_max = np.percentile(self.mapping.hillslope_length_smoothed_array,99.0)  
+            else:
+                z_max = self.contour_hsl_z_max     
         grid_array = np.clip(self.mapping.hillslope_length_smoothed_array,z_min,z_max)
-        
+        if n_contours is None and self.contour_hsl_n_contours!='auto':
+                n_contours = self.contour_hsl_n_contours
+                
         mask_array = self.geodata.basin_mask_array[
                         self.geodata.pad_width:-self.geodata.pad_width,
                         self.geodata.pad_width:-self.geodata.pad_width]  

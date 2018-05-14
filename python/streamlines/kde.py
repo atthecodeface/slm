@@ -131,13 +131,14 @@ def estimate_univariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
             
     n_data       = info.n_data
     x_range      = info.x_range
+    bandwidth    = info.kdf_bandwidth
     bin_dx       = info.bin_dx
     pdf_dx       = info.pdf_dx
     stddev       = np.std(sl_array)
     
     # Set up kernel filter
     # Hacked Silverman hack - why is 8x good?
-    kdf_width_x = 1.06*stddev*np.power(n_data,-0.2)*5
+    kdf_width_x = 1.06*stddev*np.power(n_data,-0.2)*bandwidth*10
     info.kdf_width_x = kdf_width_x
     info.n_kdf_part_points_x = np.uint32(np.floor(kdf_width_x/pdf_dx))//2
         

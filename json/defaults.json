@@ -54,7 +54,7 @@
 		"do_shuffle_seed_points" : true,
 		"shuffle_rng_seed" : 1,
 		"subpixel_seed_point_density" : 5,
-		"max_length" : 500.0,
+		"max_length" : 1000.0,
 		"interchannel_max_n_steps" : 200,
 		"integration_halt_threshold" : 0.01,
 		"trajectory_resolution" : 128,
@@ -67,7 +67,7 @@
 		"do_trace_upstream" : true,
 		"do_trace_downstream" : true,
 		
-		"segmentation_threshold" : 50
+		"segmentation_threshold" : 30
 	},
 
 	"analysis": {
@@ -87,7 +87,7 @@
 		"n_pdf_points" : 256,
 		
 		"marginal_distbn_kde_bw_method" : "scott",
-		"marginal_distbn_kde_bandwidth" : 0.2,
+		"marginal_distbn_kde_bandwidth" : 1.0,
 		"search_cdf_min" : 0.95,
 		
 		"pdf_sla_min": 1,
@@ -160,7 +160,7 @@
 
 		"shaded_relief_hillshade_alpha" : 0.3,
 		"shaded_relief_color_alpha" : 0.55,
-		"streamline_shaded_relief_hillshade_alpha" : 1.0,
+		"streamline_shaded_relief_hillshade_alpha" : 0.6,
 		"streamline_shaded_relief_color_alpha" : 0.3,
 		"streamline_density_alpha" : 0.5,
 		"streamline_density_cmap" : "YlGnBu",
@@ -212,7 +212,20 @@
         "marginal_distbn_viz_tilt":  0.5,
         "marginal_distbn_viz_scale": 0.5,
         "joint_distbn_viz_tilt":  0.0,
-        "joint_distbn_viz_scale": 0.25
+        "joint_distbn_viz_scale": 0.25,
+        
+        "mhsl_pdf_x_stretch" : 1.0,
+        "plot_hsl_cmap" : "coolwarm",
+        "plot_hsl_do_shaded_relief" : true,
+        "plot_hsl_z_min" : "auto",
+        "plot_hsl_z_max" : "auto",
+        "plot_hsl_colorbar_aspect" : 0.07,
+        "contour_hsl_cmap" : "jet",
+        "contour_hsl_do_shaded_relief" : true,
+        "contour_hsl_n_contours" : "auto",
+        "contour_hsl_z_min" : "full",
+        "contour_hsl_z_max" : "full",
+        "contour_hsl_colorbar_aspect" : 0.07
 	},
 
 	"export": {

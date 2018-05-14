@@ -8,6 +8,12 @@
 	"analysis": {
 		"joint_distbn_kde_bandwidth" : 0.4
 	},
+
+	"plot": {
+        "contour_hsl_n_contours" : 17,
+        "contour_hsl_z_min" : 50,
+        "contour_hsl_z_max" : 140
+	},
 	
 	"export": {
 		"export_path" : ["$SLMXPT","GabilanMesa2"]
