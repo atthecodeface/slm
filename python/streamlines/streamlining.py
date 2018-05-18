@@ -98,7 +98,8 @@ class Streamlining(Core):
                                  .format(possible_paths))
             
         # Read in parameters and assign to the Trajectories class instance
-        imported_parameters = import_parameters(parameters_path, parameters_file)
+        imported_parameters, slm_path, slmdata_path, slmnb_path \
+            = import_parameters(parameters_path, parameters_file)
         if ( ('verbose' not in kwargs.keys() or kwargs['verbose'] is None and 
                   'verbose' in imported_parameters['state'].keys() 
                    and imported_parameters['state']['verbose']) 
@@ -108,7 +109,6 @@ class Streamlining(Core):
             print('Loaded JSON parameters file "{}"'
                   .format(os.path.realpath(os.path.join(parameters_path, 
                                                         parameters_file+'.json'))))
-        
         try:
             override_parameters = kwargs['override_parameters']
         except:
@@ -120,6 +120,18 @@ class Streamlining(Core):
 
         self.state = State(None,imported_parameters)
 
+        try:
+            import git
+            for repo_name, repo_path in (('slm',slm_path),
+                                         ('slmnb',slmnb_path),
+                                         ('slmdata',slmdata_path)):
+                repo = git.Repo(repo_path)
+                git_info = [repo.git.show('--format=%'+s).split('\n')[0] 
+                                for s in ['H','cd','an']]
+                setattr(self.state,repo_name+'_gitinfo',git_info)
+        except:
+            pass
+            
         for item in kwargs.items():
             if item[0]=='do_plot':
                 if item[1]=='0' or item[1]=='off' or item[1]=='false':

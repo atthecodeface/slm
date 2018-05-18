@@ -102,7 +102,7 @@ class Plot(Core):
         TBD
         """
         mpl.rc( 'savefig', dpi=75)
-        mpl.rc( 'figure', autolayout=False,  titlesize='Large')
+        mpl.rc( 'figure', autolayout=False,  titlesize='Large',dpi=75)
         mpl.rc( 'lines', linewidth=2.0, markersize=10)
         # mpl.rc( 'font', size=14,family='Times New Roman', serif='cm')
         # mpl.rc( 'font', size=14,family='DejaVu Sans', serif='cm')
@@ -604,7 +604,7 @@ class Plot(Core):
         self._record_fig(fig_name,fig)
 
     def plot_hillslope_lengths_contoured(self,cmap=None,
-                                         do_colorbar=True, 
+                                         do_colorbar=False, 
                                          colorbar_title='mean hillslope length [m]',
                                          n_contours=None,
                                          z_min=None,z_max=None,

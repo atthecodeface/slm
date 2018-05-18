@@ -74,11 +74,13 @@ def import_parameters(parameters_path, parameters_file): #,do_reload_state=False
         dict:  workflow parameter dictionary
     """        
     # Parse default and assigned JSON parameters files
+    slm_path = os.path.realpath(os.path.join(streamlines.__path__[0],'..','..'))
+    slmdata_path = os.path.realpath(os.path.join(slm_path,'..','slmdata'))
+    slmnb_path = os.path.realpath(os.path.join(slm_path,'..','slmnb'))
     parameters_files_list \
-        = [os.path.realpath(
-            os.path.join(streamlines.__path__[0],'..','..','json','defaults')),
+        = [os.path.realpath(os.path.join(slm_path,'json','defaults')),
            os.path.realpath(os.path.join(parameters_path,parameters_file))]
-    return read_json_file(parameters_files_list)
+    return read_json_file(parameters_files_list), slm_path, slmdata_path, slmnb_path
 
 
 
