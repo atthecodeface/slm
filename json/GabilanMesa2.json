@@ -10,9 +10,7 @@
 	},
 
 	"plot": {
-        "contour_hsl_n_contours" : 17,
-        "contour_hsl_z_min" : 50,
-        "contour_hsl_z_max" : 140
+        "contour_hsl_n_contours" : 21
 	},
 	
 	"export": {

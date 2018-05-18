@@ -8,10 +8,8 @@
 		"do_basin_masking" : false
 	},
 
-	"mapping": {
-		"joint_distbn_kde_bandwidth" : 0.25,
-		"hillslope_length_median_radius" : 125,
-		"hillslope_length_mean_radius" :   250
+	"analysis": {
+		"joint_distbn_kde_bandwidth" : 0.25
 	},
 
 	"plot": {
