@@ -55,7 +55,7 @@
 		"shuffle_rng_seed" : 1,
 		"subpixel_seed_point_density" : 5,
 		"max_length" : 1000.0,
-		"interchannel_max_n_steps" : 200,
+		"interchannel_max_n_steps" : 20,
 		"integration_halt_threshold" : 0.01,
 		"trajectory_resolution" : 128,
 		

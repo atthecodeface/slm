@@ -144,20 +144,22 @@ class Mapping(Core):
         self.print('Thinning channels...',end='')  
         is_channel = self.trace.is_channel
         is_interchannel = self.trace.is_interchannel
-        channel_array = np.zeros_like(self.data.mapping_array, dtype=np.bool)
-        channel_array[  ((self.data.mapping_array & is_channel)==is_channel)
-                      | ((self.data.mapping_array & is_interchannel)==is_interchannel)
+        mapping_array = self.data.mapping_array
+        channel_array = np.zeros_like(mapping_array, dtype=np.bool)
+        channel_array[  ((mapping_array & is_channel)==is_channel)
+                      | ((mapping_array & is_interchannel)==is_interchannel)
                      ] = True
         self.print('skeletonizing...',end='')  
-        skeleton_array = skeletonize(channel_array)
-        self.data.mapping_array[skeleton_array] |= self.trace.is_thinchannel
+        skeleton_array = medial_axis(channel_array)
+        mapping_array[skeleton_array] |= self.trace.is_thinchannel
         self.print('done')  
 
     def map_channel_heads(self):
         channelheads.map_channel_heads(self.cl_state, Info(self.trace), self.data, 
                                        self.verbose)
-#         channelheads.prune_channel_heads(self.cl_state, Info(self.trace), self.data, 
-#                                          self.verbose)
+        mapping_array = self.data.mapping_array
+        channelheads.prune_channel_heads(self.cl_state, Info(self.trace), self.data, 
+                                         self.verbose)
         
     def count_downchannels(self):
         self.data.count_array = np.zeros_like(self.mapping_array, dtype=np.uint32)
@@ -173,6 +175,14 @@ class Mapping(Core):
         self.data.dn_slt_array = self.trace.slt_array[:,:,0]
         label.label_confluences(self.cl_state, Info(self.trace), self.data, 
                                 self.verbose)
+        # Two passes to try to eliminate all 'parasite' streamlets
+        countlink.flag_downchannels(self.cl_state, Info(self.trace), self.data,
+                                    self.verbose)
+        countlink.flag_downchannels(self.cl_state, Info(self.trace), self.data,
+                                    self.verbose, do_reset_count=False)
+        # 
+        countlink.flag_downchannels(self.cl_state, Info(self.trace), self.data,
+                                    self.verbose, do_reset_count=False)
 
     def segment_downchannels(self):
         self.data.label_array = np.zeros_like(self.mapping_array, dtype=np.uint32)
@@ -213,8 +223,7 @@ class Mapping(Core):
         midslope_array[ (~mask) & (np.fabs(
             gaussian_filter((np.arctan2(dsla,usla)-np.pi/4), self.midslope_filter_sigma))
                              <=self.midslope_threshold)] = True
-        self.data.mapping_array[midslope_array] \
-            = self.data.mapping_array[midslope_array] | self.trace.is_midslope
+        self.data.mapping_array[midslope_array>0] |= self.trace.is_midslope
         self.print('done')  
 
     def measure_hillslope_lengths(self):
@@ -246,8 +255,7 @@ class Mapping(Core):
         stats_df.set_index('label',inplace=True)
         self.hillslope_stats_df = stats_df
         
-        self.hillslope_length_array \
-            = np.zeros_like(self.data.label_array, dtype=np.float32)
+        self.hillslope_length_array=np.zeros_like(self.data.label_array,dtype=np.float32)
         for idx,row in stats_df.iterrows():     
             self.hillslope_length_array[self.data.label_array==idx] = row['mean [m]']
 

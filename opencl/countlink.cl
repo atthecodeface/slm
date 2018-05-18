@@ -76,11 +76,6 @@ __kernel void count_downchannels(
     //   tracing if we land onto a "superior channel" pixel already traced
     //   in another kernel instance
     atomic_xchg(&count_array[idx],counter++);
-//#ifdef DEBUG
-//            printf("Counting downstream (%d): head @ %d = %d\n",
-//                    global_id, idx, count_array[idx]);
-//#endif
-//    atomic_or(&mapping_array[idx],IS_THINCHANNEL);
     // Integrate downstream until the masked boundary is reached or n_steps too big
     //   OR (where counter++<count_array[idx]) we step onto a more important channel
     // HACK: factor 1000x
@@ -89,9 +84,6 @@ __kernel void count_downchannels(
                          vec, &next_vec, &idx);
         if (countlink_runge_kutta_step(&dt, &dl, &dxy1_vec, &dxy2_vec,
                                        &vec, &next_vec, &idx, mapping_array)) {
-#ifdef DEBUG
-            printf("Counting downstream: bailing @ %d\n",idx);
-#endif
             break;
         }
         n_steps++;
@@ -102,18 +94,11 @@ __kernel void count_downchannels(
             atomic_or(&mapping_array[idx],IS_THINCHANNEL);
             // Link to here from the last pixel,
             // i.e., point the previous pixel to this its downstream neighbor
-//#ifdef DEBUG
-//            printf("Counting downstream (%d): linking @ %d->%d\n",
-//                    global_id,prev_idx,idx);
-//#endif
             if (!mask_array[prev_idx]) atomic_xchg(&link_array[prev_idx],idx);
             // If we've landed on a pixel whose channel length count
             //    exceeds our counter, we must have stepped off a minor onto a major
             //    channel, and thus need to stop
             if (counter++<count_array[idx]) {
-//#ifdef DEBUG
-//            printf("Counting downstream: breaking @ %d\n",idx);
-//#endif
                 break;
             }
             atomic_xchg(&count_array[idx],counter);
@@ -155,10 +140,6 @@ __kernel void flag_downchannels(
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
     if (global_id>=N_SEED_POINTS) {
         // This is a "padding" seed, so let's bail
-//#ifdef DEBUG
-//        printf("Bailing @ %d !in [%d-%d]\n",
-//                global_id,get_global_offset(0u),N_SEED_POINTS-1);
-//#endif
         return;
     }
 #ifdef VERBOSE
@@ -173,42 +154,30 @@ __kernel void flag_downchannels(
                 get_global_size(0u));
     }
 #endif
-    __private uint idx, prev_idx, counter=1u;
+    __private uint idx, channelhead_idx, prev_idx, counter=1u;
     __private float2 vec = seed_point_array[global_id];
 
     // Remember here
-    idx = get_array_idx(vec);
-    prev_idx = idx+1;
+    channelhead_idx = get_array_idx(vec);
+    idx = channelhead_idx;
+    prev_idx = idx+1u;
     // Counter=1 at channel head (set by count_downchannels)
-//#ifdef DEBUG
-//            printf("Flagging downstream (%d): @ %d->%d inc counter=%d\n",
-//                    global_id,prev_idx,idx,counter);
-//#endif
-
-//    if (count_array[idx]>0) {
-//        atomic_add(&mapping_array[idx],~IS_CHANNELHEAD);
-//#ifdef DEBUG
-//            printf("Counting downstream: BAD CHANNEL HEAD - bailing @ %d\n",idx);
-//#endif
-//    }
-
     atomic_xchg(&count_array[idx],counter);
     atomic_or(&mapping_array[idx],IS_THINCHANNEL);
     // Integrate downstream until the masked boundary is reached
-    while (!mask_array[idx] && prev_idx!=idx && counter<1000*MAX_N_STEPS) {
+    while (!mask_array[idx] && prev_idx!=idx && counter<1000u*MAX_N_STEPS) {
         prev_idx = idx;
         idx = link_array[idx];
         counter++;
         // Assume this idx is on the grid?
         if (!mask_array[idx]) {
-//#ifdef DEBUG
-//            printf(
-//             "Flagging downstream (%d mask=%d): @ %d->%d inc counter=%d vs count=%d\n",
-//                    global_id,mask_array[idx],prev_idx,idx,counter,count_array[idx]);
-//#endif
-//            atomic_and(&mapping_array[idx],~IS_CHANNELHEAD);
+            // After label_confluences() only...
+            if ( ( ((mapping_array[idx]&IS_MINORINFLOW)>0)
+                    || (counter==2u && count_array[idx]>2u))
+                    && counter<INTERCHANNEL_MAX_N_STEPS) {
+                atomic_and(&mapping_array[channelhead_idx], ~IS_CHANNELHEAD);
+            }
             atomic_or(&mapping_array[idx],IS_THINCHANNEL);
-//            atomic_max(&count_array[idx],counter);
             // If the current pixel has count less than our counter
             //   set the pixel count to equal our counter, increment it, & continue
             // If not, bail, because we've stepped onto a superior channel
@@ -220,15 +189,18 @@ __kernel void flag_downchannels(
         } else {
             break;
         }
-//#ifdef DEBUG
-//            printf(
-//             "Flagging downstream (%d mask=%d): @ %d->%d inc counter=%d vs count=%d redux\n",
-//                    global_id,mask_array[idx],prev_idx,idx,counter,count_array[idx]);
-//#endif
     }
     // We have just stepped onto a masked pixel, so let's tag the previous pixel
     //    as a channel tail
-    if (!mask_array[prev_idx]) atomic_or(&mapping_array[prev_idx],IS_CHANNELTAIL);
+    if (!mask_array[prev_idx] && counter<1000u*MAX_N_STEPS) {
+        atomic_or(&mapping_array[prev_idx],IS_CHANNELTAIL);
+    } else {
+#ifdef DEBUG
+        printf(
+         "Flagging downstream (%d mask=%d) - not marking tail - error?: @ %d->%d inc counter=%d vs count=%d redux\n",
+                global_id,mask_array[idx],prev_idx,idx,counter,count_array[idx]);
+#endif
+    }
     return;
 }
 #endif

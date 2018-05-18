@@ -359,11 +359,11 @@ class Plot(Core):
         self.plot_simple_grid(grid_array, mask_array, axes, cmap='Greens', alpha=0.8)
         
 #         self.plot_compound_markers(axes, is_majorconfluence, ['blue','black'])
-#         self.plot_compound_markers(axes, is_loop,     ['pink','black'])
+#         self.plot_compound_markers(axes, is_loop,     ['pink','black'], msf=2)
         self.plot_compound_markers(axes, is_channeltail,     ['cyan','black'], msf=1.5)
 #         self.plot_compound_markers(axes, was_channelhead,     ['purple','black'], msf=0.5)
 #         self.plot_compound_markers(axes, is_subsegmenthead,  ['orange','black'], msf=0.5)
-#         self.plot_compound_markers(axes, is_channelhead,     ['red','black'], msf=0.5)
+        self.plot_compound_markers(axes, is_channelhead,     ['red','black'], msf=0.5)
 #         self.plot_compound_markers(axes, is_midslope,        ['purple','black'])
 #         self.plot_compound_markers(axes, is_ridge,        ['purple','black'])
         
@@ -461,7 +461,7 @@ class Plot(Core):
             if self.plot_hsl_z_max=='full':
                 z_max = np.percentile(self.mapping.hillslope_length_smoothed_array,100.0)  
             elif self.plot_hsl_z_max=='auto':
-                z_max = np.percentile(self.mapping.hillslope_length_smoothed_array,99.0)  
+                z_max = np.percentile(self.mapping.hillslope_length_smoothed_array,99.9)  
             else:
                 z_max = self.plot_hsl_z_max     
         grid_array = np.clip(self.mapping.hillslope_length_array,z_min,z_max)

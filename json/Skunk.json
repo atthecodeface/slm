@@ -6,7 +6,7 @@
 	},
 	
 	"trace": {
-		"segmentation_threshold" : 50
+		"segmentation_threshold" : 30
 	},
 
 	"analysis": {

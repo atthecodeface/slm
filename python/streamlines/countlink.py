@@ -36,15 +36,10 @@ def count_downchannels( cl_state, info, data, verbose ):
                                                      'countlink.cl'])
             
     # Generate a list (array) of seed points from the set of channel heads
-    pad            = info.pad_width
-    is_channelhead = info.is_channelhead
-    is_thinchannel = info.is_thinchannel
     # Turn off the thin channel flag aka erase mapping so far of thin channels
-    data.mapping_array[(data.mapping_array&is_thinchannel)==is_thinchannel] \
-       = data.mapping_array[(data.mapping_array&is_thinchannel)==is_thinchannel] \
-                                ^is_thinchannel
+    data.mapping_array[(data.mapping_array&info.is_thinchannel)!=0] ^= info.is_thinchannel
     seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
-                                  flag=is_channelhead, pad=pad)
+                                  flag=info.is_channelhead, pad=info.pad_width)
 #     pdebug('count down channels seed_point_array:',seed_point_array)
         
     # Specify arrays & CL buffers 
@@ -63,7 +58,7 @@ def count_downchannels( cl_state, info, data, verbose ):
     # Done
     vprint(verbose,'...done')  
 
-def flag_downchannels( cl_state, info, data, verbose ):    
+def flag_downchannels( cl_state, info, data, verbose, do_reset_count=True ):    
     """
     Integrate downstream along channels & count pixel steps as we go.
     
@@ -82,16 +77,12 @@ def flag_downchannels( cl_state, info, data, verbose ):
                                                      'rungekutta.cl','countlink.cl'])
             
     # Generate a list (array) of seed points from the set of channel heads
-    pad            = info.pad_width
-    is_channelhead = info.is_channelhead
-    is_thinchannel = info.is_thinchannel
     # Reset thin channel flag and downstream count - both are recomputed here
-    data.mapping_array[(data.mapping_array&is_thinchannel)==is_thinchannel] \
-        = data.mapping_array[(data.mapping_array&is_thinchannel)==is_thinchannel]\
-                                ^is_thinchannel
-    data.count_array *= 0
+    data.mapping_array[(data.mapping_array&info.is_thinchannel)!=0] ^= info.is_thinchannel
+    if do_reset_count:
+        data.count_array *= 0
     seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
-                                  flag=is_channelhead, pad=pad)
+                                  flag=info.is_channelhead, pad=info.pad_width)
 #     pdebug('flag down channels seed_point_array:',seed_point_array)
 
     # Specify arrays & CL buffers 

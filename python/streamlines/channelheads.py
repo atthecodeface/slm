@@ -36,15 +36,12 @@ def map_channel_heads(cl_state, info, data, verbose):
 
     # Pre-designate every channel pixel as a channel head
     #   - and expect to eliminate all non-heads during the GPU compute
-    is_channel     = info.is_channel
-    is_thinchannel = info.is_thinchannel
-    is_channelhead = info.is_channelhead
-    data.mapping_array[(data.mapping_array&is_thinchannel)==is_thinchannel] \
-                            |= is_channelhead
-    pad = info.pad_width
+    data.mapping_array[(data.mapping_array&info.is_thinchannel)==info.is_thinchannel] \
+                            |= info.is_channelhead
         
     # Trace downstream from all non-masked pixels
-    seed_point_array = pick_seeds(mask=data.mask_array, flag=is_channel, pad=pad)
+    seed_point_array = pick_seeds(mask=data.mask_array, flag=info.is_channel, 
+                                  pad=info.pad_width)
     # Specify arrays & CL buffers 
     array_dict = { 'seed_point':  {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':        {'array': data.mask_array,       'rwf': 'RO'}, 
@@ -76,13 +73,10 @@ def prune_channel_heads(cl_state, info, data, verbose):
                                                      'computestep.cl','rungekutta.cl',
                                                      'channelheads.cl'])
 
-    # Eliminate all provisional channel heads that have >1 thin channel nbr
-    is_channelhead = info.is_channelhead
-    pad = info.pad_width
-        
+    # Eliminate all provisional channel heads that have >1 thin channel nbr        
     # Trace downstream from all non-masked pixels
     seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
-                                  flag=is_channelhead, pad=pad)
+                                  flag=info.is_channelhead, pad=info.pad_width)
     # Specify arrays & CL buffers 
     array_dict = { 'seed_point':  {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':        {'array': data.mask_array,       'rwf': 'RO'}, 
