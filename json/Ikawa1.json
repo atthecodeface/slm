@@ -6,8 +6,7 @@
 	},
 	
 	"analysis": {
-		"search_cdf_min" : 0.90,
-		"joint_distbn_kde_bandwidth" : 0.25
+		"search_cdf_min" : 0.90
 	},
 
 	"plot": {

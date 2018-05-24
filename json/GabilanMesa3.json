@@ -6,7 +6,6 @@
 	},
 	
 	"analysis": {
-		"joint_distbn_kde_bandwidth" : 0.3
 	},
 
 	"plot": {

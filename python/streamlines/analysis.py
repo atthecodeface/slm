@@ -155,23 +155,15 @@ class Univariate_distribution():
         x = self.x_vec
         pdf = self.pdf
         approx_mode = np.round(x[pdf==pdf.max()][0],2)
-        for trial in [0,1]:
-            peaks = argrelextrema(np.reshape(np.power(x,trial)*pdf,pdf.shape[0],), 
-                                  np.greater, order=3)[0]
-            peaks = [peak for peak in list(peaks) if x[peak]>=approx_mode*0.5 ]
-            if trial==0:
-                self.mode_i = peaks[0]
-                self.mode_x = x[peaks[0]][0]
-            try:
-                self.bimode_i = peaks[1]
-                self.bimode_x = x[peaks[1]][0]
-                break
-            except:
-                self.bimode_x = 0
-                if trial==0:
-                    self.print('can\'t find second mode, trying with pdf*x')
-                else:
-                    self.print('failed to find second mode')
+        peaks = argrelextrema(np.reshape(pdf,pdf.shape[0],), 
+                              np.greater, order=3)[0]
+        peaks = [peak for peak in list(peaks) if x[peak]>=approx_mode*0.5 ]
+        try:
+            self.mode_i = peaks[0]
+            self.mode_x = x[peaks[0]][0]
+            self.print('Mode @ {0:2.2f}m'.format(self.mode_x))
+        except:
+            self.print('Failed to find mode')
 
     def locate_threshold(self):
         x_vec = self.x_vec
@@ -181,18 +173,25 @@ class Univariate_distribution():
         detrended_pdf = pdf/norm.pdf(np.log(x_vec),np.log(self.mean),
                                      np.log(self.stddev))
 #         detrended_pdf = self.detrended_pdf
-        extrema_i = argrelextrema(np.reshape(detrended_pdf,pdf.shape[0],), 
+        all_extrema_i = argrelextrema(np.reshape(detrended_pdf,pdf.shape[0],), 
                                   np.less, order=3)[0]
-        extrema_i = [extremum_i for extremum_i in extrema_i 
-                     if x_vec[extremum_i]>mode_x \
-                        and cdf[extremum_i]>self.search_cdf_min]
+        # Choose lowest-cdf minimum given cdf threshold 
+        #   - if necessary, progressively lowered until a minimum is found
+        search_cdf_min = self.search_cdf_min
+        while (search_cdf_min>=0.80):          
+            extrema_i = [extremum_i for extremum_i in all_extrema_i 
+                         if x_vec[extremum_i]>mode_x \
+                            and (cdf[extremum_i]>search_cdf_min)]
+            if len(extrema_i)>=1:
+                break
+            search_cdf_min -= 0.01
         try:
             self.channel_threshold_i = extrema_i[0]
             self.channel_threshold_x = x_vec[extrema_i[0]][0]
             self.print('Threshold @ cdf={0:0.3}  x={1:2.0f}m'.format(
                 cdf[self.channel_threshold_i],self.channel_threshold_x))
         except:
-            self.print('Choosing threshold: failed to find minima in range')
+            self.print('Failed to locate threshold: cannot find any minima in range')
 
 
 class Bivariate_distribution():
