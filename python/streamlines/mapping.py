@@ -5,6 +5,8 @@ TBD
 import numpy as np
 import pandas as pd
 from scipy.ndimage import gaussian_filter
+from scipy.ndimage.morphology import binary_fill_holes
+from scipy.ndimage.morphology import binary_dilation,generate_binary_structure
 from skimage.morphology import skeletonize, thin, medial_axis, disk
 from skimage.filters.rank import mean,modal,median
 from skimage.filters import gaussian
@@ -100,6 +102,10 @@ class Mapping(Core):
         #    - no GPU invocation
         self.map_midslope()
         
+        # Use up and downstream sla to designate ridge pixels
+        #    - no GPU invocation
+        self.map_ridges()
+        
         # Measure mean streamline distances from midslope to channel pixels
         self.measure_hillslope_lengths()
         #    - no atomics
@@ -109,31 +115,32 @@ class Mapping(Core):
         #    - no GPU
         
         self.print('**Mapping end**\n')  
-      
-      
+        
     def prepare(self):
         self.print('Preparing...',end='')  
         # Shorthand
         try:
-            self.mapping_array
+            del(self.mapping_array)
+            del(self.data)
+            del(self.label_array)
+            del(self.hillslope_length_array)
+            del(self.hillslope_length_smoothed_array)
         except:
-            self.mapping_array = self.trace.mapping_array 
-        try:
-            self.data
-        except:
-            self.data = Data( mask_array    = self.geodata.basin_mask_array,
-                              uv_array      = self.preprocess.uv_array,
-                              mapping_array = self.trace.mapping_array )  
+            pass
+        self.mapping_array = self.trace.mapping_array.copy()
+        self.data = Data( mask_array    = self.geodata.basin_mask_array,
+                          uv_array      = self.preprocess.uv_array,
+                          mapping_array = self.mapping_array )  
         self.verbose = self.state.verbose
         self.print('done')    
             
     def map_channels(self):
         self.print('Channels...',end='')  
-        jpdf = self.analysis.jpdf_dsla_dslt
-        # Designate channel pixels according to dsla pdf analysis
-        self.data.mapping_array[jpdf.mode_cluster_ij_list[1][:,0],
-                                jpdf.mode_cluster_ij_list[1][:,1]] \
-                            = self.trace.is_channel
+        slt_threshold = self.analysis.mpdf_dslt.channel_threshold_x
+        # Designate channel pixels according to dslt pdf analysis
+        self.data.mapping_array[  (self.trace.slt_array[:,:,0]>=slt_threshold)
+                                & (self.trace.slt_array[:,:,0]>=self.trace.slc_array[:,:,0])
+                                ] = self.trace.is_channel                                
         self.print('done')  
 
     def connect_channel_pixels(self):
@@ -150,7 +157,7 @@ class Mapping(Core):
                       | ((mapping_array & is_interchannel)==is_interchannel)
                      ] = True
         self.print('skeletonizing...',end='')  
-        skeleton_array = medial_axis(channel_array)
+        skeleton_array = skeletonize(medial_axis(channel_array))
         mapping_array[skeleton_array] |= self.trace.is_thinchannel
         self.print('done')  
 
@@ -172,7 +179,7 @@ class Mapping(Core):
                                     self.verbose)
 
     def label_confluences(self):
-        self.data.dn_slt_array = self.trace.slt_array[:,:,0]
+        self.data.dn_slt_array = self.trace.slt_array[:,:,0].copy()
         label.label_confluences(self.cl_state, Info(self.trace), self.data, 
                                 self.verbose)
         # Two passes to try to eliminate all 'parasite' streamlets
@@ -223,12 +230,41 @@ class Mapping(Core):
         midslope_array[ (~mask) & (np.fabs(
             gaussian_filter((np.arctan2(dsla,usla)-np.pi/4), self.midslope_filter_sigma))
                              <=self.midslope_threshold)] = True
-        self.data.mapping_array[midslope_array>0] |= self.trace.is_midslope
+#         dilation_structure = generate_binary_structure(2, 2)
+#         fat_midslope_array = binary_dilation(midslope_array, 
+#                                              structure=dilation_structure, iterations=1)
+        filled_midslope_array = binary_fill_holes(midslope_array)
+        skeleton_midslope_array = skeletonize(filled_midslope_array)
+#         fat_midslope_array = binary_dilation(skeleton_midslope_array, 
+#                                              structure=dilation_structure, iterations=1)
+        self.data.mapping_array[skeleton_midslope_array] |= self.trace.is_midslope
+        self.print('done')  
+
+    def map_ridges(self):
+        self.print('Ridges...',end='')  
+        dsla = self.trace.sla_array[:,:,0]
+        usla = self.trace.sla_array[:,:,1]
+        mask = self.data.mask_array
+        ridge_array = np.zeros_like(dsla, dtype=np.bool)
+        ridge_array[ (~mask) & ((
+            gaussian_filter((np.arctan2(dsla,usla)-np.pi/4), self.ridge_filter_sigma))
+                             <= -(np.pi/4)*self.ridge_threshold)] = True
+        dilation_structure = generate_binary_structure(2, 2)
+        fat_ridge_array = binary_dilation(ridge_array, 
+                                          structure=dilation_structure, iterations=1)
+        filled_ridge_array = binary_fill_holes(fat_ridge_array)
+        skeleton_ridge_array = skeletonize(filled_ridge_array)
+#         fat_ridge_array = binary_dilation(skeleton_ridge_array, 
+#                                           structure=dilation_structure, iterations=1)
+        self.data.mapping_array[skeleton_ridge_array] |= self.trace.is_ridge
         self.print('done')  
 
     def measure_hillslope_lengths(self):
+        flag = self.trace.is_midslope
+#         flag = self.trace.is_ridge
         self.data.traj_label_array = (self.data.label_array[
-                                       (self.data.mapping_array&self.trace.is_midslope)>0
+                                       ((self.data.mapping_array & flag)>0)
+                                       &   (~self.data.mask_array)
                                                 ].astype(np.int32)).ravel().copy()
         # BUG sort of - cleaner ways to create a zero array than this
         self.data.traj_length_array \

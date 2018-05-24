@@ -141,8 +141,11 @@ class Fields():
 #         self.data.slt_array[:,:,0] = self.data.slt_array[:,:,0]*(dds/pixel_size)
 #         self.data.slt_array[:,:,1] = self.data.slt_array[:,:,1]*(uds/pixel_size)
         # slt:  => sum of line-points per meter
-        self.data.slt_array = np.sqrt(self.data.slt_array) #*np.exp(-1/4) # *(3/4)
+        self.data.slt_array = np.sqrt(self.data.slt_array) 
         # slt:  =>  sqrt(area)
+        
+        self.data.slc_array \
+            = np.power(self.data.slc_array/info.subpixel_seed_point_density**2,2/3)
     
         # Done
         vprint(self.verbose,'...done')
@@ -279,6 +282,7 @@ class Fields():
         # slt: sum of line lengths crossing a pixel * number of line-points per pixel
         # sla: sum of line lengths / count of lines
         sla[slc==0] = 0.0
-        sla[slc>0]  = slt[slc>0]/slc[slc>0]
+        sla[slc>0]  = np.sqrt(2.0)*slt[slc>0]/slc[slc>0]
         slt[slc>0]  = slt[slc>0]/info.subpixel_seed_point_density**2
+#         slc = slc/info.subpixel_seed_point_density**2
         

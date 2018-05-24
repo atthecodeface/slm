@@ -40,13 +40,15 @@ def hillslope_lengths( cl_state, info, data, verbose ):
     #   to estimate hillslope length for that midslope pixel
     pad         = info.pad_width
     is_midslope = info.is_midslope
+    is_ridge    = info.is_ridge
     pixel_size  = info.pixel_size
     flag        = is_midslope
     seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
                                   flag=flag, pad=pad)
+#     pdebug(seed_point_array*2+np.array([2800,2800]))
     if ( seed_point_array.shape[0]!=data.traj_length_array.shape[0] ):
-        print('\nMismatched midslope point arrays: ',
-              seed_point_array.shape,data.traj_length_array.shape)
+        print('\nMismatched midslope/ridge point arrays: seed pts={0} traj len={1}'
+              .format(seed_point_array.shape,data.traj_length_array.shape))
     array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
@@ -59,7 +61,8 @@ def hillslope_lengths( cl_state, info, data, verbose ):
     cl_state.kernel_fn = 'hillslope_lengths'
     pocl.gpu_compute(cl_state, info, array_dict, verbose)
     
-    # Scale by pixel size and by two because we measured only half lengths
-    data.traj_length_array *= pixel_size*2
+    # Scale by two because we measured only half lengths (midslope only)
+    if flag==is_midslope:
+        data.traj_length_array *= 2.0
     # Done
     vprint(verbose,'...done')  

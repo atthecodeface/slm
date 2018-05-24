@@ -5,6 +5,7 @@ Kernel density estimation.
 import pyopencl as cl
 import pyopencl.array
 import numpy as np
+from scipy.stats import norm
 import os
 os.environ['PYTHONUNBUFFERED']='True'
 import warnings
@@ -17,74 +18,73 @@ __all__ = ['estimate_univariate_pdf','estimate_bivariate_pdf',
 
 pdebug = print
 
-def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device, 
-                            info, sl_array, verbose ):
+def estimate_bivariate_pdf( distbn ):
         
     """
     Compute bivariate histogram and subsequent kernel-density smoothed pdf.
     
     Args:
-        cl_src_path (str):
-        which_cl_platform (int):
-        which_cl_device (int):
-        info (numpy.ndarray):
-        sl_array (numpy.ndarray):
-        verbose (bool):
+        distbn (obj):
     
     Returns:
         
         
     """
-    vprint(verbose,'Computing bivariate pdf...',end='')
+    verbose = distbn.verbose
+    vprint(verbose,'Estimating bivariate pdf...',end='')
     
     # Prepare CL essentials
-    platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
+    platform,device,context= pocl.prepare_cl_context(distbn.cl_platform,distbn.cl_device)
     queue = cl.CommandQueue(context)
     
     cl_files = ['kde.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
-        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
+        with open(os.path.join(distbn.cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
             
-    n_data       = info.n_data
-    bandwidth    = info.kdf_bandwidth
+    sl_array     = distbn.logxy_data
+    n_data       = distbn.n_data
+    bandwidth    = distbn.bandwidth
     
-    x_range      = info.x_range
-    bin_dx       = info.bin_dx
-    pdf_dx       = info.pdf_dx
+    x_range      = distbn.logx_range
+    bin_dx       = distbn.bin_dx
+    pdf_dx       = distbn.pdf_dx
     stddev_x     = np.std(sl_array[0,:])
+#     stddev_x     = np.std(sl_array[0,(sl_array[0,:]<np.log(300))])
+#     pdebug('\nstddev x:', np.std(sl_array[0,:]),stddev_x,  distbn.x_min,distbn.x_max)
     
-    y_range      = info.y_range
-    bin_dy       = info.bin_dy
-    pdf_dy       = info.pdf_dy
+    y_range      = distbn.logy_range
+    bin_dy       = distbn.bin_dy
+    pdf_dy       = distbn.pdf_dy
     stddev_y     = np.std(sl_array[1,:])
-            
+#     pdebug('stddev y:', np.std(sl_array[1,:]),stddev_y,distbn.y_min,distbn.y_max)
+
     # Set up kernel filter
     # Silverman hack turned off
 #     kdf_width_x = 1.06*stddev_x*np.power(n_data,-0.2)*20
 #     kdf_width_y = 1.06*stddev_y*np.power(n_data,-0.2)*20
-    kdf_width_x = stddev_x*bandwidth*3
-    kdf_width_y = stddev_y*bandwidth*3*2
-    info.kdf_width_x = kdf_width_x
-    info.n_kdf_part_points_x= 2*(np.uint32(np.floor(kdf_width_x/bin_dx))//2)
-    info.kdf_width_y = kdf_width_y
-    info.n_kdf_part_points_y= 2*(np.uint32(np.floor(kdf_width_y/bin_dy))//2)
+    kdf_width_x = stddev_x*bandwidth
+    kdf_width_y = stddev_y*bandwidth
+    distbn.kdf_width_x = kdf_width_x
+    distbn.n_kdf_part_points_x= 2*(np.uint32(np.floor(kdf_width_x/bin_dx))//2)
+    distbn.kdf_width_y = kdf_width_y
+    distbn.n_kdf_part_points_y= 2*(np.uint32(np.floor(kdf_width_y/bin_dy))//2)
             
     vprint(verbose,'histogram...',end='')
     # Histogram
     cl_kernel_fn = 'histogram_bivariate'
     histogram_array \
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
-                      info, action='histogram',  is_bivariate=True, 
+                      distbn, action='histogram',  is_bivariate=True, 
                       sl_array=sl_array, verbose=verbose)
         
-    vprint(verbose,'kernel filtering rows...',end='')
+    vprint(verbose,'kernel filtering rows..',end='')
     # PDF
     cl_kernel_fn = 'pdf_bivariate_rows'
     partial_pdf_array \
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
-                      info, action='partial_pdf',  is_bivariate=True, 
+                      distbn, action='partial_pdf',  is_bivariate=True, 
                       histogram_array=histogram_array,
                       verbose=verbose)
 
@@ -92,24 +92,24 @@ def estimate_bivariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
     cl_kernel_fn = 'pdf_bivariate_cols'
     pdf_array \
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
-                      info,  action='full_pdf',  is_bivariate=True, 
+                      distbn,  action='full_pdf',  is_bivariate=True, 
                       partial_pdf_array=partial_pdf_array,
                       verbose=verbose)
     # Done
     vprint(verbose,'done')
-    return pdf_array/(np.sum(pdf_array)*bin_dx*bin_dy)
+    return (pdf_array/(np.sum(pdf_array)*bin_dx*bin_dy), 
+            histogram_array/(np.sum(histogram_array)*bin_dx*bin_dy))
     
-def estimate_univariate_pdf( cl_src_path, which_cl_platform, which_cl_device, 
-                             info, sl_array, verbose ):
+def estimate_univariate_pdf( distbn, do_detrend=False, logx_vec=None):
         
     """
     Compute univariate histogram and subsequent kernel-density smoothed pdf.
     
     Args:
-        cl_src_path (str):
+        distbn.cl_src_path (str):
         which_cl_platform (int):
         which_cl_device (int):
-        info (numpy.ndarray):
+        distbn (obj):
         sl_array (numpy.ndarray):
         verbose (bool):
     
@@ -117,52 +117,69 @@ def estimate_univariate_pdf( cl_src_path, which_cl_platform, which_cl_device,
         
         
     """
-    vprint(verbose,'Computing univariate pdf...',end='')
+    verbose = distbn.verbose
+    vprint(verbose,'Estimating univariate pdf...',end='')
     
     # Prepare CL essentials
-    platform, device, context= pocl.prepare_cl_context(which_cl_platform,which_cl_device)
+    platform,device,context= pocl.prepare_cl_context(distbn.cl_platform,distbn.cl_device)
     queue = cl.CommandQueue(context)
     
     cl_files = ['kde.cl']
     cl_kernel_source = ''
     for cl_file in cl_files:
-        with open(os.path.join(cl_src_path,cl_file), 'r') as fp:
+        with open(os.path.join(distbn.cl_src_path,cl_file), 'r') as fp:
             cl_kernel_source += fp.read()
             
-    n_data       = info.n_data
-    x_range      = info.x_range
-    bandwidth    = info.kdf_bandwidth
-    bin_dx       = info.bin_dx
-    pdf_dx       = info.pdf_dx
+    sl_array     = distbn.logx_data
+    n_data       = distbn.n_data
+    x_range      = distbn.logx_range
+    bandwidth    = distbn.bandwidth
+    bin_dx       = distbn.bin_dx
+    pdf_dx       = distbn.pdf_dx
     stddev       = np.std(sl_array)
     
     # Set up kernel filter
     # Hacked Silverman hack - why is 8x good?
     kdf_width_x = 1.06*stddev*np.power(n_data,-0.2)*bandwidth*10
-    info.kdf_width_x = kdf_width_x
-    info.n_kdf_part_points_x = np.uint32(np.floor(kdf_width_x/pdf_dx))//2
+    distbn.kdf_width_x = kdf_width_x
+    distbn.n_kdf_part_points_x = np.uint32(np.floor(kdf_width_x/pdf_dx))//2
+    distbn.kdf_width_y = 0.0
+    distbn.n_kdf_part_points_y = 0
         
     vprint(verbose,'histogram...',end='')
     # Histogram
     cl_kernel_fn = 'histogram_univariate'
     histogram_array \
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
-                      info, action='histogram', sl_array=sl_array, 
+                      distbn, action='histogram', sl_array=sl_array, 
                       verbose=verbose)
         
-    vprint(verbose,'kernel filtering...',end='')
+    if do_detrend:
+        x = logx_vec
+        pdf = histogram_array.copy().astype(np.float32)
+        mean = (np.sum(x*pdf)/np.sum(pdf))
+        stddev = np.sqrt(np.sum( (x-mean)**2 * pdf)/np.sum(pdf))
+#         pdebug(np.exp(mean),np.exp(stddev))
+        norm_pdf = norm.pdf(logx_vec,mean,stddev)
+        pdf /= norm_pdf
+        pdf /= np.sum(pdf)
+        pdf *= np.sum(histogram_array)
+        histogram_array = pdf.copy().astype(np.uint32)
+        
+    vprint(verbose,'kernel filtering..',end='')
     # PDF
     cl_kernel_fn = 'pdf_univariate'
     pdf_array \
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
-                      info, action='full_pdf', histogram_array=histogram_array,
+                      distbn, action='full_pdf', histogram_array=histogram_array,
                       verbose=verbose)
     # Done
     vprint(verbose,'done')
     
-    return pdf_array/(sum(pdf_array)*bin_dx)
+    return (pdf_array/(sum(pdf_array)*bin_dx),
+            histogram_array/(sum(histogram_array)*bin_dx))
     
-def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info,
+def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, distbn,
                  action='histogram', is_bivariate=False, 
                  sl_array=None,  histogram_array=None, 
                  partial_pdf_array=None,  pdf_array=None, 
@@ -176,7 +193,7 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info,
         queue (pyopencl.CommandQueue):
         cl_kernel_source (str):
         cl_kernel_fn (str):
-        info (numpy.ndarray):
+        distbn (obj):
         sl_array (numpy.ndarray):
         histogram_array (numpy.ndarray):
         verbose (bool):  
@@ -184,10 +201,10 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info,
     """
         
     # Prepare memory, buffers 
-    n_hist_bins  = info.n_hist_bins
-    n_data       = info.n_data
-    n_pdf_points = info.n_pdf_points
-    info.verbose = verbose
+    n_hist_bins  = distbn.n_hist_bins
+    n_data       = distbn.n_data
+    n_pdf_points = distbn.n_pdf_points
+    distbn.verbose = verbose
         
     if action=='histogram':
         # Compute histogram
@@ -232,7 +249,7 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, info,
         
     local_size = None
     # Compile the CL code
-    compile_options = pocl.set_compile_options(info, cl_kernel_fn, job_type='kde')
+    compile_options = pocl.set_compile_options(distbn, cl_kernel_fn, job_type='kde')
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         program = cl.Program(context, cl_kernel_source).build(options=compile_options)

@@ -77,7 +77,7 @@ def pick_seeds(mask=None, map=None, flag=None, pad=None):
     """
     if mask is None and map is not None:
         seed_point_array \
-            = (np.argwhere(map & flag).astype(np.float32)-pad).copy()
+            = (np.argwhere((map & flag)>0).astype(np.float32)-pad).copy()
     elif mask is not None and map is None:
         seed_point_array = (np.argwhere(~mask).astype(np.float32)-pad).copy()
     else:

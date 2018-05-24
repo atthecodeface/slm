@@ -43,7 +43,7 @@ __kernel void hillslope_lengths(
         __global       float  *traj_length_array
    )
 {
-    // For every mid-slope pixel
+    // For every mid-slope /or/ ridge pixel
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
 #ifdef VERBOSE
@@ -62,37 +62,49 @@ __kernel void hillslope_lengths(
         // This is a "padding" seed, so let's bail
         return;
     }
-    __private uint idx, hillslope_idx, n_steps=0u;
+    __private uint idx, n_steps=0u;
     __private float dl=0.0f, dt=DT_MAX, l_trajectory=0.0f;
     __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
                      vec = seed_point_array[global_id], prev_vec, next_vec;
-    __private bool moved_off_midslope = false;
+    __private bool moved_off = false;
+
+//    printf("len=%g (p=%g) vec=%g,%g\n",traj_length_array[global_id],PIXEL_SIZE,vec[0]*PIXEL_SIZE+2800.0f,vec[1]*PIXEL_SIZE+2800.0f);
 
     // Remember here
     idx = get_array_idx(vec);
-    hillslope_idx = idx;
     // Integrate downstream until a channel pixel (or masked pixel) is reached
     while (((~mapping_array[idx])&IS_THINCHANNEL) && n_steps<MAX_N_STEPS) {
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);
         if (mask_array[idx]) return;
-        if (!moved_off_midslope && ((~mapping_array[idx])&IS_MIDSLOPE)) {
-            // Flag when we've moved off the initial band of mid-slope pixels
-            moved_off_midslope = true;
-        } else if (moved_off_midslope && ((mapping_array[idx])&IS_MIDSLOPE)) {
-            // Bail if we cross another mid-slope pixel, meaning that mid-slope
+        if (!moved_off && ((~mapping_array[idx])&IS_MIDSLOPE)) {
+            // Flag when we've moved off the initial band of mid-slope/ridge pixels
+            moved_off = true;
+        } else if (moved_off && ((mapping_array[idx])&IS_MIDSLOPE)) {
+            // Bail if we cross another mid-slope pixel, meaning that mid-slope/ridge
             //   mapping isn't working for this streamlines
             return;
         }
         if (lengths_runge_kutta_step(&dt, &dl, &l_trajectory, &dxy1_vec, &dxy2_vec,
                                      &vec, &prev_vec,  &next_vec, &n_steps, &idx)) {
-            break;
+#ifdef DEBUG
+            printf("Lengths: R-K breaking\n");
+#endif
+            return;
+//            break;
         }
     }
     if (mapping_array[idx]&IS_THINCHANNEL) {
         // We've reached a (thin) channel, so save this trajectory length
         // No need for atomic here since we're writing to the source pixel
-        traj_length_array[global_id] = l_trajectory;
+        traj_length_array[global_id] = l_trajectory*PIXEL_SIZE;
+//#ifdef DEBUG
+//        vec = seed_point_array[global_id];
+//        vec *= PIXEL_SIZE;
+//        vec += (float2)(550.0f,400.0f);
+//        if (vec[0]>600.0f && vec[0]<700.0f && vec[1]>400.0f && vec[1]<500.0f)
+//            printf("vec=%g,%g   len=%g\n",vec[0],vec[1],traj_length_array[global_id]);
+//#endif
     }
     return;
 }

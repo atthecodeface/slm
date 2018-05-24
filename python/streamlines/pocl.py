@@ -157,21 +157,21 @@ def set_compile_options(info, kernel_def, downup_sign=1,
     if job_type=='kde':
         rtn_list = [
             '-D','KERNEL_{}'.format(kernel_def.upper()),
-            '-D','KDF_BANDWIDTH={}f'.format(info.kdf_bandwidth),
-            '-D','KDF_IS_{}'.format(info.kdf_kernel.upper()),
+            '-D','KDF_BANDWIDTH={}f'.format(info.bandwidth),
+            '-D','KDF_IS_{}'.format(info.kernel.upper()),
             '-D','N_DATA={}u'.format(info.n_data),
             '-D','N_HIST_BINS={}u'.format(info.n_hist_bins),
             '-D','N_PDF_POINTS={}u'.format(info.n_pdf_points),
-            '-D','X_MIN={}f'.format(info.x_min),
-            '-D','X_MAX={}f'.format(info.x_max),
-            '-D','X_RANGE={}f'.format(info.x_range),
+            '-D','X_MIN={}f'.format(info.logx_min),
+            '-D','X_MAX={}f'.format(info.logx_max),
+            '-D','X_RANGE={}f'.format(info.logx_range),
             '-D','BIN_DX={}f'.format(info.bin_dx),
             '-D','PDF_DX={}f'.format(info.pdf_dx),
             '-D','KDF_WIDTH_X={}f'.format(info.kdf_width_x),
             '-D','N_KDF_PART_POINTS_X={}u'.format(info.n_kdf_part_points_x),
-            '-D','Y_MIN={}f'.format(info.y_min),
-            '-D','Y_MAX={}f'.format(info.y_max),
-            '-D','Y_RANGE={}f'.format(info.y_range),
+            '-D','Y_MIN={}f'.format(info.logy_min),
+            '-D','Y_MAX={}f'.format(info.logy_max),
+            '-D','Y_RANGE={}f'.format(info.logy_range),
             '-D','BIN_DY={}f'.format(info.bin_dy),
             '-D','PDF_DY={}f'.format(info.pdf_dy),
             '-D','KDF_WIDTH_Y={}f'.format(info.kdf_width_y),
@@ -349,6 +349,7 @@ def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size,
         chunk_size = n_work_items*(min(
                             int(max_time_per_kernel/(time_per_item*n_work_items)),
                             int(np.ceil(work_left/n_work_items)) ))
+        queue.finish()   
     return cumulative_time
 
 def read_kernel_source(cl_src_path, cl_files):

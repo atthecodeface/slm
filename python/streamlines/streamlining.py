@@ -120,17 +120,17 @@ class Streamlining(Core):
 
         self.state = State(None,imported_parameters)
 
-        try:
-            import git
-            for repo_name, repo_path in (('slm',slm_path),
-                                         ('slmnb',slmnb_path),
-                                         ('slmdata',slmdata_path)):
-                repo = git.Repo(repo_path)
-                git_info = [repo.git.show('--format=%'+s).split('\n')[0] 
-                                for s in ['H','cd','an']]
-                setattr(self.state,repo_name+'_gitinfo',git_info)
-        except:
-            pass
+#         import git
+#         for repo_name, repo_path in (('slm',slm_path),
+#                                      ('slmnb',slmnb_path),
+#                                      ('slmdata',slmdata_path)):
+#             try:
+#                 repo = git.Repo(repo_path)
+#                 git_info = [repo.git.show('--format=%'+s).split('\n')[0] 
+#                                 for s in ['H','cd','an']]
+#                 setattr(self.state,repo_name+'_gitinfo',git_info)
+#             except:
+#                 pass
             
         for item in kwargs.items():
             if item[0]=='do_plot':

@@ -447,6 +447,8 @@ static inline void filter(
     // NB: add one here because histogram left-indexing starts at the right edge
     //     of the bin, aka the edge of the bin to the right ie with bin index plus one
     pdf_col_left = pdf_idx-k_idx+1;
+//    printf("pdf_col_left=%d, pdf_col_rght=%d, k_idx=%d, k_bin_point=%g\n",
+//            pdf_col_left,pdf_col_rght,k_idx,k_bin_point);
     // Step through span of histogram bins for this pdf bin
     for (h_col=0u;h_col<n_bins_per_point;h_col++) {
         // Center of histogram bin

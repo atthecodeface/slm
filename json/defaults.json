@@ -50,44 +50,46 @@
 	},
 
 	"trace": {
+		"subpixel_seed_point_density" : 3,		
+		"jitter_magnitude" : 1.0,
+		
 		"n_trajectory_seed_points" : 1000,
 		"do_shuffle_seed_points" : true,
 		"shuffle_rng_seed" : 1,
-		"subpixel_seed_point_density" : 5,
 		"max_length" : 1000.0,
 		"interchannel_max_n_steps" : 20,
 		"integration_halt_threshold" : 0.01,
 		"trajectory_resolution" : 128,
-		
-		"jitter_magnitude" : 2.5,
-		"WASjitter_magnitude" : 2.9,
 		"integrator_step_factor" : 0.5,
 		"max_integration_step_error" : 0.03,
 		
 		"do_trace_upstream" : true,
 		"do_trace_downstream" : true,
 		
-		"segmentation_threshold" : 30
+		"segmentation_threshold" : 100
 	},
 
 	"analysis": {
         "do_marginal_distbn_dsla":   true,
-        "do_marginal_distbn_usla":   true,
+        "do_marginal_distbn_usla":   false,
         "do_marginal_distbn_dslt":   true,
         "do_marginal_distbn_uslt":   false,
-        "do_marginal_distbn_dslc":   false,
+        "do_marginal_distbn_dslc":   true,
         "do_marginal_distbn_uslc":   false,
         
+		"marginal_distbn_kde_bandwidth" : 1.0,
+		"joint_distbn_kde_bandwidth"    : 1.0,
+
 		"marginal_distbn_kde_method": "opencl",
 		"marginal_distbn_kde_kernel": "epanechnikov",
+		"marginal_distbn_kde_bw_method" : "scott",
+		
 		"joint_distbn_kde_method":    "opencl",
 		"joint_distbn_kde_kernel":    "gaussian",
-		"joint_distbn_kde_bandwidth" : 0.5,
+		
 		"n_hist_bins" :  2048,
 		"n_pdf_points" : 256,
 		
-		"marginal_distbn_kde_bw_method" : "scott",
-		"marginal_distbn_kde_bandwidth" : 1.0,
 		"search_cdf_min" : 0.95,
 		
 		"pdf_sla_min": 1,
@@ -97,7 +99,8 @@
         "do_joint_distribn_usla_uslt": false,
         "do_joint_distribn_uslt_dslt": false,
 		"do_joint_distribn_dsla_usla": false,
-        "do_joint_distribn_dsla_dslc": false,
+        "do_joint_distribn_dsla_dslc": true,
+        "do_joint_distribn_dslt_dslc": true,
         "do_joint_distribn_usla_uslc": false,
         "do_joint_distribn_uslc_dslc": false,
 		"joint_distbn_kde_bw_method" : "scott",
@@ -107,8 +110,11 @@
 	},
 
 	"mapping": {
-		"midslope_filter_sigma" : 3.0,
-		"midslope_threshold" : 0.02,
+		"midslope_filter_sigma" : 5.0,
+		"midslope_threshold" : 0.03,
+		"ridge_filter_sigma" : 4.0,
+		"ridge_threshold" : 0.65,
+		
 		"hillslope_length_median_radius" : 25,
 		"hillslope_length_mean_radius" : 50
 	},
@@ -192,23 +198,23 @@
 		"shuffle_random_seed" : 1,
 		"random_cmap_seed" : 1,
 		
-        "do_plot_marginal_pdf_dsla":   false,
+        "do_plot_marginal_pdf_dsla":   true,
         "do_plot_marginal_pdf_usla":   false,
         "do_plot_marginal_pdf_dslt":   true,
         "do_plot_marginal_pdf_uslt":   false,
-        "do_plot_marginal_pdf_dslc":   false,
+        "do_plot_marginal_pdf_dslc":   true,
         "do_plot_marginal_pdf_uslc":   false,
 		"do_plot_joint_pdf_dsla_usla": false,
-        "do_plot_joint_pdf_dsla_dslt": false,
-        "do_plot_joint_pdf_dslt_dsla": true,
+        "do_plot_joint_pdf_dsla_dslt": true,
+        "do_plot_joint_pdf_dslt_dslc": true,
+        "do_plot_joint_pdf_dslt_dsla": false,
         "do_plot_joint_pdf_usla_uslt": false,
         "do_plot_joint_pdf_uslt_dslt": false,
-        "do_plot_joint_pdf_dsla_dslc": false,
+        "do_plot_joint_pdf_dsla_dslc": true,
         "do_plot_joint_pdf_usla_uslc": false,
         "do_plot_joint_pdf_uslc_dslc": false,
 		"joint_distbn_n_contours" : 25,
-        "joint_distbn_markers" : [["+","crimson",19,4,"w+",17,2,"r.",2,1.0],
-        						  ["x","blue",   16,4,"wx",14,2,"k.",2,0.4]],
+        "joint_distbn_markers" : ["+","crimson",19,4,"w+",17,2,"r.",2,1.0],
         "marginal_distbn_viz_tilt":  0.5,
         "marginal_distbn_viz_scale": 0.5,
         "joint_distbn_viz_tilt":  0.0,
@@ -217,7 +223,7 @@
         "mhsl_pdf_x_stretch" : 1.0,
         "plot_hsl_cmap" : "coolwarm",
         "plot_hsl_do_shaded_relief" : true,
-        "plot_hsl_z_min" : "auto",
+        "plot_hsl_z_min" : 0.0,
         "plot_hsl_z_max" : "auto",
         "plot_hsl_colorbar_aspect" : 0.07,
         "contour_hsl_cmap" : "jet",
