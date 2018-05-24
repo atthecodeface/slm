@@ -70,15 +70,17 @@
 	},
 
 	"analysis": {
-        "do_marginal_distbn_dsla":   true,
-        "do_marginal_distbn_usla":   false,
-        "do_marginal_distbn_dslt":   true,
-        "do_marginal_distbn_uslt":   false,
-        "do_marginal_distbn_dslc":   true,
-        "do_marginal_distbn_uslc":   false,
         
-		"marginal_distbn_kde_bandwidth" : 1.0,
-		"joint_distbn_kde_bandwidth"    : 1.0,
+		"search_cdf_min" : 0.95,
+		"marginal_distbn_kde_bandwidth" : 5.0,
+		"joint_distbn_kde_bandwidth"    : 5.0,
+
+		"n_hist_bins" :  2048,
+		"n_pdf_points" : 256,
+		
+		"pdf_sla_min": 1,
+		"pdf_slc_min": 1,
+		"pdf_slt_min": 1,
 
 		"marginal_distbn_kde_method": "opencl",
 		"marginal_distbn_kde_kernel": "epanechnikov",
@@ -87,14 +89,13 @@
 		"joint_distbn_kde_method":    "opencl",
 		"joint_distbn_kde_kernel":    "gaussian",
 		
-		"n_hist_bins" :  2048,
-		"n_pdf_points" : 256,
-		
-		"search_cdf_min" : 0.95,
-		
-		"pdf_sla_min": 1,
-		"pdf_slc_min": 1,
-		"pdf_slt_min": 1,
+        "do_marginal_distbn_dsla":   true,
+        "do_marginal_distbn_usla":   false,
+        "do_marginal_distbn_dslt":   true,
+        "do_marginal_distbn_uslt":   false,
+        "do_marginal_distbn_dslc":   true,
+        "do_marginal_distbn_uslc":   false,
+        		
         "do_joint_distribn_dsla_dslt": true,
         "do_joint_distribn_usla_uslt": false,
         "do_joint_distribn_uslt_dslt": false,

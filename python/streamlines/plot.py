@@ -1052,7 +1052,6 @@ class Plot(Core):
                               marginal_distbn.channel_threshold_i))
         except:
             dt_max_idx = (min(2*marginal_distbn.mode_i,detrended_pdf.shape[0]))
-        pdebug(dt_min_idx,dt_max_idx)
         detrended_pdf /= max(detrended_pdf[dt_min_idx:dt_max_idx])
         pdf_max = norm_pdf[marginal_distbn.mode_i]
         pdf_ysf_list +=  [ pdf_max ]
@@ -1100,9 +1099,11 @@ class Plot(Core):
         plt.xticks(x_ticks,x_ticks)
         axes.set_xlabel(x_label)
         axes.set_ylabel(y_label)
+        loc = 'upper right'
+#         loc = 'upper left'
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            axes.legend(legend, loc='upper left',fontsize=14,framealpha=0.97)
+            axes.legend(legend, loc=loc,fontsize=14,framealpha=0.97)
 
         axes.set_xlim(xmin=0.99, xmax=x_max*1.001)
         axes.set_ylim(ymin=0,ymax=y_max*1.1)
@@ -1218,13 +1219,13 @@ class Plot(Core):
         if not swap_xy:
             x_mesh = bivariate_distribution.x_mesh
             y_mesh = bivariate_distribution.y_mesh
-            x_vec = bivariate_distribution.x_vec
-            y_vec = bivariate_distribution.y_vec
+            x_vec  = bivariate_distribution.x_mesh[:,0]
+            y_vec  = bivariate_distribution.y_mesh[0,:]
         else:
-            y_mesh = bivariate_distribution.x_mesh
             x_mesh = bivariate_distribution.y_mesh
-            y_vec = bivariate_distribution.x_vec
-            x_vec = bivariate_distribution.y_vec
+            y_mesh = bivariate_distribution.x_mesh
+            x_vec  = bivariate_distribution.y_mesh[0,:]
+            y_vec  = bivariate_distribution.x_mesh[:,0]
         mode_xy = bivariate_distribution.mode_xy
         x_min = x_mesh.min()
         x_max = x_mesh.max()

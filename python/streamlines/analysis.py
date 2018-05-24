@@ -140,10 +140,10 @@ class Univariate_distribution():
                                            logx_vec=self.logx_vec_histogram )
 
     def statistics(self):
-        x = self.logx_vec
+        logx = self.logx_vec
         pdf = self.pdf
-        mean = (np.sum(x*pdf)/np.sum(pdf))
-        variance = (np.sum( (x-mean)**2 * pdf)/np.sum(pdf))
+        mean = (np.sum(logx*pdf)/np.sum(pdf))
+        variance = (np.sum( (logx-mean)**2 * pdf)/np.sum(pdf))
         self.mean = np.exp(mean)
         self.stddev = np.exp(np.sqrt(variance))
         self.var = np.exp(variance)
@@ -260,8 +260,8 @@ class Bivariate_distribution():
 
         self.x_mesh = np.exp(self.logx_mesh)
         self.y_mesh = np.exp(self.logy_mesh)
-        self.x_vec = self.x_mesh[:,0]
-        self.y_vec = self.y_mesh[0,:]
+#         self.x_vec = self.x_mesh[:,0]
+#         self.y_vec = self.y_mesh[0,:]
 
         self.method = method
         self.mode_ij_list = [None,None]

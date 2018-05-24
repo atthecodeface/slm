@@ -14,7 +14,6 @@
 	},
 
 	"analysis": {
-		"joint_distbn_kde_bandwidth" : 0.5
 	},
 	
 	"export": {

@@ -50,26 +50,24 @@ def estimate_bivariate_pdf( distbn ):
     x_range      = distbn.logx_range
     bin_dx       = distbn.bin_dx
     pdf_dx       = distbn.pdf_dx
-    stddev_x     = np.std(sl_array[0,:])
-#     stddev_x     = np.std(sl_array[0,(sl_array[0,:]<np.log(300))])
-#     pdebug('\nstddev x:', np.std(sl_array[0,:]),stddev_x,  distbn.x_min,distbn.x_max)
+    stddev_x     = np.std(sl_array[:,0])
+#     pdebug('\nstd x={0:0.2} lxmin={1:0.2}  lxmax={2:0.2}=>{3:0.0f}'
+#            .format(stddev_x,  distbn.logx_min,distbn.logx_max,
+#                    np.exp(distbn.logx_max)))
     
     y_range      = distbn.logy_range
     bin_dy       = distbn.bin_dy
     pdf_dy       = distbn.pdf_dy
-    stddev_y     = np.std(sl_array[1,:])
-#     pdebug('stddev y:', np.std(sl_array[1,:]),stddev_y,distbn.y_min,distbn.y_max)
+    stddev_y     = np.std(sl_array[:,1])
+#     pdebug('std y={0:0.2} lymin={1:0.2}  lymax={2:0.2}' 
+#            .format(stddev_y,distbn.logy_min,distbn.logy_max))
 
     # Set up kernel filter
-    # Silverman hack turned off
-#     kdf_width_x = 1.06*stddev_x*np.power(n_data,-0.2)*20
-#     kdf_width_y = 1.06*stddev_y*np.power(n_data,-0.2)*20
-    kdf_width_x = stddev_x*bandwidth
-    kdf_width_y = stddev_y*bandwidth
-    distbn.kdf_width_x = kdf_width_x
-    distbn.n_kdf_part_points_x= 2*(np.uint32(np.floor(kdf_width_x/bin_dx))//2)
-    distbn.kdf_width_y = kdf_width_y
-    distbn.n_kdf_part_points_y= 2*(np.uint32(np.floor(kdf_width_y/bin_dy))//2)
+    # Hacked Silverman hack
+    distbn.kdf_width_x = 1.06*stddev_x*np.power(n_data,-0.2)*bandwidth
+    distbn.kdf_width_y = 1.06*stddev_y*np.power(n_data,-0.2)*bandwidth
+    distbn.n_kdf_part_points_x= (np.uint32(np.floor(distbn.kdf_width_x/bin_dx))//2)
+    distbn.n_kdf_part_points_y= (np.uint32(np.floor(distbn.kdf_width_y/bin_dy))//2)
             
     vprint(verbose,'histogram...',end='')
     # Histogram
@@ -106,12 +104,9 @@ def estimate_univariate_pdf( distbn, do_detrend=False, logx_vec=None):
     Compute univariate histogram and subsequent kernel-density smoothed pdf.
     
     Args:
-        distbn.cl_src_path (str):
-        which_cl_platform (int):
-        which_cl_device (int):
         distbn (obj):
-        sl_array (numpy.ndarray):
-        verbose (bool):
+        do_detrend (bool):
+        logx_vec (numpy.ndarray):
     
     Returns:
         
@@ -136,15 +131,18 @@ def estimate_univariate_pdf( distbn, do_detrend=False, logx_vec=None):
     bandwidth    = distbn.bandwidth
     bin_dx       = distbn.bin_dx
     pdf_dx       = distbn.pdf_dx
-    stddev       = np.std(sl_array)
+    stddev_x     = np.std(sl_array)
     
     # Set up kernel filter
-    # Hacked Silverman hack - why is 8x good?
-    kdf_width_x = 1.06*stddev*np.power(n_data,-0.2)*bandwidth*10
-    distbn.kdf_width_x = kdf_width_x
-    distbn.n_kdf_part_points_x = np.uint32(np.floor(kdf_width_x/pdf_dx))//2
+    # Hacked Silverman hack
+    distbn.kdf_width_x = 1.06*stddev_x*np.power(n_data,-0.2)*bandwidth
     distbn.kdf_width_y = 0.0
+    distbn.n_kdf_part_points_x = np.uint32(np.floor(distbn.kdf_width_x/pdf_dx))//2
     distbn.n_kdf_part_points_y = 0
+    
+#     if not do_detrend:
+#         pdebug('\nstd x={0:0.2} lxmin={1:0.2}  lxmax={2:0.2}'
+#            .format(stddev_x,  distbn.logx_min,distbn.logx_max))
         
     vprint(verbose,'histogram...',end='')
     # Histogram
@@ -204,7 +202,6 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, distbn,
     n_hist_bins  = distbn.n_hist_bins
     n_data       = distbn.n_data
     n_pdf_points = distbn.n_pdf_points
-    distbn.verbose = verbose
         
     if action=='histogram':
         # Compute histogram
