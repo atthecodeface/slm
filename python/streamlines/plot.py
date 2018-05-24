@@ -1210,7 +1210,9 @@ class Plot(Core):
                                title=title, x_label=x_label,y_label=y_label)
 
     def plot_joint_pdf(self, bivariate_distribution, mx_distbn=None, my_distbn=None,
-                       fig_name=None, title='', x_label='', y_label='', swap_xy=False,
+                       fig_name=None, title='', swap_xy=False,
+                       x_label='', y_label='', 
+                       xsym_label = r'$L_m^{*}$', ysym_label = r'$\sqrt{A_e^*}$', 
                        do_plot_mode=True):
         """
         TBD
@@ -1253,21 +1255,22 @@ class Plot(Core):
         
         # Plot thresholds
         try:
-            legend += [r'threshold $\sqrt{A_e^*}=$'
-                       +'{:.0f}m'.format(np.round(
+            legend += [r'threshold '+xsym_label
+                       +' = {:.0f}m'.format(np.round(
                         mx_distbn.channel_threshold_x,0))]
-            legend += [r'threshold $L_m^{*}=$'
-                       +'{:.0f}m'.format(np.round(
+            legend += [r'threshold '+ysym_label
+                       +' = {:.0f}m'.format(np.round(
                         my_distbn.channel_threshold_x,0))]
             if not swap_xy:
-                axes.plot(x_vec,x_vec*0+my_distbn.channel_threshold_x,
-                          ':', color='navy',linewidth=3,alpha=1.0)
-                axes.plot(y_vec*0+mx_distbn.channel_threshold_x,y_vec,
+                axes.plot(x_vec*0+mx_distbn.channel_threshold_x,y_vec,
                           '--', color='blue',linewidth=3,alpha=1.0)
-            else:
-                axes.plot(y_vec*0+mx_distbn.channel_threshold_x,y_vec,
+                axes.plot(x_vec,y_vec*0+my_distbn.channel_threshold_x,
                           ':', color='navy',linewidth=3,alpha=1.0)
-                axes.plot(x_vec,x_vec*0+my_distbn.channel_threshold_x,
+            else:
+#                 pdebug('swapping xy')
+                axes.plot(x_vec*0+mx_distbn.channel_threshold_x,y_vec,
+                          ':', color='navy',linewidth=3,alpha=1.0)
+                axes.plot(x_vec,y_vec*0+my_distbn.channel_threshold_x,
                           '--', color='blue',linewidth=3,alpha=1.0)
             do_extras = True  
         except:
@@ -1295,11 +1298,11 @@ class Plot(Core):
             h_grad = 1.0
             if not swap_xy:
                 h_grad_str = '{0:1.1}'.format(h_grad)
-                legend += [r'hillslope $\sqrt{A_e} =$'+'$L_m $']
+                legend += [r'hillslope  $x =$'+'$y $']
                 x = x_vec
             else:
                 h_grad_str = '{0:0.2}'.format(h_grad)
-                legend += [r'channel $L_m =$'+'${A_e}^{1/3}$']
+                legend += [r'hillslope  $x =$'+'$y^{1/3}$']
                 x = x_vec
             axes.plot(x,x*h_grad,'-.', color='crimson',linewidth=2,alpha=0.7)
     
@@ -1308,13 +1311,13 @@ class Plot(Core):
             h_grad = 1.0
             if not swap_xy:
                 h_grad_str = '{0:1.1}'.format(h_grad)
-                legend += [r'channel $\sqrt{A_e} =$'+'$L_m^{3/2} $']
+                legend += [r'channel  $x =$'+'$y^{3/2} $']
                 x = x_vec
                 axes.plot(x,np.power(x,1.5),'--', 
                           color='magenta',linewidth=2,alpha=0.7)
             else:
                 h_grad_str = '{0:0.2}'.format(h_grad)
-                legend += [r'channel $L_m =$'+'${A_e}^{1/3}$']
+                legend += [r'channel  $x =$'+'${y^{1/3}$']
                 x = x_vec
                 axes.plot(x,np.power(x,2.0/3),'--', #np.power(1.5,0.5)*
                           color='magenta',linewidth=2,alpha=0.7)
@@ -1352,6 +1355,8 @@ class Plot(Core):
         title = r'Streamline length distribution$ f(L_{md},L_{mu}$'
         x_label = r'Downstreamline mean length  $L_{md}$ [m]'
         y_label = r'Upstreamline mean length  $L_{mu}$ [m]'
+        xsym_label = r'$L_{md}^{*}$'
+        ysym_label = r'$L_{mu}^{*}$'
         try:
             joint_distbn = self.analysis.jpdf_dsla_usla
             mx_distbn    = self.analysis.mpdf_dsla
@@ -1360,8 +1365,9 @@ class Plot(Core):
             self.print('"'+title+'" not computed: cannot plot')
             return
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
-                            fig_name=fig_name,
-                            title=title, x_label=x_label, y_label=y_label)
+                            fig_name=fig_name, 
+                            title=title, x_label=x_label, y_label=y_label,
+                            xsym_label=xsym_label, ysym_label=ysym_label)
             
     def plot_joint_pdf_usla_uslt(self):
         """
@@ -1371,6 +1377,8 @@ class Plot(Core):
         title = r'Upstreamline length distribution $f(\log(L_{mu}),\log\sqrt{A_{eu}})$ '
         x_label = r'Upstreamline mean length  $L_{mu}$ [m]'
         y_label = r'Upstreamline root equiv area  $\sqrt{A_{eu}}$ [m]'
+        xsym_label = r'$L_{mu}^{*}$'
+        ysym_label = r'$\sqrt{A_{eu}^*}$'
         try:
             joint_distbn = self.analysis.jpdf_usla_uslt
             mx_distbn    = self.analysis.mpdf_usla
@@ -1381,6 +1389,7 @@ class Plot(Core):
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
                             fig_name=fig_name,
                             title=title, x_label=x_label, y_label=y_label,
+                            xsym_label=xsym_label, ysym_label=ysym_label,
                             do_plot_mode=True)
 
     def plot_joint_pdf_dsla_dslt(self):
@@ -1391,6 +1400,8 @@ class Plot(Core):
         title = r'Downstreamline length distribution $f(\log(L_{md}),\log\sqrt{A_{ed}})$'
         x_label = r'Downstreamline mean length  $L_{md}$ [m]'
         y_label = r'Downstreamline root equiv area  $\sqrt{A_{ed}}$ [m]'
+        xsym_label = r'$L_{md}^{*}$'
+        ysym_label = r'$\sqrt{A_{ed}^*}$'
         try:
             joint_distbn = self.analysis.jpdf_dsla_dslt
             mx_distbn    = self.analysis.mpdf_dsla
@@ -1401,6 +1412,7 @@ class Plot(Core):
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
                             fig_name=fig_name, swap_xy=False,
                             title=title, x_label=x_label, y_label=y_label,
+                            xsym_label=xsym_label, ysym_label=ysym_label,
                             do_plot_mode=True)
 
     def plot_joint_pdf_dslt_dsla(self):
@@ -1411,6 +1423,8 @@ class Plot(Core):
         title = r'Downstreamline length distribution $f(\log\sqrt{A_{ed}},\log(L_{md}))$'
         x_label = r'Downstreamline root equiv area  $\sqrt{A_{ed}}$ [m]'
         y_label = r'Downstreamline mean length  $L_{md}$ [m]'
+        xsym_label = r'$\sqrt{A_{ed}^*}$'
+        ysym_label = r'$L_{md}^{*}$'
         try:
             joint_distbn = self.analysis.jpdf_dsla_dslt
             mx_distbn    = self.analysis.mpdf_dsla
@@ -1421,6 +1435,7 @@ class Plot(Core):
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
                             fig_name=fig_name, swap_xy=True,
                             title=title, x_label=x_label, y_label=y_label,
+                            xsym_label=xsym_label, ysym_label=ysym_label,
                             do_plot_mode=True)
 
     def plot_joint_pdf_uslt_dslt(self):
@@ -1431,6 +1446,8 @@ class Plot(Core):
         title = r'Streamline root equiv area distribution $f\sqrt{A_{eu}},\sqrt{A_{ed}}$'
         x_label = r'Upstreamline root equiv area  $\sqrt{A_{eu}}$ [m]'
         y_label = r'Downstreamline root equiv area  $\sqrt{A_{ed}}$ [m]'
+        xsym_label = r'$\sqrt{A_{eu}^*}$'
+        ysym_label = r'$\sqrt{A_{ed}^*}$'
         try:
             joint_distbn = self.analysis.jpdf_uslt_dslt
             mx_distbn    = self.analysis.mpdf_uslt
@@ -1440,7 +1457,8 @@ class Plot(Core):
             return
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
                             fig_name=fig_name,
-                            title=title, x_label=x_label, y_label=y_label)
+                            title=title, x_label=x_label, y_label=y_label,
+                            xsym_label=xsym_label, ysym_label=ysym_label)
 
     def plot_joint_pdf_usla_uslc(self):
         """
@@ -1450,6 +1468,8 @@ class Plot(Core):
         title = r'Upstreamline distribution $f(\log(L_{mu}),\log(C_{u}))$'
         x_label = r'Upstreamline mean length  $L_{mu}$ [m]'
         y_label = r'Upstreamline concentration  $C_{u}$ [lines/m]'
+        xsym_label = r'$L_{mu}^{*}$'
+        ysym_label = r'$C_{u}^*$'
         try:
             joint_distbn = self.analysis.jpdf_usla_uslc
             mx_distbn    = self.analysis.mpdf_usla
@@ -1460,6 +1480,7 @@ class Plot(Core):
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
                             fig_name=fig_name,
                             title=title, x_label=x_label, y_label=y_label,
+                            xsym_label=xsym_label, ysym_label=ysym_label,
                             do_plot_mode=True)
 
     def plot_joint_pdf_dsla_dslc(self):
@@ -1470,6 +1491,8 @@ class Plot(Core):
         title = r'Downstreamline distribution $f(\log(L_{md}),\log(C_{d}))$'
         x_label = r'Downstreamline mean length  $L_{md}$ [m]'
         y_label = r'Downstreamline concentration  $C_{d}$ [lines/m]'
+        xsym_label = r'$L_{md}^{*}$'
+        ysym_label = r'$C_{d}^*$'
         try:
             joint_distbn = self.analysis.jpdf_dsla_dslc
             mx_distbn    = self.analysis.mpdf_dsla
@@ -1480,6 +1503,7 @@ class Plot(Core):
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
                             fig_name=fig_name,
                             title=title, x_label=x_label, y_label=y_label,
+                            xsym_label=xsym_label, ysym_label=ysym_label,
                             do_plot_mode=True)
 
     def plot_joint_pdf_dslt_dslc(self):
@@ -1490,6 +1514,8 @@ class Plot(Core):
         title = r'Downstreamline distribution $f(\sqrt{A_{ed}},\log(C_{d}))$'
         x_label = r'Downstreamline root equiv area  $\sqrt{A_{ed}}$ [m]'
         y_label = r'Downstreamline concentration  $C_{d}$ [lines/m]'
+        xsym_label = r'$\sqrt{A_{ed}^*}$'
+        ysym_label = r'$C_{d}^*$'
         try:
             joint_distbn = self.analysis.jpdf_dslt_dslc
             mx_distbn    = self.analysis.mpdf_dslt
@@ -1500,6 +1526,7 @@ class Plot(Core):
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
                             fig_name=fig_name,
                             title=title, x_label=x_label, y_label=y_label,
+                            xsym_label=xsym_label, ysym_label=ysym_label,
                             do_plot_mode=True)
 
     def plot_joint_pdf_uslc_dslc(self):
@@ -1510,6 +1537,8 @@ class Plot(Core):
         title = r'Streamline concentration distribution $f(\log(C_{u}),\log(C_{d}))$'
         x_label = r'Upstreamline concentration  $C_{u}$ [lines/m]'
         y_label = r'Downstreamline concentration  $C_{d}$ [lines/m]'
+        xsym_label = r'$C_{u}^*$'
+        ysym_label = r'$C_{d}^*$'
         try:
             joint_distbn = self.analysis.jpdf_uslc_dslc
             mx_distbn    = self.analysis.mpdf_uslc
@@ -1519,7 +1548,8 @@ class Plot(Core):
             return
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
                             fig_name=fig_name,
-                            title=title, x_label=x_label, y_label=y_label)
+                            title=title, x_label=x_label, y_label=y_label,
+                            xsym_label=xsym_label, ysym_label=ysym_label)
 
     @staticmethod
     def _choose_ticks(x_min,x_max):
