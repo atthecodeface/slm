@@ -271,15 +271,21 @@ __kernel void subsegment_channel_edges(
         x =  idx/NY_PADDED;
         y =  idx%NY_PADDED;
 
-        // "Scan" left-side thin-channel-adjacent pixels
-        //    until another thin-channel pixel is reached - then stop
+        // "Scan" progressively left nbr pixels to ensure we are on the left flank
         n_turns = 0;
         left_idx = idx;
         dx = (char)(x-prev_x);
         dy = (char)(y-prev_y);
-        // Progressively locate the pixel 45deg CCW of the pixel[idx]
-        //   using the vector pixel[prev_idx] -> pixel[idx] to define "N"
-        // Start with NW, then W, then SW, until n_turns==4 aka to S
+        // Step across nbrhood pixels by repeatedly rotating the vector
+        // (dx,dy) = pixel[prev_idx] -> pixel[idx] (which defines "N").
+        // Start with the W nbr, stop at the NE nbr.
+        // If a thin channel pixel nbr is reached, check if the rotated vector
+        //   points downstream - if so, flag DO NOT label left here
+        //   - otherwise, break and continue on to left-flank labeling.
+        // This deals with the corner case in which the downstream pixel sequence
+        //   has a nasty "bump" turning sharp R then sharp L,
+        //   i.e., when this downstream-vector rotation finds itself on the R flank
+        //   not the L flank as required here.
         do_label_left = true;
         while (left_idx!=prev_idx && ++n_turns<=7) {
             left_idx = rotate_left(prev_x,prev_y,&dx,&dy);
@@ -299,9 +305,11 @@ __kernel void subsegment_channel_edges(
             left_idx = idx;
             dx = (char)(x-prev_x);
             dy = (char)(y-prev_y);
-            // Progressively locate the pixel 45deg CCW of the pixel[idx]
-            //   using the vector pixel[prev_idx] -> pixel[idx] to define "N"
-            // Start with NW, then W, then SW, until n_turns==4 aka to S
+            // Step across nbrhood pixels by repeatedly rotating the vector
+            // (dx,dy) = pixel[prev_idx] -> pixel[idx] (which defines "N").
+            // Start with the W nbr, stop at the S nbr.
+            // Break if a thin channel pixel nbr is reached.
+            // Label as left flank if not a thin channel pixel.
             while (left_idx!=prev_idx && ++n_turns<=4) {
                 left_idx = rotate_left(prev_x,prev_y,&dx,&dy);
                 if (n_turns>=2 && !mask_array[left_idx]) {
