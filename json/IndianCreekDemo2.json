@@ -10,9 +10,6 @@
 		"do_basin_masking" : true
 	},
 
-	"analysis": {
-	},
-
 	"plot": {
         "mhsl_pdf_x_stretch" : 1.0,
         "contour_hsl_n_contours" : 6

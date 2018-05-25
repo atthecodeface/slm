@@ -8,9 +8,6 @@
 		"do_basin_masking" : false
 	},
 
-	"analysis": {
-	},
-
 	"plot": {
         "mhsl_pdf_x_stretch" : 0.8,
         "plot_hsl_colorbar_aspect" : 0.04,

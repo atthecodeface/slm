@@ -132,6 +132,8 @@ class Mapping(Core):
                           uv_array      = self.preprocess.uv_array,
                           mapping_array = self.mapping_array )  
         self.verbose = self.state.verbose
+        self.info = Info(self.trace, mapping=self)
+
         self.print('done')    
             
     def map_channels(self):
@@ -139,18 +141,17 @@ class Mapping(Core):
         slt_threshold = self.analysis.mpdf_dslt.channel_threshold_x
         # Designate channel pixels according to dslt pdf analysis
         self.data.mapping_array[  (self.trace.slt_array[:,:,0]>=slt_threshold)
-                                & (self.trace.slt_array[:,:,0]>=self.trace.slc_array[:,:,0])
-                                ] = self.trace.is_channel                                
+                        & (self.trace.slt_array[:,:,0]*2>=self.trace.slc_array[:,:,0])
+                                ] = self.info.is_channel                                
         self.print('done')  
 
     def connect_channel_pixels(self):
-        connect.connect_channel_pixels(self.cl_state, Info(self.trace), self.data,
-                                       self.verbose)
+        connect.connect_channel_pixels(self.cl_state,self.info,self.data,self.verbose)
         
     def thin_channels(self):
         self.print('Thinning channels...',end='')  
-        is_channel = self.trace.is_channel
-        is_interchannel = self.trace.is_interchannel
+        is_channel = self.info.is_channel
+        is_interchannel = self.info.is_interchannel
         mapping_array = self.data.mapping_array
         channel_array = np.zeros_like(mapping_array, dtype=np.bool)
         channel_array[  ((mapping_array & is_channel)==is_channel)
@@ -158,66 +159,67 @@ class Mapping(Core):
                      ] = True
         self.print('skeletonizing...',end='')  
         skeleton_array = skeletonize(medial_axis(channel_array))
-        mapping_array[skeleton_array] |= self.trace.is_thinchannel
+        mapping_array[skeleton_array] |= self.info.is_thinchannel
         self.print('done')  
 
     def map_channel_heads(self):
-        channelheads.map_channel_heads(self.cl_state, Info(self.trace), self.data, 
+        channelheads.map_channel_heads(self.cl_state, self.info, self.data, 
                                        self.verbose)
         mapping_array = self.data.mapping_array
-        channelheads.prune_channel_heads(self.cl_state, Info(self.trace), self.data, 
+        channelheads.prune_channel_heads(self.cl_state, self.info, self.data, 
                                          self.verbose)
         
     def count_downchannels(self):
         self.data.count_array = np.zeros_like(self.mapping_array, dtype=np.uint32)
         self.data.link_array  = np.zeros_like(self.mapping_array, dtype=np.uint32)
-        countlink.count_downchannels(self.cl_state, Info(self.trace), self.data, 
+        countlink.count_downchannels(self.cl_state, self.info, self.data, 
                                      self.verbose)
         
     def flag_downchannels(self):
-        countlink.flag_downchannels(self.cl_state, Info(self.trace), self.data,
+        countlink.flag_downchannels(self.cl_state, self.info, self.data,
                                     self.verbose)
 
     def label_confluences(self):
         self.data.dn_slt_array = self.trace.slt_array[:,:,0].copy()
-        label.label_confluences(self.cl_state, Info(self.trace), self.data, 
-                                self.verbose)
-        # Two passes to try to eliminate all 'parasite' streamlets
-        countlink.flag_downchannels(self.cl_state, Info(self.trace), self.data,
+        label.label_confluences(self.cl_state, self.info, self.data, self.verbose)
+        # Three passes to try to eliminate all 'parasite' streamlets
+        countlink.flag_downchannels(self.cl_state, self.info, self.data,
                                     self.verbose)
-        countlink.flag_downchannels(self.cl_state, Info(self.trace), self.data,
+        countlink.flag_downchannels(self.cl_state, self.info, self.data,
                                     self.verbose, do_reset_count=False)
-        # 
-        countlink.flag_downchannels(self.cl_state, Info(self.trace), self.data,
+        countlink.flag_downchannels(self.cl_state, self.info, self.data,
                                     self.verbose, do_reset_count=False)
+        
 
     def segment_downchannels(self):
         self.data.label_array = np.zeros_like(self.mapping_array, dtype=np.uint32)
-        self.n_segments = segment.segment_channels(self.cl_state, Info(self.trace), 
+        self.n_segments = segment.segment_channels(self.cl_state, self.info, 
                                                    self.data, self.verbose)
         # Save the channel-only segment labeling for now
         self.data.channel_label_array = self.data.label_array.copy().astype(np.uint32)
-        is_majorconfluence = self.trace.is_majorconfluence
-#         pdebug('Major confluences',self.label_array[(~self.geodata.basin_mask_array) 
-#                  & ((self.mapping_array & is_majorconfluence)==is_majorconfluence)])
-#         pdebug('Unique labels:',np.unique(self.label_array))
+        is_majorconfluence = self.info.is_majorconfluence
         
+#         thinchannel_array = np.zeros_like(self.mapping_array, dtype=np.bool)
+#         thinchannel_array[(self.mapping_array & self.info.is_thinchannel)!=0] |= True
+#         skeleton_thinchannel_array = skeletonize(thinchannel_array)
+#         self.mapping_array[(self.mapping_array & self.info.is_thinchannel)!=0] \
+#             ^= self.info.is_thinchannel
+#         self.mapping_array[skeleton_thinchannel_array] |= self.info.is_thinchannel        
+
     def link_hillslopes(self):
-        linkhillslopes.link_hillslopes(self.cl_state, Info(self.trace), self.data,
+        linkhillslopes.link_hillslopes(self.cl_state, self.info, self.data,
                                        self.verbose)
 
     def segment_hillslopes(self):
-        segment.segment_hillslopes(self.cl_state, Info(self.trace), self.data, 
+        segment.segment_hillslopes(self.cl_state, self.info, self.data, 
                                    self.verbose )
 
     def subsegment_flanks(self):
-        segment.subsegment_flanks(self.cl_state, Info(self.trace), self.data, 
-                                  self.verbose)
+        segment.subsegment_flanks(self.cl_state, self.info, self.data, self.verbose)
         self.data.label_array = self.data.label_array.astype(dtype=np.int32)
         self.data.label_array[self.data.label_array<0] \
             = - (  self.data.label_array[self.data.label_array<0] 
-                 + self.trace.left_flank_addition )
-        is_leftflank = self.trace.is_leftflank
+                 + self.info.left_flank_addition )
         self.label_array = self.data.label_array
         
     def map_midslope(self):
@@ -233,11 +235,11 @@ class Mapping(Core):
 #         dilation_structure = generate_binary_structure(2, 2)
 #         fat_midslope_array = binary_dilation(midslope_array, 
 #                                              structure=dilation_structure, iterations=1)
-        filled_midslope_array = binary_fill_holes(midslope_array)
-        skeleton_midslope_array = skeletonize(filled_midslope_array)
+#         filled_midslope_array = binary_fill_holes(midslope_array)
+        skeleton_midslope_array = skeletonize(midslope_array)
 #         fat_midslope_array = binary_dilation(skeleton_midslope_array, 
 #                                              structure=dilation_structure, iterations=1)
-        self.data.mapping_array[skeleton_midslope_array] |= self.trace.is_midslope
+        self.data.mapping_array[skeleton_midslope_array] |= self.info.is_midslope
         self.print('done')  
 
     def map_ridges(self):
@@ -256,12 +258,14 @@ class Mapping(Core):
         skeleton_ridge_array = skeletonize(filled_ridge_array)
 #         fat_ridge_array = binary_dilation(skeleton_ridge_array, 
 #                                           structure=dilation_structure, iterations=1)
-        self.data.mapping_array[skeleton_ridge_array] |= self.trace.is_ridge
+        self.data.mapping_array[skeleton_ridge_array] |= self.info.is_ridge
         self.print('done')  
 
     def measure_hillslope_lengths(self):
-        flag = self.trace.is_midslope
-#         flag = self.trace.is_ridge
+        if self.do_map_hsl_from_ridges:
+            flag = self.info.is_ridge
+        else:
+            flag = self.info.is_midslope
         self.data.traj_label_array = (self.data.label_array[
                                        ((self.data.mapping_array & flag)>0)
                                        &   (~self.data.mask_array)
@@ -270,8 +274,7 @@ class Mapping(Core):
         self.data.traj_length_array \
             = np.zeros_like(self.data.traj_label_array,dtype=np.float32)
         
-        lengths.hillslope_lengths(self.cl_state, Info(self.trace), self.data, 
-                                  self.verbose)
+        lengths.hillslope_lengths(self.cl_state, self.info, self.data, self.verbose)
 
         unique_labels = np.unique(self.data.traj_label_array)
         self.hillslope_labels \

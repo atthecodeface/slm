@@ -16,7 +16,7 @@ __all__ = ['hillslope_lengths']
 
 pdebug = print
 
-def hillslope_lengths( cl_state, info, data, verbose ): 
+def hillslope_lengths( cl_state, info, data, verbose, do_use_ridges=False ): 
     """
     Measure mean (half) hillslope lengths.
     
@@ -27,7 +27,7 @@ def hillslope_lengths( cl_state, info, data, verbose ):
         verbose (bool):
         
     """
-    vprint(verbose,'Measuring hillslope lengths...')
+    vprint(verbose,'Measuring hillslope lengths...',end='')
     
     # Prepare CL essentials
     cl_state.kernel_source \
@@ -42,7 +42,12 @@ def hillslope_lengths( cl_state, info, data, verbose ):
     is_midslope = info.is_midslope
     is_ridge    = info.is_ridge
     pixel_size  = info.pixel_size
-    flag        = is_midslope
+    if do_use_ridges:
+        flag    = is_ridge
+        vprint(verbose,'from ridges...')
+    else:
+        flag    = is_midslope
+        vprint(verbose,'from midslopes...')
     seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
                                   flag=flag, pad=pad)
 #     pdebug(seed_point_array*2+np.array([2800,2800]))
@@ -61,8 +66,8 @@ def hillslope_lengths( cl_state, info, data, verbose ):
     cl_state.kernel_fn = 'hillslope_lengths'
     pocl.gpu_compute(cl_state, info, array_dict, verbose)
     
-    # Scale by two because we measured only half lengths (midslope only)
-    if flag==is_midslope:
+    # Scale by two if we measured only half hillslope lengths from midslope pixels
+    if not do_use_ridges:
         data.traj_length_array *= 2.0
     # Done
     vprint(verbose,'...done')  

@@ -80,17 +80,20 @@ __kernel void segment_downchannels(
     //    or a masked pixel is reached
     while (!mask_array[idx] && prev_idx!=idx
             && (mapping_array[idx] & IS_SUBSEGMENTHEAD)==0) {
-        if (  ((mapping_array[idx]) & IS_MAJORCONFLUENCE)
-           && ((mapping_array[prev_idx]) & IS_MAJORINFLOW)
-           && (count_array[idx]>=segmentation_counter) ) {
-            segment_label = idx;
-            segmentation_counter += SEGMENTATION_THRESHOLD;
-//            if ((mapping_array[prev_idx]&IS_SUBSEGMENTHEAD)!=0)
-                atomic_or(&mapping_array[idx],IS_SUBSEGMENTHEAD);
-        } else if ( count_array[idx]>=segmentation_counter+SEGMENTATION_THRESHOLD/2 ) {
+//        if (  0 & ((mapping_array[idx]) & IS_MAJORCONFLUENCE)
+//              && ((mapping_array[prev_idx]) & IS_MAJORINFLOW)
+//              && (count_array[idx]>=segmentation_counter) ) {
+//            segment_label = idx;
+//            segmentation_counter += SEGMENTATION_THRESHOLD;
+////            if ((mapping_array[prev_idx]&IS_SUBSEGMENTHEAD)!=0)
+//                atomic_or(&mapping_array[idx],IS_SUBSEGMENTHEAD);
+//        } else
+        if (   (count_array[idx]>=segmentation_counter+SEGMENTATION_THRESHOLD/2)
+//            && ((~mapping_array[idx]) & IS_MAJORCONFLUENCE)
+//            && ((~mapping_array[prev_idx]) & IS_MAJORINFLOW)
+            ) {
                 segment_label = idx;
                 segmentation_counter = count_array[idx]+SEGMENTATION_THRESHOLD;
-//                if ((mapping_array[prev_idx]&IS_SUBSEGMENTHEAD)!=0)
                     atomic_or(&mapping_array[idx],IS_SUBSEGMENTHEAD);
         }
         // Label here with the current segment's label
@@ -189,6 +192,16 @@ __kernel void segment_hillslopes(
 ///
 /// TBD
 ///
+static inline uint rotate_left(uint prev_x, uint prev_y, char *dx, char *dy) {
+    __private char rotated_dx=*dx-*dy, rotated_dy=*dx+*dy;
+    *dx = rotated_dx/clamp((char)abs(rotated_dx),(char)1,(char)2);
+    *dy = rotated_dy/clamp((char)abs(rotated_dy),(char)1,(char)2);
+    return (prev_x+*dx)*NY_PADDED + (prev_y+*dy);
+}
+
+///
+/// TBD
+///
 /// Compiled if KERNEL_SUBSEGMENT_CHANNEL_EDGES is defined.
 ///
 /// @param[in]     seed_point_array: list of initial streamline point vectors,
@@ -206,6 +219,9 @@ __kernel void segment_hillslopes(
 /// @returns void
 ///
 /// @ingroup segmentation
+
+/// @bugs Corner case problem where thin channel seq has a fat kink, leading
+///       to mislabeling of left flank pixel & thin hillslope sl among right flank zone
 ///
 __kernel void subsegment_channel_edges(
         __global const float2 *seed_point_array,
@@ -238,8 +254,9 @@ __kernel void subsegment_channel_edges(
     }
     __private uint idx, prev_idx, left_idx, segment_label=0u,
             prev_x,prev_y, x,y, n_turns, n_steps;
-    __private char dx,dy, rotated_dx,rotated_dy;
+    __private char dx,dy;
     __private float2 vec = seed_point_array[global_id];
+    __private bool do_label_left;
 
     // Remember here
     prev_idx = get_array_idx(vec);
@@ -249,35 +266,51 @@ __kernel void subsegment_channel_edges(
     // Even if this pixel is masked, we still need to try to subsegment
     n_steps = 0u;
     while (prev_idx!=idx && n_steps++<MAX_N_STEPS) {
-
         prev_x = prev_idx/NY_PADDED;
         prev_y = prev_idx%NY_PADDED;
         x =  idx/NY_PADDED;
         y =  idx%NY_PADDED;
+
+        // "Scan" left-side thin-channel-adjacent pixels
+        //    until another thin-channel pixel is reached - then stop
+        n_turns = 0;
+        left_idx = idx;
         dx = (char)(x-prev_x);
         dy = (char)(y-prev_y);
-
-        // Rotate 45deg anticlockwise repeatedly until a non-fillable pixel is reached
-        n_turns = 0;
-        while (left_idx!=prev_idx && ++n_turns<=4) {
-            rotated_dx = dx-dy;
-            rotated_dy = dx+dy;
-            rotated_dx = rotated_dx/clamp((char)abs(rotated_dx),(char)1,(char)2);
-            rotated_dy = rotated_dy/clamp((char)abs(rotated_dy),(char)1,(char)2);
-            dx = rotated_dx;
-            dy = rotated_dy;
-            left_idx = (prev_x+rotated_dx)*NY_PADDED + (prev_y+rotated_dy);
-            if (!mask_array[left_idx] && label_array[left_idx]==segment_label) {
-                if ((mapping_array[left_idx]) & IS_THINCHANNEL) {
-                    if (n_turns>1) {
-                        break;
+        // Progressively locate the pixel 45deg CCW of the pixel[idx]
+        //   using the vector pixel[prev_idx] -> pixel[idx] to define "N"
+        // Start with NW, then W, then SW, until n_turns==4 aka to S
+        do_label_left = true;
+        while (left_idx!=prev_idx && ++n_turns<=7) {
+            left_idx = rotate_left(prev_x,prev_y,&dx,&dy);
+            if (n_turns>=2 && !mask_array[left_idx]
+                          && ((mapping_array[left_idx]) & IS_THINCHANNEL)) {
+                if (left_idx==link_array[idx]) {
+                    do_label_left = false;
+//                    printf("don't label left\n");
+                }
+                break;
+            }
+        }
+        if (do_label_left) {
+            // "Scan" left-side thin-channel-adjacent pixels and label as "left flank"
+            //    until another thin-channel pixel is reached in the scan - then stop
+            n_turns = 0;
+            left_idx = idx;
+            dx = (char)(x-prev_x);
+            dy = (char)(y-prev_y);
+            // Progressively locate the pixel 45deg CCW of the pixel[idx]
+            //   using the vector pixel[prev_idx] -> pixel[idx] to define "N"
+            // Start with NW, then W, then SW, until n_turns==4 aka to S
+            while (left_idx!=prev_idx && ++n_turns<=4) {
+                left_idx = rotate_left(prev_x,prev_y,&dx,&dy);
+                if (n_turns>=2 && !mask_array[left_idx]) {
+                    if ((mapping_array[left_idx]) & IS_THINCHANNEL) {
+                            break;
+                    } else {
+                        atomic_or(&mapping_array[left_idx],IS_LEFTFLANK);
+                        atomic_or(&label_array[left_idx],LEFT_FLANK_ADDITION);
                     }
-                } else {
-                    atomic_or(&mapping_array[left_idx],IS_LEFTFLANK);
-//#ifdef DEBUG
-//                    printf("labeling left flank addition @ %d,%d\n",x,y);
-//#endif
-                    atomic_or(&label_array[left_idx],LEFT_FLANK_ADDITION);
                 }
             }
         }

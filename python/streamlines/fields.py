@@ -145,7 +145,8 @@ class Fields():
         # slt:  =>  sqrt(area)
         
         self.data.slc_array \
-            = np.power(self.data.slc_array/info.subpixel_seed_point_density**2,2/3)
+            = np.sqrt(2.0)*np.power(self.data.slc_array
+                                    /info.subpixel_seed_point_density**2,2/3)
     
         # Done
         vprint(self.verbose,'...done')

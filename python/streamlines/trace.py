@@ -32,7 +32,7 @@ class Data():
         self.traj_stats_df       = traj_stats_df
         
 class Info():    
-    def __init__(self, trace, n_seed_points=None):
+    def __init__(self, trace, mapping=None, n_seed_points=None):
         state = trace.state
         geodata = trace.geodata
         if trace.max_length==np.float32(0.0):
@@ -95,25 +95,34 @@ class Info():
         self.subpixel_seed_step =       np.float32(subpixel_seed_step)
         self.jitter_magnitude =         np.float32(trace.jitter_magnitude)
         self.interchannel_max_n_steps = np.uint32(interchannel_max_n_steps)
-        self.segmentation_threshold =   np.uint32(trace.segmentation_threshold)
-        self.left_flank_addition = np.uint32(2147483648)
-        self.is_channel =          np.uint32(trace.is_channel)
-        self.is_thinchannel =      np.uint32(trace.is_thinchannel)
-        self.is_interchannel =     np.uint32(trace.is_interchannel)
-        self.is_channelhead =      np.uint32(trace.is_channelhead)
-        self.is_channeltail =      np.uint32(trace.is_channeltail)
-        self.is_majorconfluence =  np.uint32(trace.is_majorconfluence)
-        self.is_minorconfluence =  np.uint32(trace.is_minorconfluence)
-        self.is_majorinflow =      np.uint32(trace.is_majorinflow)
-        self.is_minorinflow =      np.uint32(trace.is_minorinflow)
-        self.is_leftflank =        np.uint32(trace.is_leftflank)
-        self.is_rightflank =       np.uint32(trace.is_rightflank)
-        self.is_midslope =         np.uint32(trace.is_midslope)
-        self.is_ridge =            np.uint32(trace.is_ridge)
-        self.was_channelhead =     np.uint32(trace.was_channelhead)
-        self.is_subsegmenthead =   np.uint32(trace.is_subsegmenthead)
-        self.is_loop =             np.uint32(trace.is_loop)
-        self.is_blockage =         np.uint32(trace.is_blockage)
+        if mapping is not None:
+            self.segmentation_threshold = np.uint32(mapping.segmentation_threshold)
+            self.do_map_hsl_from_ridges = mapping.do_map_hsl_from_ridges
+        else:
+            self.segmentation_threshold = np.uint32(0)
+            self.do_map_hsl_from_ridges = False
+        
+        self.left_flank_addition = 2147483648
+        flags = [
+            'is_channel',         # 1
+            'is_thinchannel',     # 2
+            'is_interchannel',    # 4
+            'is_channelhead',     # 8
+            'is_channeltail',     # 16
+            'is_majorconfluence', # 32
+            'is_minorconfluence', # 64
+            'is_majorinflow',     # 128
+            'is_minorinflow',     # 256
+            'is_leftflank',       # 512
+            'is_rightflank',      # 1024
+            'is_midslope',        # 2048
+            'is_ridge',           # 4028
+            'was_channelhead',    # 8196
+            'is_subsegmenthead',  # 16384
+            'is_loop',            # 32768
+            'is_blockage'         # 65536
+            ]
+        [setattr(self,flag,np.uint(2**idx)) for idx,flag in enumerate(flags)]
 
 class Trace(Core):
     """
@@ -151,27 +160,6 @@ class Trace(Core):
         self.preprocess = preprocess
         self.mapping_array = None
         self.seed_point_array = None
-        self.left_flank_addition = 2147483648
-        flags = [
-            'is_channel',         # 1
-            'is_thinchannel',     # 2
-            'is_interchannel',    # 4
-            'is_channelhead',     # 8
-            'is_channeltail',     # 16
-            'is_majorconfluence', # 32
-            'is_minorconfluence', # 64
-            'is_majorinflow',     # 128
-            'is_minorinflow',     # 256
-            'is_leftflank',       # 512
-            'is_rightflank',      # 1024
-            'is_midslope',        # 2048
-            'is_ridge',           # 4028
-            'was_channelhead',    # 8196
-            'is_subsegmenthead',  # 16384
-            'is_loop',            # 32768
-            'is_blockage'         # 65536
-            ]
-        [setattr(self,flag,2**idx) for idx,flag in enumerate(flags)]
         
     def do(self):
         """

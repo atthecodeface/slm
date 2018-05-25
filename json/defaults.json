@@ -64,14 +64,13 @@
 		"max_integration_step_error" : 0.03,
 		
 		"do_trace_upstream" : true,
-		"do_trace_downstream" : true,
-		
-		"segmentation_threshold" : 100
+		"do_trace_downstream" : true
 	},
 
 	"analysis": {
         
 		"search_cdf_min" : 0.95,
+		"search_cdf_max" : 0.995,
 		"marginal_distbn_kde_bandwidth" : 5.0,
 		"joint_distbn_kde_bandwidth"    : 5.0,
 
@@ -111,11 +110,13 @@
 	},
 
 	"mapping": {
+		"segmentation_threshold" : 500,
+		
 		"midslope_filter_sigma" : 5.0,
 		"midslope_threshold" : 0.03,
 		"ridge_filter_sigma" : 4.0,
 		"ridge_threshold" : 0.65,
-		
+		"do_map_hsl_from_ridges" : false,
 		"hillslope_length_median_radius" : 25,
 		"hillslope_length_mean_radius" : 50
 	},

@@ -26,7 +26,7 @@ class Univariate_distribution():
     def __init__(self, logx_array=None, logy_array=None, pixel_size=None,
                  method='opencl', 
                  n_hist_bins=2048, n_pdf_points=256, 
-                 search_cdf_min=0.95,
+                 search_cdf_min=0.95, search_cdf_max=0.99,
                  logx_min=None, logy_min=None, logx_max=None, logy_max=None,
                  cl_src_path=None, cl_platform=None, cl_device=None,
                  debug=False, verbose=False):
@@ -67,6 +67,7 @@ class Univariate_distribution():
  
         self.method = method
         self.search_cdf_min = search_cdf_min
+        self.search_cdf_max = search_cdf_max
         
         self.pixel_size = pixel_size
         self.cl_src_path = cl_src_path
@@ -181,7 +182,8 @@ class Univariate_distribution():
         while (search_cdf_min>=0.80):          
             extrema_i = [extremum_i for extremum_i in all_extrema_i 
                          if x_vec[extremum_i]>mode_x \
-                            and (cdf[extremum_i]>search_cdf_min)]
+                            and (cdf[extremum_i]>search_cdf_min
+                                 and cdf[extremum_i]<self.search_cdf_max)]
             if len(extrema_i)>=1:
                 break
             search_cdf_min -= 0.01
@@ -423,6 +425,7 @@ class Analysis(Core):
                                             logx_min=logx_min, logy_min=logy_min, 
                                             logx_max=logx_max, logy_max=logy_max,
                                             search_cdf_min = self.search_cdf_min,
+                                            search_cdf_max = self.search_cdf_max,
                                             cl_src_path=self.state.cl_src_path, 
                                             cl_platform=self.state.cl_platform, 
                                             cl_device=self.state.cl_device,

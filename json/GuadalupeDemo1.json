@@ -9,12 +9,6 @@
         "basins" : [701,702],
 		"do_basin_masking" : false
 	},
-
-	"trace": {
-	},
-
-	"analysis": {
-	},
 	
 	"export": {
 		"export_path" : ["$SLMXPT","GuadalupeDemo1"]

@@ -332,21 +332,21 @@ class Plot(Core):
                 do_plot_color_relief=False, color_alpha=0,
                 hillshade_alpha=self.channel_shaded_relief_hillshade_alpha)
 
-        is_channel         = self.trace.is_channel
-        is_thinchannel     = self.trace.is_thinchannel
-        is_interchannel    = self.trace.is_interchannel
-        is_channelhead     = self.trace.is_channelhead
-        is_channeltail     = self.trace.is_channeltail
-        is_majorconfluence = self.trace.is_majorconfluence
-        is_minorconfluence = self.trace.is_minorconfluence
-        is_majorinflow     = self.trace.is_majorinflow
-        is_minorinflow     = self.trace.is_minorinflow
-        is_leftflank       = self.trace.is_leftflank
-        is_midslope        = self.trace.is_midslope
-        is_ridge           = self.trace.is_ridge
-        was_channelhead    = self.trace.was_channelhead
-        is_subsegmenthead  = self.trace.is_subsegmenthead
-        is_loop            = self.trace.is_loop
+        is_channel         = self.mapping.info.is_channel
+        is_thinchannel     = self.mapping.info.is_thinchannel
+        is_interchannel    = self.mapping.info.is_interchannel
+        is_channelhead     = self.mapping.info.is_channelhead
+        is_channeltail     = self.mapping.info.is_channeltail
+        is_majorconfluence = self.mapping.info.is_majorconfluence
+        is_minorconfluence = self.mapping.info.is_minorconfluence
+        is_majorinflow     = self.mapping.info.is_majorinflow
+        is_minorinflow     = self.mapping.info.is_minorinflow
+        is_leftflank       = self.mapping.info.is_leftflank
+        is_midslope        = self.mapping.info.is_midslope
+        is_ridge           = self.mapping.info.is_ridge
+        was_channelhead    = self.mapping.info.was_channelhead
+        is_subsegmenthead  = self.mapping.info.is_subsegmenthead
+        is_loop            = self.mapping.info.is_loop
         
         basin_mask_array = self.geodata.basin_mask_array
         
@@ -365,8 +365,8 @@ class Plot(Core):
 #         self.plot_compound_markers(axes, is_majorconfluence, ['blue','black'])
 #         self.plot_compound_markers(axes, is_loop,     ['pink','black'], msf=2)
         self.plot_compound_markers(axes, is_channeltail,     ['cyan','black'], msf=1.5)
-#         self.plot_compound_markers(axes, was_channelhead,     ['purple','black'], msf=0.5)
-#         self.plot_compound_markers(axes, is_subsegmenthead,  ['orange','black'], msf=0.5)
+#         self.plot_compound_markers(axes, is_leftflank,     ['purple','black'], msf=0.2)
+        self.plot_compound_markers(axes, is_subsegmenthead,  ['orange','black'], msf=1.0)
         self.plot_compound_markers(axes, is_channelhead,     ['red','black'], msf=0.5)
 #         self.plot_compound_markers(axes, is_midslope,        ['purple','black'])
 #         self.plot_compound_markers(axes, is_ridge,        ['purple','black'])
@@ -1210,7 +1210,7 @@ class Plot(Core):
                                title=title, x_label=x_label,y_label=y_label)
 
     def plot_joint_pdf(self, bivariate_distribution, mx_distbn=None, my_distbn=None,
-                       fig_name=None, title='', swap_xy=False,
+                       fig_name=None, title='', swap_xy=False, do_nl_trend=False,
                        x_label='', y_label='', 
                        xsym_label = r'$L_m^{*}$', ysym_label = r'$\sqrt{A_e^*}$', 
                        do_plot_mode=True):
@@ -1298,29 +1298,30 @@ class Plot(Core):
             h_grad = 1.0
             if not swap_xy:
                 h_grad_str = '{0:1.1}'.format(h_grad)
-                legend += [r'hillslope  $x =$'+'$y $']
+                legend += [r'hillslope  $y =$'+'$x$']
                 x = x_vec
             else:
                 h_grad_str = '{0:0.2}'.format(h_grad)
-                legend += [r'hillslope  $x =$'+'$y^{1/3}$']
+                legend += [r'hillslope  $y =$'+'$x$']
                 x = x_vec
             axes.plot(x,x*h_grad,'-.', color='crimson',linewidth=2,alpha=0.7)
     
             # Nonlinear trend y=x^n
-            h_grad = mode_xy[1]/mode_xy[0]
-            h_grad = 1.0
-            if not swap_xy:
-                h_grad_str = '{0:1.1}'.format(h_grad)
-                legend += [r'channel  $x =$'+'$y^{3/2} $']
-                x = x_vec
-                axes.plot(x,np.power(x,1.5),'--', 
-                          color='magenta',linewidth=2,alpha=0.7)
-            else:
-                h_grad_str = '{0:0.2}'.format(h_grad)
-                legend += [r'channel  $x =$'+'${y^{1/3}$']
-                x = x_vec
-                axes.plot(x,np.power(x,2.0/3),'--', #np.power(1.5,0.5)*
-                          color='magenta',linewidth=2,alpha=0.7)
+            if do_nl_trend:
+                h_grad = mode_xy[1]/mode_xy[0]
+                h_grad = 1.0
+                if not swap_xy:
+                    h_grad_str = '{0:1.1}'.format(h_grad)
+                    legend += [r'channel  $y =$'+'$x^{3/2}$']
+                    x = x_vec
+                    axes.plot(x,np.power(x,1.5),'--', 
+                              color='magenta',linewidth=2,alpha=0.7)
+                else:
+                    h_grad_str = '{0:0.2}'.format(h_grad)
+                    legend += [r'channel  $y =$'+'${x^{1/3}$']
+                    x = x_vec
+                    axes.plot(x,np.power(x,2.0/3),'--', #np.power(1.5,0.5)*
+                              color='magenta',linewidth=2,alpha=0.7)
 
         # Presentation
 #         loc = 'lower right'
@@ -1387,7 +1388,7 @@ class Plot(Core):
             self.print('"'+title+'" not computed: cannot plot')
             return
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
-                            fig_name=fig_name,
+                            fig_name=fig_name, do_nl_trend=True,
                             title=title, x_label=x_label, y_label=y_label,
                             xsym_label=xsym_label, ysym_label=ysym_label,
                             do_plot_mode=True)
@@ -1410,7 +1411,7 @@ class Plot(Core):
             self.print('"'+title+'" not computed: cannot plot')
             return
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
-                            fig_name=fig_name, swap_xy=False,
+                            fig_name=fig_name, swap_xy=False, do_nl_trend=True,
                             title=title, x_label=x_label, y_label=y_label,
                             xsym_label=xsym_label, ysym_label=ysym_label,
                             do_plot_mode=True)
@@ -1478,7 +1479,7 @@ class Plot(Core):
             self.print('"'+title+'" not computed: cannot plot')
             return
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
-                            fig_name=fig_name,
+                            fig_name=fig_name, do_nl_trend=True,
                             title=title, x_label=x_label, y_label=y_label,
                             xsym_label=xsym_label, ysym_label=ysym_label,
                             do_plot_mode=True)
@@ -1501,7 +1502,7 @@ class Plot(Core):
             self.print('"'+title+'" not computed: cannot plot')
             return
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
-                            fig_name=fig_name,
+                            fig_name=fig_name, do_nl_trend=True,
                             title=title, x_label=x_label, y_label=y_label,
                             xsym_label=xsym_label, ysym_label=ysym_label,
                             do_plot_mode=True)

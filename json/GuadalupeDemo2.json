@@ -9,12 +9,6 @@
         "roi_y_bounds" : [0,800]
 	},
 	
-	"analysis": {
-	},
-
-	"plot": {
-	},
-	
 	"export": {
 		"export_path" : ["$SLMXPT","GuadalupeDemo2"]
 	}

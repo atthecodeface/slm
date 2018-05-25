@@ -46,6 +46,11 @@ __kernel void hillslope_lengths(
     // For every mid-slope /or/ ridge pixel
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+#ifdef DO_MAP_HSL_FROM_RIDGES
+    const uint from_flag = IS_RIDGE;
+#else
+    const uint from_flag = IS_MIDSLOPE;
+#endif
 #ifdef VERBOSE
     // Report how kernel instances are distributed
     if (global_id==0 || global_id==get_global_offset(0u)) {
@@ -68,7 +73,8 @@ __kernel void hillslope_lengths(
                      vec = seed_point_array[global_id], prev_vec, next_vec;
     __private bool moved_off = false;
 
-//    printf("len=%g (p=%g) vec=%g,%g\n",traj_length_array[global_id],PIXEL_SIZE,vec[0]*PIXEL_SIZE+2800.0f,vec[1]*PIXEL_SIZE+2800.0f);
+//    printf("len=%g (p=%g) vec=%g,%g\n",traj_length_array[global_id],PIXEL_SIZE,
+//    vec[0]*PIXEL_SIZE+2800.0f,vec[1]*PIXEL_SIZE+2800.0f);
 
     // Remember here
     idx = get_array_idx(vec);
@@ -77,10 +83,10 @@ __kernel void hillslope_lengths(
         compute_step_vec(dt, uv_array, &dxy1_vec, &dxy2_vec, &uv1_vec, &uv2_vec,
                          vec, &next_vec, &idx);
         if (mask_array[idx]) return;
-        if (!moved_off && ((~mapping_array[idx])&IS_MIDSLOPE)) {
+        if (!moved_off && ((~mapping_array[idx])&from_flag)) {
             // Flag when we've moved off the initial band of mid-slope/ridge pixels
             moved_off = true;
-        } else if (moved_off && ((mapping_array[idx])&IS_MIDSLOPE)) {
+        } else if (moved_off && ((mapping_array[idx])&from_flag)) {
             // Bail if we cross another mid-slope pixel, meaning that mid-slope/ridge
             //   mapping isn't working for this streamlines
             return;

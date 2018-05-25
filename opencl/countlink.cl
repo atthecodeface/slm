@@ -98,7 +98,7 @@ __kernel void count_downchannels(
             // If we've landed on a pixel whose channel length count
             //    exceeds our counter, we must have stepped off a minor onto a major
             //    channel, and thus need to stop
-            if (counter++<count_array[idx]) {
+            if (++counter<count_array[idx]) {
                 break;
             }
             atomic_xchg(&count_array[idx],counter);

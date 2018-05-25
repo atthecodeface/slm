@@ -216,7 +216,6 @@ def set_compile_options(info, kernel_def, downup_sign=1,
         '-D','SUBPIXEL_SEED_STEP={}f'.format(info.subpixel_seed_step),
         '-D','JITTER_MAGNITUDE={}f'.format(info.jitter_magnitude),
         '-D','INTERCHANNEL_MAX_N_STEPS={}u'.format(info.interchannel_max_n_steps),
-        '-D','SEGMENTATION_THRESHOLD={}u'.format(info.segmentation_threshold),
         '-D','LEFT_FLANK_ADDITION={}u'.format(info.left_flank_addition),
         '-D','IS_CHANNEL={}u'.format(info.is_channel),
         '-D','IS_THINCHANNEL={}u'.format(info.is_thinchannel),
@@ -236,6 +235,11 @@ def set_compile_options(info, kernel_def, downup_sign=1,
         '-D','IS_LOOP={}u'.format(info.is_loop),
         '-D','IS_BLOCKAGE={}u'.format(info.is_blockage)
         ]
+        if info.segmentation_threshold>0:
+            rtn_list += ['-D','SEGMENTATION_THRESHOLD={}u'
+                         .format(info.segmentation_threshold)]
+        if info.do_map_hsl_from_ridges:
+            rtn_list += ['-D', 'DO_MAP_HSL_FROM_RIDGES']
         if info.debug:
             rtn_list += ['-D', 'DEBUG']
         if info.verbose:

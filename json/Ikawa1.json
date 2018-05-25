@@ -4,10 +4,6 @@
 		"dtm_file" : "Ikawa1_res1m_fillsinks0p01deg.tif",
 		"data_path": ["$SLMDATA","Ikawa"]
 	},
-	
-	"analysis": {
-		"search_cdf_min" : 0.90
-	},
 
 	"plot": {
         "mhsl_pdf_x_stretch" : 0.7,
