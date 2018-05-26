@@ -110,7 +110,7 @@
 	},
 
 	"mapping": {
-		"segmentation_threshold" : 500,
+		"segmentation_threshold" : 1000,
 		
 		"midslope_filter_sigma" : 5.0,
 		"midslope_threshold" : 0.03,

@@ -120,17 +120,17 @@ class Streamlining(Core):
 
         self.state = State(None,imported_parameters)
 
-#         import git
-#         for repo_name, repo_path in (('slm',slm_path),
-#                                      ('slmnb',slmnb_path),
-#                                      ('slmdata',slmdata_path)):
-#             try:
-#                 repo = git.Repo(repo_path)
-#                 git_info = [repo.git.show('--format=%'+s).split('\n')[0] 
-#                                 for s in ['H','cd','an']]
-#                 setattr(self.state,repo_name+'_gitinfo',git_info)
-#             except:
-#                 pass
+        import git
+        for repo_name, repo_path in (('slm',slm_path),
+                                     ('slmnb',slmnb_path),
+                                     ('slmdata',slmdata_path)):
+            try:
+                repo = git.Repo(repo_path)
+                git_info = [repo.git.show('--format=%'+s).split('\n')[0] 
+                                for s in ['H','cd','an']]
+                setattr(self.state,repo_name+'_gitinfo',git_info)
+            except:
+                pass
             
         for item in kwargs.items():
             if item[0]=='do_plot':
@@ -154,19 +154,21 @@ class Streamlining(Core):
             elif item[1] is not None:
                 setattr(self.state, item[0],item[1])
         self.state.obj_list=[self.state]
-                
+
         self.state.parameters_path = parameters_path
         self.state.parameters_file = parameters_file
-        self.geodata = Geodata(self.state,imported_parameters)
-        self.preprocess = Preprocess(self.state,imported_parameters,self.geodata)
-        self.trace = Trace(self.state,imported_parameters,self.geodata,self.preprocess)
+        self.geodata     = Geodata(self.state,imported_parameters)
+        self.preprocess  = Preprocess(self.state,imported_parameters,self.geodata)
+        self.trace       = Trace(self.state,imported_parameters,self.geodata,
+                                 self.preprocess)
         self.state.trace = self.trace
-        self.analysis = Analysis(self.state,imported_parameters,self.geodata,self.trace)
-        self.mapping = Mapping(self.state,imported_parameters,
-                         self.geodata,self.preprocess,self.trace,self.analysis)
-        self.plot = Plot(self.state,imported_parameters, self.geodata,self.preprocess,
-                         self.trace,self.analysis,self.mapping)
-        self.export = Export(self.state,imported_parameters,self.plot)
+        self.analysis    = Analysis(self.state,imported_parameters,self.geodata,
+                                    self.trace)
+        self.mapping     = Mapping(self.state,imported_parameters,
+                                   self.geodata,self.preprocess,self.trace,self.analysis)
+        self.plot        = Plot(self.state,imported_parameters, self.geodata,
+                                self.preprocess, self.trace, self.analysis, self.mapping)
+        self.export      = Export(self.state,imported_parameters,self.plot)
                              
         self.print('**Initialization end**\n') 
     
