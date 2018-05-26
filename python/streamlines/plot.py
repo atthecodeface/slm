@@ -86,7 +86,7 @@ class Plot(Core):
         """
         TBD
         """
-        mpl.rc( 'savefig', dpi=75)
+#         mpl.rc( 'savefig', dpi=300)
         mpl.rc( 'figure', autolayout=False,  titlesize='Large',dpi=75)
         mpl.rc( 'lines', linewidth=2.0, markersize=10)
         # mpl.rc( 'font', size=14,family='Times New Roman', serif='cm')

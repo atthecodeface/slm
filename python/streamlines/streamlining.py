@@ -10,16 +10,16 @@ from json import loads
 import os
 os.environ['PYTHONUNBUFFERED']='True'
 
-from streamlines.core import Core
+from streamlines.core       import Core
 from streamlines.parameters import read_json_file, import_parameters
-from streamlines.state import State
-from streamlines.geodata import Geodata
+from streamlines.state      import State
+from streamlines.geodata    import Geodata
 from streamlines.preprocess import Preprocess
-from streamlines.trace import Trace
-from streamlines.analysis import Analysis
-from streamlines.mapping import Mapping
-from streamlines.plot import Plot
-from streamlines.export import Export
+from streamlines.trace      import Trace
+from streamlines.analysis   import Analysis
+from streamlines.mapping    import Mapping
+from streamlines.plot       import Plot
+from streamlines.export     import Export
 
 __all__ = ['Streamlining']
 

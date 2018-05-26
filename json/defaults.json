@@ -241,7 +241,7 @@
 		"export_path" : ["$SLMXPT"],	
 		"format" : ["pdf"],
 		"options" : {
-			"dpi":75, 
+			"dpi":150, 
 			"bbox_inches":"tight"
 			}
 	}
