@@ -22,7 +22,8 @@
 		"do_rw_savez" : false,
 		"do_rw_hdf5" : false,
 
-		"do_reload_state" : false
+		"do_git_info" : true,
+        "do_display" : false
 	},
 
 	"geodata": {
@@ -121,7 +122,7 @@
 		"hillslope_length_mean_radius" : 50
 	},
 
-	"plot": {	
+	"plot": {        
 		"do_plot_maps" : true,	
 		"do_plot_distributions" : true,	
 		
@@ -238,7 +239,7 @@
 
 	"export": {
 		"export_path" : ["$SLMXPT"],	
-		"format" : ["png"],
+		"format" : ["pdf"],
 		"options" : {
 			"dpi":75, 
 			"bbox_inches":"tight"

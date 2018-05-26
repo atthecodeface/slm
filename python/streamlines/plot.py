@@ -41,20 +41,6 @@ from streamlines.core import Core
 pdebug = print
 
 __all__ = ['Plot']
-
-def force_display(fig):
-    """
-    TBD
-    """
-    try:
-        fig.canvas.manager.show() 
-        # this makes sure that the gui window gets shown
-        # if this is needed depends on rcparams, this is just to be safe
-        fig.canvas.flush_events() 
-        # this make sure that if the event loop integration is not 
-        # set up by the gui framework the plot will update
-    except:
-        pass
     
 def gaussian_pdf(x, mu, sigma):
     """
@@ -82,9 +68,8 @@ class Plot(Core):
     """
     Plot maps and distributions.
     """
-    def __init__(self,state, 
-                 imported_parameters,
-                 geodata,preprocess,trace,analysis,mapping):
+    def __init__(self, state, imported_parameters,
+                 geodata, preprocess, trace, analysis, mapping):
         """
         TBD
         """
@@ -128,6 +113,7 @@ class Plot(Core):
                         figsize=(self.plot_window_width *plot_window_size_factor,
                                  self.plot_window_height*plot_window_size_factor)
                          )
+        axes.set_rasterization_zorder(1)
         fig.canvas.set_window_title(window_title)
 #         if self.suptitle_y!=0:
 #             fig.suptitle(title, fontweight='bold', y=self.suptitle_y)
@@ -145,7 +131,24 @@ class Plot(Core):
           
     def _record_fig(self,fig_name,fig):
         self.print('Recording figure "{}"'.format(fig_name))
-        self.figs.update({fig_name : fig})
+        self.figs.update({fig_name : fig})        
+
+    def _force_display(self, fig):
+        """
+        TBD
+        """
+        if self.state.do_display:
+            try:
+                fig.canvas.manager.show() 
+                # this makes sure that the gui window gets shown
+                # if this is needed depends on rcparams, this is just to be safe
+                fig.canvas.flush_events() 
+                # this make sure that if the event loop integration is not 
+                # set up by the gui framework the plot will update
+            except:
+                pass
+        else:
+            plt.close(fig)
 
     @staticmethod
     def show():
@@ -160,6 +163,7 @@ class Plot(Core):
             self.plot_maps()
         if self.do_plot_distributions:
             self.plot_distributions()
+        if self.do_plot_hillslope_distributions:
             self.plot_hillslope_distributions()
 
         self.print('**Plot all end**\n')  
@@ -204,7 +208,7 @@ class Plot(Core):
         axes.imshow(dtm_hillshade_array, cmap='Greys', 
                   extent=(0,self.geodata.dtm_array.shape[0],
                           0,self.geodata.dtm_array.shape[1]))
-        force_display(fig)
+        self._force_display(fig)
         self._record_fig('dtm_shaded_relief',fig)
     
     def plot_roi_shaded_relief(self, interp_method=None):
@@ -217,7 +221,7 @@ class Plot(Core):
                                     color_alpha=self.shaded_relief_color_alpha,
                                     hillshade_alpha=self.shaded_relief_hillshade_alpha,
                                     interp_method=interp_method)
-        force_display(fig)
+        self._force_display(fig)
         self._record_fig('roi_shaded_relief',fig)
 
     def plot_roi_shaded_relief_overlay(self, axes, 
@@ -309,7 +313,7 @@ class Plot(Core):
         #   - turn this off to check for boundary overflow errors in e.g. streamlines
         axes.set_xlim(xmin=self.geodata.roi_x_bounds[0],xmax=self.geodata.roi_x_bounds[1])
         axes.set_ylim(ymin=self.geodata.roi_y_bounds[0],ymax=self.geodata.roi_y_bounds[1])
-        force_display(fig)
+        self._force_display(fig)
         self._record_fig('streamlines',fig)
     
     def plot_channels(self):
@@ -370,7 +374,7 @@ class Plot(Core):
         self.plot_compound_markers(axes, is_channelhead,     ['red','black'], msf=0.5)
 #         self.plot_compound_markers(axes, is_midslope,        ['purple','black'])
 #         self.plot_compound_markers(axes, is_ridge,        ['purple','black'])
-        
+        self._force_display(fig)
         self._record_fig(fig_name,fig)
 
     def plot_compound_markers(self, axes, flag, colors, msf=1.0):
@@ -483,6 +487,7 @@ class Plot(Core):
                                colorbar_aspect=colorbar_aspect)
     
     def plot_hillslope_distributions(self, x_stretch=None):
+        self.print('Plotting hillslope distributions...')
         df = self.mapping.hillslope_stats_df
         kde_min_labels = 20
         if x_stretch is None:
@@ -500,6 +505,7 @@ class Plot(Core):
         axes.set_ylabel(r'probability density  $f(L)$  [m$^{-1}$]')
         axes.set_xlim(0,df['mean [m]'].quantile(q=1)*x_stretch)
         axes.set_ylim(0,None)
+        self._force_display(fig)
         self._record_fig(name,fig)
 
         name = 'hillslope_stddev'
@@ -515,6 +521,7 @@ class Plot(Core):
         axes.set_xlim(0,df['stddev [m]'].quantile(q=0.99))
         axes.set_ylim(0,None)
         # axes.legend(['hillslope length std dev'],frameon=False)
+        self._force_display(fig)
         self._record_fig(name,fig)
         
         name = 'hillslope_count'
@@ -525,7 +532,9 @@ class Plot(Core):
         axes.set_ylabel(r'probability density  $f(N_{sl})$  [-]')
         axes.set_xlim(0,df['count'].quantile(q=0.99))
         axes.set_ylim(0,None)
+        self._force_display(fig)
         self._record_fig(name,fig)
+        self.print('...done')
 
     def plot_gridded_data(self, 
                             grid_array,
@@ -605,6 +614,7 @@ class Plot(Core):
                                       aspect=colorbar_aspect)
             cbar = plt.colorbar(im, cax=cax, orientation="horizontal")
             cbar.set_label(colorbar_title)
+        self._force_display(fig)
         self._record_fig(fig_name,fig)
 
     def plot_hillslope_lengths_contoured(self,cmap=None,
@@ -675,7 +685,7 @@ class Plot(Core):
         #   - turn this off to check for boundary overflow errors in e.g. streamlines
         axes.set_xlim(xmin=self.geodata.roi_x_bounds[0],xmax=self.geodata.roi_x_bounds[1])
         axes.set_ylim(ymin=self.geodata.roi_y_bounds[0],ymax=self.geodata.roi_y_bounds[1])
-        force_display(fig)
+        self._force_display(fig)
         self._record_fig('hillslope_length_contours',fig)
     
     def plot_contours_overlay(self,axes,Z,mask=None, n_contours=None,
@@ -792,7 +802,7 @@ class Plot(Core):
         self.plot_classical_streamlines_overlay(axes)
         axes.set_xlim(xmin=self.geodata.roi_x_bounds[0],xmax=self.geodata.roi_x_bounds[1])
         axes.set_ylim(ymin=self.geodata.roi_y_bounds[0],ymax=self.geodata.roi_y_bounds[1])
-        force_display(fig)
+        self._force_display(fig)
         self._record_fig('classical_streamlines',fig)
 
     def plot_classical_streamlines_and_vectors(self):
@@ -808,7 +818,7 @@ class Plot(Core):
         self.plot_classical_streamlines_overlay(axes)
         axes.set_xlim(xmin=self.geodata.roi_x_bounds[0],xmax=self.geodata.roi_x_bounds[1])
         axes.set_ylim(ymin=self.geodata.roi_y_bounds[0],ymax=self.geodata.roi_y_bounds[1])
-        force_display(fig)
+        self._force_display(fig)
         self._record_fig('classical_streamlines_and_vectors',fig)
 
     def plot_classical_streamlines_overlay(self,axes):
@@ -840,7 +850,7 @@ class Plot(Core):
                         color_alpha=self.streamline_shaded_relief_color_alpha,
                         hillshade_alpha=self.streamline_shaded_relief_hillshade_alpha)
         self.plot_gradient_vector_field_overlay(axes)
-        force_display(fig)
+        self._force_display(fig)
         self._record_fig('gradient_vector_field',fig)
 
     def plot_gradient_vector_field_overlay(self,axes,color='k'):
@@ -1110,7 +1120,7 @@ class Plot(Core):
 
 
         # Display & record
-        force_display(fig)
+        self._force_display(fig)
         self._record_fig(fig_name,fig)    
         
     def plot_marginal_pdf_dsla(self):
@@ -1345,7 +1355,7 @@ class Plot(Core):
         axes.grid(color='gray', linestyle='dotted', linewidth=0.5, which='both')
         
         # Push to screen
-        force_display(fig)
+        self._force_display(fig)
         self._record_fig(fig_name,fig)
 
     def plot_joint_pdf_dsla_usla(self):
@@ -1566,5 +1576,6 @@ class Plot(Core):
 #                                             for x in list(range(*xtick_range,1))]
         x_ticks.sort()
         return x_ticks
+        self._force_display(fig)
         self._record_fig(fig_name,fig)
 

@@ -41,7 +41,6 @@ class Streamlining(Core):
     
     Args:
         parameters_file (str): Name of JSON parameters file prefixed by full path.
-        do_reload_state (bool): Flag whether to reload computation state from file(s).
 
     Attributes:
         parameters_file (str): Name of JSON parameters file 
@@ -51,7 +50,7 @@ class Streamlining(Core):
     
     
         """  
-    def __init__(self, do_reload_state=False, **kwargs):
+    def __init__(self, **kwargs):
         """
         Initialize the principal 'streamlines' class instance, whose object
         will contain references to the each of the key class instances of 
@@ -119,19 +118,6 @@ class Streamlining(Core):
                 imported_parameters[item[0]].update(item[1])
 
         self.state = State(None,imported_parameters)
-
-        import git
-        for repo_name, repo_path in (('slm',slm_path),
-                                     ('slmnb',slmnb_path),
-                                     ('slmdata',slmdata_path)):
-            try:
-                repo = git.Repo(repo_path)
-                git_info = [repo.git.show('--format=%'+s).split('\n')[0] 
-                                for s in ['H','cd','an']]
-                setattr(self.state,repo_name+'_gitinfo',git_info)
-            except:
-                pass
-            
         for item in kwargs.items():
             if item[0]=='do_plot':
                 if item[1]=='0' or item[1]=='off' or item[1]=='false':
@@ -155,6 +141,21 @@ class Streamlining(Core):
                 setattr(self.state, item[0],item[1])
         self.state.obj_list=[self.state]
 
+        if self.state.do_git_info:
+            import git
+            for repo_name, repo_path in (('slm',slm_path),
+                                         ('slmnb',slmnb_path),
+                                         ('slmdata',slmdata_path)):
+                try:
+                    repo = git.Repo(repo_path)
+                    summary = repo.git.show('--summary').split('\n')
+                    git_info = [[summary[0]]+[summary[1].split(' <')[0]]+[summary[2]]]
+                    setattr(self.state,repo_name+'_gitinfo',git_info)
+                    self.print('{} git:'.format(repo_name))
+                    self.pprint(git_info)
+                except:
+                    pass
+            
         self.state.parameters_path = parameters_path
         self.state.parameters_file = parameters_file
         self.geodata     = Geodata(self.state,imported_parameters)

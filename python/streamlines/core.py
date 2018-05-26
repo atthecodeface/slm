@@ -22,6 +22,7 @@ from json import dumps
 import numpy as np
 import os
 import sys
+import pprint
 import streamlines
 pdebug = print
 
@@ -140,6 +141,10 @@ class Core():
     def print(self, *args, **kwargs):
         if self.state.verbose:
             print(*args, **kwargs)
+
+    def pprint(self, *args, **kwargs):
+        if self.state.verbose:
+            pprint.pprint(*args, **kwargs)
 
     def vprint(self, *args, **kwargs):
         if self.state.verbose:

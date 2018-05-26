@@ -59,8 +59,6 @@ def run(**kwargs):
     # those parameters relevant to the corresponding workflow step.
     sl = Streamlining(**kwargs)
     
-    if sl.state.do_reload_state:
-        return sl
     if sl.state.do_geodata:
         sl.geodata.do()
     if sl.state.do_preprocess:
@@ -146,6 +144,11 @@ def _parse_cmd_line_args():
                         metavar='geodata_flag',
                         help='read geodata files (DTM, basins)')
 
+    parser.add_argument('-i','--info', dest='do_git_info', 
+                        default=None, type=_str2bool, action="store",  
+                        metavar='git_info_flag',
+                        help='report info for slm git repos')
+    
     parser.add_argument('-j', '--json', dest='override_parameters',
                         default=None, type=str,  action="store", 
                         metavar='override_parameters',
@@ -161,10 +164,10 @@ def _parse_cmd_line_args():
                         metavar='maps/pdfs/all',
                         help='carry out all plotting set in parameters files')
     
-    parser.add_argument('-r','--reload', dest='do_reload_state', 
-                        default=None, type=_str2bool, action="store",  
-                        metavar='reload_state_flag',
-                        help='reload previous runtime state from files')
+    parser.add_argument('-q', '--display', dest='do_display',
+                        default=None, type=_str2bool,  action="store", 
+                        metavar='display_flag',
+                        help='display plots')
     
     parser.add_argument('-s','--save', dest='do_save_state', 
                         default=None, type=_str2bool, action="store",  
