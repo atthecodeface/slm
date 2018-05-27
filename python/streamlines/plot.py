@@ -370,8 +370,8 @@ class Plot(Core):
 #         self.plot_compound_markers(axes, is_loop,     ['pink','black'], msf=2)
         self.plot_compound_markers(axes, is_channeltail,     ['cyan','black'], msf=1.5)
 #         self.plot_compound_markers(axes, is_leftflank,     ['purple','black'], msf=0.2)
-        self.plot_compound_markers(axes, is_subsegmenthead,  ['orange','black'], msf=1.0)
         self.plot_compound_markers(axes, is_channelhead,     ['red','black'], msf=0.5)
+        self.plot_compound_markers(axes, is_subsegmenthead,  ['orange','black'], msf=0.25)
 #         self.plot_compound_markers(axes, is_midslope,        ['purple','black'])
 #         self.plot_compound_markers(axes, is_ridge,        ['purple','black'])
         self._force_display(fig)
@@ -487,7 +487,7 @@ class Plot(Core):
                                colorbar_aspect=colorbar_aspect)
     
     def plot_hillslope_distributions(self, x_stretch=None):
-        self.print('Plotting hillslope distributions...')
+        self.print('Plotting hillslope length distributions...')
         df = self.mapping.hillslope_stats_df
         kde_min_labels = 20
         if x_stretch is None:

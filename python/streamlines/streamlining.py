@@ -7,6 +7,7 @@ Todo:
 
 import os
 from json import loads
+from datetime import datetime
 import os
 os.environ['PYTHONUNBUFFERED']='True'
 
@@ -104,6 +105,7 @@ class Streamlining(Core):
                    and imported_parameters['state']['verbose']) 
              or ('verbose' in kwargs.keys() and kwargs['verbose'] is not None 
                    and kwargs['verbose'])):
+            print(datetime.now().strftime("\n%a %Y-%m-%d %H:%M:%S"))
             print('\n**Initialization begin**') 
             print('Loaded JSON parameters file "{}"'
                   .format(os.path.realpath(os.path.join(parameters_path, 
@@ -140,7 +142,7 @@ class Streamlining(Core):
             elif item[1] is not None:
                 setattr(self.state, item[0],item[1])
         self.state.obj_list=[self.state]
-
+        
         if self.state.do_git_info:
             import git
             for repo_name, repo_path in (('slm',slm_path),

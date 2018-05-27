@@ -190,7 +190,6 @@ class Mapping(Core):
         countlink.flag_downchannels(self.cl_state, self.info, self.data,
                                     self.verbose, do_reset_count=False)
         
-
     def segment_downchannels(self):
         self.data.label_array = np.zeros_like(self.mapping_array, dtype=np.uint32)
         self.n_segments = segment.segment_channels(self.cl_state, self.info, 
@@ -295,8 +294,11 @@ class Mapping(Core):
         self.hillslope_stats_df = stats_df
         
         self.hillslope_length_array=np.zeros_like(self.data.label_array,dtype=np.float32)
-        for idx,row in stats_df.iterrows():     
-            self.hillslope_length_array[self.data.label_array==idx] = row['mean [m]']
+        for idx,row in stats_df.iterrows():
+            if row['count']>=self.n_hsl_averaging_threshold:
+                self.hillslope_length_array[self.data.label_array==idx] = row['mean [m]']
+            else:
+                self.hillslope_length_array[self.data.label_array==idx] = 0
 
     def map_hillslope_lengths(self):
         self.print('Mapping hillslope lengths...',end='',flush=True)
@@ -322,13 +324,22 @@ class Mapping(Core):
             self.print('median filtering with {0}m ({1}-pixel) diameter disk...'
                        .format(self.hillslope_length_median_radius,median_radius), 
                        end='',flush=True)
-            sys.stdout.flush()
-            hsl_median \
-               = np.ma.array(median(hsl_masked,median_disk,mask=hsl_bool),mask=~hsl_bool)
+            if self.state.verbose:
+                sys.stdout.flush()
+            # Strangely, mask logic is backwards for median(): 
+            #    - true pixels are used (median-filtered), while false are untouched
+            if median_radius==0:
+                hsl_median = hsl_masked
+            else:
+                hsl_median \
+                    = np.ma.array(median(hsl_masked,median_disk,mask=hsl_bool),
+                                  mask=~hsl_bool)
+    #                = np.ma.array(median(hsl_masked,median_disk),mask=~hsl_bool)
             self.print('mean filtering with {0}m ({1}-pixel) diameter disk...'
                        .format(self.hillslope_length_mean_radius,mean_radius),
                        end='',flush=True) 
-            sys.stdout.flush()
+            if self.state.verbose:
+                sys.stdout.flush()
             hsl_median_nm = mean(hsl_median,mean_disk)
             
         self.hillslope_length_smoothed_array \
