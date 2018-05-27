@@ -8,7 +8,7 @@ Todo:
 
 import os
 import numpy as np
-from scipy.ndimage.morphology import binary_dilation,generate_binary_structure
+from scipy.ndimage.morphology import binary_dilation, generate_binary_structure
 from osgeo import gdal
 import json
 # Needs GDAL. Had issues with 2.2.0 and had to do:

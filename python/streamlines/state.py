@@ -8,13 +8,12 @@ hold their results.
 Todo: 
     Fix issues with HDF5 r/w. There remain issues with writing lists of arrays.
 """
-import os, sys
+import os
+import sys
 import numpy as np
-# from sklearn.externals import joblib
 import json
-# import h5py
 from pympler.asizeof import asizeof
-from collections import ChainMap
+from collections     import ChainMap
 from pprint import pprint
 
 from streamlines.core import Core

@@ -5,8 +5,7 @@ Todo:
     Fix likely bug in parameters file path wrangling
 """
 
-import os
-from json import loads
+from json     import loads
 from datetime import datetime
 import os
 os.environ['PYTHONUNBUFFERED']='True'
@@ -174,5 +173,4 @@ class Streamlining(Core):
         self.export      = Export(self.state,imported_parameters,self.plot)
                              
         self.print('**Initialization end**\n') 
-    
     

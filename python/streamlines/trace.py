@@ -6,15 +6,15 @@ Todo:
 """
 
 import sys
-import numpy as np
+import numpy  as np
 import pandas as pd
 import timeit
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
-from streamlines.core import Core
 
+from streamlines.core         import Core
 from streamlines.trajectories import Trajectories
-from streamlines.fields import Fields
+from streamlines.fields       import Fields
 
 __all__ = ['Info','Trace']
 

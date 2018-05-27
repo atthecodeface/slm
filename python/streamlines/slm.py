@@ -34,7 +34,7 @@ This workflow proceeds as follows:
 #   numba (0.36.2) - for acceleration
 #
 from argparse import ArgumentParser,ArgumentTypeError,ArgumentDefaultsHelpFormatter
-from pprint import pprint
+from pprint   import pprint
 from streamlines.streamlining import Streamlining
 
 __all__ = ['run','_parse_cmd_line_args','_str2bool']

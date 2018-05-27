@@ -6,11 +6,11 @@
 import pyopencl as cl
 import pyopencl.array
 import numpy as np
-import os
-os.environ['PYTHONUNBUFFERED']='True'
+from os import environ
+environ['PYTHONUNBUFFERED']='True'
 import warnings
 
-from streamlines import pocl
+from streamlines        import pocl
 from streamlines.useful import vprint, pick_seeds
 
 __all__ = ['count_downchannels','flag_downchannels']

@@ -2,11 +2,11 @@
 Prep PyOpenCL kernel
 """
 
-import pyopencl as cl
+import pyopencl       as cl
 import pyopencl.tools as cltools
 import numpy as np
 import os
-from streamlines import state
+from streamlines        import state
 from streamlines.useful import vprint
 import warnings
 

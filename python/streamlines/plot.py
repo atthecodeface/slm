@@ -11,21 +11,21 @@ Map and graph plotting
 #  CartoPy
 #  mpl_toolkits.axes_grid1
 
-import matplotlib as mpl
-from matplotlib import streamplot
+import numpy as np
+from numpy  import pi, arctan, arctan2, sin, cos, sqrt
 from random import shuffle, seed
-from scipy.ndimage import median_filter, gaussian_filter, maximum_filter
-import matplotlib.pyplot as plt
+import matplotlib as mpl
+from   matplotlib import streamplot
+import matplotlib.pyplot   as plt
 import matplotlib.gridspec as gridspec
-import matplotlib.ticker as ticker
+import matplotlib.ticker   as ticker
 from matplotlib.pyplot import streamplot
 from matplotlib.colors import LinearSegmentedColormap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import colorsys
-import numpy as np
-from numpy import pi, arctan, arctan2, sin, cos, sqrt
-from scipy.stats import norm, gaussian_kde
-from scipy.signal import decimate
+from scipy.ndimage import median_filter, gaussian_filter, maximum_filter
+from scipy.stats   import norm, gaussian_kde
+from scipy.signal  import decimate
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
 import warnings

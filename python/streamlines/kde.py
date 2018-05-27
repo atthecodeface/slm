@@ -10,7 +10,7 @@ import os
 os.environ['PYTHONUNBUFFERED']='True'
 import warnings
 
-from streamlines import pocl
+from streamlines        import pocl
 from streamlines.useful import vprint, pick_seeds
 
 __all__ = ['estimate_univariate_pdf','estimate_bivariate_pdf',

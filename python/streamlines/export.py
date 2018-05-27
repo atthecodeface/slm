@@ -2,7 +2,7 @@
 Map and graph plotting
 """
 
-from matplotlib.pyplot import savefig,figure
+from matplotlib.pyplot import savefig, figure
 import os
 
 from streamlines.core import Core

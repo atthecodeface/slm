@@ -2,25 +2,24 @@
 TBD
 """
 
-import numpy as np
+import numpy  as np
 import pandas as pd
-from scipy.ndimage import gaussian_filter
+from skimage.morphology   import skeletonize, thin, medial_axis, disk
+from skimage.filters      import gaussian
+from skimage.filters.rank import mean,modal,median
+from scipy.ndimage            import gaussian_filter
 from scipy.ndimage.morphology import binary_fill_holes
 from scipy.ndimage.morphology import binary_dilation,generate_binary_structure
-from skimage.morphology import skeletonize, thin, medial_axis, disk
-from skimage.filters.rank import mean,modal,median
-from skimage.filters import gaussian
 import warnings
 import sys
-
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
-from streamlines.core import Core
-from streamlines import connect, channelheads, countlink, label, \
-                        segment, linkhillslopes, lengths
+from streamlines.core  import Core
+from streamlines       import connect, channelheads, countlink, label, \
+                              segment, linkhillslopes, lengths
 from streamlines.trace import Info, Data
-from streamlines.pocl import Initialize_cl
+from streamlines.pocl  import Initialize_cl
 
 __all__ = ['Mapping']
 

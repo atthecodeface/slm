@@ -3,10 +3,10 @@ Tools to compute statistical distributions (pdfs) and model their properties
 """
 
 import numpy as np
+from scipy.stats       import gaussian_kde, norm
+from scipy.signal      import argrelextrema
+from scipy.ndimage     import median_filter, gaussian_filter, maximum_filter
 from sklearn.neighbors import KernelDensity
-from scipy.stats import gaussian_kde, norm
-from scipy.signal import argrelextrema
-from scipy.ndimage import median_filter, gaussian_filter, maximum_filter
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
