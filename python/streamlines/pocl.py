@@ -155,96 +155,105 @@ def set_compile_options(info, kernel_def, downup_sign=1,
             compile options
     """
     if job_type=='kde':
-        rtn_list = [
-            '-D','KERNEL_{}'.format(kernel_def.upper()),
-            '-D','KDF_BANDWIDTH={}f'.format(info.bandwidth),
-            '-D','KDF_IS_{}'.format(info.kernel.upper()),
-            '-D','N_DATA={}u'.format(info.n_data),
-            '-D','N_HIST_BINS={}u'.format(info.n_hist_bins),
-            '-D','N_PDF_POINTS={}u'.format(info.n_pdf_points),
-            '-D','X_MIN={}f'.format(info.logx_min),
-            '-D','X_MAX={}f'.format(info.logx_max),
-            '-D','X_RANGE={}f'.format(info.logx_range),
-            '-D','BIN_DX={}f'.format(info.bin_dx),
-            '-D','PDF_DX={}f'.format(info.pdf_dx),
-            '-D','KDF_WIDTH_X={}f'.format(info.kdf_width_x),
-            '-D','N_KDF_PART_POINTS_X={}u'.format(info.n_kdf_part_points_x),
-            '-D','Y_MIN={}f'.format(info.logy_min),
-            '-D','Y_MAX={}f'.format(info.logy_max),
-            '-D','Y_RANGE={}f'.format(info.logy_range),
-            '-D','BIN_DY={}f'.format(info.bin_dy),
-            '-D','PDF_DY={}f'.format(info.pdf_dy),
-            '-D','KDF_WIDTH_Y={}f'.format(info.kdf_width_y),
-            '-D','N_KDF_PART_POINTS_Y={}u'.format(info.n_kdf_part_points_y)
-        ]
-        if info.debug:
-            rtn_list += ['-D', 'DEBUG']
-        if info.verbose:
-            rtn_list += ['-D', 'VERBOSE']
-        return rtn_list
+        rtn_dict = {
+            'bandwidth' :            'f',
+            'n_data' :               'u',
+            'n_hist_bins' :          'u',
+            'n_pdf_points' :         'u',
+            'logx_min' :             'f',
+            'logx_max' :             'f',
+            'logx_range' :           'f',
+            'bin_dx' :               'f',
+            'pdf_dx' :               'f',
+            'kdf_width_x' :          'f',
+            'n_kdf_part_points_x' :  'u',
+            'logy_min' :             'f',
+            'logy_max' :             'f',
+            'logy_range' :           'f',
+            'bin_dy' :               'f',
+            'pdf_dy' :               'f',
+            'kdf_width_y' :          'f',
+            'n_kdf_part_points_y' :  'u'
+        }
+        rtn_list =  ['-D','KERNEL_{}'.format(kernel_def.upper())]
+        rtn_list += ['-D','KDF_IS_{}'.format(info.kernel.upper())]
+        for item in rtn_dict.items():
+            value = getattr(info,item[0])
+            list_item = ['-D','{0}={1}{2}'.format(item[0].upper(),value,item[1])]
+            rtn_list += list_item
 
     else:
-        rtn_list = [
-        '-D','KERNEL_{}'.format(kernel_def.upper()),
-        '-D','N_SEED_POINTS={}u'.format(info.n_seed_points),
-        '-D','DOWNUP_SIGN={}'.format(downup_sign),
-        '-D','INTEGRATOR_STEP_FACTOR={}f'.format(info.integrator_step_factor),
-        '-D','MAX_INTEGRATION_STEP_ERROR={}f'.format(info.max_integration_step_error),
-        '-D','ADJUSTED_MAX_ERROR={}f'.format( info.adjusted_max_error),
-        '-D','MAX_LENGTH={}f'.format(info.max_length),
-        '-D','PIXEL_SIZE={}f'.format(info.pixel_size),
-        '-D','INTEGRATION_HALT_THRESHOLD={}f'.format(info.integration_halt_threshold),
-        '-D','PAD_WIDTH={}u'.format(info.pad_width),
-        '-D','PAD_WIDTH_PP5={}f'.format(info.pad_width_pp5),
-        '-D','NX={}u'.format(info.nx),
-        '-D','NY={}u'.format(info.ny),
-        '-D','NXF={}f'.format(info.nxf),
-        '-D','NYF={}f'.format(info.nyf),
-        '-D','NX_PADDED={}u'.format(info.nx_padded),
-        '-D','NY_PADDED={}u'.format(info.ny_padded),
-        '-D','NXY_PADDED={}u'.format(info.nxy_padded),
-        '-D','X_MAX={}f'.format(info.x_max),
-        '-D','Y_MAX={}f'.format(info.y_max),
-        '-D','GRID_SCALE={}f'.format(info.grid_scale),
-        '-D','COMBO_FACTOR={}f'.format(info.combo_factor*downup_sign),
-        '-D','DT_MAX={}f'.format(info.dt_max),
-        '-D','MAX_N_STEPS={}u'.format(info.max_n_steps),
-        '-D','TRAJECTORY_RESOLUTION={}u'.format(info.trajectory_resolution),
-        '-D','SEEDS_CHUNK_OFFSET={}u'.format(info.seeds_chunk_offset),
-        '-D','SUBPIXEL_SEED_POINT_DENSITY={}u'.format(info.subpixel_seed_point_density),
-        '-D','SUBPIXEL_SEED_HALFSPAN={}f'.format(info.subpixel_seed_halfspan),
-        '-D','SUBPIXEL_SEED_STEP={}f'.format(info.subpixel_seed_step),
-        '-D','JITTER_MAGNITUDE={}f'.format(info.jitter_magnitude),
-        '-D','INTERCHANNEL_MAX_N_STEPS={}u'.format(info.interchannel_max_n_steps),
-        '-D','LEFT_FLANK_ADDITION={}u'.format(info.left_flank_addition),
-        '-D','IS_CHANNEL={}u'.format(info.is_channel),
-        '-D','IS_THINCHANNEL={}u'.format(info.is_thinchannel),
-        '-D','IS_INTERCHANNEL={}u'.format(info.is_interchannel),
-        '-D','IS_CHANNELHEAD={}u'.format(info.is_channelhead),
-        '-D','IS_CHANNELTAIL={}u'.format(info.is_channeltail),
-        '-D','IS_MAJORCONFLUENCE={}u'.format(info.is_majorconfluence),
-        '-D','IS_MINORCONFLUENCE={}u'.format(info.is_minorconfluence),
-        '-D','IS_MAJORINFLOW={}u'.format(info.is_majorinflow),
-        '-D','IS_MINORINFLOW={}u'.format(info.is_minorinflow),
-        '-D','IS_LEFTFLANK={}u'.format(info.is_leftflank),
-        '-D','IS_RIGHTFLANK={}u'.format(info.is_rightflank),
-        '-D','IS_MIDSLOPE={}u'.format(info.is_midslope),
-        '-D','IS_RIDGE={}u'.format(info.is_ridge),
-        '-D','WAS_CHANNELHEAD={}u'.format(info.was_channelhead),
-        '-D','IS_SUBSEGMENTHEAD={}u'.format(info.is_subsegmenthead),
-        '-D','IS_LOOP={}u'.format(info.is_loop),
-        '-D','IS_BLOCKAGE={}u'.format(info.is_blockage)
-        ]
+        rtn_dict = {
+            'n_seed_points' :               ('u',''),
+            'downup_sign' :                 ('u', np.int8(downup_sign)),
+            'integrator_step_factor' :      ('f',''),
+            'max_integration_step_error' :  ('f',''),
+            'adjusted_max_error' :          ('f',''),
+            'integration_halt_threshold' :  ('f',''),
+            'max_length' :                  ('f',''),
+            'pixel_size' :                  ('f',''),
+            'pad_width' :                   ('u',''),
+            'pad_width_pp5' :               ('f',''),
+            'nx' :                          ('u',''),
+            'ny' :                          ('u',''),
+            'nxf' :                         ('f',''),
+            'nyf' :                         ('f',''),
+            'nx_padded' :                   ('u',''),
+            'ny_padded' :                   ('u',''),
+            'nxy_padded' :                  ('u',''),
+            'x_max' :                       ('f',''),
+            'y_max' :                       ('f',''),
+            'grid_scale' :                  ('f',''),
+            'combo_factor' :                ('f', info.combo_factor*downup_sign),
+            'dt_max' :                      ('f',''),
+            'max_n_steps' :                 ('u',''),
+            'trajectory_resolution' :       ('u',''),
+            'seeds_chunk_offset' :          ('u',''),
+            'subpixel_seed_point_density' : ('u',''),
+            'subpixel_seed_halfspan' :      ('f',''),
+            'subpixel_seed_step' :          ('f',''),
+            'jitter_magnitude' :            ('f',''),
+            'interchannel_max_n_steps' :    ('u',''),
+            'left_flank_addition' :         ('u',''),
+            'is_channel' :                  ('u',''),
+            'is_thinchannel' :              ('u',''),
+            'is_interchannel' :             ('u',''),
+            'is_channelhead' :              ('u',''),
+            'is_channeltail' :              ('u',''),
+            'is_majorconfluence' :          ('u',''),
+            'is_minorconfluence' :          ('u',''),
+            'is_majorinflow' :              ('u',''),
+            'is_minorinflow' :              ('u',''),
+            'is_leftflank' :                ('u',''),
+            'is_rightflank' :               ('u',''),
+            'is_midslope' :                 ('u',''),
+            'is_ridge' :                    ('u',''),
+            'was_channelhead' :             ('u',''),
+            'is_subsegmenthead' :           ('u',''),
+            'is_loop' :                     ('u',''),
+            'is_blockage' :                 ('u',''),
+            'do_map_hsl_from_ridges' :      ('flag',''),
+            'debug' :                       ('flag',''),
+            'verbose' :                     ('flag','')
+        }
         if info.segmentation_threshold>0:
-            rtn_list += ['-D','SEGMENTATION_THRESHOLD={}u'
-                         .format(info.segmentation_threshold)]
-        if info.do_map_hsl_from_ridges:
-            rtn_list += ['-D', 'DO_MAP_HSL_FROM_RIDGES']
-        if info.debug:
-            rtn_list += ['-D', 'DEBUG']
-        if info.verbose:
-            rtn_list += ['-D', 'VERBOSE']
-        return rtn_list
+            rtn_dict.update({'segmentation_threshold' : ('u','')})            
+
+        rtn_list = ['-D','KERNEL_{}'.format(kernel_def.upper())]
+        for item in rtn_dict.items():
+            if item[1][0]=='flag':
+                if getattr(info,item[0]):
+                    list_item = ['-D', '{}'.format(item[0].upper())]
+            elif item[1][1]!='':
+                list_item = ['-D', 
+                             '{0}={1}{2}'.format(item[0].upper(),item[1][1],item[1][0])]
+            else:
+                value = getattr(info,item[0])
+                list_item = ['-D', 
+                             '{0}={1}{2}'.format(item[0].upper(),value,item[1][0])]
+            rtn_list += list_item
+
+    return rtn_list
 
 def report_kernel_info(device,kernel,verbose):
     """

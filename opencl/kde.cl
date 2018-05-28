@@ -96,8 +96,8 @@ static inline double k_sample(const double x, const double w) {
 ///
 /// Compute the 2d raw (unnormalized) histogram of an @p sl_array data-pair vector.
 ///
-/// The two columns of the data vector @p sl_array span [@p X_MIN,@p X_MAX]
-///   and  [@p Y_MIN,@p Y_MAX] with ranges @p X_RANGE and  @p Y_RANGE respectively.
+/// The two columns of the data vector @p sl_array span [@p LOGX_MIN,@p LOGX_MAX]
+///   and  [@p LOGY_MIN,@p LOGY_MAX] with ranges @p LOGX_RANGE and  @p LOGY_RANGE respectively.
 ///   Each kernel instance maps one element pair of this data
 ///   vector onto its matching @p histogram_array bin element through an @p atomic_inc
 ///   operation on that element.
@@ -114,8 +114,8 @@ __kernel void histogram_bivariate(
     // For every ROI pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
-    const float bin_x = (sl_array[global_id][0]-X_MIN)/X_RANGE;
-    const float bin_y = (sl_array[global_id][1]-Y_MIN)/Y_RANGE;
+    const float bin_x = (sl_array[global_id][0]-LOGX_MIN)/LOGX_RANGE;
+    const float bin_y = (sl_array[global_id][1]-LOGY_MIN)/LOGY_RANGE;
     const uint idx_x = min(max(0u,(uint)(bin_x*(float)(N_HIST_BINS-1u))),N_HIST_BINS-1u);
     const uint idx_y = min(max(0u,(uint)(bin_y*(float)(N_HIST_BINS-1u))),N_HIST_BINS-1u);
     atomic_inc(&histogram_array[idx_y+N_HIST_BINS*idx_x]);
@@ -366,8 +366,8 @@ __kernel void pdf_bivariate_cols(
 ///
 /// Compute the 1d raw (unnormalized) histogram of an @p sl_array data vector.
 ///
-/// The single-column data vector @p sl_array spans [@p X_MIN,@p X_MAX] with
-///   range @p X_RANGE.  Each kernel instance maps one element of this data
+/// The single-column data vector @p sl_array spans [@p LOGX_MIN,@p LOGX_MAX] with
+///   range @p LOGX_RANGE.  Each kernel instance maps one element of this data
 ///   vector onto its matching @p histogram_array bin element through an @p atomic_inc
 ///   operation on that element.
 ///
@@ -387,7 +387,7 @@ __kernel void histogram_univariate(
     // For every ROI pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
-    const float bin_x = (sl_array[global_id]-X_MIN)/X_RANGE;
+    const float bin_x = (sl_array[global_id]-LOGX_MIN)/LOGX_RANGE;
     const uint idx = min(max(0u,(uint)(bin_x*(float)N_HIST_BINS)),N_HIST_BINS-1u);
     atomic_inc(&histogram_array[idx]);
     return;

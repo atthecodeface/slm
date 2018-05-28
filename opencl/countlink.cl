@@ -174,7 +174,8 @@ __kernel void flag_downchannels(
             // After label_confluences() only...
             if ( ( ((mapping_array[idx]&IS_MINORINFLOW)>0)
                     || (counter==2u && count_array[idx]>2u))
-                    && counter<INTERCHANNEL_MAX_N_STEPS) {
+                    && counter<20u  // HACK - should be scaled by pixel size
+                    ) {
                 atomic_and(&mapping_array[channelhead_idx], ~IS_CHANNELHEAD);
             }
             atomic_or(&mapping_array[idx],IS_THINCHANNEL);
