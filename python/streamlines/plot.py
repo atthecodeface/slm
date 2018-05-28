@@ -163,8 +163,8 @@ class Plot(Core):
             self.plot_maps()
         if self.do_plot_distributions:
             self.plot_distributions()
-        if self.do_plot_hillslope_distributions:
-            self.plot_hillslope_distributions()
+        if self.do_plot_hsl_distributions:
+            self.plot_hsl_distributions()
 
         self.print('**Plot all end**\n')  
         
@@ -190,10 +190,10 @@ class Plot(Core):
             self.plot_segments()
         if self.do_plot_channels:
             self.plot_channels()
-        if self.do_plot_hillslope_lengths:
-            self.plot_hillslope_lengths()
-        if self.do_plot_hillslope_lengths_contoured:
-            self.plot_hillslope_lengths_contoured()
+        if self.do_plot_hsl:
+            self.plot_hsl()
+        if self.do_plot_hsl_contoured:
+            self.plot_hsl_contoured()
         self.print('...done')
             
     def plot_dtm_shaded_relief(self):
@@ -448,7 +448,7 @@ class Plot(Core):
                                do_shaded_relief=do_shaded_relief, 
                                do_flip_cmap=False, do_balance_cmap=False)
 
-    def plot_hillslope_lengths(self, cmap=None,
+    def plot_hsl(self, cmap=None,
                                z_min=None,z_max=None, 
                                do_shaded_relief=None,
                                colorbar_aspect=None):
@@ -460,33 +460,33 @@ class Plot(Core):
             do_shaded_relief = self.plot_hsl_do_shaded_relief
         if z_min is None:
             if self.plot_hsl_z_min=='full':
-                z_min = np.percentile(self.mapping.hillslope_length_smoothed_array, 0.0)
+                z_min = np.percentile(self.mapping.hsl_smoothed_array, 0.0)
             elif self.plot_hsl_z_min=='auto':
-                z_min = np.percentile(self.mapping.hillslope_length_smoothed_array, 1.0)
+                z_min = np.percentile(self.mapping.hsl_smoothed_array, 1.0)
             else:
                 z_min = self.plot_hsl_z_min
         if z_max is None:
             if self.plot_hsl_z_max=='full':
-                z_max = np.percentile(self.mapping.hillslope_length_smoothed_array,100.0)  
+                z_max = np.percentile(self.mapping.hsl_smoothed_array,100.0)  
             elif self.plot_hsl_z_max=='auto':
-                z_max = np.percentile(self.mapping.hillslope_length_smoothed_array,99.9)  
+                z_max = np.percentile(self.mapping.hsl_smoothed_array,99.9)  
             else:
                 z_max = self.plot_hsl_z_max     
-        grid_array = np.clip(self.mapping.hillslope_length_array,z_min,z_max)
+        grid_array = np.clip(self.mapping.hsl_array,z_min,z_max)
         mask_array = np.zeros_like(grid_array).astype(np.bool)            
         mask_array[self.mapping.label_array==0] = True
         self.plot_gridded_data(grid_array,
                                cmap,  # rainbow
                                mask_array=mask_array,
-                               fig_name='hillslope_length',
+                               fig_name='hsl',
                                window_title='hillslope length',
                                do_flip_cmap=False, do_balance_cmap=False,
                                do_shaded_relief=do_shaded_relief, 
                                do_colorbar=True, 
-                               colorbar_title='mean hillslope length [m]',
+                               colorbar_title='hillslope length [m]',
                                colorbar_aspect=colorbar_aspect)
     
-    def plot_hillslope_distributions(self, x_stretch=None):
+    def plot_hsl_distributions(self, x_stretch=None):
         self.print('Plotting hillslope length distributions...')
         df = self.mapping.hillslope_stats_df
         kde_min_labels = 20
@@ -617,10 +617,12 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig(fig_name,fig)
 
-    def plot_hillslope_lengths_contoured(self,cmap=None,
+    def plot_hsl_contoured(self,cmap=None,
                                          do_colorbar=False, 
-                                         colorbar_title='mean hillslope length [m]',
+                                         colorbar_title='hillslope length [m]',
                                          n_contours=None,
+                                         contour_interval=None,
+                                         linewidth=None,
                                          z_min=None,z_max=None,
                                          do_shaded_relief=None,
                                          colorbar_aspect=None,
@@ -639,21 +641,23 @@ class Plot(Core):
             do_shaded_relief = self.contour_hsl_do_shaded_relief
         if z_min is None:
             if self.contour_hsl_z_min=='full':
-                z_min = np.percentile(self.mapping.hillslope_length_smoothed_array, 0.0)
+                z_min = np.percentile(self.mapping.hsl_smoothed_array, 0.0)
             elif self.contour_hsl_z_min=='auto':
-                z_min = np.percentile(self.mapping.hillslope_length_smoothed_array, 1.0)
+                z_min = np.percentile(self.mapping.hsl_smoothed_array, 1.0)
             else:
                 z_min = self.contour_hsl_z_min
         if z_max is None:
             if self.contour_hsl_z_max=='full':
-                z_max = np.percentile(self.mapping.hillslope_length_smoothed_array,100.0)  
+                z_max = np.percentile(self.mapping.hsl_smoothed_array,100.0)  
             elif self.contour_hsl_z_max=='auto':
-                z_max = np.percentile(self.mapping.hillslope_length_smoothed_array,99.0)  
+                z_max = np.percentile(self.mapping.hsl_smoothed_array,99.0)  
             else:
                 z_max = self.contour_hsl_z_max     
-        grid_array = np.clip(self.mapping.hillslope_length_smoothed_array,z_min,z_max)
+        grid_array = np.clip(self.mapping.hsl_smoothed_array,z_min,z_max)
         if n_contours is None and self.contour_hsl_n_contours!='auto':
                 n_contours = self.contour_hsl_n_contours
+        if linewidth is None:
+            linewidth = self.contour_hsl_linewidth
                 
         mask_array = self.geodata.basin_mask_array[
                         self.geodata.pad_width:-self.geodata.pad_width,
@@ -679,6 +683,8 @@ class Plot(Core):
             cbar.set_label(colorbar_title)
         self.plot_contours_overlay(axes,np.flipud(grid_array),mask=mask_array,
                                    n_contours=n_contours,
+                                   contour_interval=contour_interval,
+                                   linewidth=linewidth,
                                    contour_label_suffix=contour_label_suffix, 
                                    contour_label_fontsize=contour_label_fontsize)
         # Force map limits to match those of the ROI
@@ -686,9 +692,10 @@ class Plot(Core):
         axes.set_xlim(xmin=self.geodata.roi_x_bounds[0],xmax=self.geodata.roi_x_bounds[1])
         axes.set_ylim(ymin=self.geodata.roi_y_bounds[0],ymax=self.geodata.roi_y_bounds[1])
         self._force_display(fig)
-        self._record_fig('hillslope_length_contours',fig)
+        self._record_fig('hsl_contours',fig)
     
     def plot_contours_overlay(self,axes,Z,mask=None, n_contours=None,
+                              contour_interval=None, linewidth=None,
                               contour_label_suffix='m', contour_label_fontsize=12):
         """
         TBD
@@ -700,17 +707,20 @@ class Plot(Core):
 #         z_min = np.percentile(Z, 1.0)
         z_max = np.percentile(Z,100.0)
         if n_contours is None:
-            c_interval = 5
+            if contour_interval is None:
+                c_interval = 5
+            else:
+                c_interval = contour_interval
             while c_interval<50:
-                c_min = np.floor(np.min(Z)/c_interval)*c_interval
-                c_max = np.ceil(z_max/c_interval)*c_interval
+                c_min = np.floor(np.min(Z)//c_interval)*c_interval
+                c_max = np.ceil(z_max//c_interval)*c_interval
                 c_count = (c_max-c_min)/c_interval
                 if c_count<=15:
                     break
                 c_interval *= 2
             n_contours = np.arange(c_min,c_max+c_interval,c_interval)
         contours = axes.contour(x_pixel_centers_array,y_pixel_centers_array,Z,
-                                n_contours, colors='k')
+                                n_contours, colors='k', linewidths=linewidth)
         axes.clabel(contours, fmt='%.0f'+contour_label_suffix, 
                     fontsize=contour_label_fontsize);
 

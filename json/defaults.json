@@ -113,8 +113,8 @@
 	"mapping": {
 		"segmentation_threshold" : 20,
 		"n_hsl_averaging_threshold" : 5,
-		"hillslope_length_median_radius" : 5,
-		"hillslope_length_mean_radius" : 50,
+		"hsl_median_radius" : 5,
+		"hsl_mean_radius" : 50,
 		"Xsegmentation_threshold" : 1000,
 		"Xn_hsl_averaging_threshold" : 10,
 		
@@ -135,9 +135,9 @@
 		"do_plot_flow_maps" : true,
 		"do_plot_segments" : true,
 		"do_plot_channels" : true,
-		"do_plot_hillslope_lengths" : true,
-		"do_plot_hillslope_lengths_contoured" : true,
-		"do_plot_hillslope_distributions" : true,
+		"do_plot_hsl" : true,
+		"do_plot_hsl_contoured" : true,
+		"do_plot_hsl_distributions" : true,
 
 		"do_plot_downstreamlines" : true,
 		"do_plot_upstreamlines" : true,
@@ -237,7 +237,8 @@
         "contour_hsl_n_contours" : "auto",
         "contour_hsl_z_min" : "full",
         "contour_hsl_z_max" : "full",
-        "contour_hsl_colorbar_aspect" : 0.07
+        "contour_hsl_colorbar_aspect" : 0.07,
+        "contour_hsl_linewidth" : 0.5
 	},
 
 	"export": {

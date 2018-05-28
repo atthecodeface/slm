@@ -16,7 +16,7 @@ __all__ = ['hillslope_lengths']
 
 pdebug = print
 
-def hillslope_lengths( cl_state, info, data, verbose, do_use_ridges=False ): 
+def hsl( cl_state, info, data, verbose, do_use_ridges=False ): 
     """
     Measure mean (half) hillslope lengths.
     

@@ -106,11 +106,11 @@ class Mapping(Core):
         self.map_ridges()
         
         # Measure mean streamline distances from midslope to channel pixels
-        self.measure_hillslope_lengths()
+        self.measure_hsl()
         #    - no atomics
         
         # Measure mean streamline distances from midslope to channel pixels
-        self.map_hillslope_lengths()
+        self.map_hsl()
         #    - no GPU
         
         self.print('**Mapping end**\n')  
@@ -122,8 +122,8 @@ class Mapping(Core):
             del(self.mapping_array)
             del(self.data)
             del(self.label_array)
-            del(self.hillslope_length_array)
-            del(self.hillslope_length_smoothed_array)
+            del(self.hsl_array)
+            del(self.hsl_smoothed_array)
         except:
             pass
         self.mapping_array = self.trace.mapping_array.copy()
@@ -259,7 +259,7 @@ class Mapping(Core):
         self.data.mapping_array[skeleton_ridge_array] |= self.info.is_ridge
         self.print('done')  
 
-    def measure_hillslope_lengths(self):
+    def measure_hsl(self):
         if self.do_map_hsl_from_ridges:
             flag = self.info.is_ridge
         else:
@@ -272,7 +272,7 @@ class Mapping(Core):
         self.data.traj_length_array \
             = np.zeros_like(self.data.traj_label_array,dtype=np.float32)
         
-        lengths.hillslope_lengths(self.cl_state, self.info, self.data, self.verbose)
+        lengths.hsl(self.cl_state, self.info, self.data, self.verbose)
 
         unique_labels = np.unique(self.data.traj_label_array)
         self.hillslope_labels \
@@ -282,7 +282,7 @@ class Mapping(Core):
         df['label']  = self.data.traj_label_array
         df['length'] = self.data.traj_length_array
         df = df[df.label!=0]
-        self.hillslope_length_df = df
+        self.hsl_df = df
         
         stats_df = pd.DataFrame(self.hillslope_labels,columns=['label'])
         stats_list = ( ('count','count'),('mean','mean [m]'), ('std','stddev [m]') )
@@ -292,18 +292,18 @@ class Mapping(Core):
         stats_df.set_index('label',inplace=True)
         self.hillslope_stats_df = stats_df
         
-        self.hillslope_length_array=np.zeros_like(self.data.label_array,dtype=np.float32)
+        self.hsl_array=np.zeros_like(self.data.label_array,dtype=np.float32)
         for idx,row in stats_df.iterrows():
             if row['count']>=self.n_hsl_averaging_threshold:
-                self.hillslope_length_array[self.data.label_array==idx] = row['mean [m]']
+                self.hsl_array[self.data.label_array==idx] = row['mean [m]']
             else:
-                self.hillslope_length_array[self.data.label_array==idx] = 0
+                self.hsl_array[self.data.label_array==idx] = 0
 
-    def map_hillslope_lengths(self):
+    def map_hsl(self):
         self.print('Mapping hillslope lengths...',end='',flush=True)
         sys.stdout.flush()
         
-        hsl = np.flipud(self.hillslope_length_array.T)
+        hsl = np.flipud(self.hsl_array.T)
         hsl_bool = hsl.astype(np.bool)
         hsl_clipped = np.ma.array(hsl, mask=~hsl_bool)
         hsl_min = np.min(hsl_clipped)
@@ -311,9 +311,9 @@ class Mapping(Core):
         hsl_clipped = 65535*(hsl_clipped-hsl_min)/(hsl_max-hsl_min)
         hsl_masked = np.ma.array(hsl_clipped.astype(np.uint16),mask=~hsl_bool)
 
-        median_radius = int(self.hillslope_length_median_radius
+        median_radius = int(self.hsl_median_radius
                             /self.geodata.roi_pixel_size)
-        mean_radius   = int(self.hillslope_length_mean_radius
+        mean_radius   = int(self.hsl_mean_radius
                             /self.geodata.roi_pixel_size)
         median_disk = disk(median_radius)
         mean_disk   = disk(mean_radius)
@@ -321,7 +321,7 @@ class Mapping(Core):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.print('median filtering with {0}m ({1}-pixel) diameter disk...'
-                       .format(self.hillslope_length_median_radius,median_radius), 
+                       .format(self.hsl_median_radius,median_radius), 
                        end='',flush=True)
             if self.state.verbose:
                 sys.stdout.flush()
@@ -335,13 +335,13 @@ class Mapping(Core):
                                   mask=~hsl_bool)
     #                = np.ma.array(median(hsl_masked,median_disk),mask=~hsl_bool)
             self.print('mean filtering with {0}m ({1}-pixel) diameter disk...'
-                       .format(self.hillslope_length_mean_radius,mean_radius),
+                       .format(self.hsl_mean_radius,mean_radius),
                        end='',flush=True) 
             if self.state.verbose:
                 sys.stdout.flush()
             hsl_median_nm = mean(hsl_median,mean_disk)
             
-        self.hillslope_length_smoothed_array \
+        self.hsl_smoothed_array \
             = ((hsl_median_nm[self.geodata.pad_width:-self.geodata.pad_width,
                               self.geodata.pad_width:-self.geodata.pad_width]
                                 .astype(np.float32))/65535)*(hsl_max-hsl_min)+hsl_min
