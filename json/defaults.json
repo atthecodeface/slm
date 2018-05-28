@@ -19,8 +19,6 @@
 		"do_plot" : true,
 		"do_save_state" : false,	
 		"do_export" : false,
-		"do_rw_savez" : false,
-		"do_rw_hdf5" : false,
 
 		"do_git_info" : true,
         "do_display" : false
@@ -163,12 +161,15 @@
 		"hillshade_azimuth" : 135,
 		"hillshade_angle" : 25,
 		
+		
 		"downstreamline_color" : "blue",
 		"upstreamline_color" : "red",
 		
 		"streamline_point_marker" : "-",
 		"streamline_point_size" : 0.5,
 		"streamline_point_alpha" : 0.7,
+		"streamline_linewidth" : 0.5,
+		"classical_streamline_linewidth" : 1.0,
 
 		"shaded_relief_hillshade_alpha" : 0.3,
 		"shaded_relief_color_alpha" : 0.55,
@@ -191,9 +192,9 @@
 		"channel_head_marker_alpha" : 0.8,
 		"channel_shaded_relief_hillshade_alpha" : 0.5,
 		
-		"gradient_vector_color" : "black",
-		"gradient_vector_alpha" : 0.8,
-		"gradient_vector_scale" : "none",
+		"gradient_vector_color" : "purple",
+		"gradient_vector_alpha" : 0.7,
+		"gradient_vector_scale" : 30,
 	
 		"blockage_marker_size" : 20,
 		"loops_marker_size" : 20,
@@ -238,7 +239,9 @@
         "contour_hsl_z_min" : "full",
         "contour_hsl_z_max" : "full",
         "contour_hsl_colorbar_aspect" : 0.07,
-        "contour_hsl_linewidth" : 0.5
+        "contour_hsl_linewidth" : 0.5,
+        "contour_hsl_label_fontsize" : 9,
+        "contour_hsl_label_suffix" : ""
 	},
 
 	"export": {

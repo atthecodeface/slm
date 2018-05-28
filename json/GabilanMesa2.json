@@ -5,13 +5,6 @@
 		"data_path" : ["$SLMDATA","GabilanMesa"]
 	},
 	
-	"analysis": {
-	},
-
-	"plot": {
-        "contour_hsl_n_contours" : 21
-	},
-	
 	"export": {
 		"export_path" : ["$SLMXPT","GabilanMesa2"]
 	}

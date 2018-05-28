@@ -5,7 +5,8 @@
 		"data_path" : ["$SLMDATA","GabilanMesa"]
 	},
 	
-	"analysis": {
+	"plot": {
+        "mhsl_pdf_x_stretch" : 1.1
 	},
 		
 	"export": {

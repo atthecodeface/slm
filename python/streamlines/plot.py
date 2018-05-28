@@ -488,12 +488,12 @@ class Plot(Core):
     
     def plot_hsl_distributions(self, x_stretch=None):
         self.print('Plotting hillslope length distributions...')
-        df = self.mapping.hillslope_stats_df
+        df = self.mapping.hsl_stats_df
         kde_min_labels = 20
         if x_stretch is None:
             x_stretch = self.mhsl_pdf_x_stretch
             
-        name = 'hillslope_mean'
+        name = 'hsl_mean'
         fig,_ = self._new_figure(window_title=name)
         if df.shape[0]>kde_min_labels:
             axes = df['mean [m]'].plot.density(figsize=(8,8),
@@ -508,7 +508,7 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig(name,fig)
 
-        name = 'hillslope_stddev'
+        name = 'hsl_stddev'
         fig,_ = self._new_figure(window_title=name)
         if df.shape[0]>kde_min_labels:
             axes = df['stddev [m]'].plot.density(figsize=(8,8),
@@ -524,7 +524,7 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig(name,fig)
         
-        name = 'hillslope_count'
+        name = 'hsl_count'
         fig,_ = self._new_figure(window_title=name)
         axes = df['count'].plot.hist(bins=20,figsize=(8,8),
                                 title='Hillslope streamline count')
@@ -626,8 +626,8 @@ class Plot(Core):
                                          z_min=None,z_max=None,
                                          do_shaded_relief=None,
                                          colorbar_aspect=None,
-                                         contour_label_suffix='m',
-                                         contour_label_fontsize=12):
+                                         contour_label_suffix=None,
+                                         contour_label_fontsize=None):
         """
         Streamlines, points on semi-transparent shaded relief
         """
@@ -639,6 +639,10 @@ class Plot(Core):
             colorbar_aspect = self.contour_hsl_colorbar_aspect
         if do_shaded_relief is None:
             do_shaded_relief = self.contour_hsl_do_shaded_relief
+        if contour_label_fontsize is None:
+            contour_label_fontsize = self.contour_hsl_label_fontsize
+        if contour_label_suffix is None:
+            contour_label_suffix = self.contour_hsl_label_suffix
         if z_min is None:
             if self.contour_hsl_z_min=='full':
                 z_min = np.percentile(self.mapping.hsl_smoothed_array, 0.0)
@@ -654,8 +658,8 @@ class Plot(Core):
             else:
                 z_max = self.contour_hsl_z_max     
         grid_array = np.clip(self.mapping.hsl_smoothed_array,z_min,z_max)
-        if n_contours is None and self.contour_hsl_n_contours!='auto':
-                n_contours = self.contour_hsl_n_contours
+#         if n_contours is None and self.contour_hsl_n_contours!='auto':
+#                 n_contours = self.contour_hsl_n_contours
         if linewidth is None:
             linewidth = self.contour_hsl_linewidth
                 
@@ -715,7 +719,7 @@ class Plot(Core):
                 c_min = np.floor(np.min(Z)//c_interval)*c_interval
                 c_max = np.ceil(z_max//c_interval)*c_interval
                 c_count = (c_max-c_min)/c_interval
-                if c_count<=15:
+                if c_count<=17:
                     break
                 c_interval *= 2
             n_contours = np.arange(c_min,c_max+c_interval,c_interval)
@@ -732,16 +736,14 @@ class Plot(Core):
             up_or_down_str = 'down'
             streamline_arrays_list = self.trace.streamline_arrays_list[0]
             color = self.downstreamline_color
-            marker = self.streamline_point_marker   
-            size = self.streamline_point_size
-            alpha = self.streamline_point_alpha
         else:
             up_or_down_str = 'up'
             streamline_arrays_list = self.trace.streamline_arrays_list[1]
             color = self.upstreamline_color
-            marker = self.streamline_point_marker   
-            size = self.streamline_point_size
-            alpha = self.streamline_point_alpha
+        marker = self.streamline_point_marker   
+        size = self.streamline_point_size
+        linewidth = self.streamline_linewidth
+        alpha = self.streamline_point_alpha
         
         try:
             n_streamlines = len(streamline_arrays_list)
@@ -787,7 +789,7 @@ class Plot(Core):
                       marker, 
                       color=color,
                       ms=size, 
-                      lw=size,
+                      lw=linewidth,
                       alpha=alpha,
                       fillstyle='full')
     
@@ -815,7 +817,9 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig('classical_streamlines',fig)
 
-    def plot_classical_streamlines_and_vectors(self):
+    def plot_classical_streamlines_and_vectors(self, sl_color=None, 
+                                               vec_color=None, vec_alpha=None, 
+                                               vec_scale=None):
         """
         Classic streamlines and gradient vector field on color shaded relief
         """
@@ -824,14 +828,23 @@ class Plot(Core):
         self.plot_roi_shaded_relief_overlay(axes, 
                         color_alpha=self.streamline_shaded_relief_color_alpha,
                         hillshade_alpha=self.streamline_shaded_relief_hillshade_alpha)
-        self.plot_gradient_vector_field_overlay(axes,color='darkred')
-        self.plot_classical_streamlines_overlay(axes)
+        if sl_color is None:
+            sl_color = self.downstreamline_color
+        if vec_color is None:
+            vec_color = self.gradient_vector_color        
+        if vec_alpha is None:
+            vec_alpha = self.gradient_vector_alpha       
+        if vec_scale is None:
+            vec_scale = self.gradient_vector_scale    
+        self.plot_gradient_vector_field_overlay(axes, vec_color=vec_color,
+                                                vec_alpha=vec_alpha, vec_scale=vec_scale)
+        self.plot_classical_streamlines_overlay(axes, sl_color=sl_color)
         axes.set_xlim(xmin=self.geodata.roi_x_bounds[0],xmax=self.geodata.roi_x_bounds[1])
         axes.set_ylim(ymin=self.geodata.roi_y_bounds[0],ymax=self.geodata.roi_y_bounds[1])
         self._force_display(fig)
         self._record_fig('classical_streamlines_and_vectors',fig)
 
-    def plot_classical_streamlines_overlay(self,axes):
+    def plot_classical_streamlines_overlay(self,axes, sl_color='blue'):
         """
         Classic streamlines (overlay method)
         """
@@ -847,10 +860,12 @@ class Plot(Core):
                                   mask=self.geodata.basin_mask_array).T[
                         self.geodata.pad_width:-self.geodata.pad_width,
                         self.geodata.pad_width:-self.geodata.pad_width], 
-                      density=min(1.0,self.classical_streamplot_density), color='k' )
+                      density=min(1.0,self.classical_streamplot_density), 
+                      color=sl_color, linewidth=self.classical_streamline_linewidth)
 #                           color=self.geodata.roi_array, cmap='terrain')
 
-    def plot_gradient_vector_field(self):
+    def plot_gradient_vector_field(self, vec_color='purple',vec_alpha=0.5,
+                                         vec_scale=30):
         """
         Topographic gradient vector field on color shaded relief
         """
@@ -859,11 +874,14 @@ class Plot(Core):
         self.plot_roi_shaded_relief_overlay(axes, 
                         color_alpha=self.streamline_shaded_relief_color_alpha,
                         hillshade_alpha=self.streamline_shaded_relief_hillshade_alpha)
-        self.plot_gradient_vector_field_overlay(axes)
+        self.plot_gradient_vector_field_overlay(axes, vec_color=vec_color,
+                                                vec_alpha=vec_alpha, vec_scale=vec_scale)
         self._force_display(fig)
         self._record_fig('gradient_vector_field',fig)
 
-    def plot_gradient_vector_field_overlay(self,axes,color='k'):
+    def plot_gradient_vector_field_overlay(self,axes,
+                                           vec_color='purple',vec_alpha=0.5,
+                                           vec_scale=30):
         """
        Topographic gradient vector field (overlay method)
         """
@@ -907,9 +925,9 @@ class Plot(Core):
                     (u*m).T, 
                     (v*m).T,
                     pivot='mid',
-                    color=self.gradient_vector_color,
-                    alpha=self.gradient_vector_alpha
-                    ,scale=scale
+                    color=vec_color,
+                    alpha=vec_alpha,
+                    scale=vec_scale
                     )
             
     def plot_blockages_overlay(self,axes,color='k',shape='s'):

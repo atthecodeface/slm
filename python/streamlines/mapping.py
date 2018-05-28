@@ -290,7 +290,7 @@ class Mapping(Core):
             stats_df = stats_df.join( getattr(df.groupby('label'),stat[0])() ,on='label')
             stats_df.rename(index=str, columns={'length':stat[1]}, inplace=True)
         stats_df.set_index('label',inplace=True)
-        self.hillslope_stats_df = stats_df
+        self.hsl_stats_df = stats_df
         
         self.hsl_array=np.zeros_like(self.data.label_array,dtype=np.float32)
         for idx,row in stats_df.iterrows():

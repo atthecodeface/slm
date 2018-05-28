@@ -4,15 +4,6 @@
 		"dtm_file" : "Gabilan_DTM0_resampled1m_fillsinks0p01deg.tif",
 		"data_path" : ["$SLMDATA","GabilanMesa"]
 	},
-
-	"mapping": {
-		"Xhillslope_length_median_radius" : 100,
-		"Xhillslope_length_mean_radius" :   250
-	},
-
-	"plot": {
-        "contour_hsl_n_contours" : 13
-	},
 	
 	"export": {
 		"export_path" : ["$SLMXPT","GabilanMesa3"]
