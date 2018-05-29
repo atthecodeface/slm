@@ -11,10 +11,8 @@
 	"plot": {
         "mhsl_pdf_x_stretch" : 0.8,
         "plot_hsl_colorbar_aspect" : 0.04,
-        "contour_hsl_n_contours" : 11,
-        "contour_hsl_z_min" : 30,
-        "contour_hsl_z_max" : 120,
-        "contour_hsl_colorbar_aspect" : 0.05
+        "contour_hsl_colorbar_aspect" : 0.05,
+        "contour_hsl_label_fontsize" : 7
 	},
 	
 	"export": {
