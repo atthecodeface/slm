@@ -82,7 +82,8 @@ class Plot(Core):
         self.figs = {}
         
     def _new_figure(self, title=None, window_title=None, pdf=False, 
-                    x_pixel_scale=1,y_pixel_scale=1):
+                    x_pixel_scale=1,y_pixel_scale=1,
+                    window_size_factor=None):
         """
         TBD
         """
@@ -105,13 +106,14 @@ class Plot(Core):
         except:
             self.figure_count = 1
         if not pdf:
-            plot_window_size_factor = self.plot_window_size_factor
+            if window_size_factor is None:
+                window_size_factor = self.window_size_factor
         else:
-            plot_window_size_factor = self.plot_window_pdf_size_factor
+            window_size_factor = self.window_pdf_size_factor
         fig, axes = plt.subplots( 
-#                         figsize = plt.figaspect(1)*plot_window_size_factor
-                        figsize=(self.plot_window_width *plot_window_size_factor,
-                                 self.plot_window_height*plot_window_size_factor)
+#                         figsize = plt.figaspect(1)*window_size_factor
+                        figsize=(self.window_width *window_size_factor,
+                                 self.window_height*window_size_factor)
                          )
         axes.set_rasterization_zorder(1)
         fig.canvas.set_window_title(window_title)
@@ -196,12 +198,13 @@ class Plot(Core):
             self.plot_hsl_contoured()
         self.print('...done')
             
-    def plot_dtm_shaded_relief(self):
+    def plot_dtm_shaded_relief(self, window_size_factor=None):
         """
         Hillshade view of source DTM
         """
         fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
-                                    y_pixel_scale=self.geodata.roi_pixel_size)
+                                    y_pixel_scale=self.geodata.roi_pixel_size,
+                                    window_size_factor=window_size_factor)
         dtm_hillshade_array = self.generate_hillshade(self.geodata.dtm_array,
                                                       self.hillshade_azimuth,
                                                       self.hillshade_angle)
@@ -211,12 +214,13 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig('dtm_shaded_relief',fig)
     
-    def plot_roi_shaded_relief(self, interp_method=None):
+    def plot_roi_shaded_relief(self, interp_method=None, window_size_factor=None):
         """
         Hillshade view of ROI of DTM
         """
         fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
-                                    y_pixel_scale=self.geodata.roi_pixel_size)
+                                    y_pixel_scale=self.geodata.roi_pixel_size,
+                                    window_size_factor=window_size_factor)
         self.plot_roi_shaded_relief_overlay(axes, 
                                     color_alpha=self.shaded_relief_color_alpha,
                                     hillshade_alpha=self.shaded_relief_hillshade_alpha,
@@ -224,8 +228,7 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig('roi_shaded_relief',fig)
 
-    def plot_roi_shaded_relief_overlay(self, axes, 
-                                       do_plot_color_relief=None,
+    def plot_roi_shaded_relief_overlay(self, axes, do_plot_color_relief=None,
                                        color_alpha=None, hillshade_alpha=None,
                                        interp_method=None):
         """
@@ -245,7 +248,7 @@ class Plot(Core):
                                                                self.hillshade_azimuth,
                                                                self.hillshade_angle)
         if interp_method is None:
-            interp_method = self.plot_interpolation_method
+            interp_method = self.interpolation_method
             
 #         rounded_pixel_sf = (self.geodata.roi_pixel_size
 #                             /np.round(self.geodata.roi_pixel_size))
@@ -288,12 +291,13 @@ class Plot(Core):
                        *cos(slope)*cos(azimuth_radians - aspect) )
         return (255*(shadedImage+1))/2
 
-    def plot_streamlines(self):
+    def plot_streamlines(self, window_size_factor=None):
         """
         Streamlines, points on semi-transparent shaded relief
         """
         fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
-                                    y_pixel_scale=self.geodata.roi_pixel_size)
+                                    y_pixel_scale=self.geodata.roi_pixel_size,
+                                    window_size_factor=window_size_factor)
         self.plot_roi_shaded_relief_overlay(axes,
                         color_alpha=self.streamline_shaded_relief_color_alpha,
                         hillshade_alpha=self.streamline_shaded_relief_hillshade_alpha)
@@ -316,7 +320,7 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig('streamlines',fig)
     
-    def plot_channels(self):
+    def plot_channels(self, window_size_factor=None):
         try:
             self.mapping.mapping_array
         except: 
@@ -330,7 +334,8 @@ class Plot(Core):
                     
         fig,axes = self._new_figure(window_title=window_title,
                                     x_pixel_scale=self.geodata.roi_pixel_size,
-                                    y_pixel_scale=self.geodata.roi_pixel_size)
+                                    y_pixel_scale=self.geodata.roi_pixel_size,
+                                    window_size_factor=window_size_factor)
 
         self.plot_roi_shaded_relief_overlay(axes,
                 do_plot_color_relief=False, color_alpha=0,
@@ -407,7 +412,7 @@ class Plot(Core):
                       cmap=cmap, 
                       extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds],
                       alpha=alpha,
-                      interpolation=self.plot_interpolation_method
+                      interpolation=self.interpolation_method
                     ,vmin=0, vmax=1
                       )
         else:
@@ -415,19 +420,19 @@ class Plot(Core):
                       cmap=cmap, 
                       extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds],
                       alpha=alpha,
-                      interpolation=self.plot_interpolation_method
+                      interpolation=self.interpolation_method
                       )
         clim=im.properties()['clim']
         return im
     
-    def plot_flow_maps(self):        
+    def plot_flow_maps(self, window_size_factor=None):        
         tmp_array = self.trace.sla_array[:,:,0].copy()
         tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)] \
             = np.sqrt(tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)])
         
         self.plot_gridded_data(tmp_array,
                                'gist_earth', 
-                               fig_name='dsla',
+                               fig_name='dsla', window_size_factor=window_size_factor,
                                window_title='dsla',
                                do_flip_cmap=True, do_balance_cmap=False)
         tmp_array = self.trace.slt_array[:,:,0].copy()
@@ -435,50 +440,48 @@ class Plot(Core):
             = np.log(tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)])
         self.plot_gridded_data(tmp_array,
                                'gist_earth', #'seismic', 
-                               fig_name='dslt',
-                               window_title='dslt',
+                               fig_name='dslt', window_size_factor=window_size_factor,
+                               window_title='dslt', 
                                do_flip_cmap=True, do_balance_cmap=False)
         
-    def plot_segments(self,do_shaded_relief=True):
+    def plot_segments(self,do_shaded_relief=True, window_size_factor=None):
         tmp_array = (self.mapping.label_array.copy().astype(np.int32))
         self.plot_gridded_data(tmp_array,
                                'randomized', 
-                               fig_name='label',
+                               fig_name='label', window_size_factor=window_size_factor,
                                window_title='label',
                                do_shaded_relief=do_shaded_relief, 
                                do_flip_cmap=False, do_balance_cmap=False)
 
-    def plot_hsl(self, cmap=None,
-                               z_min=None,z_max=None, 
-                               do_shaded_relief=None,
-                               colorbar_aspect=None):
+    def plot_hsl(self, cmap=None, window_size_factor=None,
+                 z_min=None,z_max=None, do_shaded_relief=None, colorbar_aspect=None):
         if cmap is None:
-            cmap = self.plot_hsl_cmap
+            cmap = self.hsl_cmap
         if colorbar_aspect is None:
-            colorbar_aspect = self.plot_hsl_colorbar_aspect
+            colorbar_aspect = self.hsl_colorbar_aspect
         if do_shaded_relief is None:
-            do_shaded_relief = self.plot_hsl_do_shaded_relief
+            do_shaded_relief = self.hsl_do_shaded_relief
         if z_min is None:
-            if self.plot_hsl_z_min=='full':
+            if self.hsl_z_min=='full':
                 z_min = np.percentile(self.mapping.hsl_smoothed_array, 0.0)
-            elif self.plot_hsl_z_min=='auto':
+            elif self.hsl_z_min=='auto':
                 z_min = np.percentile(self.mapping.hsl_smoothed_array, 1.0)
             else:
-                z_min = self.plot_hsl_z_min
+                z_min = self.hsl_z_min
         if z_max is None:
-            if self.plot_hsl_z_max=='full':
+            if self.hsl_z_max=='full':
                 z_max = np.percentile(self.mapping.hsl_smoothed_array,100.0)  
-            elif self.plot_hsl_z_max=='auto':
+            elif self.hsl_z_max=='auto':
                 z_max = np.percentile(self.mapping.hsl_smoothed_array,99.9)  
             else:
-                z_max = self.plot_hsl_z_max     
+                z_max = self.hsl_z_max     
         grid_array = np.clip(self.mapping.hsl_array,z_min,z_max)
         mask_array = np.zeros_like(grid_array).astype(np.bool)            
         mask_array[self.mapping.label_array==0] = True
         self.plot_gridded_data(grid_array,
                                cmap,  # rainbow
                                mask_array=mask_array,
-                               fig_name='hsl',
+                               fig_name='hsl', window_size_factor=window_size_factor,
                                window_title='hillslope length',
                                do_flip_cmap=False, do_balance_cmap=False,
                                do_shaded_relief=do_shaded_relief, 
@@ -536,18 +539,11 @@ class Plot(Core):
         self._record_fig(name,fig)
         self.print('...done')
 
-    def plot_gridded_data(self, 
-                            grid_array,
-                            gridded_cmap, 
-                            fig_name=None,
-                            mask_array=None,
-                            window_title='',
-                            do_flip_cmap=False,
-                            do_balance_cmap=True,
-                            do_shaded_relief=True,
-                            do_colorbar=False,
-                            colorbar_title=None,
-                            colorbar_aspect=0.07):
+    def plot_gridded_data(self, grid_array, gridded_cmap, 
+                          window_size_factor=None, fig_name=None, mask_array=None,
+                          window_title='', do_flip_cmap=False, do_balance_cmap=True,
+                          do_shaded_relief=True, do_colorbar=False, 
+                          colorbar_title=None, colorbar_aspect=0.07):
         """
         TBD
         """
@@ -569,7 +565,8 @@ class Plot(Core):
             
         fig,axes = self._new_figure(window_title=window_title,
                                     x_pixel_scale=self.geodata.roi_pixel_size,
-                                    y_pixel_scale=self.geodata.roi_pixel_size)
+                                    y_pixel_scale=self.geodata.roi_pixel_size,
+                                    window_size_factor=window_size_factor)
 
         if do_shaded_relief:
             self.plot_roi_shaded_relief_overlay(axes, do_plot_color_relief=False,
@@ -604,7 +601,7 @@ class Plot(Core):
                   cmap=gridded_cmap, 
                   extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds],
                   alpha=grid_alpha,
-                  interpolation=self.plot_interpolation_method,
+                  interpolation=self.interpolation_method,
                   vmin=vmin, vmax=vmax
                   )
         clim=im.properties()['clim']
@@ -617,22 +614,18 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig(fig_name,fig)
 
-    def plot_hsl_contoured(self,cmap=None,
-                                         do_colorbar=False, 
-                                         colorbar_title='hillslope length [m]',
-                                         n_contours=None,
-                                         contour_interval=None,
-                                         linewidth=None,
-                                         z_min=None,z_max=None,
-                                         do_shaded_relief=None,
-                                         colorbar_aspect=None,
-                                         contour_label_suffix=None,
-                                         contour_label_fontsize=None):
+    def plot_hsl_contoured(self, window_size_factor=None, cmap=None,
+                           do_colorbar=False, colorbar_title='hillslope length [m]',
+                           n_contours=None, contour_interval=None, linewidth=None,
+                           z_min=None,z_max=None, do_shaded_relief=None,
+                           colorbar_aspect=None, contour_label_suffix=None,
+                           contour_label_fontsize=None):
         """
         Streamlines, points on semi-transparent shaded relief
         """
         fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
-                                    y_pixel_scale=self.geodata.roi_pixel_size)
+                                    y_pixel_scale=self.geodata.roi_pixel_size,
+                                    window_size_factor=window_size_factor)
         if cmap is None:
             cmap = self.contour_hsl_cmap
         if colorbar_aspect is None:
@@ -752,14 +745,14 @@ class Plot(Core):
         idx_list = list(range(n_streamlines))
         if self.shuffle_random_seed is not None:
             seed(self.shuffle_random_seed)
-        if self.plot_streamline_limit!='none':
+        if self.streamline_limit!='none':
             shuffle(idx_list)
-            idx_list = idx_list[0:min(n_streamlines,self.plot_streamline_limit)]
+            idx_list = idx_list[0:min(n_streamlines,self.streamline_limit)]
 
 #         trajectories = [streamline_arrays_list[idx] for idx in idx_list]
         todo = len(idx_list)
-        if self.plot_streamline_limit!='none' \
-            and self.plot_streamline_limit<n_streamlines:
+        if self.streamline_limit!='none' \
+            and self.streamline_limit<n_streamlines:
             self.print('Plotting {0:,}'.format(todo)+' '
                   +up_or_down_str+'streamlines'
                   +' randomly sampled from a set of {0:,}'.format(n_streamlines))
@@ -802,12 +795,13 @@ class Plot(Core):
  
         self.print('')    
     
-    def plot_classical_streamlines(self):
+    def plot_classical_streamlines(self, window_size_factor=None):
         """
         Classic streamlines on color shaded relief
         """
         fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
-                                    y_pixel_scale=self.geodata.roi_pixel_size)
+                                    y_pixel_scale=self.geodata.roi_pixel_size,
+                                    window_size_factor=window_size_factor)
         self.plot_roi_shaded_relief_overlay(axes, 
                         color_alpha=self.streamline_shaded_relief_color_alpha,
                         hillshade_alpha=self.streamline_shaded_relief_hillshade_alpha)
@@ -817,14 +811,15 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig('classical_streamlines',fig)
 
-    def plot_classical_streamlines_and_vectors(self, sl_color=None, 
-                                               vec_color=None, vec_alpha=None, 
-                                               vec_scale=None):
+    def plot_classical_streamlines_and_vectors(self, window_size_factor=None, 
+                                               sl_color=None,  vec_color=None, 
+                                               vec_alpha=None, vec_scale=None):
         """
         Classic streamlines and gradient vector field on color shaded relief
         """
         fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
-                                    y_pixel_scale=self.geodata.roi_pixel_size)
+                                    y_pixel_scale=self.geodata.roi_pixel_size,
+                                    window_size_factor=window_size_factor)
         self.plot_roi_shaded_relief_overlay(axes, 
                         color_alpha=self.streamline_shaded_relief_color_alpha,
                         hillshade_alpha=self.streamline_shaded_relief_hillshade_alpha)
@@ -864,13 +859,14 @@ class Plot(Core):
                       color=sl_color, linewidth=self.classical_streamline_linewidth)
 #                           color=self.geodata.roi_array, cmap='terrain')
 
-    def plot_gradient_vector_field(self, vec_color='purple',vec_alpha=0.5,
-                                         vec_scale=30):
+    def plot_gradient_vector_field(self, window_size_factor=None, 
+                                   vec_color='purple',vec_alpha=0.5, vec_scale=30):
         """
         Topographic gradient vector field on color shaded relief
         """
         fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
-                                    y_pixel_scale=self.geodata.roi_pixel_size)
+                                    y_pixel_scale=self.geodata.roi_pixel_size,
+                                    window_size_factor=window_size_factor)
         self.plot_roi_shaded_relief_overlay(axes, 
                         color_alpha=self.streamline_shaded_relief_color_alpha,
                         hillshade_alpha=self.streamline_shaded_relief_hillshade_alpha)
