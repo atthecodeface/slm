@@ -232,7 +232,7 @@ def set_compile_options(info, kernel_def, downup_sign=1,
             'is_subsegmenthead' :           ('u',''),
             'is_loop' :                     ('u',''),
             'is_blockage' :                 ('u',''),
-            'do_map_hsl_from_ridges' :      ('flag',''),
+            'do_measure_hsl_from_ridges' :  ('flag',''),
             'debug' :                       ('flag',''),
             'verbose' :                     ('flag','')
         }

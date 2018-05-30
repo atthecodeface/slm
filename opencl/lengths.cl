@@ -46,7 +46,7 @@ __kernel void hillslope_lengths(
     // For every mid-slope /or/ ridge pixel
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
-#ifdef DO_MAP_HSL_FROM_RIDGES
+#ifdef DO_MEASURE_HSL_FROM_RIDGES
     const uint from_flag = IS_RIDGE;
 #else
     const uint from_flag = IS_MIDSLOPE;

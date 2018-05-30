@@ -6,7 +6,7 @@ import numpy  as np
 import pandas as pd
 from skimage.morphology   import skeletonize, thin, medial_axis, disk
 from skimage.filters      import gaussian
-from skimage.filters.rank import mean,modal,median
+from skimage.filters.rank import mean,median
 from scipy.ndimage            import gaussian_filter
 from scipy.ndimage.morphology import binary_fill_holes
 from scipy.ndimage.morphology import binary_dilation,generate_binary_structure
@@ -113,6 +113,9 @@ class Mapping(Core):
         self.map_hsl()
         #    - no GPU
         
+        # Gradient-thresholded hillslope horizontal orientation = aspect
+        self.compute_aspect()
+        
         self.print('**Mapping end**\n')  
         
     def prepare(self):
@@ -149,10 +152,10 @@ class Mapping(Core):
         
     def thin_channels(self):
         self.print('Thinning channels...',end='')  
-        is_channel = self.info.is_channel
+        is_channel      = self.info.is_channel
         is_interchannel = self.info.is_interchannel
-        mapping_array = self.data.mapping_array
-        channel_array = np.zeros_like(mapping_array, dtype=np.bool)
+        mapping_array   = self.data.mapping_array
+        channel_array   = np.zeros_like(mapping_array, dtype=np.bool)
         channel_array[  ((mapping_array & is_channel)==is_channel)
                       | ((mapping_array & is_interchannel)==is_interchannel)
                      ] = True
@@ -260,7 +263,7 @@ class Mapping(Core):
         self.print('done')  
 
     def measure_hsl(self):
-        if self.do_map_hsl_from_ridges:
+        if self.do_measure_hsl_from_ridges:
             flag = self.info.is_ridge
         else:
             flag = self.info.is_midslope
@@ -330,10 +333,8 @@ class Mapping(Core):
             if median_radius==0:
                 hsl_median = hsl_masked
             else:
-                hsl_median \
-                    = np.ma.array(median(hsl_masked,median_disk,mask=hsl_bool),
-                                  mask=~hsl_bool)
-    #                = np.ma.array(median(hsl_masked,median_disk),mask=~hsl_bool)
+                hsl_median = np.ma.array(median(hsl_masked,median_disk,mask=hsl_bool),
+                                         mask=~hsl_bool)
             self.print('mean filtering with {0}m ({1}-pixel) diameter disk...'
                        .format(self.hsl_mean_radius,mean_radius),
                        end='',flush=True) 
@@ -347,3 +348,26 @@ class Mapping(Core):
                                 .astype(np.float32))/65535)*(hsl_max-hsl_min)+hsl_min
         self.print('done')  
         
+    def compute_aspect(self):
+        self.print('Computing hillslope aspect...',end='',flush=True)
+        sys.stdout.flush()
+
+        slope_threshold = self.aspect_slope_threshold
+        median_radius   = self.aspect_median_filter_radius
+        slope_array     = self.preprocess.slope_array.copy()
+        uv_array        = self.preprocess.uv_array
+        is_channel      = self.info.is_channel
+        mapping_array   = self.data.mapping_array
+        mask_array      = np.zeros_like(mapping_array, dtype=np.bool)
+        slope_array[((mapping_array & is_channel)==is_channel)] = 0.0
+        if self.do_aspect_median_filtering:
+            sf = np.max(slope_array)/255.0
+            median_slope_array = sf*median(np.uint8(slope_array/sf),disk(median_radius))
+            slope_array = median_slope_array
+        mask_array[ (slope_array<slope_threshold)
+                   | ((mapping_array & is_channel)==is_channel) ] = True
+        self.aspect_array = np.ma.masked_array(
+                 np.rad2deg(np.arctan2(uv_array[:,:,1],uv_array[:,:,0])),
+                                       mask=mask_array )
+        self.print('done')  
+                                                         

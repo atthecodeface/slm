@@ -96,11 +96,11 @@ class Info():
         self.jitter_magnitude =         np.float32(trace.jitter_magnitude)
         self.interchannel_max_n_steps = np.uint32(interchannel_max_n_steps)
         if mapping is not None:
-            self.segmentation_threshold = np.uint32(mapping.segmentation_threshold)
-            self.do_map_hsl_from_ridges = mapping.do_map_hsl_from_ridges
+            self.segmentation_threshold     = np.uint32(mapping.segmentation_threshold)
+            self.do_measure_hsl_from_ridges = mapping.do_measure_hsl_from_ridges
         else:
-            self.segmentation_threshold = np.uint32(0)
-            self.do_map_hsl_from_ridges = False
+            self.segmentation_threshold     = np.uint32(0)
+            self.do_measure_hsl_from_ridges = False
         
         self.left_flank_addition = 2147483648
         flags = [

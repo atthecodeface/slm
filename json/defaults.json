@@ -67,7 +67,6 @@
 	},
 
 	"analysis": {
-        
 		"search_cdf_min" : 0.95,
 		"search_cdf_max" : 0.995,
 		"marginal_distbn_kde_bandwidth" : 5.0,
@@ -109,18 +108,18 @@
 	},
 
 	"mapping": {
+		"do_measure_hsl_from_ridges" : false,
 		"segmentation_threshold" : 20,
 		"n_hsl_averaging_threshold" : 5,
 		"hsl_median_radius" : 5,
 		"hsl_mean_radius" : 50,
-		"Xsegmentation_threshold" : 1000,
-		"Xn_hsl_averaging_threshold" : 10,
-		
 		"midslope_filter_sigma" : 5.0,
 		"midslope_threshold" : 0.03,
 		"ridge_filter_sigma" : 4.0,
 		"ridge_threshold" : 0.65,
-		"do_map_hsl_from_ridges" : false
+		"aspect_slope_threshold" : 15.0,
+		"do_aspect_median_filtering" : true,
+		"aspect_median_filter_radius" : 3
 	},
 
 	"plot": {        
@@ -145,7 +144,7 @@
 		"do_plot_loops" : false,
 		
 		"interpolation_method" : "nearest",
-		"streamline_limit" : 1500,
+		"n_streamlines_limit" : 1500,
 		
 		"do_plot_color_shaded_relief" : true,
 		"do_plot_curvature_roi" : false,
@@ -158,10 +157,6 @@
 		"window_height" : 3.0,
 		"suptitle_y" : 0,
 		
-		"hillshade_azimuth" : 135,
-		"hillshade_angle" : 25,
-		
-		
 		"downstreamline_color" : "blue",
 		"upstreamline_color" : "red",
 		
@@ -170,6 +165,11 @@
 		"streamline_point_alpha" : 0.7,
 		"streamline_linewidth" : 0.5,
 		"classical_streamline_linewidth" : 1.0,
+		"classical_streamplot_density" : 1.0,
+		
+		"terrain_cmap" : "terrain",
+		"hillshade_azimuth" : 135,
+		"hillshade_angle" : 25,
 
 		"shaded_relief_hillshade_alpha" : 0.3,
 		"shaded_relief_color_alpha" : 0.55,
@@ -199,9 +199,6 @@
 		"blockage_marker_size" : 20,
 		"loops_marker_size" : 20,
 		
-		"classical_streamplot_density" : 1.0,
-
-		"terrain_cmap" : "terrain",
 		"shuffle_random_seed" : 1,
 		"random_cmap_seed" : 1,
 		

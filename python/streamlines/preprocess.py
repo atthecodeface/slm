@@ -9,7 +9,6 @@ and blockages, and computing a streamline 'flow speed' field.
 from numba.decorators import njit
 import numpy as np
 from numpy.linalg import eigvals
-from scipy.ndimage import gaussian_filter
 from scipy.ndimage.filters import generic_filter
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
@@ -36,17 +35,17 @@ def compute_topo_gradient_field(roi_array):
     return np.gradient(roi_array, axis=0), np.gradient(roi_array, axis=1)
 
 # Not numbarizable
+def pad_array(roi_array,pad_width):
+    """
+    Pad ROI-size array around grid edges, repeating edge values.
+    """
+    return np.pad(roi_array, (int(pad_width),int(pad_width)),'edge')
+    
 def pad_arrays(u_array,v_array,pad_width):
     """
     Pad gradient vector arrays around grid edges, repeating edge values.
     """
-    u_array = np.pad(u_array, 
-                            (int(pad_width),int(pad_width)), 
-                            'edge')
-    v_array = np.pad(v_array, 
-                            (int(pad_width),int(pad_width)), 
-                            'edge')
-    return u_array, v_array
+    return pad_array(u_array,pad_width), pad_array(v_array,pad_width)
     
 # @njit(cache=False)
 def set_velocity_field(roi_gradx_array,roi_grady_array):
@@ -87,7 +86,7 @@ def compute_gradient_velocity_field(roi_gradx_array, roi_grady_array):
     u_array, v_array = set_velocity_field(roi_gradx_array,roi_grady_array)
     speed_array = set_speed_field(u_array,v_array)
     u_array, v_array = normalize_velocity_field(u_array,v_array,speed_array)
-    return u_array, v_array
+    return u_array, v_array, speed_array
 
 @njit(cache=False)
 def get_flow_vector(nn):
@@ -357,7 +356,7 @@ class Preprocess(Core):
             
         self.roi_gradx_array, self.roi_grady_array \
             = compute_topo_gradient_field(self.geodata.roi_array.astype(np.float32))
-        u_array, v_array \
+        u_array, v_array, raw_speed_array \
             = compute_gradient_velocity_field(self.roi_gradx_array, self.roi_grady_array)
         
         if do_fixes:
@@ -385,11 +384,16 @@ class Preprocess(Core):
                 = normalize_velocity_field(u_array,v_array,speed_array)
         else:
             (u_array, v_array) \
-                = unnormalize_velocity_field(u_array,v_array,speed_array)
+                = unnormalize_velocity_field(u_array,v_array,raw_speed_array)
             
         self.uv_array = np.stack( pad_arrays(u_array,v_array,self.geodata.pad_width), 
                                   axis=2 ).copy().astype(dtype=np.float32)
-                                                    
+        self.slope_array = np.rad2deg(np.arctan(pad_array(raw_speed_array,
+                                                          self.geodata.pad_width)))\
+                                   .astype(dtype=np.float32)
+        self.aspect_array = np.rad2deg(np.arctan2(self.uv_array[:,:,1],
+                                                  self.uv_array[:,:,0]))
+    
     def mask_nan_uv(self):
         self.print('Mask out bad uv pixels...', end='')
         self.geodata.basin_mask_array[np.isnan(self.uv_array[:,:,0]) 
@@ -405,15 +409,12 @@ class Preprocess(Core):
         """     
         self.print('Compute raw gradient vector field')  
         (self.roi_gradx_array,self.roi_grady_array) = derivatives(self.geodata.roi_array)
-        u_array, v_array \
+        u_array, v_array, speed_array \
             = compute_gradient_velocity_field(self.roi_gradx_array, self.roi_grady_array)
-        speed_array = set_speed_field(u_array, v_array)
-        (u_array, v_array) \
-            = normalize_velocity_field(u_array,v_array,speed_array)
         (u_array, v_array) \
             = pad_arrays(u_array,v_array,self.geodata.pad_width)
-        self.uv_array = np.stack( (u_array, v_array), axis=2
-                                                    ).copy().astype(dtype=np.float32)
+        self.uv_array = np.stack( pad_arrays(u_array,v_array,self.geodata.pad_width), 
+                                  axis=2 ).copy().astype(dtype=np.float32)
 
     def find_blockages(self):
         """

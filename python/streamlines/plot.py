@@ -83,7 +83,7 @@ class Plot(Core):
         
     def _new_figure(self, title=None, window_title=None, pdf=False, 
                     x_pixel_scale=1,y_pixel_scale=1,
-                    window_size_factor=None):
+                    window_size_factor=None, projection=None):
         """
         TBD
         """
@@ -110,25 +110,29 @@ class Plot(Core):
                 window_size_factor = self.window_size_factor
         else:
             window_size_factor = self.window_pdf_size_factor
-        fig, axes = plt.subplots( 
-#                         figsize = plt.figaspect(1)*window_size_factor
-                        figsize=(self.window_width *window_size_factor,
-                                 self.window_height*window_size_factor)
-                         )
+        
+        if projection is None:
+            fig, axes = plt.subplots( 
+                            figsize=(self.window_width *window_size_factor,
+                                     self.window_height*window_size_factor))
+            ticks_x = ticker.FuncFormatter(
+                lambda x, pos: '{0:g}'.format(x*x_pixel_scale) )
+            axes.xaxis.set_major_formatter(ticks_x)
+            ticks_y = ticker.FuncFormatter(
+                lambda y, pos: '{0:g}'.format(y*y_pixel_scale) )
+            axes.yaxis.set_major_formatter(ticks_y)
+        elif projection=='polar':
+            fig, axes = plt.subplots( 
+                            figsize=(self.window_width *window_size_factor,
+                                     self.window_height*window_size_factor),
+                            subplot_kw=dict(projection=projection))
+        else:
+             raise Exception('Projection not understood') 
+
         axes.set_rasterization_zorder(1)
         fig.canvas.set_window_title(window_title)
-#         if self.suptitle_y!=0:
-#             fig.suptitle(title, fontweight='bold', y=self.suptitle_y)
-
         axes.set_title(title, fontsize=14, fontweight='bold')
         
-        ticks_x = ticker.FuncFormatter(
-            lambda x, pos: '{0:g}'.format(x*x_pixel_scale) )
-        axes.xaxis.set_major_formatter(ticks_x)
-        ticks_y = ticker.FuncFormatter(
-            lambda y, pos: '{0:g}'.format(y*y_pixel_scale) )
-        axes.yaxis.set_major_formatter(ticks_y)
-
         return fig, axes
           
     def _record_fig(self,fig_name,fig):
@@ -320,6 +324,68 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig('streamlines',fig)
     
+    def plot_aspect(self, window_size_factor=None):
+        try:
+            self.mapping.aspect_array
+        except: 
+            self.print('Aspect array not computed')
+
+        cmap = 'bwr'
+        fig_name='aspect'
+        window_title='aspect'
+        do_flip_cmap=False
+        do_balance_cmap=True
+                    
+        fig,axes = self._new_figure(window_title=window_title,
+                                    x_pixel_scale=self.geodata.roi_pixel_size,
+                                    y_pixel_scale=self.geodata.roi_pixel_size,
+                                    window_size_factor=window_size_factor)
+
+        self.plot_roi_shaded_relief_overlay(axes,
+                do_plot_color_relief=False, color_alpha=0,
+                hillshade_alpha=self.channel_shaded_relief_hillshade_alpha)
+
+        basin_mask_array = self.geodata.basin_mask_array
+        
+        grid_array = self.mapping.aspect_array
+        mask_array = basin_mask_array
+        self.plot_simple_grid(grid_array, mask_array, axes, cmap='hsv', alpha=0.5,
+                              do_vlimit=False)
+
+        self._force_display(fig)
+        self._record_fig(fig_name,fig)
+
+    def plot_aspect_distribution(self, window_size_factor=None):
+        try:
+            pad = self.geodata.pad_width
+            aspect_array = self.mapping.aspect_array[pad:-pad,pad:-pad].copy()
+        except: 
+            self.print('Aspect array not computed')
+        try:
+            hsl_array = self.mapping.hsl_smoothed_array.T.copy()
+        except: 
+            self.print('HSL array not computed')
+            
+        mask_array   = np.ma.getmaskarray(aspect_array) | np.ma.getmaskarray(hsl_array) 
+        hsl_array    = np.ma.masked_array(hsl_array, mask=mask_array).ravel()
+        aspect_array = np.ma.masked_array(aspect_array, mask=mask_array).ravel()
+        pdebug(aspect_array.shape)
+        pdebug(hsl_array.shape)
+        cmap = 'bwr'
+        fig_name='aspect_distribution'
+        window_title='aspect distribution'
+        do_flip_cmap=False
+        do_balance_cmap=True
+                    
+        fig,axes = self._new_figure(window_title=window_title,
+                                    x_pixel_scale=self.geodata.roi_pixel_size,
+                                    y_pixel_scale=self.geodata.roi_pixel_size,
+                                    window_size_factor=window_size_factor,
+                                    projection='polar')
+        axes.plot(aspect_array, hsl_array,'k.',ms=1)
+        self._force_display(fig)
+        self._record_fig(fig_name,fig)
+
     def plot_channels(self, window_size_factor=None):
         try:
             self.mapping.mapping_array
@@ -412,8 +478,7 @@ class Plot(Core):
                       cmap=cmap, 
                       extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds],
                       alpha=alpha,
-                      interpolation=self.interpolation_method
-                    ,vmin=0, vmax=1
+                      interpolation=self.interpolation_method ,vmin=0, vmax=1
                       )
         else:
             im = axes.imshow(np.flipud(masked_grid_array.T), 
@@ -498,12 +563,11 @@ class Plot(Core):
             
         name = 'hsl_mean'
         fig,_ = self._new_figure(window_title=name)
+        title = 'Hillslope length averages'
         if df.shape[0]>kde_min_labels:
-            axes = df['mean [m]'].plot.density(figsize=(8,8),
-                                          title='Mean hillslope length')
+            axes = df['mean [m]'].plot.density(figsize=(8,8), title=title)
         else:
-            axes = df['mean [m]'].plot.hist(figsize=(8,8),
-                                          title='Mean hillslope length')
+            axes = df['mean [m]'].plot.hist(figsize=(8,8), title=title)
         axes.set_xlabel(r'distance $L$  [m]')
         axes.set_ylabel(r'probability density  $f(L)$  [m$^{-1}$]')
         axes.set_xlim(0,df['mean [m]'].quantile(q=1)*x_stretch)
@@ -513,12 +577,11 @@ class Plot(Core):
 
         name = 'hsl_stddev'
         fig,_ = self._new_figure(window_title=name)
+        title = 'Hillslope length standard deviations'
         if df.shape[0]>kde_min_labels:
-            axes = df['stddev [m]'].plot.density(figsize=(8,8),
-                        title='Hillslope length std deviation');
+            axes = df['stddev [m]'].plot.density(figsize=(8,8), title=title)
         else:
-            axes = df['stddev [m]'].plot.hist(figsize=(8,8),
-                        title='Hillslope length std deviation');
+            axes = df['stddev [m]'].plot.hist(figsize=(8,8), title=title)
         axes.set_xlabel(r'distance std deviation $\sigma_L$  [m]')
         axes.set_ylabel(r'probability density  $f(\sigma_L)$  [m$^{-1}$]')
         axes.set_xlim(0,df['stddev [m]'].quantile(q=0.99))
@@ -528,11 +591,17 @@ class Plot(Core):
         self._record_fig(name,fig)
         
         name = 'hsl_count'
+        try:
+            csum = np.int(df['count'].sum())
+            cmax = np.int(df['count'].quantile(q=0.99))
+            n_bins = min(50,max(10,csum//cmax))
+        except:
+            n_bins = 20
         fig,_ = self._new_figure(window_title=name)
-        axes = df['count'].plot.hist(bins=20,figsize=(8,8),
-                                title='Hillslope streamline count')
-        axes.set_xlabel(r'number $N_{sl}$   [-]');
-        axes.set_ylabel(r'probability density  $f(N_{sl})$  [-]')
+        title = 'Hillslope length streamline counts'
+        axes = df['count'].plot.hist(bins=n_bins,figsize=(8,8), title=title)
+        axes.set_xlabel(r'number of streamlines per length average $N_{sl}$   [-]');
+        axes.set_ylabel(r'frequency  $n(N_{sl})$  [-]')
         axes.set_xlim(0,df['count'].quantile(q=0.99))
         axes.set_ylim(0,None)
         self._force_display(fig)
@@ -745,14 +814,12 @@ class Plot(Core):
         idx_list = list(range(n_streamlines))
         if self.shuffle_random_seed is not None:
             seed(self.shuffle_random_seed)
-        if self.streamline_limit!='none':
+        if self.n_streamlines_limit!='none':
             shuffle(idx_list)
-            idx_list = idx_list[0:min(n_streamlines,self.streamline_limit)]
+            idx_list = idx_list[0:min(n_streamlines,self.n_streamlines_limit)]
 
-#         trajectories = [streamline_arrays_list[idx] for idx in idx_list]
         todo = len(idx_list)
-        if self.streamline_limit!='none' \
-            and self.streamline_limit<n_streamlines:
+        if self.n_streamlines_limit!='none' and n_streamlines>self.n_streamlines_limit:
             self.print('Plotting {0:,}'.format(todo)+' '
                   +up_or_down_str+'streamlines'
                   +' randomly sampled from a set of {0:,}'.format(n_streamlines))
@@ -1093,19 +1160,6 @@ class Plot(Core):
         line_colors += ['darkblue']
         line_styles += ['-']
         line_alphas += [1]
-
-#         fig,axes = self._new_figure(title=title)
-#         axes.grid(color='gray', linestyle='-')
-# #         plt.plot(np.log(x_vec), np.log(pdf),'.')
-# #         plt.plot(np.log(x_vec), np.log(x_vec**1.3)-1.8)
-# #         plt.plot(np.log(x_vec), np.log(x_vec**1.3)-2.1)
-# #         plt.plot(np.log(x_vec), np.log(x_vec**0.75)-3.4)
-# #         plt.plot(np.log(x_vec), np.log(x_vec**1.5)-2)
-#         axes.set_xscale('log')
-# #         axes.set_yscale('log')
-#         plt.plot(x_vec, detrended_pdf,'.')
-        
-#         return
             
         # Create graph
         fig,axes = self._new_figure(title=title)
@@ -1247,7 +1301,7 @@ class Plot(Core):
                        fig_name=None, title='', swap_xy=False, do_nl_trend=False,
                        x_label='', y_label='', 
                        xsym_label = r'$L_m^{*}$', ysym_label = r'$\sqrt{A_e^*}$', 
-                       do_plot_mode=True):
+                       do_plot_mode=True, do_overlay_histogram=False):
         """
         TBD
         """
@@ -1275,15 +1329,32 @@ class Plot(Core):
         legend = []
 
         # Pdfs
-        if not swap_xy:
-            kde_pdf = bivariate_distribution.pdf.copy()
-        else:
-            kde_pdf = bivariate_distribution.pdf.copy().T
+        kde_pdf      = bivariate_distribution.pdf.copy()
+        if swap_xy:
+            kde_pdf  = kde_pdf.T
         kde_pdf = np.power(kde_pdf,self.joint_distbn_viz_scale)
+
+        if do_overlay_histogram:
+            from skimage.transform import downscale_local_mean
+            downscale_factor = 2
+            kde_hist    = downscale_local_mean(bivariate_distribution.histogram.copy(),
+                                               (downscale_factor,downscale_factor))
+            kde_hist[kde_hist>0] = 1
+            kde_hist = np.ma.masked_where(kde_hist==0,kde_hist)
+            n_hist_bins = bivariate_distribution.n_hist_bins
+            x_hist_vec  = np.exp(np.linspace(np.log(x_min),np.log(x_max),
+                                             n_hist_bins//downscale_factor))
+            y_hist_vec  = np.exp(np.linspace(np.log(y_min),np.log(y_max),
+                                             n_hist_bins//downscale_factor))        
+            if swap_xy:
+                kde_hist = kde_hist.T
         
         # Plot bivariate pdf - distorted for emphasis as appropriate
         axes.pcolormesh(x_vec,y_vec,kde_pdf.T, cmap='GnBu', 
                         antialiased=True, shading='gouraud')
+        if do_overlay_histogram:
+            axes.pcolormesh(x_hist_vec,y_hist_vec,kde_hist.T, cmap='gray', 
+                            antialiased=False,alpha=0.5)
         axes.contour(x_vec,y_vec, kde_pdf.T, self.joint_distbn_n_contours,
                      colors='k',linewidths=1,alpha=0.5, antialiased=True)
         
