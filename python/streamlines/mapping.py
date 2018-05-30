@@ -114,7 +114,8 @@ class Mapping(Core):
         #    - no GPU
         
         # Gradient-thresholded hillslope horizontal orientation = aspect
-        self.compute_aspect()
+        self.map_aspect()
+        self.compute_hsl_aspect()
         
         self.print('**Mapping end**\n')  
         
@@ -348,14 +349,14 @@ class Mapping(Core):
                                 .astype(np.float32))/65535)*(hsl_max-hsl_min)+hsl_min
         self.print('done')  
         
-    def compute_aspect(self):
+    def map_aspect(self):
         self.print('Computing hillslope aspect...',end='',flush=True)
         sys.stdout.flush()
 
         slope_threshold = self.aspect_slope_threshold
         median_radius   = self.aspect_median_filter_radius
         slope_array     = self.preprocess.slope_array.copy()
-        uv_array        = self.preprocess.uv_array
+        uv_array        = self.preprocess.uv_array.copy()
         is_channel      = self.info.is_channel
         mapping_array   = self.data.mapping_array
         mask_array      = np.zeros_like(mapping_array, dtype=np.bool)
@@ -364,10 +365,43 @@ class Mapping(Core):
             sf = np.max(slope_array)/255.0
             median_slope_array = sf*median(np.uint8(slope_array/sf),disk(median_radius))
             slope_array = median_slope_array
+        pdebug('filtering') 
+        uv_filter_width = 10
+        uv_array[:,:,0] = gaussian_filter(uv_array[:,:,0],uv_filter_width)
+        uv_array[:,:,1] = gaussian_filter(uv_array[:,:,1],uv_filter_width)
         mask_array[ (slope_array<slope_threshold)
                    | ((mapping_array & is_channel)==is_channel) ] = True
         self.aspect_array = np.ma.masked_array(
-                 np.rad2deg(np.arctan2(uv_array[:,:,1],uv_array[:,:,0])),
+                 np.arctan2(uv_array[:,:,0],uv_array[:,:,1]),
                                        mask=mask_array )
+        self.print('done')  
+                                                         
+    def compute_hsl_aspect(self):
+        self.print('Computing hillslope length-aspect function...',end='',flush=True)
+        sys.stdout.flush()
+        
+        aspect_range = np.pi
+        n_bins = 60
+        pad = self.geodata.pad_width
+        aspect_array = self.aspect_array[pad:-pad,pad:-pad].copy()
+        hsl_array = self.hsl_smoothed_array.T.copy()
+        mask_array   = np.ma.getmaskarray(aspect_array) | np.ma.getmaskarray(hsl_array) 
+        hsl_aspect_array = np.stack(
+                       (np.ma.masked_array(hsl_array,    mask=mask_array).ravel(),
+                        np.ma.masked_array(aspect_array, mask=mask_array).ravel()),
+                        axis=1)
+        # Sort in-place using column 1 (aspect) as key
+        self.hsl_aspect_array = hsl_aspect_array[hsl_aspect_array[:,1].argsort()]
+#         self.hsl_aspect_array = hsl_aspect_array
+        df = pd.DataFrame(data=self.hsl_aspect_array,columns=['hsl','aspect'])
+        half_bin = aspect_range/n_bins
+        bins = np.linspace(-aspect_range,+aspect_range,n_bins+1)-half_bin
+        df['groups'] = pd.cut(df['aspect'], bins)
+        self.hsl_aspect_df = df
+        hsl_aspect_averages = df.groupby('groups')['hsl'].mean()
+        self.hsl_aspect_averages = hsl_aspect_averages
+        self.hsl_aspect_averages_array = np.stack((hsl_aspect_averages.values, 
+                                                   bins[1:]+half_bin),axis=1)
+        pdebug(half_bin)
         self.print('done')  
                                                          

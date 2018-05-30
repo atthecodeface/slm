@@ -23,8 +23,7 @@ from matplotlib.pyplot import streamplot
 from matplotlib.colors import LinearSegmentedColormap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import colorsys
-from scipy.ndimage import median_filter, gaussian_filter, maximum_filter
-from scipy.stats   import norm, gaussian_kde
+from scipy.stats   import norm
 from scipy.signal  import decimate
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
@@ -200,6 +199,10 @@ class Plot(Core):
             self.plot_hsl()
         if self.do_plot_hsl_contoured:
             self.plot_hsl_contoured()
+        if self.do_plot_aspect:
+            self.plot_aspect()
+        if self.do_plot_aspect_distribution:
+            self.plot_aspect_distribution()
         self.print('...done')
             
     def plot_dtm_shaded_relief(self, window_size_factor=None):
@@ -347,30 +350,38 @@ class Plot(Core):
 
         basin_mask_array = self.geodata.basin_mask_array
         
-        grid_array = self.mapping.aspect_array
+        grid_array = np.rad2deg(self.mapping.aspect_array.copy())
+#         grid_array[30:70,30:60] = 0
         mask_array = basin_mask_array
-        self.plot_simple_grid(grid_array, mask_array, axes, cmap='hsv', alpha=0.5,
-                              do_vlimit=False)
+        pdebug(grid_array.shape,mask_array.shape)
+        im = self.plot_simple_grid(grid_array, mask_array, axes, cmap=cmap, alpha=0.5,
+                              do_vlimit=False, v_min=-180, v_max=+180)
+        
+#         pad = self.geodata.pad_width
+#         self.plot_contours_overlay(axes,
+#                                    grid_array[pad:-pad,pad:-pad].T,
+#                                    mask=mask_array[pad:-pad,pad:-pad],
+#                                    contour_interval=10,
+#                                    linewidth=1,
+#                                    contour_label_suffix='', 
+#                                    contour_label_fontsize=10)
+        
+        divider = make_axes_locatable(axes)
+        cax = divider.append_axes("bottom", size="4%", 
+                                  pad=0.5, aspect=0.04)
+        cbar = plt.colorbar(im, cax=cax, ticks=np.arange(-180,270,90), 
+                            orientation="horizontal")
+        cbar.set_label(r'aspect (degrees from north)')
 
         self._force_display(fig)
         self._record_fig(fig_name,fig)
 
     def plot_aspect_distribution(self, window_size_factor=None):
         try:
-            pad = self.geodata.pad_width
-            aspect_array = self.mapping.aspect_array[pad:-pad,pad:-pad].copy()
+            hsl_aspect_array = self.mapping.hsl_aspect_averages_array
         except: 
-            self.print('Aspect array not computed')
-        try:
-            hsl_array = self.mapping.hsl_smoothed_array.T.copy()
-        except: 
-            self.print('HSL array not computed')
+            self.print('HSL-aspect array not computed')
             
-        mask_array   = np.ma.getmaskarray(aspect_array) | np.ma.getmaskarray(hsl_array) 
-        hsl_array    = np.ma.masked_array(hsl_array, mask=mask_array).ravel()
-        aspect_array = np.ma.masked_array(aspect_array, mask=mask_array).ravel()
-        pdebug(aspect_array.shape)
-        pdebug(hsl_array.shape)
         cmap = 'bwr'
         fig_name='aspect_distribution'
         window_title='aspect distribution'
@@ -382,7 +393,19 @@ class Plot(Core):
                                     y_pixel_scale=self.geodata.roi_pixel_size,
                                     window_size_factor=window_size_factor,
                                     projection='polar')
-        axes.plot(aspect_array, hsl_array,'k.',ms=1)
+
+        axes.plot(hsl_aspect_array[:,1],hsl_aspect_array[:,0],'b')
+        axes.plot(hsl_aspect_array[:,1],hsl_aspect_array[:,0],'b.',ms=10)
+        axes.set_theta_zero_location('N')
+        axes.set_theta_direction(-1)
+        bands = np.arange(0,np.max(hsl_aspect_array[:,0]),20).astype(np.uint32)
+        band_labels = ['{}m'.format(band) for band in bands]
+        axes.set_rgrids(bands, labels=band_labels, color='b',style=None)
+        angles = np.arange(0,360,45).astype(np.uint32)
+        angle_labels = ['0','45','90','135',r'$\pm$180','-135','-90','-45']
+        axes.set_thetagrids(angles, labels=angle_labels)
+        axes.grid(color='b',alpha=0.5,linestyle='dashed')
+        
         self._force_display(fig)
         self._record_fig(fig_name,fig)
 
@@ -467,7 +490,7 @@ class Plot(Core):
                   color=colors[0], alpha=alpha, fillstyle='full')
 
     def plot_simple_grid(self,grid_array,mask_array,axes,cmap='Blues',alpha=0.8,
-                         do_vlimit=True):
+                         do_vlimit=True, v_min=None, v_max=None):
         grid_array = grid_array[self.geodata.pad_width:-self.geodata.pad_width,
                                 self.geodata.pad_width:-self.geodata.pad_width]    
         mask_array = mask_array[self.geodata.pad_width:-self.geodata.pad_width,
@@ -478,14 +501,14 @@ class Plot(Core):
                       cmap=cmap, 
                       extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds],
                       alpha=alpha,
-                      interpolation=self.interpolation_method ,vmin=0, vmax=1
+                      interpolation=self.interpolation_method, vmin=0, vmax=1
                       )
         else:
             im = axes.imshow(np.flipud(masked_grid_array.T), 
                       cmap=cmap, 
                       extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds],
                       alpha=alpha,
-                      interpolation=self.interpolation_method
+                      interpolation=self.interpolation_method, vmin=v_min, vmax=v_max
                       )
         clim=im.properties()['clim']
         return im
