@@ -327,18 +327,19 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig('streamlines',fig)
     
-    def plot_aspect(self, window_size_factor=None):
+    def plot_aspect(self, window_size_factor=None,cmap=None):
         try:
             self.mapping.aspect_array
         except: 
             self.print('Aspect array not computed')
 
-        cmap = 'bwr'
+        if cmap==None:
+            cmap = 'RdYlBu' #'seismic'  #bwr
         fig_name='aspect'
         window_title='aspect'
         do_flip_cmap=False
         do_balance_cmap=True
-                    
+                            
         fig,axes = self._new_figure(window_title=window_title,
                                     x_pixel_scale=self.geodata.roi_pixel_size,
                                     y_pixel_scale=self.geodata.roi_pixel_size,
@@ -353,9 +354,8 @@ class Plot(Core):
         grid_array = np.rad2deg(self.mapping.aspect_array.copy())
 #         grid_array[30:70,30:60] = 0
         mask_array = basin_mask_array
-        pdebug(grid_array.shape,mask_array.shape)
-        im = self.plot_simple_grid(grid_array, mask_array, axes, cmap=cmap, alpha=0.5,
-                              do_vlimit=False, v_min=-180, v_max=+180)
+        im = self.plot_simple_grid(grid_array, mask_array, axes, cmap=cmap, 
+                                   alpha=0.5, do_vlimit=False, v_min=-180, v_max=+180)
         
 #         pad = self.geodata.pad_width
 #         self.plot_contours_overlay(axes,
@@ -371,7 +371,7 @@ class Plot(Core):
                                   pad=0.5, aspect=0.04)
         cbar = plt.colorbar(im, cax=cax, ticks=np.arange(-180,270,90), 
                             orientation="horizontal")
-        cbar.set_label(r'aspect (degrees from north)')
+        cbar.set_label(r'aspect (degrees from east)')
 
         self._force_display(fig)
         self._record_fig(fig_name,fig)
@@ -394,11 +394,13 @@ class Plot(Core):
                                     window_size_factor=window_size_factor,
                                     projection='polar')
 
-        axes.plot(hsl_aspect_array[:,1],hsl_aspect_array[:,0],'b')
-        axes.plot(hsl_aspect_array[:,1],hsl_aspect_array[:,0],'b.',ms=10)
-        axes.set_theta_zero_location('N')
-        axes.set_theta_direction(-1)
-        bands = np.arange(0,np.max(hsl_aspect_array[:,0]),20).astype(np.uint32)
+        axes.plot(hsl_aspect_array[:,1][~np.isnan(hsl_aspect_array[:,0])],
+                  hsl_aspect_array[:,0][~np.isnan(hsl_aspect_array[:,0])],
+                  'b')
+#         axes.set_theta_zero_location('N')
+#         axes.set_theta_direction(-1)
+        max_hsl = np.max(hsl_aspect_array[:,0][~np.isnan(hsl_aspect_array[:,0])])
+        bands = np.arange(0,max_hsl,20).astype(np.uint32)
         band_labels = ['{}m'.format(band) for band in bands]
         axes.set_rgrids(bands, labels=band_labels, color='b',style=None)
         angles = np.arange(0,360,45).astype(np.uint32)

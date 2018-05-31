@@ -365,43 +365,54 @@ class Mapping(Core):
             sf = np.max(slope_array)/255.0
             median_slope_array = sf*median(np.uint8(slope_array/sf),disk(median_radius))
             slope_array = median_slope_array
-        pdebug('filtering') 
-        uv_filter_width = 10
+        uv_filter_width = 3      
         uv_array[:,:,0] = gaussian_filter(uv_array[:,:,0],uv_filter_width)
         uv_array[:,:,1] = gaussian_filter(uv_array[:,:,1],uv_filter_width)
         mask_array[ (slope_array<slope_threshold)
                    | ((mapping_array & is_channel)==is_channel) ] = True
         self.aspect_array = np.ma.masked_array(
-                 np.arctan2(uv_array[:,:,0],uv_array[:,:,1]),
+                 np.arctan2(uv_array[:,:,1],uv_array[:,:,0]),
                                        mask=mask_array )
         self.print('done')  
                                                          
-    def compute_hsl_aspect(self):
+    def compute_hsl_aspect(self, n_bins=None):
         self.print('Computing hillslope length-aspect function...',end='',flush=True)
         sys.stdout.flush()
         
-        aspect_range = np.pi
-        n_bins = 60
+#         aspect_range = np.pi
+        aspect_range = 180
+        if n_bins is None:
+            n_bins = 60
         pad = self.geodata.pad_width
-        aspect_array = self.aspect_array[pad:-pad,pad:-pad].copy()
+        aspect_array = np.rad2deg(self.aspect_array[pad:-pad,pad:-pad].copy())
         hsl_array = self.hsl_smoothed_array.T.copy()
-        mask_array   = np.ma.getmaskarray(aspect_array) | np.ma.getmaskarray(hsl_array) 
+        aspect_array = aspect_array[hsl_array>0.0]
+        hsl_array    = hsl_array[hsl_array>0.0]
+        hsl_array    = hsl_array[np.abs(aspect_array)>0.0]
+        aspect_array = aspect_array[np.abs(aspect_array)>0.0]
+        mask_array   = np.ma.getmaskarray(aspect_array)| np.ma.getmaskarray(hsl_array)
         hsl_aspect_array = np.stack(
                        (np.ma.masked_array(hsl_array,    mask=mask_array).ravel(),
                         np.ma.masked_array(aspect_array, mask=mask_array).ravel()),
                         axis=1)
         # Sort in-place using column 1 (aspect) as key
         self.hsl_aspect_array = hsl_aspect_array[hsl_aspect_array[:,1].argsort()]
-#         self.hsl_aspect_array = hsl_aspect_array
-        df = pd.DataFrame(data=self.hsl_aspect_array,columns=['hsl','aspect'])
+        self.hsl_aspect_df = pd.DataFrame(data=self.hsl_aspect_array,
+                                          columns=['hsl','aspect'])
         half_bin = aspect_range/n_bins
-        bins = np.linspace(-aspect_range,+aspect_range,n_bins+1)-half_bin
-        df['groups'] = pd.cut(df['aspect'], bins)
-        self.hsl_aspect_df = df
-        hsl_aspect_averages = df.groupby('groups')['hsl'].mean()
-        self.hsl_aspect_averages = hsl_aspect_averages
-        self.hsl_aspect_averages_array = np.stack((hsl_aspect_averages.values, 
-                                                   bins[1:]+half_bin),axis=1)
-        pdebug(half_bin)
+        bins = np.linspace(-aspect_range,+aspect_range+2*half_bin,n_bins+2)-half_bin
+#         pdebug('\n',(bins))
+        self.hsl_aspect_df['groups'] = pd.cut(self.hsl_aspect_df['aspect'], bins)
+        self.hsl_aspect_averages = self.hsl_aspect_df.groupby('groups')['hsl'].mean()
+        bins = np.deg2rad(bins[:-1]+half_bin)
+        hsl = self.hsl_aspect_averages.values
+        south_hsl = (hsl[0]+hsl[-1])/2.0
+        hsl[0] = south_hsl
+        hsl[-1] = south_hsl
+#         pdebug(hsl[0],hsl[-1],(hsl[0]+hsl[-1])/2.0)
+#         pdebug(np.rad2deg(bins))
+#         pdebug(self.hsl_aspect_averages)
+        self.hsl_aspect_averages_array = np.stack((hsl,bins),axis=1)
+#         pdebug(self.hsl_aspect_averages_array)
         self.print('done')  
                                                          
