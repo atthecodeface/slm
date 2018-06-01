@@ -69,7 +69,7 @@
 	"analysis": {
 		"search_cdf_min" : 0.95,
 		"search_cdf_max" : 0.995,
-		"marginal_distbn_kde_bandwidth" : 5.0,
+		"marginal_distbn_kde_bandwidth" : 6.0,
 		"joint_distbn_kde_bandwidth"    : 5.0,
 
 		"n_hist_bins" :  2048,

@@ -2,11 +2,17 @@
 	"geodata": {
 		"title" : "Ikawa ROI1, JP, UTM Zone 54N",
 		"dtm_file" : "Ikawa1_res1m_fillsinks0p01deg.tif",
-		"data_path": ["$SLMDATA","Ikawa"]
+		"data_path": ["$SLMDATA","Ikawa"],
+		"basins_file" : "Ikawa1_res1m_fillsinks0p01deg_basins25k.tif",
+        "Abasins" : [20,24],
+        "basins" : [12,16],
+        "Zbasins" : [2,4,6,8,10,18],
+        "Xbasins" : [22],
+        "Ybasins" : [14],
+		"do_basin_masking" : true
 	},
 
 	"plot": {
-        "mhsl_pdf_x_stretch" : 0.7,
         "plot_hsl_colorbar_aspect" : 0.05,
         "contour_hsl_n_contours" : 19,
         "contour_hsl_z_min" : 10,

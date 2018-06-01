@@ -302,7 +302,10 @@ class Plot(Core):
         """
         Streamlines, points on semi-transparent shaded relief
         """
-        fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
+        fig_name='streamlines'
+        window_title='streamlines'
+        fig,axes = self._new_figure(window_title=window_title,
+                                    x_pixel_scale=self.geodata.roi_pixel_size,
                                     y_pixel_scale=self.geodata.roi_pixel_size,
                                     window_size_factor=window_size_factor)
         self.plot_roi_shaded_relief_overlay(axes,
@@ -325,9 +328,11 @@ class Plot(Core):
         axes.set_xlim(xmin=self.geodata.roi_x_bounds[0],xmax=self.geodata.roi_x_bounds[1])
         axes.set_ylim(ymin=self.geodata.roi_y_bounds[0],ymax=self.geodata.roi_y_bounds[1])
         self._force_display(fig)
-        self._record_fig('streamlines',fig)
+        self._record_fig(fig_name,fig)
     
     def plot_aspect(self, window_size_factor=None,cmap=None):
+        fig_name='aspect'
+        window_title='aspect'
         try:
             self.mapping.aspect_array
         except: 
@@ -335,8 +340,6 @@ class Plot(Core):
 
         if cmap==None:
             cmap = 'RdYlBu' #'seismic'  #bwr
-        fig_name='aspect'
-        window_title='aspect'
         do_flip_cmap=False
         do_balance_cmap=True
                             
@@ -399,13 +402,25 @@ class Plot(Core):
                   'b')
 #         axes.set_theta_zero_location('N')
 #         axes.set_theta_direction(-1)
-        max_hsl = np.max(hsl_aspect_array[:,0][~np.isnan(hsl_aspect_array[:,0])])
-        bands = np.arange(0,max_hsl,20).astype(np.uint32)
+        z_max = np.max(hsl_aspect_array[:,0][~np.isnan(hsl_aspect_array[:,0])])
+        c_interval = 5
+        while c_interval<=100:
+            c_max = np.ceil(z_max//c_interval)*c_interval
+            c_count = c_max/c_interval
+            if c_count<=5:
+                break
+            c_interval *= 2        
+        bands = np.arange(0,c_max+2*c_interval,c_interval).astype(np.uint32)
         band_labels = ['{}m'.format(band) for band in bands]
         axes.set_rgrids(bands, labels=band_labels, color='b',style=None)
         angles = np.arange(0,360,45).astype(np.uint32)
-        angle_labels = ['0','45','90','135',r'$\pm$180','-135','-90','-45']
+        angle_labels = [r'0$\degree$',r'45$\degree$',
+                        r'90$\degree$ = N',r'135$\degree$',
+         r'$\pm$180$\degree$'+u'\N{space}\N{space}\N{space}\N{space}\N{space}\N{space}',
+                r'-135$\degree$'+u'\N{space}\N{space}\N{space}\N{space}\N{space}',
+                        r'-90$\degree$ = S',r'-45$\degree$']
         axes.set_thetagrids(angles, labels=angle_labels)
+#         axes.tick_params(pad=8)
         axes.grid(color='b',alpha=0.5,linestyle='dashed')
         
         self._force_display(fig)
@@ -419,7 +434,7 @@ class Plot(Core):
 
         cmap = 'bwr'
         fig_name='channels'
-        window_title='channels & midslopes'
+        window_title='channels, midslopes & ridges'
         do_flip_cmap=False
         do_balance_cmap=True
                     
@@ -515,36 +530,45 @@ class Plot(Core):
         clim=im.properties()['clim']
         return im
     
-    def plot_flow_maps(self, window_size_factor=None):        
+    def plot_flow_maps(self, window_size_factor=None): 
+        fig_name='dsla'
+        window_title='dsla'     
         tmp_array = self.trace.sla_array[:,:,0].copy()
         tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)] \
             = np.sqrt(tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)])
         
         self.plot_gridded_data(tmp_array,
                                'gist_earth', 
-                               fig_name='dsla', window_size_factor=window_size_factor,
-                               window_title='dsla',
+                               fig_name=fig_name, window_size_factor=window_size_factor,
+                               window_title=window_title,
                                do_flip_cmap=True, do_balance_cmap=False)
         tmp_array = self.trace.slt_array[:,:,0].copy()
         tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)] \
             = np.log(tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)])
+            
+        fig_name='dslt'
+        window_title='dslt'     
         self.plot_gridded_data(tmp_array,
                                'gist_earth', #'seismic', 
-                               fig_name='dslt', window_size_factor=window_size_factor,
-                               window_title='dslt', 
+                               fig_name=fig_name, window_size_factor=window_size_factor,
+                               window_title=window_title,
                                do_flip_cmap=True, do_balance_cmap=False)
         
     def plot_segments(self,do_shaded_relief=True, window_size_factor=None):
+        fig_name='label'
+        window_title='label'     
         tmp_array = (self.mapping.label_array.copy().astype(np.int32))
         self.plot_gridded_data(tmp_array,
                                'randomized', 
-                               fig_name='label', window_size_factor=window_size_factor,
-                               window_title='label',
+                               fig_name=fig_name, window_size_factor=window_size_factor,
+                               window_title=window_title,
                                do_shaded_relief=do_shaded_relief, 
                                do_flip_cmap=False, do_balance_cmap=False)
 
     def plot_hsl(self, cmap=None, window_size_factor=None,
                  z_min=None,z_max=None, do_shaded_relief=None, colorbar_aspect=None):
+        fig_name='hsl'
+        window_title='hsl'     
         if cmap is None:
             cmap = self.hsl_cmap
         if colorbar_aspect is None:
@@ -571,8 +595,8 @@ class Plot(Core):
         self.plot_gridded_data(grid_array,
                                cmap,  # rainbow
                                mask_array=mask_array,
-                               fig_name='hsl', window_size_factor=window_size_factor,
-                               window_title='hillslope length',
+                               fig_name=fig_name, window_size_factor=window_size_factor,
+                               window_title=window_title,
                                do_flip_cmap=False, do_balance_cmap=False,
                                do_shaded_relief=do_shaded_relief, 
                                do_colorbar=True, 
@@ -717,7 +741,10 @@ class Plot(Core):
         """
         Streamlines, points on semi-transparent shaded relief
         """
-        fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
+        fig_name='hsl_contours'
+        window_title='hsl contours'    
+        fig,axes = self._new_figure(window_title=window_title,
+                                    x_pixel_scale=self.geodata.roi_pixel_size,
                                     y_pixel_scale=self.geodata.roi_pixel_size,
                                     window_size_factor=window_size_factor)
         if cmap is None:
@@ -783,7 +810,7 @@ class Plot(Core):
         axes.set_xlim(xmin=self.geodata.roi_x_bounds[0],xmax=self.geodata.roi_x_bounds[1])
         axes.set_ylim(ymin=self.geodata.roi_y_bounds[0],ymax=self.geodata.roi_y_bounds[1])
         self._force_display(fig)
-        self._record_fig('hsl_contours',fig)
+        self._record_fig(fig_name,fig)
     
     def plot_contours_overlay(self,axes,Z,mask=None, n_contours=None,
                               contour_interval=None, linewidth=None,
@@ -1136,6 +1163,7 @@ class Plot(Core):
         """
         TBD
         """
+        window_title=fig_name
 
         # Get ready
         x_vec = marginal_distbn.x_vec
@@ -1153,9 +1181,6 @@ class Plot(Core):
         line_styles = ['-']
         line_alphas = [1]
         
-    
-                
-    
         legend += ['Gaussian']
         loc   = np.log(marginal_distbn.mean)
         scale = np.log(marginal_distbn.stddev)
@@ -1187,7 +1212,7 @@ class Plot(Core):
         line_alphas += [1]
             
         # Create graph
-        fig,axes = self._new_figure(title=title)
+        fig,axes = self._new_figure(window_title=window_title, title=title)
         axes.set_xscale('log')
         
         # Do the plotting
@@ -1330,6 +1355,8 @@ class Plot(Core):
         """
         TBD
         """
+        window_title=fig_name
+
         # Preparation
         if not swap_xy:
             x_mesh = bivariate_distribution.x_mesh
@@ -1348,7 +1375,7 @@ class Plot(Core):
         y_max = y_mesh.max()
         
         # Create mpl figure
-        fig,axes = self._new_figure(title=title)
+        fig,axes = self._new_figure(window_title=window_title, title=title)
         axes.set_xscale('log')
         axes.set_yscale('log')
         legend = []
