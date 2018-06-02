@@ -95,14 +95,13 @@ __kernel void label_confluences(
     if (n_inflows>1) {
         atomic_or(&mapping_array[idx],IS_MAJORCONFLUENCE);
         for (i=0;i<n_inflows;i++) {
-            if ( (count_array[inflows_list[i]]+1)!=count_array[idx] ) {
+            if ( count_array[idx]!=(count_array[inflows_list[i]]+1) ) {
                 atomic_or(&mapping_array[inflows_list[i]],IS_MINORINFLOW);
             } else {
                 equal_dominant_inflows_list[n_equal_dominant_inflows++]= inflows_list[i];
                 if (slt_array[inflows_list[i]]>dominant_slt) {
                     dominant_slt_index = inflows_list[i];
                     dominant_slt = slt_array[dominant_slt_index];
-//                    printf("di=%d\n",dominant_slt_index);
                 }
             }
         }

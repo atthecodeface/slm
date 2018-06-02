@@ -159,13 +159,32 @@ def subsegment_flanks( cl_state, info, data, verbose ):
             
     # Trace downstream from all non-left-flank hillslope pixels
     flag = is_leftflank | is_thinchannel
-    seed_point_array = pick_seeds(mask=data.mask_array, map=~data.mapping_array, 
+    seed_point_array = pick_seeds(mask=data.mask_array, map=~data.mapping_array, #NB: not
                                   flag=flag,pad=pad)
     array_dict['seed_point']['array'] = seed_point_array
     info.n_seed_points = seed_point_array.shape[0]
-    
     # Do integrations on the GPU
     cl_state.kernel_fn = 'subsegment_flanks'
+    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+
+    # Trace downstream from all right-flank hillslope pixels
+    flag = is_leftflank | is_thinchannel
+    seed_point_array = pick_seeds(mask=data.mask_array, map=~data.mapping_array, #NB: not
+                                  flag=flag,pad=pad)
+    array_dict['seed_point']['array'] = seed_point_array
+    info.n_seed_points = seed_point_array.shape[0]
+    # Do integrations on the GPU
+    cl_state.kernel_fn = 'fix_right_flanks'
+    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    
+    # Trace downstream from all left-flank hillslope pixels
+    flag = is_leftflank
+    seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
+                                  flag=flag,pad=pad)
+    array_dict['seed_point']['array'] = seed_point_array
+    info.n_seed_points = seed_point_array.shape[0]
+    # Do integrations on the GPU
+    cl_state.kernel_fn = 'fix_left_flanks'
     pocl.gpu_compute(cl_state, info, array_dict, verbose)
     
     # Done

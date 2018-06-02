@@ -414,10 +414,10 @@ class Plot(Core):
         band_labels = ['{}m'.format(band) for band in bands]
         axes.set_rgrids(bands, labels=band_labels, color='b',style=None)
         angles = np.arange(0,360,45).astype(np.uint32)
+        spc = u'\N{space}'
         angle_labels = [r'0$\degree$',r'45$\degree$',
                         r'90$\degree$ = N',r'135$\degree$',
-         r'$\pm$180$\degree$'+u'\N{space}\N{space}\N{space}\N{space}\N{space}\N{space}',
-                r'-135$\degree$'+u'\N{space}\N{space}\N{space}\N{space}\N{space}',
+                        r'$\pm$180$\degree$'+spc*6, r'-135$\degree$'+spc*5,
                         r'-90$\degree$ = S',r'-45$\degree$']
         axes.set_thetagrids(angles, labels=angle_labels)
 #         axes.tick_params(pad=8)
@@ -562,7 +562,7 @@ class Plot(Core):
                                'randomized', 
                                fig_name=fig_name, window_size_factor=window_size_factor,
                                window_title=window_title,
-                               do_shaded_relief=do_shaded_relief, 
+                               do_shaded_relief=False, 
                                do_flip_cmap=False, do_balance_cmap=False)
 
     def plot_hsl(self, cmap=None, window_size_factor=None,

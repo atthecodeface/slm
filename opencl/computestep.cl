@@ -9,7 +9,8 @@
 #if defined(KERNEL_INTEGRATE_TRAJECTORY) || defined(KERNEL_CONNECT_CHANNELS) \
     || defined(KERNEL_MAP_CHANNEL_HEADS) || defined(KERNEL_COUNT_DOWNCHANNELS) \
     || defined(KERNEL_LINK_HILLSLOPES)   || defined(KERNEL_SEGMENT_HILLSLOPES) \
-    || defined(KERNEL_SUBSEGMENT_FLANKS) || defined(KERNEL_HILLSLOPE_LENGTHS)
+    || defined(KERNEL_SUBSEGMENT_FLANKS) || defined(KERNEL_HILLSLOPE_LENGTHS) \
+    || defined(KERNEL_FIX_RIGHT_FLANKS)  || defined(KERNEL_FIX_LEFT_FLANKS)
 ///
 /// Compute a 2nd-order Runge-Kutta integration step along a streamline.
 ///

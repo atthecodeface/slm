@@ -140,8 +140,11 @@ class Mapping(Core):
         self.print('done')    
             
     def map_channels(self):
-        self.print('Channels...',end='')  
-        slt_threshold = self.analysis.mpdf_dslt.channel_threshold_x
+        self.print('Channels...',end='')
+        if self.imposed_channel_threshold:
+            slt_threshold = self.imposed_channel_threshold
+        else:
+            slt_threshold = self.analysis.mpdf_dslt.channel_threshold_x
         # Designate channel pixels according to dslt pdf analysis
         self.data.mapping_array[  (self.trace.slt_array[:,:,0]>=slt_threshold)
                         & (self.trace.slt_array[:,:,0]*2>=self.trace.slc_array[:,:,0])
@@ -217,6 +220,7 @@ class Mapping(Core):
                                    self.verbose )
 
     def subsegment_flanks(self):
+        # Channel edges first, and then flanks
         segment.subsegment_flanks(self.cl_state, self.info, self.data, self.verbose)
         self.data.label_array = self.data.label_array.astype(dtype=np.int32)
         self.data.label_array[self.data.label_array<0] \

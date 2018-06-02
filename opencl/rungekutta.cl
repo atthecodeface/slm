@@ -405,7 +405,8 @@ static inline bool countlink_runge_kutta_step(float *dt, float *dl,
 }
 #endif
 
-#if defined(KERNEL_SEGMENT_HILLSLOPES) || defined(KERNEL_SUBSEGMENT_FLANKS)
+#if defined(KERNEL_SEGMENT_HILLSLOPES) || defined(KERNEL_SUBSEGMENT_FLANKS) \
+   || defined(KERNEL_FIX_RIGHT_FLANKS) || defined(KERNEL_FIX_LEFT_FLANKS)
 ///
 /// Compute a single step of 2nd-order Runge-Kutta numerical integration of
 ///    a streamline given precomputed 1st and 2nd order step vectors.
