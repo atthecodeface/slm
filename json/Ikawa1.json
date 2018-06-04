@@ -15,8 +15,8 @@
 	},
 
 	"mapping": {
-		"segmentation_threshold" : 20000,
-		"imposed_channel_threshold" : 3000
+		"Xsegmentation_threshold" : 20000,
+		"Ximposed_channel_threshold" : 3000
 	},
 
 	"plot": {

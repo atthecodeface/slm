@@ -47,62 +47,62 @@ class Mapping(Core):
         TBD.
         """
         self.print('\n**Mapping begin**') 
-        
-        # Shorthand
         self.prepare()
-         
+        self.map_segments_channels()
+        self.map_hsl_ridges_midslopes_aspect()
+        self.print('**Mapping end**\n')  
+                
+    def map_segments_channels(self):
+        """
+        TBD.
+        """
+        self.print('\n**Mapping segments and channels begin**') 
+        
         # Use downstream slt,sla pdfs to designate pixels as channels
-        #    - no GPU invocation
         self.map_channels()
         
         # Join up disconnected channel pixels if they are not too widely spaced
-        #    - atomic_or
         self.connect_channel_pixels()
         
         # Skeletonize channel pixels into thin network
-        #    - no GPU invocation
         self.thin_channels()
         
         # Locate upstream ends of thinned channel network & designate as heads
-        #    - atomic_and, atomic_or
         self.map_channel_heads()
         
         # Link downstream from channel heads
-        #    - atomic_or mapping_array[]
-        #    - atomic_xchg count_array[], link_array[]
         self.count_downchannels()
                 
         # Count downstream from channel heads
-        #    - atomic_or mapping_array[]
-        #    - atomic_max count_array[]
         self.flag_downchannels()
         
         # Map locations of channel confluences & designate types
-        #    - atomic_or
         self.label_confluences()
         
         # Label channel segments with channel head idxs
-        #    - atomic_xchg label_array[]
         self.segment_downchannels()
         
         # Designate downstream linkages for all hillslope pixels
-        #    - atomic_xchg link_array[]
         self.link_hillslopes()
         
         # Label correspondingly upstream hillslope pixels
-        #    - atomic_xchg label_array[]
         self.segment_hillslopes()
         
         # Designate as L or R of channel to subsegment hillslope flanks
-        #    - no atomics
         self.subsegment_flanks()
 
+        self.print('**Mapping segments and channels end**\n')  
+        
+    def map_hsl_ridges_midslopes_aspect(self):
+        """
+        TBD.
+        """
+        self.print('\n**Mapping HSL, ridges, midslopes, aspect begin**') 
+        
         # Use up and downstream sla to designate midslope pixels
-        #    - no GPU invocation
         self.map_midslope()
         
         # Use up and downstream sla to designate ridge pixels
-        #    - no GPU invocation
         self.map_ridges()
         
         # Measure mean streamline distances from midslope to channel pixels
@@ -117,26 +117,24 @@ class Mapping(Core):
         self.map_aspect()
         self.compute_hsl_aspect()
         
-        self.print('**Mapping end**\n')  
+        self.print('**Mapping HSL, ridges, midslopes, aspect end**\n')  
         
     def prepare(self):
         self.print('Preparing...',end='')  
-        # Shorthand
-        try:
-            del(self.mapping_array)
-            del(self.data)
-            del(self.label_array)
-            del(self.hsl_array)
-            del(self.hsl_smoothed_array)
-        except:
-            pass
+        array_list \
+            = ['mapping_array','data','label_array','hsl_array','hsl_smoothed_array']
+        for del_array in array_list:
+            try:
+                obj = getattr(self,del_array)
+                del(obj)
+            except:
+                pass
         self.mapping_array = self.trace.mapping_array.copy()
         self.data = Data( mask_array    = self.geodata.basin_mask_array,
                           uv_array      = self.preprocess.uv_array,
                           mapping_array = self.mapping_array )  
         self.verbose = self.state.verbose
         self.info = Info(self.trace, mapping=self)
-
         self.print('done')    
             
     def map_channels(self):
