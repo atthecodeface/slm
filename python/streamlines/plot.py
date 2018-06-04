@@ -41,17 +41,6 @@ pdebug = print
 
 __all__ = ['Plot']
     
-def gaussian_pdf(x, mu, sigma):
-    """
-    Gaussian pdf:  y(x) = N(x; mu, sigma)
-    where:
-        x = ordinate
-        N(x) = normal distribution probability density function
-        mu = mean
-        sigma = standard deviation
-    """
-    return norm.pdf(x,mu,sigma)
-
 # Generate random colormap
 def random_colormap(cmap_name='randomized', n_colors=1000,random_seed=1):
     """
