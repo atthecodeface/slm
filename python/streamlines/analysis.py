@@ -13,7 +13,7 @@ environ['PYTHONUNBUFFERED']='True'
 from streamlines.core import Core
 from streamlines import kde
 
-__all__ = ['Info','Univariate_distribution','Bivariate_distribution','Analysis']
+__all__ = ['Univariate_distribution','Bivariate_distribution','Analysis']
 
 pdebug = print
             

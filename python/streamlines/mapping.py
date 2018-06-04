@@ -121,14 +121,26 @@ class Mapping(Core):
         
     def prepare(self):
         self.print('Preparing...',end='')  
-        array_list \
-            = ['mapping_array','data','label_array','hsl_array','hsl_smoothed_array']
-        for del_array in array_list:
-            try:
-                obj = getattr(self,del_array)
-                del(obj)
-            except:
-                pass
+        try:
+            del self.mapping_array
+        except:
+            pass
+        try:
+            del self.data
+        except:
+            pass
+        try:
+            del self.label_array
+        except:
+            pass
+        try:
+            del self.hsl_array
+        except:
+            pass
+        try:
+            del self.hsl_smoothed_array
+        except:
+            pass
         self.mapping_array = self.trace.mapping_array.copy()
         self.data = Data( mask_array    = self.geodata.basin_mask_array,
                           uv_array      = self.preprocess.uv_array,
@@ -225,6 +237,9 @@ class Mapping(Core):
             = - (  self.data.label_array[self.data.label_array<0] 
                  + self.info.left_flank_addition )
         self.label_array = self.data.label_array
+        
+        
+class HSL():
         
     def map_midslope(self):
         self.print('Midslopes...',end='')  
