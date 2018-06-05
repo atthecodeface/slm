@@ -44,10 +44,46 @@ class Geodata(Core):
                              *self.data_path,self.dtm_file) 
                 ))
         self.read_dtm_file()
-        self.read_basins_file()
-        self.generate_basins_mask()
+        if self.do_basin_masking:
+            self.read_basins_file()
+        self.make_basins_mask()
+        self.make_dtm_mask()
         self.print('**Geodata end**\n', flush=True)  
-    
+
+    def read_geotiff_file(self, path, filename):
+        """
+        Read GeoTIFF file.
+        Assumes file contains a single-band 2d grid of equal x-y dimension pixels.
+
+        Args:
+            path (str): Path to folder containing GeoTIFF file to be read
+            filename (str): GeoTIFF filename
+        
+        Raises:
+            ValueError if file cannot be opened for reading
+            
+        Returns:
+            numpy.ndarray, float: Numpy array of GeoTIFF grid, size (in meters) 
+                                    of a grid pixel
+        """          
+        fullpath_filename = os.path.join(path,filename)
+        if self.state.noisy:
+            self.print(fullpath_filename)
+        tiff=gdal.Open(fullpath_filename)
+        if tiff is None:
+            raise ValueError('Cannot open GeoTIFF file "%s" for reading' % fullpath_filename)
+        geotransform = tiff.GetGeoTransform()
+        x_easting_bottomleft  = geotransform[0]
+        y_northing_bottomleft = geotransform[3]+geotransform[5]
+        pixel_size = geotransform[1]
+        self.print('DTM GeoTIFF coordinate "geotransform":',geotransform)
+        if not np.isclose(pixel_size,geotransform[5]*(-1),rtol=1e-3):
+            raise ValueError(
+                'Pixel x=%g and y=%g dimensions not equal in "%s": cannot handle non-square pixels'
+                             % (pixel_size,(-1)*geotransform[5],fullpath_filename) )
+        return (tiff.GetRasterBand(1).ReadAsArray().copy().astype(np.float32), 
+                pixel_size, geotransform)
+        
     def read_dtm_file(self):
         """
         Read GeoTIFF-format DTM file into numpy array and parse out important metadata, 
@@ -179,8 +215,6 @@ class Geodata(Core):
         Attributes:
             self.basins_array (numpy.ndarray float32):
         """ 
-        if not self.do_basin_masking:
-            return
         self.print('Reading basins from GeoTIFF file "%s/%s"'
               % (self.dtm_path,self.basins_file))
         basins_array, _, _ = self.read_geotiff_file(self.dtm_path,self.basins_file)
@@ -195,8 +229,15 @@ class Geodata(Core):
               self.roi_y_bounds[0]:self.roi_y_bounds[1],
               self.roi_x_bounds[0]:self.roi_x_bounds[1]]).T.copy()
 
-    
-    def generate_basins_mask(self):
+    def make_dtm_mask(self):
+        mask_unpadded_array = np.zeros_like(self.roi_array,dtype=np.bool8)
+        mask_unpadded_array[np.isnan(self.roi_array)] = True
+        self.dtm_mask_array = np.pad(mask_unpadded_array,
+                                     (int(self.pad_width),int(self.pad_width)), 
+                                     'constant',
+                                     constant_values=(True,True)).astype(dtype=np.bool8)
+
+    def make_basins_mask(self):
         """
         Generate a boolean mask array from the drainage basin index layer 
         and a list of non-mask indexes.
@@ -211,7 +252,7 @@ class Geodata(Core):
             # Generate boolean grid with True at unmasked basin pixels
             basin_mask_unpadded_array = np.zeros_like(self.basins_array,dtype=np.bool8)
             for basin in self.basins:
-                basin_mask_unpadded_array[self.basins_array==basin] = 1
+                basin_mask_unpadded_array[self.basins_array==basin] = True
             dilation_structure = generate_binary_structure(2, 2)
             basin_fatmask_unpadded_array = binary_dilation(basin_mask_unpadded_array, 
                                                        structure=dilation_structure, 
@@ -223,8 +264,8 @@ class Geodata(Core):
             basin_mask_unpadded_array = np.zeros_like(self.roi_array,dtype=np.bool8)
             basin_fatmask_unpadded_array = np.zeros_like(self.roi_array,dtype=np.bool8)
         # Mask out NaN pixels
-        basin_mask_unpadded_array[np.isnan(self.roi_array)] = 1
-        basin_fatmask_unpadded_array[np.isnan(self.roi_array)] = 1
+        basin_mask_unpadded_array[np.isnan(self.roi_array)] = True
+        basin_fatmask_unpadded_array[np.isnan(self.roi_array)] = True
                 
         if self.h_min!='none':
             self.roi_array[np.isnan(self.roi_array)] = self.h_min
@@ -241,37 +282,4 @@ class Geodata(Core):
         self.basin_fatmask_array \
             = basin_fatmask_array.copy().astype(dtype=np.bool8)
                  
-    def read_geotiff_file(self, path, filename):
-        """
-        Read GeoTIFF file.
-        Assumes file contains a single-band 2d grid of equal x-y dimension pixels.
-
-        Args:
-            path (str): Path to folder containing GeoTIFF file to be read
-            filename (str): GeoTIFF filename
-        
-        Raises:
-            ValueError if file cannot be opened for reading
-            
-        Returns:
-            numpy.ndarray, float: Numpy array of GeoTIFF grid, size (in meters) 
-                                    of a grid pixel
-        """          
-        fullpath_filename = os.path.join(path,filename)
-        if self.state.noisy:
-            self.print(fullpath_filename)
-        tiff=gdal.Open(fullpath_filename)
-        if tiff is None:
-            raise ValueError('Cannot open GeoTIFF file "%s" for reading' % fullpath_filename)
-        geotransform = tiff.GetGeoTransform()
-        x_easting_bottomleft  = geotransform[0]
-        y_northing_bottomleft = geotransform[3]+geotransform[5]
-        pixel_size = geotransform[1]
-        self.print('DTM GeoTIFF coordinate "geotransform":',geotransform)
-        if not np.isclose(pixel_size,geotransform[5]*(-1),rtol=1e-3):
-            raise ValueError(
-                'Pixel x=%g and y=%g dimensions not equal in "%s": cannot handle non-square pixels'
-                             % (pixel_size,(-1)*geotransform[5],fullpath_filename) )
-        return (tiff.GetRasterBand(1).ReadAsArray().copy().astype(np.float32), 
-                pixel_size, geotransform)
         

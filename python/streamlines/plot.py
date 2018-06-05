@@ -124,6 +124,9 @@ class Plot(Core):
         return fig, axes
           
     def _record_fig(self,fig_name,fig):
+        """
+        TBD
+        """
         self.print('Recording figure "{}"'.format(fig_name))
         self.figs.update({fig_name : fig})        
 
@@ -146,6 +149,9 @@ class Plot(Core):
 
     @staticmethod
     def show():
+        """
+        TBD
+        """
         plt.show()
 
     def do(self):
@@ -164,7 +170,7 @@ class Plot(Core):
         
     def plot_maps(self):
         """
-        Plot maps of DTM ROI streamlines and processed grids
+        Plot maps
         """
         self.print('Plotting maps...')
         # Hillshade view of source DTM with correct axis labeling
@@ -320,6 +326,9 @@ class Plot(Core):
         self._record_fig(fig_name,fig)
     
     def plot_aspect(self, window_size_factor=None,cmap=None):
+        """
+        TBD
+        """
         fig_name='aspect'
         window_title='aspect'
         try:
@@ -556,6 +565,9 @@ class Plot(Core):
 
     def plot_hsl(self, cmap=None, window_size_factor=None,
                  z_min=None,z_max=None, do_shaded_relief=None, colorbar_aspect=None):
+        """
+        TBD
+        """
         fig_name='hsl'
         window_title='hsl'     
         if cmap is None:
@@ -593,6 +605,9 @@ class Plot(Core):
                                colorbar_aspect=colorbar_aspect)
     
     def plot_hsl_distributions(self, x_stretch=None):
+        """
+        TBD
+        """
         self.print('Plotting hillslope length distributions...')
         df = self.mapping.hsl_stats_df
         kde_min_labels = 20
@@ -728,7 +743,7 @@ class Plot(Core):
                            colorbar_aspect=None, contour_label_suffix=None,
                            contour_label_fontsize=None):
         """
-        Streamlines, points on semi-transparent shaded relief
+        TBD
         """
         fig_name='hsl_contours'
         window_title='hsl contours'    
