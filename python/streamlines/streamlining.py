@@ -154,7 +154,6 @@ class Streamlining(Core):
                 elif item[1] is not None:
                     self.state.do_plot = item[1]
             elif item[1] is not None:
-                pdebug(item[0],item[1])
                 setattr(self.state, item[0],item[1])
         # Used by State.inventorize_run_state() and other State methods
         self.state.obj_list=[self.state]
