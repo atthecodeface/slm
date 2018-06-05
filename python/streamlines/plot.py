@@ -578,7 +578,7 @@ class Plot(Core):
                 z_max = np.percentile(self.mapping.hsl_smoothed_array,99.9)  
             else:
                 z_max = self.hsl_z_max     
-        grid_array = np.clip(self.mapping.hsl_array,z_min,z_max)
+        grid_array = np.clip(self.mapping.hsl_array.copy(),z_min,z_max)
         mask_array = np.zeros_like(grid_array).astype(np.bool)            
         mask_array[self.mapping.label_array==0] = True
         self.plot_gridded_data(grid_array,
@@ -760,7 +760,7 @@ class Plot(Core):
                 z_max = np.percentile(self.mapping.hsl_smoothed_array,99.0)  
             else:
                 z_max = self.contour_hsl_z_max     
-        grid_array = np.clip(self.mapping.hsl_smoothed_array,z_min,z_max)
+        grid_array = np.clip(self.mapping.hsl_smoothed_array.copy(),z_min,z_max)
 #         if n_contours is None and self.contour_hsl_n_contours!='auto':
 #                 n_contours = self.contour_hsl_n_contours
         if linewidth is None:
@@ -768,7 +768,7 @@ class Plot(Core):
                 
         mask_array = self.geodata.basin_mask_array[
                         self.geodata.pad_width:-self.geodata.pad_width,
-                        self.geodata.pad_width:-self.geodata.pad_width]  
+                        self.geodata.pad_width:-self.geodata.pad_width].copy()
         mask_array[(self.mapping.label_array[
                         self.geodata.pad_width:-self.geodata.pad_width,
                         self.geodata.pad_width:-self.geodata.pad_width]==0)] = True

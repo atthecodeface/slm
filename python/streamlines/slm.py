@@ -61,10 +61,11 @@ def run(**kwargs):
         sl.mapping.do()
     if sl.state.do_plot:
         sl.plot.do()
-        try:
-            sl.plot.show()
-        except:
-            raise ValueError('Cannot display graphs')
+        if sl.state.do_display:
+            try:
+                sl.plot.show()
+            except:
+                raise ValueError('Cannot display graphs')
     if sl.state.do_save_state:
         sl.state.inventorize_run_state()
         sl.state.save_state()

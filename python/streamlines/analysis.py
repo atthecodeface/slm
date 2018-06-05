@@ -1,11 +1,10 @@
 """
-Tools to compute statistical distributions (pdfs) and model their properties
+Tools to compute 1d & 2d pdfs, some statistics, and related analyses
 """
 
 import numpy as np
 from scipy.stats       import gaussian_kde, norm
 from scipy.signal      import argrelextrema
-from scipy.ndimage     import median_filter, gaussian_filter, maximum_filter
 from sklearn.neighbors import KernelDensity
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
@@ -88,12 +87,14 @@ class Analysis(Core):
         """
         TBD
         """
-        logx_array = x_array[:,:,up_down_idx_x].copy().astype(dtype=np.float32)
-        logy_array = y_array[:,:,up_down_idx_y].copy().astype(dtype=np.float32)
-        logx_array[logx_array>0.0] = np.log(logx_array[logx_array>0.0])
-        logy_array[logy_array>0.0] = np.log(logy_array[logy_array>0.0])
-        logx_array[x_array[:,:,up_down_idx_x]<=0.0] = np.finfo(np.float32).min
-        logy_array[y_array[:,:,up_down_idx_y]<=0.0] = np.finfo(np.float32).min   
+        if mask_array is not None:
+            tx_array = x_array[~mask_array,up_down_idx_x].copy().astype(dtype=np.float32)
+            ty_array = y_array[~mask_array,up_down_idx_y].copy().astype(dtype=np.float32)
+        else:
+            tx_array = x_array[:,:,up_down_idx_x].ravel().copy().astype(dtype=np.float32)
+            ty_array = y_array[:,:,up_down_idx_y].ravel().copy().astype(dtype=np.float32)
+        logx_array = np.log(tx_array[(tx_array>0.0) & (ty_array>0.0)])
+        logy_array = np.log(ty_array[(tx_array>0.0) & (ty_array>0.0)])
         if method is None:
             method = self.marginal_distbn_kde_method
         if n_hist_bins is None:
@@ -104,20 +105,20 @@ class Analysis(Core):
             kernel = self.marginal_distbn_kde_kernel
         if bandwidth is None:
             bandwidth = self.marginal_distbn_kde_bandwidth  
-        uv_distbn = Univariate_distribution(logx_array=logx_array, logy_array=logy_array,
-                                            pixel_size = self.geodata.roi_pixel_size,
-                                            method=method, 
-                                            n_hist_bins=n_hist_bins,
-                                            n_pdf_points=n_pdf_points,
-                                            logx_min=logx_min, logy_min=logy_min, 
-                                            logx_max=logx_max, logy_max=logy_max,
-                                            search_cdf_min = self.search_cdf_min,
-                                            search_cdf_max = self.search_cdf_max,
-                                            cl_src_path=self.state.cl_src_path, 
-                                            cl_platform=self.state.cl_platform, 
-                                            cl_device=self.state.cl_device,
-                                            debug=self.state.debug,
-                                            verbose=self.state.verbose)
+        uv_distbn = Univariate_distribution( logx_array=logx_array, logy_array=logy_array,
+                                             pixel_size = self.geodata.roi_pixel_size,
+                                             method=method, 
+                                             n_hist_bins=n_hist_bins,
+                                             n_pdf_points=n_pdf_points,
+                                             logx_min=logx_min, logy_min=logy_min, 
+                                             logx_max=logx_max, logy_max=logy_max,
+                                             search_cdf_min = self.search_cdf_min,
+                                             search_cdf_max = self.search_cdf_max,
+                                             cl_src_path=self.state.cl_src_path, 
+                                             cl_platform=self.state.cl_platform, 
+                                             cl_device=self.state.cl_device,
+                                             debug=self.state.debug,
+                                             verbose=self.state.verbose )
         if method=='opencl':
             uv_distbn.compute_kde_opencl(kernel=kernel, bandwidth=bandwidth)
         elif method=='sklearn':
@@ -136,7 +137,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing marginal distribution "dsla"...')
-        x_array, y_array = self.trace.sla_array.copy(), self.trace.slc_array.copy(), 
+        x_array, y_array = self.trace.sla_array, self.trace.slc_array, 
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
@@ -155,7 +156,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing marginal distribution "usla"...')
-        x_array, y_array = self.trace.sla_array.copy(), self.trace.slc_array.copy()
+        x_array, y_array = self.trace.sla_array, self.trace.slc_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
@@ -174,7 +175,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing marginal distribution "dslt"...')
-        x_array, y_array = self.trace.slt_array.copy(), self.trace.sla_array.copy()
+        x_array, y_array = self.trace.slt_array, self.trace.sla_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
@@ -193,7 +194,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing marginal distribution "uslt"...')
-        x_array, y_array = self.trace.slt_array.copy(), self.trace.sla_array.copy()
+        x_array, y_array = self.trace.slt_array, self.trace.sla_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
@@ -212,7 +213,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing marginal distribution "dslc"...')
-        x_array, y_array = self.trace.slc_array.copy(), self.trace.sla_array.copy()
+        x_array, y_array = self.trace.slc_array, self.trace.sla_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
@@ -231,7 +232,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing marginal distribution "uslc"...')
-        x_array, y_array = self.trace.slc_array.copy(), self.trace.sla_array.copy()
+        x_array, y_array = self.trace.slc_array, self.trace.sla_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
@@ -245,6 +246,7 @@ class Analysis(Core):
                                              logx_max=logx_max,logy_max=logy_max)
         self.print('...done')            
 
+
     def compute_joint_distribn(self, x_array,y_array, mask_array=None,
                                up_down_idx_x=0, up_down_idx_y=0, 
                                n_hist_bins=None, n_pdf_points=None, 
@@ -257,12 +259,14 @@ class Analysis(Core):
         """
         TBD
         """
-        logx_array = x_array[:,:,up_down_idx_x].copy().astype(dtype=np.float32)
-        logy_array = y_array[:,:,up_down_idx_y].copy().astype(dtype=np.float32)
-        logx_array[logx_array>0.0] = np.log(logx_array[logx_array>0.0])
-        logy_array[logy_array>0.0] = np.log(logy_array[logy_array>0.0])
-        logx_array[x_array[:,:,up_down_idx_x]<=0.0] = np.finfo(np.float32).min
-        logy_array[y_array[:,:,up_down_idx_y]<=0.0] = np.finfo(np.float32).min   
+        if mask_array is not None:
+            tx_array = x_array[~mask_array,up_down_idx_x].copy().astype(dtype=np.float32)
+            ty_array = y_array[~mask_array,up_down_idx_y].copy().astype(dtype=np.float32)
+        else:
+            tx_array = x_array[:,:,up_down_idx_x].copy().ravel().astype(dtype=np.float32)
+            ty_array = y_array[:,:,up_down_idx_y].copy().ravel().astype(dtype=np.float32)
+        logx_array = np.log(tx_array[(tx_array>0.0) & (ty_array>0.0)])
+        logy_array = np.log(ty_array[(tx_array>0.0) & (ty_array>0.0)])
         if method is None:
             method = self.joint_distbn_kde_method
         if n_hist_bins is None:
@@ -275,7 +279,7 @@ class Analysis(Core):
             kernel = self.joint_distbn_kde_kernel
         if bandwidth is None:
             bandwidth = self.joint_distbn_kde_bandwidth  
-        bv_distbn = Bivariate_distribution(logx_array=logx_array, logy_array=logy_array,
+        bv_distbn = Bivariate_distribution( logx_array=logx_array, logy_array=logy_array,
                                             pixel_size = self.geodata.roi_pixel_size,
                                             method=method, 
                                             n_hist_bins=n_hist_bins,
@@ -286,7 +290,7 @@ class Analysis(Core):
                                             cl_platform=self.state.cl_platform, 
                                             cl_device=self.state.cl_device,
                                             debug=self.state.debug,
-                                            verbose=self.state.verbose)
+                                            verbose=self.state.verbose )
         
         if method=='opencl':
             bv_distbn.compute_kde_opencl(kernel=kernel, bandwidth=bandwidth)
@@ -305,7 +309,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "dsla_usla"...')
-        x_array,y_array = self.trace.sla_array.copy(),self.trace.sla_array.copy()
+        x_array,y_array = self.trace.sla_array,self.trace.sla_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 0,1
         (logx_min, logx_max, logy_min, logy_max) \
@@ -325,7 +329,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "dsla_dslt"...')
-        x_array,y_array = self.trace.sla_array.copy(),self.trace.slt_array.copy()
+        x_array,y_array = self.trace.sla_array,self.trace.slt_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
@@ -350,7 +354,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "dslt_dslc"...')
-        x_array,y_array = self.trace.slt_array.copy(),self.trace.slc_array.copy()
+        x_array,y_array = self.trace.slt_array,self.trace.slc_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
@@ -375,7 +379,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "usla_uslt"...')
-        x_array,y_array = self.trace.sla_array.copy(),self.trace.slt_array.copy()
+        x_array,y_array = self.trace.sla_array,self.trace.slt_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 1,1
         (logx_min, logx_max, logy_min, logy_max) \
@@ -395,13 +399,13 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "uslt_dslt"...',flush=True)
-        x_array,y_array = self.trace.slt_array.copy(),self.trace.slt_array.copy()
+        x_array,y_array = self.trace.slt_array,self.trace.slt_array
         up_down_idx_x, up_down_idx_y = 1,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
                                      'pdf_slt_min','pdf_slt_max'])
         self.jpdf_uslt_dslt \
-            = self.compute_joint_distribn(x_array,y_array,
+            = self.compute_joint_distribn(x_array,y_array, mask_array,
                                             up_down_idx_x=up_down_idx_x,
                                             up_down_idx_y=up_down_idx_y,
                                             logx_min=logx_min,logy_min=logy_min, 
@@ -414,7 +418,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "dsla_dslc"...')
-        x_array,y_array = self.trace.sla_array.copy(),self.trace.slc_array.copy()
+        x_array,y_array = self.trace.sla_array,self.trace.slc_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
@@ -439,7 +443,7 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "usla_uslc"...')
-        x_array,y_array = self.trace.sla_array.copy(),self.trace.slc_array.copy()
+        x_array,y_array = self.trace.sla_array,self.trace.slc_array
         mask_array = self.geodata.basin_mask_array
         up_down_idx_x,up_down_idx_y = 1,1
         (logx_min, logx_max, logy_min, logy_max) \
@@ -459,13 +463,13 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing joint distribution "uslc_dslc"...',flush=True)
-        x_array,y_array = self.trace.slc_array.copy(),self.trace.slc_array.copy()
+        x_array,y_array = self.trace.slc_array,self.trace.slc_array
         up_down_idx_x, up_down_idx_y = 1,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slc_min','pdf_slc_max',
                                      'pdf_slc_min','pdf_slc_max'])
         self.jpdf_uslc_dslc \
-            = self.compute_joint_distribn(x_array,y_array,
+            = self.compute_joint_distribn(x_array,y_array, mask_array,
                                             up_down_idx_x=up_down_idx_x,
                                             up_down_idx_y=up_down_idx_y,
                                             logx_min=logx_min,logy_min=logy_min, 
@@ -615,15 +619,13 @@ class Univariate_distribution():
         self.raw_var = np.exp(self.logx_data.var())
 
     def find_modes(self):
-        x = self.x_vec
         pdf = self.pdf
-        approx_mode = np.round(x[pdf==pdf.max()][0],2)
-        peaks = argrelextrema(np.reshape(pdf,pdf.shape[0],), 
-                              np.greater, order=3)[0]
-        peaks = [peak for peak in list(peaks) if x[peak]>=approx_mode*0.5 ]
+        approx_mode = np.round(self.x_vec[pdf==pdf.max()][0],2)
+        peaks = argrelextrema(np.reshape(pdf,pdf.shape[0],), np.greater, order=3)[0]
+        peaks = [peak for peak in list(peaks) if self.x_vec[peak]>=approx_mode*0.5 ]
         try:
             self.mode_i = peaks[0]
-            self.mode_x = x[peaks[0]][0]
+            self.mode_x = self.x_vec[peaks[0]][0]
             self.print('Mode @ {0:2.2f}m'.format(self.mode_x))
         except:
             self.print('Failed to find mode')
