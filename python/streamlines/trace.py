@@ -193,7 +193,7 @@ class Trace(Core):
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
         """
-        data = Data( mask_array    = self.geodata.basin_mask_array,
+        data = Data( mask_array    = self.geodata.merge_active_masks(),
                      uv_array      = self.preprocess.uv_array,
                      mapping_array = self.mapping_array )
         trajectories = Trajectories(self.state.cl_platform, self.state.cl_device,
@@ -214,7 +214,7 @@ class Trace(Core):
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
         """
-        data = Data( mask_array    = self.geodata.basin_mask_array,
+        data = Data( mask_array    = self.geodata.merge_active_masks(),
                      uv_array      = self.preprocess.uv_array,
                      mapping_array = self.mapping_array,
                      traj_stats_df = self.traj_stats_df )

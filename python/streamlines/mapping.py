@@ -142,7 +142,7 @@ class Mapping(Core):
         except:
             pass
         self.mapping_array = self.trace.mapping_array.copy()
-        self.data = Data( mask_array    = self.geodata.basin_mask_array,
+        self.data = Data( mask_array    = self.geodata.merge_active_masks(),
                           uv_array      = self.preprocess.uv_array,
                           mapping_array = self.mapping_array )  
         self.verbose = self.state.verbose

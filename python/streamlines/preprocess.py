@@ -396,11 +396,11 @@ class Preprocess(Core):
     
     def mask_nan_uv(self):
         self.print('Mask out bad uv pixels...', end='')
-        self.geodata.basin_mask_array[np.isnan(self.uv_array[:,:,0]) 
-                                      | np.isnan(self.uv_array[:,:,1])] = True
-        self.geodata.basin_fatmask_array[np.isnan(self.uv_array[:,:,0]) 
-                                         | np.isnan(self.uv_array[:,:,1])] = True
-        self.uv_array[self.geodata.basin_mask_array] = [0.0,0.0]
+        self.uv_mask_array = np.zeros_like(self.geodata.dtm_mask_array)
+        self.uv_mask_array[  np.isnan(self.uv_array[:,:,0]) 
+                           | np.isnan(self.uv_array[:,:,1]) ] = True
+        self.geodata.add_active_mask(self.uv_mask_array)
+        self.uv_array[self.uv_mask_array] = [0.0,0.0]
         self.print('done')
         
     def raw_gradient_vector_field(self):

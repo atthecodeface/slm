@@ -138,7 +138,7 @@ class Analysis(Core):
         """
         self.print('Computing marginal distribution "dsla"...')
         x_array, y_array = self.trace.sla_array, self.trace.slc_array, 
-        mask_array = self.geodata.basin_mask_array
+        mask_array = self.geodata.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
@@ -157,7 +157,7 @@ class Analysis(Core):
         """
         self.print('Computing marginal distribution "usla"...')
         x_array, y_array = self.trace.sla_array, self.trace.slc_array
-        mask_array = self.geodata.basin_mask_array
+        mask_array = self.geodata.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
@@ -176,7 +176,7 @@ class Analysis(Core):
         """
         self.print('Computing marginal distribution "dslt"...')
         x_array, y_array = self.trace.slt_array, self.trace.sla_array
-        mask_array = self.geodata.basin_mask_array
+        mask_array = self.geodata.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
@@ -195,7 +195,7 @@ class Analysis(Core):
         """
         self.print('Computing marginal distribution "uslt"...')
         x_array, y_array = self.trace.slt_array, self.trace.sla_array
-        mask_array = self.geodata.basin_mask_array
+        mask_array = self.geodata.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
@@ -214,7 +214,7 @@ class Analysis(Core):
         """
         self.print('Computing marginal distribution "dslc"...')
         x_array, y_array = self.trace.slc_array, self.trace.sla_array
-        mask_array = self.geodata.basin_mask_array
+        mask_array = self.geodata.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slc_min','pdf_slc_max',
@@ -233,7 +233,7 @@ class Analysis(Core):
         """
         self.print('Computing marginal distribution "uslc"...')
         x_array, y_array = self.trace.slc_array, self.trace.sla_array
-        mask_array = self.geodata.basin_mask_array
+        mask_array = self.geodata.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slc_min','pdf_slc_max',
@@ -310,7 +310,7 @@ class Analysis(Core):
         """
         self.print('Computing joint distribution "dsla_usla"...')
         x_array,y_array = self.trace.sla_array,self.trace.sla_array
-        mask_array = self.geodata.basin_mask_array
+        mask_array = self.geodata.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 0,1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
@@ -330,7 +330,7 @@ class Analysis(Core):
         """
         self.print('Computing joint distribution "dsla_dslt"...')
         x_array,y_array = self.trace.sla_array,self.trace.slt_array
-        mask_array = self.geodata.basin_mask_array
+        mask_array = self.geodata.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
@@ -355,7 +355,7 @@ class Analysis(Core):
         """
         self.print('Computing joint distribution "dslt_dslc"...')
         x_array,y_array = self.trace.slt_array,self.trace.slc_array
-        mask_array = self.geodata.basin_mask_array
+        mask_array = self.geodata.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
@@ -380,7 +380,7 @@ class Analysis(Core):
         """
         self.print('Computing joint distribution "usla_uslt"...')
         x_array,y_array = self.trace.sla_array,self.trace.slt_array
-        mask_array = self.geodata.basin_mask_array
+        mask_array = self.geodata.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 1,1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
@@ -419,7 +419,7 @@ class Analysis(Core):
         """
         self.print('Computing joint distribution "dsla_dslc"...')
         x_array,y_array = self.trace.sla_array,self.trace.slc_array
-        mask_array = self.geodata.basin_mask_array
+        mask_array = self.geodata.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
@@ -444,7 +444,7 @@ class Analysis(Core):
         """
         self.print('Computing joint distribution "usla_uslc"...')
         x_array,y_array = self.trace.sla_array,self.trace.slc_array
-        mask_array = self.geodata.basin_mask_array
+        mask_array = self.geodata.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 1,1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',

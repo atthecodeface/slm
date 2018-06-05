@@ -237,7 +237,7 @@ class Plot(Core):
         Hillshade view of ROI of DTM (overlay method)
         """
         if self.geodata.do_basin_masking:                
-            mask_array = self.geodata.basin_mask_array[
+            mask_array = self.geodata.merge_active_masks()[
                 self.geodata.pad_width:-self.geodata.pad_width,
                 self.geodata.pad_width:-self.geodata.pad_width]
         else:
@@ -350,11 +350,11 @@ class Plot(Core):
                 do_plot_color_relief=False, color_alpha=0,
                 hillshade_alpha=self.channel_shaded_relief_hillshade_alpha)
 
-        basin_mask_array = self.geodata.basin_mask_array
+        mask_array = self.geodata.merge_active_masks()
         
         grid_array = np.rad2deg(self.mapping.aspect_array.copy())
 #         grid_array[30:70,30:60] = 0
-        mask_array = basin_mask_array
+        
         im = self.plot_simple_grid(grid_array, mask_array, axes, cmap=cmap, 
                                    alpha=0.5, do_vlimit=False, v_min=-180, v_max=+180)
         
@@ -461,18 +461,18 @@ class Plot(Core):
         is_subsegmenthead  = self.mapping.info.is_subsegmenthead
         is_loop            = self.mapping.info.is_loop
         
-        basin_mask_array = self.geodata.basin_mask_array
+        active_mask_array = self.geodata.merge_active_masks()
         
         grid_array = (self.mapping.mapping_array & is_thinchannel).copy().astype(np.bool)
-        mask_array = basin_mask_array | ~(grid_array)
+        mask_array = active_mask_array | ~(grid_array)
         self.plot_simple_grid(grid_array, mask_array, axes, cmap='Blues', alpha=0.8)
 
         grid_array = (self.mapping.mapping_array & is_midslope).copy().astype(np.bool)
-        mask_array = basin_mask_array | ~(grid_array)
+        mask_array = active_mask_array | ~(grid_array)
         self.plot_simple_grid(grid_array, mask_array, axes, cmap='Greens', alpha=0.8)
         
         grid_array = (self.mapping.mapping_array & is_ridge).copy().astype(np.bool)
-        mask_array = basin_mask_array | ~(grid_array)
+        mask_array = active_mask_array | ~(grid_array)
         self.plot_simple_grid(grid_array, mask_array, axes, cmap='Oranges', alpha=0.8)
         
 #         self.plot_compound_markers(axes, is_majorconfluence, ['blue','black'])
@@ -674,7 +674,7 @@ class Plot(Core):
         mask_array = mask_array[self.geodata.pad_width:-self.geodata.pad_width,
                                 self.geodata.pad_width:-self.geodata.pad_width]
         if self.geodata.do_basin_masking:
-            mask_array |= self.geodata.basin_mask_array[
+            mask_array |= self.geodata.merge_active_masks()[
                 self.geodata.pad_width:-self.geodata.pad_width,
                 self.geodata.pad_width:-self.geodata.pad_width]
             
@@ -781,7 +781,7 @@ class Plot(Core):
         if linewidth is None:
             linewidth = self.contour_hsl_linewidth
                 
-        mask_array = self.geodata.basin_mask_array[
+        mask_array = self.geodata.merge_active_masks()[
                         self.geodata.pad_width:-self.geodata.pad_width,
                         self.geodata.pad_width:-self.geodata.pad_width].copy()
         mask_array[(self.mapping.label_array[
@@ -971,11 +971,11 @@ class Plot(Core):
                           self.geodata.y_roi_n_pixel_centers)
         axes.streamplot(x_pixel_centers_array,y_pixel_centers_array,
                       np.ma.array(self.preprocess.uv_array[:,:,0],
-                                  mask=self.geodata.basin_mask_array).T[
+                                  mask=self.geodata.merge_active_masks()).T[
                         self.geodata.pad_width:-self.geodata.pad_width,
                         self.geodata.pad_width:-self.geodata.pad_width],
                       np.ma.array(self.preprocess.uv_array[:,:,1],
-                                  mask=self.geodata.basin_mask_array).T[
+                                  mask=self.geodata.merge_active_masks()).T[
                         self.geodata.pad_width:-self.geodata.pad_width,
                         self.geodata.pad_width:-self.geodata.pad_width], 
                       density=min(1.0,self.classical_streamplot_density), 
@@ -1023,13 +1023,13 @@ class Plot(Core):
                                 decimation_factor,axis=1,n=2)
             m = decimate( 
                     decimate(
-                        ~self.geodata.basin_mask_array,
+                        ~self.geodata.merge_active_masks(),
                             decimation_factor,axis=0,n=2), 
                                 decimation_factor,axis=1,n=2)
         else:
             u = self.preprocess.uv_array[:,:,0]
             v = self.preprocess.uv_array[:,:,1]
-            m = ~self.geodata.basin_mask_array
+            m = ~self.geodata.merge_active_masks()
         # Normalize for clarity
         speed = np.hypot(u,v)
         u = u/speed

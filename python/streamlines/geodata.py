@@ -36,21 +36,14 @@ class Geodata(Core):
             self.dtm_path (str): absolute path to DTM file (should really be a list)
         """
         self.print('\n**Geodata begin**', flush=True)  
-        try:
-            self.dtm_path
-        except:
-            self.dtm_path = os.path.dirname(os.path.realpath(
-                os.path.join(os.path.realpath(self.state.parameters_path),
-                             *self.data_path,self.dtm_file) 
-                ))
         self.read_dtm_file()
+        self.make_dtm_mask()
         if self.do_basin_masking:
             self.read_basins_file()
         self.make_basins_mask()
-        self.make_dtm_mask()
         self.print('**Geodata end**\n', flush=True)  
 
-    def read_geotiff_file(self, path, filename):
+    def read_geotiff(self, path, filename):
         """
         Read GeoTIFF file.
         Assumes file contains a single-band 2d grid of equal x-y dimension pixels.
@@ -112,10 +105,17 @@ class Geodata(Core):
                                                     y coordinates of ROI pixel centers
 
         """
+        try:
+            self.dtm_path
+        except:
+            self.dtm_path = os.path.dirname(os.path.realpath(
+                os.path.join(os.path.realpath(self.state.parameters_path),
+                             *self.data_path,self.dtm_file) 
+                ))
         self.print('Reading DTM from GeoTIFF file "%s/%s"'
               % (self.dtm_path,self.dtm_file))
         self.dtm_array, self.pixel_size, self.geotransform\
-             = self.read_geotiff_file(self.dtm_path,self.dtm_file)
+             = self.read_geotiff(self.dtm_path,self.dtm_file)
         self.x_easting_bottomleft  = self.geotransform[0]
         self.y_northing_bottomleft = self.geotransform[3] \
                                       +self.geotransform[5]*self.dtm_array.shape[0]
@@ -207,6 +207,8 @@ class Geodata(Core):
                     (self.roi_x_origin+roi_width+roi_dx/2)*self.pixel_size,
                     (self.roi_y_origin-roi_dy/2)*self.pixel_size,
                     (self.roi_y_origin+roi_height+roi_dy/2)*self.pixel_size))
+        if self.h_min!='none':
+            self.roi_array[np.isnan(self.roi_array)] = self.h_min
         
     def read_basins_file(self):
         """
@@ -217,7 +219,7 @@ class Geodata(Core):
         """ 
         self.print('Reading basins from GeoTIFF file "%s/%s"'
               % (self.dtm_path,self.basins_file))
-        basins_array, _, _ = self.read_geotiff_file(self.dtm_path,self.basins_file)
+        basins_array, _, _ = self.read_geotiff(self.dtm_path,self.basins_file)
         # Check size
         if (self.dtm_array.shape[1]!=basins_array.shape[1] 
             or self.dtm_array.shape[0]!=basins_array.shape[0]):
@@ -230,12 +232,17 @@ class Geodata(Core):
               self.roi_x_bounds[0]:self.roi_x_bounds[1]]).T.copy()
 
     def make_dtm_mask(self):
+        """
+        TBD
+        """ 
         mask_unpadded_array = np.zeros_like(self.roi_array,dtype=np.bool8)
         mask_unpadded_array[np.isnan(self.roi_array)] = True
+        if self.h_min!='none':
+            mask_unpadded_array[self.roi_array<=self.h_min] = True
         self.dtm_mask_array = np.pad(mask_unpadded_array,
-                                     (int(self.pad_width),int(self.pad_width)), 
-                                     'constant',
-                                     constant_values=(True,True)).astype(dtype=np.bool8)
+                                     (int(self.pad_width), int(self.pad_width)), 
+                                     'constant', constant_values=(True,True))
+        self.add_active_mask(self.dtm_mask_array)
 
     def make_basins_mask(self):
         """
@@ -263,23 +270,48 @@ class Geodata(Core):
         else:
             basin_mask_unpadded_array = np.zeros_like(self.roi_array,dtype=np.bool8)
             basin_fatmask_unpadded_array = np.zeros_like(self.roi_array,dtype=np.bool8)
+            
         # Mask out NaN pixels
         basin_mask_unpadded_array[np.isnan(self.roi_array)] = True
         basin_fatmask_unpadded_array[np.isnan(self.roi_array)] = True
                 
         if self.h_min!='none':
             self.roi_array[np.isnan(self.roi_array)] = self.h_min
-            basin_mask_unpadded_array[self.roi_array<=self.h_min] = 1
-            basin_fatmask_unpadded_array[self.roi_array<=self.h_min] = 1
-        basin_mask_array = np.pad(basin_mask_unpadded_array,
-                                         (int(self.pad_width),int(self.pad_width)), 
-                                         'constant',constant_values=(True,True))
-        basin_fatmask_array = np.pad(basin_fatmask_unpadded_array, 
-                                            (int(self.pad_width),int(self.pad_width)), 
-                                            'constant',constant_values=(True,True))
-        self.basin_mask_array \
-            = basin_mask_array.copy().astype(dtype=np.bool8)
-        self.basin_fatmask_array \
-            = basin_fatmask_array.copy().astype(dtype=np.bool8)
-                 
+            basin_mask_unpadded_array[self.roi_array<=self.h_min] = True
+            basin_fatmask_unpadded_array[self.roi_array<=self.h_min] = True
+            
+        self.basin_mask_array = np.pad(basin_mask_unpadded_array,
+                                       (int(self.pad_width),int(self.pad_width)), 
+                                       'constant', constant_values=(True,True))
+        self.basin_fatmask_array = np.pad(basin_fatmask_unpadded_array, 
+                                          (int(self.pad_width), int(self.pad_width)), 
+                                          'constant', constant_values=(True,True))
+        if self.do_basin_masking:        
+            self.add_active_mask(self.basin_mask_array)
+
+
+    def add_active_mask(self, mask_array):
+        """
+        TBD
+        """ 
+        try:
+            self.active_masks += [mask_array]
+        except:
+            self.active_masks = [mask_array]
+        
+    def remove_active_mask(self, mask_array):
+        """
+        TBD
+        """ 
+        active_masks = [mask for mask in self.active_masks if mask is not mask_array]
+        self.active_masks = active_masks
+        
+    def merge_active_masks(self):
+        """
+        TBD
+        """ 
+        mask_array = self.active_masks[0].copy()
+        for active_mask in self.active_masks[1:]:
+            mask_array |= active_mask
+        return mask_array
         
