@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Carry out the streamline computation workflow.
+Carry out slm workflow.
 
 This workflow proceeds as follows:
 
@@ -14,43 +14,24 @@ This workflow proceeds as follows:
 
 """
 
-#
-# Run from command line using e.g., 
-#   python ${PATH_TO_STREAMLINE_MODULE}/streamlines/postprocess.py -f IndianCreekTest0
-# Basic package requirements:
-#  itertools
-#  os, sys, getopt
-#  json
-#
-# Pip install package requirements (showing version used during development):
-#  matplotlib (2.0.2)
-#  numpy (1.13.0)
-#  scipy (0.19.0)
-#  scikit-image (0.13.0)
-#  scikit-learn (0.18.1) inc. sklearn.externals.joblib
-#  GDAL (2.1.3; version 2.2.0 fails on darwin)
-#
-# Optional package:
-#   numba (0.36.2) - for acceleration
-#
 from argparse import ArgumentParser,ArgumentTypeError,ArgumentDefaultsHelpFormatter
 from pprint   import pprint
 from streamlines.streamlining import Streamlining
 
-__all__ = ['run','_parse_cmd_line_args','_str2bool']
+__all__ = ['run','_str2bool','_parse_cmd_line_args']
 
 pdebug = print
 
 def run(**kwargs):
     """
-    Main function to drive streamline computation workflow when 
+    Main function to drive slm analysis workflow when 
     called either from command line or Jupyter notebook.
     
     Return:
         object:  instance of :class:`.Streamlining` class
     """
 
-    # Create the streamline workflow object
+    # Create the slm workflow object
     #
     # The first initialization step is to read the parameters file specified from the 
     # command line, placing its result in a dict. 
@@ -59,6 +40,7 @@ def run(**kwargs):
     # those parameters relevant to the corresponding workflow step.
     sl = Streamlining(**kwargs)
     
+    # Execute the slm workflow
     if sl.state.do_geodata:
         sl.geodata.do()
     if sl.state.do_preprocess:

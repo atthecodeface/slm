@@ -1,8 +1,5 @@
 """
-Compute streamlines and their density grids.
-
-Todo:
-    Fix likely bug in parameters file path wrangling
+Perform slm analysis of topographic structure
 """
 
 from json     import loads
@@ -62,7 +59,7 @@ class Streamlining(Core):
             to that stage of the workflow, e.g. state.do_plot, trace.do_trace_upstream,
             parsed the parameters 'dictionary of dictionaries' file;
         (2) a reference to the inventorize() method, inherited from the Core() class,
-            used to do the parameters parsing;
+            used to do the parameter parsing;
         (3) back-references to all the key class instances needed for its work,
             e.g., trace.geodata(), plot.state();
         (4) references to methods needed for its work,
@@ -71,20 +68,26 @@ class Streamlining(Core):
             notably data arrays containing results, 
             e.g., geodata.roi_array, trace.streamline_arrays_list.
         """
+        
+        #
+        # Parse workflow parameters in JSON files and command line
+        #
         if 'parameters_file' not in kwargs.keys():
             raise ValueError('Must specify a parameters JSON file')
-
         parameters_path, parameters_file  = os.path.split(kwargs['parameters_file'])
         # Remove trailing .json for now if there is one
         parameters_file = ''.join(parameters_file.split('.json',-1))
-
         # Look for the JSON file in several likely places
-        if parameters_path=='':            
+        if parameters_path=='':   
+            # Try the current directory - in UNIX, the dir from which slm was invoked         
             possible_paths = ['.']
+            # Try the slm "home" dir given in the SLM environment variable
             try:
                 possible_paths += [os.path.join(os.environ['SLM'],'json')]
             except:
                 pass
+            # If we're running a Jupyter notebook in slmnb/, try the likely
+            #   relative path to slm/json/
             guess = os.path.join('..','..','slm','json')
             if os.path.isdir(guess):
                 possible_paths += [guess]
@@ -93,6 +96,7 @@ class Streamlining(Core):
                             os.path.join(path, parameters_file+'.json'))):
                     parameters_path = path
                     break
+            # If we still can't find the specified JSON file, bail
             if parameters_path=='':
                 raise ValueError('Cannot find JSON parameters file in {}'
                                  .format(possible_paths))
@@ -112,16 +116,24 @@ class Streamlining(Core):
             print('Loaded JSON parameters file "{}"'
                   .format(os.path.realpath(os.path.join(parameters_path, 
                                                         parameters_file+'.json'))))
+        # If the command line requires override of JSON-file parameters, make it happen
         try:
             override_parameters = kwargs['override_parameters']
         except:
             override_parameters = None
         if override_parameters is not None and override_parameters!='':
+            # The override parameter string is itself JSON data 
             override_dict = loads(override_parameters)
             for item in override_dict.items():
                 imported_parameters[item[0]].update(item[1])
 
+        # Instantiate the workflow "state"
         self.state = State(None,imported_parameters)
+        # Record the JSON parameters file path & name 
+        self.state.parameters_path = parameters_path
+        self.state.parameters_file = parameters_file
+
+        # Parse command line args and assign to State attributes in most cases
         for item in kwargs.items():
             if item[0]=='do_plot':
                 if item[1]=='0' or item[1]=='off' or item[1]=='false':
@@ -142,38 +154,47 @@ class Streamlining(Core):
                 elif item[1] is not None:
                     self.state.do_plot = item[1]
             elif item[1] is not None:
+                pdebug(item[0],item[1])
                 setattr(self.state, item[0],item[1])
+        # Used by State.inventorize_run_state() and other State methods
         self.state.obj_list=[self.state]
         
+        # Try to fetch latest slm-related git repo information
+        #   - notably the commit hash, author, date & time
         if self.state.do_git_info:
+            # Avoid the need to have the Python git module installed
+            #   by only importing if do_git_info is true
             import git
             for repo_name, repo_path in (('slm',slm_path),
                                          ('slmnb',slmnb_path),
                                          ('slmdata',slmdata_path)):
                 try:
+                    # Create a short-lived git repo class instance
                     repo = git.Repo(repo_path)
+                    # Grab its summary - seems to be the fastest way to get git info
                     summary = repo.git.show('--summary').split('\n')
                     git_info = [[summary[0]]+[summary[1].split(' <')[0]]+[summary[2]]]
                     setattr(self.state,repo_name+'_gitinfo',git_info)
+                    # Print git info if verbose mode is on
                     self.print('{} git:'.format(repo_name))
                     self.pprint(git_info)
                 except:
                     pass
             
-        self.state.parameters_path = parameters_path
-        self.state.parameters_file = parameters_file
-        self.geodata     = Geodata(self.state,imported_parameters)
-        self.preprocess  = Preprocess(self.state,imported_parameters,self.geodata)
-        self.trace       = Trace(self.state,imported_parameters,self.geodata,
-                                 self.preprocess)
-        self.state.trace = self.trace
-        self.analysis    = Analysis(self.state,imported_parameters,self.geodata,
+        # Instantiate slm workflow classes
+        self.geodata    = Geodata(self.state,imported_parameters)
+        self.preprocess = Preprocess(self.state,imported_parameters,self.geodata)
+        self.trace      = Trace(self.state,imported_parameters,self.geodata,
+                                self.preprocess)
+        self.analysis   = Analysis(self.state,imported_parameters,self.geodata,
                                     self.trace)
-        self.mapping     = Mapping(self.state,imported_parameters,
-                                   self.geodata,self.preprocess,self.trace,self.analysis)
-        self.plot        = Plot(self.state,imported_parameters, self.geodata,
-                                self.preprocess, self.trace, self.analysis, self.mapping)
-        self.export      = Export(self.state,imported_parameters,self.plot)
+        self.mapping    = Mapping(self.state,imported_parameters,
+                                  self.geodata,self.preprocess,self.trace,self.analysis)
+        self.plot       = Plot(self.state,imported_parameters, self.geodata,
+                               self.preprocess, self.trace, self.analysis, self.mapping)
+        self.export     = Export(self.state,imported_parameters,self.plot)
+        # Used by State.save_state()
+        self.state.trace = self.trace
                              
         self.print('**Initialization end**\n') 
     

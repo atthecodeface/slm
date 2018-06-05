@@ -239,7 +239,7 @@ class Mapping(Core):
         self.label_array = self.data.label_array
         
         
-class HSL():
+# class HSL():
         
     def map_midslope(self):
         self.print('Midslopes...',end='')  
