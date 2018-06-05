@@ -325,7 +325,7 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig(fig_name,fig)
     
-    def plot_aspect(self, window_size_factor=None,cmap=None):
+    def plot_aspect(self, window_size_factor=None,cmap=None,do_plot_contours=False):
         """
         TBD
         """
@@ -358,14 +358,15 @@ class Plot(Core):
         im = self.plot_simple_grid(grid_array, mask_array, axes, cmap=cmap, 
                                    alpha=0.5, do_vlimit=False, v_min=-180, v_max=+180)
         
-#         pad = self.geodata.pad_width
-#         self.plot_contours_overlay(axes,
-#                                    grid_array[pad:-pad,pad:-pad].T,
-#                                    mask=mask_array[pad:-pad,pad:-pad],
-#                                    contour_interval=10,
-#                                    linewidth=1,
-#                                    contour_label_suffix='', 
-#                                    contour_label_fontsize=10)
+        if do_plot_contours:
+            pad = self.geodata.pad_width
+            self.plot_contours_overlay(axes,
+                                       grid_array[pad:-pad,pad:-pad].T,
+                                       mask=mask_array[pad:-pad,pad:-pad],
+                                       contour_interval=10,
+                                       linewidth=1,
+                                       contour_label_suffix='', 
+                                       contour_label_fontsize=10)
         
         divider = make_axes_locatable(axes)
         cax = divider.append_axes("bottom", size="4%", 
@@ -394,7 +395,6 @@ class Plot(Core):
                                     y_pixel_scale=self.geodata.roi_pixel_size,
                                     window_size_factor=window_size_factor,
                                     projection='polar')
-
         axes.plot(hsl_aspect_array[:,1][~np.isnan(hsl_aspect_array[:,0])],
                   hsl_aspect_array[:,0][~np.isnan(hsl_aspect_array[:,0])],
                   'b')
@@ -795,7 +795,7 @@ class Plot(Core):
             hsl_alpha = 1.0
         self.plot_roi_shaded_relief_overlay(axes, do_plot_color_relief=False,
                                             hillshade_alpha=hillshade_alpha)
-        im = self.plot_simple_grid(np.fliplr(grid_array.T),
+        im = self.plot_simple_grid((grid_array),
                               mask_array,axes,cmap=cmap,alpha=hsl_alpha,do_vlimit=False)
         if do_colorbar:
             divider = make_axes_locatable(axes)
@@ -803,7 +803,7 @@ class Plot(Core):
                                       pad=0.5, aspect=colorbar_aspect)
             cbar = plt.colorbar(im, cax=cax, orientation="horizontal")
             cbar.set_label(colorbar_title)
-        self.plot_contours_overlay(axes,np.flipud(grid_array),mask=mask_array,
+        self.plot_contours_overlay(axes,grid_array.T,mask=mask_array,
                                    n_contours=n_contours,
                                    contour_interval=contour_interval,
                                    linewidth=linewidth,

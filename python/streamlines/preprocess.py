@@ -453,7 +453,9 @@ class Preprocess(Core):
                 self.print('\nBlockages at:')
                 for x,y in self.where_blockages_array:
                     dx,dy = get_flow_vector(self.blockages_array[x,y])
-                    self.print('  %s @ %s => %s' % (str([dx,dy]),str([x,y]),str([x+dx,y+dy])))
+                    self.print('  {0} @ {1} => {2}'.format(str([dx,dy]),
+                                                           str([x,y]),
+                                                           str([x+dx,y+dy])))
             else:
                 self.print('none found...', end='')
         self.print('...done')

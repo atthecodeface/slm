@@ -324,7 +324,7 @@ class Mapping(Core):
         self.print('Mapping hillslope lengths...',end='',flush=True)
         sys.stdout.flush()
         
-        hsl = np.flipud(self.hsl_array.T)
+        hsl = self.hsl_array
         hsl_bool = hsl.astype(np.bool)
         hsl_clipped = np.ma.array(hsl, mask=~hsl_bool)
         hsl_min = np.min(hsl_clipped)
@@ -385,11 +385,10 @@ class Mapping(Core):
         uv_filter_width = 3      
         uv_array[:,:,0] = gaussian_filter(uv_array[:,:,0],uv_filter_width)
         uv_array[:,:,1] = gaussian_filter(uv_array[:,:,1],uv_filter_width)
-        mask_array[ (slope_array<slope_threshold)
+        mask_array[  (slope_array<slope_threshold)
                    | ((mapping_array & is_channel)==is_channel) ] = True
         self.aspect_array = np.ma.masked_array(
-                 np.arctan2(uv_array[:,:,1],uv_array[:,:,0]),
-                                       mask=mask_array )
+                 np.arctan2(uv_array[:,:,1],uv_array[:,:,0]), mask=mask_array )
         self.print('done')  
                                                          
     def compute_hsl_aspect(self, n_bins=None):
@@ -401,12 +400,16 @@ class Mapping(Core):
         if n_bins is None:
             n_bins = 60
         pad = self.geodata.pad_width
+#         self.hsl_smoothed_array[75:150,:]=0
+#         self.hsl_smoothed_array[self.hsl_smoothed_array<120]=0
         aspect_array = np.rad2deg(self.aspect_array[pad:-pad,pad:-pad].copy())
-        hsl_array = self.hsl_smoothed_array.T.copy()
+        hsl_array = self.hsl_smoothed_array.copy()
+
         aspect_array = aspect_array[hsl_array>0.0]
         hsl_array    = hsl_array[hsl_array>0.0]
         hsl_array    = hsl_array[np.abs(aspect_array)>0.0]
         aspect_array = aspect_array[np.abs(aspect_array)>0.0]
+                
         mask_array   = np.ma.getmaskarray(aspect_array)| np.ma.getmaskarray(hsl_array)
         hsl_aspect_array = np.stack(
                        (np.ma.masked_array(hsl_array,    mask=mask_array).ravel(),
@@ -418,7 +421,7 @@ class Mapping(Core):
                                           columns=['hsl','aspect'])
         half_bin = aspect_range/n_bins
         bins = np.linspace(-aspect_range,+aspect_range+2*half_bin,n_bins+2)-half_bin
-#         pdebug('\n',(bins))
+
         self.hsl_aspect_df['groups'] = pd.cut(self.hsl_aspect_df['aspect'], bins)
         self.hsl_aspect_averages = self.hsl_aspect_df.groupby('groups')['hsl'].mean()
         bins = np.deg2rad(bins[:-1]+half_bin)
@@ -426,10 +429,6 @@ class Mapping(Core):
         south_hsl = (hsl[0]+hsl[-1])/2.0
         hsl[0] = south_hsl
         hsl[-1] = south_hsl
-#         pdebug(hsl[0],hsl[-1],(hsl[0]+hsl[-1])/2.0)
-#         pdebug(np.rad2deg(bins))
-#         pdebug(self.hsl_aspect_averages)
         self.hsl_aspect_averages_array = np.stack((hsl,bins),axis=1)
-#         pdebug(self.hsl_aspect_averages_array)
         self.print('done')  
                                                          
