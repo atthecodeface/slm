@@ -41,6 +41,14 @@ def run(**kwargs):
     sl = Streamlining(**kwargs)
     
     # Execute the slm workflow
+    #   => geodata  - read DTM
+    #    => preprocess - compute uv vector field
+    #     => trace - integrate streamlines
+    #      => analysis - estimate pdfs
+    #       => mapping - map geomorphic structures & fields
+    #        => plot - graphs & maps
+    #         => save state (currently defunct)
+    #          => export - write plots to files
     if sl.state.do_geodata:
         sl.geodata.do()
     if sl.state.do_preprocess:
