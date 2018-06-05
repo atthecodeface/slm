@@ -40,7 +40,7 @@ class Geodata(Core):
         self.make_dtm_mask()
         if self.do_basin_masking:
             self.read_basins_file()
-        self.make_basins_mask()
+            self.make_basins_mask()
         self.print('**Geodata end**\n', flush=True)  
 
     def read_geotiff(self, path, filename):
@@ -253,32 +253,18 @@ class Geodata(Core):
             self.basin_mask_array (numpy.ndarray bool):
             self.basin_fatmask_array (numpy.ndarray bool):
         """ 
-        if self.do_basin_masking:        
-            self.print('Mask out all but basin numbers %s'
-                  % (str(self.basins)))
-            # Generate boolean grid with True at unmasked basin pixels
-            basin_mask_unpadded_array = np.zeros_like(self.basins_array,dtype=np.bool8)
-            for basin in self.basins:
-                basin_mask_unpadded_array[self.basins_array==basin] = True
-            dilation_structure = generate_binary_structure(2, 2)
-            basin_fatmask_unpadded_array = binary_dilation(basin_mask_unpadded_array, 
-                                                       structure=dilation_structure, 
-                                                       iterations=1)
-            # True = masked out; False = data we want to see
-            basin_mask_unpadded_array = np.invert(basin_mask_unpadded_array)    
-            basin_fatmask_unpadded_array = np.invert(basin_fatmask_unpadded_array)
-        else:
-            basin_mask_unpadded_array = np.zeros_like(self.roi_array,dtype=np.bool8)
-            basin_fatmask_unpadded_array = np.zeros_like(self.roi_array,dtype=np.bool8)
-            
-        # Mask out NaN pixels
-        basin_mask_unpadded_array[np.isnan(self.roi_array)] = True
-        basin_fatmask_unpadded_array[np.isnan(self.roi_array)] = True
-                
-        if self.h_min!='none':
-            self.roi_array[np.isnan(self.roi_array)] = self.h_min
-            basin_mask_unpadded_array[self.roi_array<=self.h_min] = True
-            basin_fatmask_unpadded_array[self.roi_array<=self.h_min] = True
+        self.print('Mask out all but basin numbers {}'.format(str(self.basins)))
+        # Generate boolean grid with True at unmasked basin pixels
+        basin_mask_unpadded_array = np.zeros_like(self.basins_array,dtype=np.bool8)
+        for basin in self.basins:
+            basin_mask_unpadded_array[self.basins_array==basin] = True
+        dilation_structure = generate_binary_structure(2, 2)
+        basin_fatmask_unpadded_array = binary_dilation(basin_mask_unpadded_array, 
+                                                   structure=dilation_structure, 
+                                                   iterations=1)
+        # True = masked out; False = data we want to see
+        basin_mask_unpadded_array = np.invert(basin_mask_unpadded_array)    
+        basin_fatmask_unpadded_array = np.invert(basin_fatmask_unpadded_array)
             
         self.basin_mask_array = np.pad(basin_mask_unpadded_array,
                                        (int(self.pad_width),int(self.pad_width)), 
@@ -286,8 +272,7 @@ class Geodata(Core):
         self.basin_fatmask_array = np.pad(basin_fatmask_unpadded_array, 
                                           (int(self.pad_width), int(self.pad_width)), 
                                           'constant', constant_values=(True,True))
-        if self.do_basin_masking:        
-            self.add_active_mask(self.basin_mask_array)
+        self.add_active_mask(self.basin_mask_array)
 
 
     def add_active_mask(self, mask_array):
