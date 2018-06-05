@@ -274,7 +274,6 @@ class Geodata(Core):
                                           'constant', constant_values=(True,True))
         self.add_active_mask(self.basin_mask_array)
 
-
     def add_active_mask(self, mask_array):
         """
         TBD
