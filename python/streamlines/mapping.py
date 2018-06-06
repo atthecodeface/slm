@@ -335,10 +335,8 @@ class Mapping(Core):
         hsl_clipped = 65535*(hsl_clipped-hsl_min)/(hsl_max-hsl_min)
         hsl_masked = np.ma.array(hsl_clipped.astype(np.uint16),mask=~hsl_bool)
 
-        median_radius = int(self.hsl_median_radius
-                            /self.geodata.roi_pixel_size)
-        mean_radius   = int(self.hsl_mean_radius
-                            /self.geodata.roi_pixel_size)
+        median_radius = int(self.hsl_median_radius/self.geodata.roi_pixel_size)
+        mean_radius   = int(self.hsl_mean_radius/self.geodata.roi_pixel_size)
         median_disk = disk(median_radius)
         mean_disk   = disk(mean_radius)
         
@@ -377,7 +375,6 @@ class Mapping(Core):
         median_radius   = self.aspect_median_filter_radius/self.geodata.pixel_size
         slope_array     = self.preprocess.slope_array.copy()
         uv_array        = self.preprocess.uv_array.copy()
-        uv_filter_width = self.uv_filter_width/self.geodata.pixel_size
         is_channel      = self.info.is_channel
         mapping_array   = self.data.mapping_array
         mask_array      = np.zeros_like(mapping_array, dtype=np.bool)
@@ -386,12 +383,15 @@ class Mapping(Core):
             sf = np.max(slope_array)/255.0
             median_slope_array = sf*median(np.uint8(slope_array/sf),disk(median_radius))
             slope_array = median_slope_array
-        uv_array[:,:,0] = gaussian_filter(uv_array[:,:,0],uv_filter_width)
-        uv_array[:,:,1] = gaussian_filter(uv_array[:,:,1],uv_filter_width)
+
+        median_radius   = self.uv_median_radius/self.geodata.pixel_size
+        sf = 2.0/255.0
+        uvx_array = sf*median(np.uint8((uv_array[:,:,0]+1.0)/sf),disk(median_radius))-1.0
+        uvy_array = sf*median(np.uint8((uv_array[:,:,1]+1.0)/sf),disk(median_radius))-1.0
         mask_array[  (slope_array<slope_threshold)
                    | ((mapping_array & is_channel)==is_channel) ] = True
-        self.aspect_array = np.ma.masked_array(
-                 np.arctan2(uv_array[:,:,1],uv_array[:,:,0]), mask=mask_array )
+        self.aspect_array = np.ma.masked_array( np.arctan2(uvy_array,uvx_array), 
+                                                mask=mask_array )
         self.print('done')  
                                                          
     def compute_hsl_aspect(self, n_bins=None, hsl_averaging_threshold=None):
