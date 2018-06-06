@@ -77,7 +77,7 @@ def estimate_bivariate_pdf( distbn ):
                       distbn, action='histogram',  is_bivariate=True, 
                       sl_array=sl_array, verbose=verbose)
         
-    vprint(verbose,'kernel filtering rows..',end='')
+    vprint(verbose,'kernel filtering rows...',end='')
     # PDF
     cl_kernel_fn = 'pdf_bivariate_rows'
     partial_pdf_array \
@@ -164,7 +164,7 @@ def estimate_univariate_pdf( distbn, do_detrend=False, logx_vec=None):
         pdf *= np.sum(histogram_array)
         histogram_array = pdf.copy().astype(np.uint32)
         
-    vprint(verbose,'kernel filtering..',end='')
+    vprint(verbose,'kernel filtering...',end='')
     # PDF
     cl_kernel_fn = 'pdf_univariate'
     pdf_array \

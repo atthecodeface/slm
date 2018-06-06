@@ -19,8 +19,9 @@ from   matplotlib import streamplot
 import matplotlib.pyplot   as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.ticker   as ticker
-from matplotlib.pyplot import streamplot
-from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.pyplot  import streamplot
+from matplotlib.colors  import LinearSegmentedColormap
+from matplotlib.patches import ArrowStyle, FancyArrowPatch
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import colorsys
 from scipy.stats   import norm
@@ -410,7 +411,7 @@ class Plot(Core):
             c_interval *= 2        
         bands = np.arange(0,c_max+2*c_interval,c_interval).astype(np.uint32)
         band_labels = ['{}m'.format(band) for band in bands]
-        axes.set_rgrids(bands, labels=band_labels, color='b',style=None)
+        axes.set_rgrids(bands, labels=band_labels, color='blue',style=None)
         angles = np.arange(0,360,45).astype(np.uint32)
         spc = u'\N{space}'
         angle_labels = [r'0$\degree$',r'45$\degree$',
@@ -421,6 +422,21 @@ class Plot(Core):
 #         axes.tick_params(pad=8)
         axes.grid(color='b',alpha=0.5,linestyle='dashed')
         
+        mha = np.deg2rad(self.mapping.mean_hsl_azimuth)
+        mhm = self.mapping.mean_hsl_magnitude
+        mhl = z_max/2.0
+        head_length = 40   # hack - how to correctly scale??
+        arrow_style = ArrowStyle.Fancy(head_length=head_length,head_width=head_length/2,
+                                      tail_width=1)
+        arrow_patch = FancyArrowPatch((mha-np.pi,mhl/3.0), (mha,mhl),
+                                      shrinkA=1, shrinkB=1,
+                                      arrowstyle=arrow_style,
+                                      facecolor='blue', edgecolor='darkblue', 
+                                      linewidth=4)
+        axes.add_patch(arrow_patch)
+        axes.plot(mha,mhm,'.',ms=40,color='blue')
+        axes.plot(mha,mhm,'.',ms=30,color='lightblue')
+                      
         self._force_display(fig)
         self._record_fig(fig_name,fig)
 

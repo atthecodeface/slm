@@ -4,9 +4,11 @@ TBD
 
 import numpy  as np
 import pandas as pd
-from skimage.morphology   import skeletonize, thin, medial_axis, disk
-from skimage.filters      import gaussian
-from skimage.filters.rank import mean,median
+from cmath import rect, polar
+from sklearn.preprocessing import normalize
+from skimage.morphology    import skeletonize, thin, medial_axis, disk
+from skimage.filters       import gaussian
+from skimage.filters.rank  import mean,median
 from scipy.ndimage            import gaussian_filter
 from scipy.ndimage.morphology import binary_fill_holes
 from scipy.ndimage.morphology import binary_dilation,generate_binary_structure
@@ -48,11 +50,11 @@ class Mapping(Core):
         """
         self.print('\n**Mapping begin**') 
         self.prepare()
-        self.map_segments_channels()
-        self.map_hsl_ridges_midslopes_aspect()
+        self.mapping_segments_channels()
+        self.mapping_hsl_ridges_midslopes_aspect()
         self.print('**Mapping end**\n')  
                 
-    def map_segments_channels(self):
+    def mapping_segments_channels(self):
         """
         TBD.
         """
@@ -93,7 +95,7 @@ class Mapping(Core):
 
         self.print('**Mapping segments and channels end**\n')  
         
-    def map_hsl_ridges_midslopes_aspect(self):
+    def mapping_hsl_ridges_midslopes_aspect(self):
         """
         TBD.
         """
@@ -119,6 +121,7 @@ class Mapping(Core):
         
         self.print('**Mapping HSL, ridges, midslopes, aspect end**\n')  
         
+
     def prepare(self):
         self.print('Preparing...',end='')  
         try:
@@ -371,9 +374,10 @@ class Mapping(Core):
         sys.stdout.flush()
 
         slope_threshold = self.aspect_slope_threshold
-        median_radius   = self.aspect_median_filter_radius
+        median_radius   = self.aspect_median_filter_radius/self.geodata.pixel_size
         slope_array     = self.preprocess.slope_array.copy()
         uv_array        = self.preprocess.uv_array.copy()
+        uv_filter_width = self.uv_filter_width/self.geodata.pixel_size
         is_channel      = self.info.is_channel
         mapping_array   = self.data.mapping_array
         mask_array      = np.zeros_like(mapping_array, dtype=np.bool)
@@ -382,7 +386,6 @@ class Mapping(Core):
             sf = np.max(slope_array)/255.0
             median_slope_array = sf*median(np.uint8(slope_array/sf),disk(median_radius))
             slope_array = median_slope_array
-        uv_filter_width = 3      
         uv_array[:,:,0] = gaussian_filter(uv_array[:,:,0],uv_filter_width)
         uv_array[:,:,1] = gaussian_filter(uv_array[:,:,1],uv_filter_width)
         mask_array[  (slope_array<slope_threshold)
@@ -391,44 +394,47 @@ class Mapping(Core):
                  np.arctan2(uv_array[:,:,1],uv_array[:,:,0]), mask=mask_array )
         self.print('done')  
                                                          
-    def compute_hsl_aspect(self, n_bins=None):
+    def compute_hsl_aspect(self, n_bins=None, hsl_averaging_threshold=None):
         self.print('Computing hillslope length-aspect function...',end='',flush=True)
         sys.stdout.flush()
         
-#         aspect_range = np.pi
-        aspect_range = 180
         if n_bins is None:
             n_bins = 60
-        pad = self.geodata.pad_width
-#         self.hsl_smoothed_array[75:150,:]=0
-#         self.hsl_smoothed_array[self.hsl_smoothed_array<120]=0
-        aspect_array = np.rad2deg(self.aspect_array[pad:-pad,pad:-pad].copy())
-        hsl_array = self.hsl_smoothed_array.copy()
-
-        aspect_array = aspect_array[hsl_array>0.0]
-        hsl_array    = hsl_array[hsl_array>0.0]
-        hsl_array    = hsl_array[np.abs(aspect_array)>0.0]
-        aspect_array = aspect_array[np.abs(aspect_array)>0.0]
-                
-        mask_array   = np.ma.getmaskarray(aspect_array)| np.ma.getmaskarray(hsl_array)
-        hsl_aspect_array = np.stack(
-                       (np.ma.masked_array(hsl_array,    mask=mask_array).ravel(),
-                        np.ma.masked_array(aspect_array, mask=mask_array).ravel()),
-                        axis=1)
+        if hsl_averaging_threshold is None:
+            hsl_averaging_threshold = self.hsl_averaging_threshold
+        
+        pad           = self.geodata.pad_width
+        mask_array    = self.data.mask_array[pad:-pad,pad:-pad]
+        aspect_array  = self.aspect_array[pad:-pad,pad:-pad].copy()[~mask_array]
+        hsl_array     = self.hsl_smoothed_array.copy()[~mask_array]
+        aspect_array  = np.rad2deg(aspect_array[hsl_array>hsl_averaging_threshold])
+        hsl_array     = hsl_array[hsl_array>hsl_averaging_threshold]
+        hsl_aspect_array = np.stack( (hsl_array,aspect_array), axis=1)
+        
         # Sort in-place using column 1 (aspect) as key
         self.hsl_aspect_array = hsl_aspect_array[hsl_aspect_array[:,1].argsort()]
-        self.hsl_aspect_df = pd.DataFrame(data=self.hsl_aspect_array,
-                                          columns=['hsl','aspect'])
-        half_bin = aspect_range/n_bins
-        bins = np.linspace(-aspect_range,+aspect_range+2*half_bin,n_bins+2)-half_bin
-
+        self.hsl_aspect_df    = pd.DataFrame(data=self.hsl_aspect_array,
+                                             columns=['hsl','aspect'])
+        half_bin_width = 180/n_bins
+        bin_width = half_bin_width*2
+        bins = np.linspace(-180,+180+bin_width,n_bins+2)-half_bin_width
         self.hsl_aspect_df['groups'] = pd.cut(self.hsl_aspect_df['aspect'], bins)
         self.hsl_aspect_averages = self.hsl_aspect_df.groupby('groups')['hsl'].mean()
-        bins = np.deg2rad(bins[:-1]+half_bin)
+        bins = np.deg2rad(bins[:-1]+half_bin_width)
         hsl = self.hsl_aspect_averages.values
         south_hsl = (hsl[0]+hsl[-1])/2.0
-        hsl[0] = south_hsl
+        hsl[0]  = south_hsl
         hsl[-1] = south_hsl
         self.hsl_aspect_averages_array = np.stack((hsl,bins),axis=1)
+        
+        complex_hsl_vector_array \
+            = (np.array([rect(ha[0],ha[1]) 
+                         for ha in self.hsl_aspect_averages_array]))
+        mean_complex_hsl_vector \
+            = np.mean(complex_hsl_vector_array[~np.isnan(complex_hsl_vector_array)])
+        mhsl = polar(mean_complex_hsl_vector)
+        self.mean_hsl_magnitude = mhsl[0]
+        self.mean_hsl_azimuth = np.rad2deg(mhsl[1])
+            
         self.print('done')  
                                                          

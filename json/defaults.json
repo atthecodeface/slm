@@ -114,13 +114,15 @@
 		"n_hsl_averaging_threshold" : 5,
 		"hsl_median_radius" : 5,
 		"hsl_mean_radius" : 50,
+		"uv_filter_width" : 50.0,
+		"hsl_averaging_threshold" : 5.0,
 		"midslope_filter_sigma" : 5.0,
 		"midslope_threshold" : 0.03,
 		"ridge_filter_sigma" : 4.0,
 		"ridge_threshold" : 0.65,
 		"aspect_slope_threshold" : 15.0,
 		"do_aspect_median_filtering" : true,
-		"aspect_median_filter_radius" : 3
+		"aspect_median_filter_radius" : 4
 	},
 
 	"plot": {        
