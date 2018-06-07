@@ -429,11 +429,15 @@ class Mapping(Core):
         
         self.hsl_mean_south = np.mean(self.hsl_aspect_averages_array[1:(n_bins//2-2), 0])
         self.hsl_mean_north = np.mean(self.hsl_aspect_averages_array[(n_bins//2+1):-2,0])
-#         pdebug(self.hsl_aspect_averages_array[1:(n_bins//2),0])
-#         pdebug(self.hsl_mean_south)
-#         pdebug(self.hsl_aspect_averages_array[(n_bins//2+1):-1, 0])
-#         pdebug(self.hsl_mean_north)
+        self.hsl_mean = (self.hsl_mean_north+self.hsl_mean_south)/2.0
+        self.hsl_ns_disparity = np.abs(self.hsl_mean_north-self.hsl_mean_south)
+        self.hsl_ns_disparity_normed = self.hsl_ns_disparity/self.hsl_mean
         
+        self.hsl_split_stddev = np.mean(np.array(
+            [np.std(hsl_split[~np.isnan(hsl_split)])
+             for hsl_split in np.split(self.hsl_aspect_averages_array[1:,0],4)]))
+        self.hsl_split_stddev_normed = self.hsl_split_stddev/self.hsl_mean
+
         hsl_complex_vector_array \
             = (np.array([rect(ha[0],ha[1]) 
                          for ha in self.hsl_aspect_averages_array]))
@@ -442,6 +446,17 @@ class Mapping(Core):
         mhsl = polar(hsl_mean_complex_vector)
         self.hsl_mean_magnitude = mhsl[0]
         self.hsl_mean_azimuth = np.rad2deg(mhsl[1])
+        
+        self.hsl_ns_disparity_confidence \
+            = self.hsl_ns_disparity_normed/self.hsl_split_stddev_normed - 1.0
+        
+        self.print('\nHSL north-south disparity vs overall variation:'
+                   +'   {0:2.1f}% / {1:2.1f}%'
+                   .format(self.hsl_ns_disparity_normed*100,
+                           self.hsl_split_stddev_normed*100) )
+        self.print('HSL north-south disparity degree of confidence:   {0:2.1f}'
+                   .format(self.hsl_ns_disparity_confidence) )
+
             
         self.print('done')  
                                                          
