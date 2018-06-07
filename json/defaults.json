@@ -139,7 +139,7 @@
 		"do_plot_hsl_contoured" : true,
 		"do_plot_hsl_distributions" : true,
 		"do_plot_aspect" : true,
-		"do_plot_aspect_distribution" : true,
+		"do_plot_hsl_aspect_distribution" : true,
 
 		"do_plot_downstreamlines" : true,
 		"do_plot_upstreamlines" : true,

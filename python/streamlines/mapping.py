@@ -427,14 +427,21 @@ class Mapping(Core):
         hsl[-1] = south_hsl
         self.hsl_aspect_averages_array = np.stack((hsl,bins),axis=1)
         
-        complex_hsl_vector_array \
+        self.hsl_mean_south = np.mean(self.hsl_aspect_averages_array[1:(n_bins//2-2), 0])
+        self.hsl_mean_north = np.mean(self.hsl_aspect_averages_array[(n_bins//2+1):-2,0])
+#         pdebug(self.hsl_aspect_averages_array[1:(n_bins//2),0])
+#         pdebug(self.hsl_mean_south)
+#         pdebug(self.hsl_aspect_averages_array[(n_bins//2+1):-1, 0])
+#         pdebug(self.hsl_mean_north)
+        
+        hsl_complex_vector_array \
             = (np.array([rect(ha[0],ha[1]) 
                          for ha in self.hsl_aspect_averages_array]))
-        mean_complex_hsl_vector \
-            = np.mean(complex_hsl_vector_array[~np.isnan(complex_hsl_vector_array)])
-        mhsl = polar(mean_complex_hsl_vector)
-        self.mean_hsl_magnitude = mhsl[0]
-        self.mean_hsl_azimuth = np.rad2deg(mhsl[1])
+        hsl_mean_complex_vector \
+            = np.mean(hsl_complex_vector_array[~np.isnan(hsl_complex_vector_array)])
+        mhsl = polar(hsl_mean_complex_vector)
+        self.hsl_mean_magnitude = mhsl[0]
+        self.hsl_mean_azimuth = np.rad2deg(mhsl[1])
             
         self.print('done')  
                                                          

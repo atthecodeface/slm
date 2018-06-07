@@ -197,8 +197,8 @@ class Plot(Core):
             self.plot_hsl_contoured()
         if self.do_plot_aspect:
             self.plot_aspect()
-        if self.do_plot_aspect_distribution:
-            self.plot_aspect_distribution()
+        if self.do_plot_hsl_aspect_distribution:
+            self.plot_hsl_aspect_distribution()
         self.print('...done')
             
     def plot_dtm_shaded_relief(self, window_size_factor=None):
@@ -379,32 +379,42 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig(fig_name,fig)
 
-    def plot_aspect_distribution(self, window_size_factor=None):
+    def plot_hsl_aspect_distribution(self, window_size_factor=None, cmap=None):
         try:
             hsl_aspect_array = self.mapping.hsl_aspect_averages_array
         except: 
             self.print('HSL-aspect array not computed')
             
-        cmap = 'bwr'
-        fig_name='aspect_distribution'
-        window_title='aspect distribution'
-        do_flip_cmap=False
-        do_balance_cmap=True
+        fig_name='hsl_aspect_distribution'
+        window_title='HSL-aspect distribution'
                     
         fig,axes = self._new_figure(window_title=window_title,
                                     x_pixel_scale=self.geodata.roi_pixel_size,
                                     y_pixel_scale=self.geodata.roi_pixel_size,
                                     window_size_factor=window_size_factor,
                                     projection='polar')
-        axes.plot(hsl_aspect_array[:,1][~np.isnan(hsl_aspect_array[:,0])],
-                  hsl_aspect_array[:,0][~np.isnan(hsl_aspect_array[:,0])],
-                  'b')
+        hsl = hsl_aspect_array[:,0][~np.isnan(hsl_aspect_array[:,0])]
+        asp = hsl_aspect_array[:,1][~np.isnan(hsl_aspect_array[:,0])]
+        hsl_max = np.max(hsl)
+        n_bins = hsl.shape[0]
+        hsl_north = hsl[(n_bins//2):]
+        asp_north = asp[(n_bins//2):]
+        hsl_south = hsl[:(n_bins//2+1)]
+        asp_south = asp[:(n_bins//2+1)]
+        if cmap is None:
+            cmap = self.contour_hsl_cmap
+        cmap = mpl.cm.get_cmap(cmap)
+        rgba_north = cmap(self.mapping.hsl_mean_north/hsl_max)
+        rgba_south = cmap(self.mapping.hsl_mean_south/hsl_max)
+        axes.fill_between(asp_north, hsl_north, facecolor=rgba_north, alpha=0.5)
+        axes.fill_between(asp_south, hsl_south, facecolor=rgba_south, alpha=0.5)
+        axes.plot(asp, hsl, 'black', lw=2)
+        
 #         axes.set_theta_zero_location('N')
 #         axes.set_theta_direction(-1)
-        z_max = np.max(hsl_aspect_array[:,0][~np.isnan(hsl_aspect_array[:,0])])
         c_interval = 5
         while c_interval<=100:
-            c_max = np.ceil(z_max//c_interval)*c_interval
+            c_max = np.ceil(hsl_max//c_interval)*c_interval
             c_count = c_max/c_interval
             if c_count<=5:
                 break
@@ -414,7 +424,7 @@ class Plot(Core):
         axes.set_rgrids(bands, labels=band_labels, color='blue',style=None)
         angles = np.arange(0,360,45).astype(np.uint32)
         spc = u'\N{space}'
-        angle_labels = [r'0$\degree$',r'45$\degree$',
+        angle_labels = [spc*6+r'0$\degree$ = E',r'45$\degree$',
                         r'90$\degree$ = N',r'135$\degree$',
                         r'$\pm$180$\degree$'+spc*6, r'-135$\degree$'+spc*5,
                         r'-90$\degree$ = S',r'-45$\degree$']
@@ -422,9 +432,9 @@ class Plot(Core):
 #         axes.tick_params(pad=8)
         axes.grid(color='b',alpha=0.5,linestyle='dashed')
         
-        mha = np.deg2rad(self.mapping.mean_hsl_azimuth)
-        mhm = self.mapping.mean_hsl_magnitude
-        mhl = z_max/2.0
+        mha = np.deg2rad(self.mapping.hsl_mean_azimuth)
+        mhm = self.mapping.hsl_mean_magnitude
+        mhl = hsl_max/2.0
         head_length = 40   # hack - how to correctly scale??
         arrow_style = ArrowStyle.Fancy(head_length=head_length,head_width=head_length/2,
                                       tail_width=1)
@@ -436,7 +446,20 @@ class Plot(Core):
         axes.add_patch(arrow_patch)
         axes.plot(mha,mhm,'.',ms=40,color='blue')
         axes.plot(mha,mhm,'.',ms=30,color='lightblue')
-                      
+
+        color = 'darkblue'
+        h_position = hsl_max/1.4
+        axes.text(+np.deg2rad(160), h_position, 
+                  r'$\overline{\mathbf{L}}_\mathbf{N}=$'+'{:2.0f}m'
+                    .format(self.mapping.hsl_mean_north),
+                  size=18, color=color, fontweight='bold',
+                  horizontalalignment='left', verticalalignment='center')
+        axes.text(-np.deg2rad(160), h_position, 
+                  r'$\overline{\mathbf{L}}_\mathbf{S}=$'+'{:2.0f}m'
+                    .format(self.mapping.hsl_mean_south),
+                  size=18, color=color, fontweight='bold',
+                  horizontalalignment='left', verticalalignment='center')
+
         self._force_display(fig)
         self._record_fig(fig_name,fig)
 
