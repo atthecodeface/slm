@@ -396,19 +396,20 @@ class Plot(Core):
         hsl = hsl_aspect_array[:,0][~np.isnan(hsl_aspect_array[:,0])]
         asp = hsl_aspect_array[:,1][~np.isnan(hsl_aspect_array[:,0])]
         hsl_max = np.max(hsl)
-        n_bins = hsl.shape[0]
-        hsl_north = hsl[(n_bins//2):]
-        asp_north = asp[(n_bins//2):]
-        hsl_south = hsl[:(n_bins//2+1)]
-        asp_south = asp[:(n_bins//2+1)]
+        hsl_min = np.min(hsl)
+        n_bins  = hsl.shape[0]
+        hsl_north = hsl[asp>=0.0]
+        asp_north = asp[asp>=0.0]
+        hsl_south = hsl[asp<=0.0]
+        asp_south = asp[asp<=0.0]
         if cmap is None:
-            cmap = self.contour_hsl_cmap
+            cmap = 'Greys'
         cmap = mpl.cm.get_cmap(cmap)
-        rgba_north = cmap(self.mapping.hsl_mean_north/hsl_max)
-        rgba_south = cmap(self.mapping.hsl_mean_south/hsl_max)
-        axes.fill_between(asp_north, hsl_north, facecolor=rgba_north, alpha=0.5)
-        axes.fill_between(asp_south, hsl_south, facecolor=rgba_south, alpha=0.5)
-        axes.plot(asp, hsl, 'black', lw=2)
+        rgba_north = cmap((self.mapping.hsl_mean_north-hsl_min)/(hsl_max-hsl_min))
+        rgba_south = cmap((self.mapping.hsl_mean_south-hsl_min)/(hsl_max-hsl_min))
+        axes.fill_between(asp_north, hsl_north, facecolor=rgba_north, alpha=0.4)
+        axes.fill_between(asp_south, hsl_south, facecolor=rgba_south, alpha=0.4)
+        axes.plot(asp, hsl, 'black', lw=1)
         
 #         axes.set_theta_zero_location('N')
 #         axes.set_theta_direction(-1)
@@ -430,7 +431,7 @@ class Plot(Core):
                         r'-90$\degree$ = S',r'-45$\degree$']
         axes.set_thetagrids(angles, labels=angle_labels)
 #         axes.tick_params(pad=8)
-        axes.grid(color='b',alpha=0.5,linestyle='dashed')
+        axes.grid(color='blue',alpha=0.5,linestyle='dashed')
         
         mha = np.deg2rad(self.mapping.hsl_mean_azimuth)
         mhm = self.mapping.hsl_mean_magnitude
@@ -441,24 +442,24 @@ class Plot(Core):
         arrow_patch = FancyArrowPatch((mha-np.pi,mhl/3.0), (mha,mhl),
                                       shrinkA=1, shrinkB=1,
                                       arrowstyle=arrow_style,
-                                      facecolor='blue', edgecolor='darkblue', 
+                                      facecolor='blue', edgecolor='blue', 
                                       linewidth=4)
         axes.add_patch(arrow_patch)
         axes.plot(mha,mhm,'.',ms=40,color='blue')
         axes.plot(mha,mhm,'.',ms=30,color='lightblue')
 
-        color = 'darkblue'
-        h_position = hsl_max/1.4
-        axes.text(+np.deg2rad(160), h_position, 
+        color = 'purple'
+        h_position = hsl_max/1.8
+        axes.text(+np.deg2rad(145), h_position, 
                   r'$\overline{\mathbf{L}}_\mathbf{N}=$'+'{:2.0f}m'
                     .format(self.mapping.hsl_mean_north),
                   size=18, color=color, fontweight='bold',
-                  horizontalalignment='left', verticalalignment='center')
-        axes.text(-np.deg2rad(160), h_position, 
+                  horizontalalignment='center', verticalalignment='center')
+        axes.text(-np.deg2rad(145), h_position, 
                   r'$\overline{\mathbf{L}}_\mathbf{S}=$'+'{:2.0f}m'
                     .format(self.mapping.hsl_mean_south),
                   size=18, color=color, fontweight='bold',
-                  horizontalalignment='left', verticalalignment='center')
+                  horizontalalignment='center', verticalalignment='center')
 
         self._force_display(fig)
         self._record_fig(fig_name,fig)

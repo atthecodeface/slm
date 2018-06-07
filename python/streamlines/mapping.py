@@ -427,8 +427,10 @@ class Mapping(Core):
         hsl[-1] = south_hsl
         self.hsl_aspect_averages_array = np.stack((hsl,bins),axis=1)
         
-        self.hsl_mean_south = np.mean(self.hsl_aspect_averages_array[1:(n_bins//2-2), 0])
-        self.hsl_mean_north = np.mean(self.hsl_aspect_averages_array[(n_bins//2+1):-2,0])
+        hsl_south_array = self.hsl_aspect_averages_array[1:(n_bins//2-2), 0]
+        hsl_north_array = self.hsl_aspect_averages_array[(n_bins//2+1):-2,0]
+        self.hsl_mean_south = np.mean(hsl_south_array[~np.isnan(hsl_south_array)])
+        self.hsl_mean_north = np.mean(hsl_north_array[~np.isnan(hsl_north_array)])
         self.hsl_mean = (self.hsl_mean_north+self.hsl_mean_south)/2.0
         self.hsl_ns_disparity = np.abs(self.hsl_mean_north-self.hsl_mean_south)
         self.hsl_ns_disparity_normed = self.hsl_ns_disparity/self.hsl_mean
@@ -448,15 +450,22 @@ class Mapping(Core):
         self.hsl_mean_azimuth = np.rad2deg(mhsl[1])
         
         self.hsl_ns_disparity_confidence \
-            = self.hsl_ns_disparity_normed/self.hsl_split_stddev_normed - 1.0
+            = self.hsl_ns_disparity_normed/self.hsl_split_stddev_normed
+
+        self.print('done')  
         
+    def check_hsl_ns_disparity(self):
         self.print('\nHSL north-south disparity vs overall variation:'
                    +'   {0:2.1f}% / {1:2.1f}%'
                    .format(self.hsl_ns_disparity_normed*100,
                            self.hsl_split_stddev_normed*100) )
         self.print('HSL north-south disparity degree of confidence:   {0:2.1f}'
                    .format(self.hsl_ns_disparity_confidence) )
-
-            
-        self.print('done')  
-                                                         
+        if self.hsl_ns_disparity_confidence<0.5:
+            self.print('   => no significant disparity')
+        elif self.hsl_ns_disparity_confidence<1.0:
+            self.print('   => likely no significant disparity')
+        elif self.hsl_ns_disparity_confidence<2.0:
+            self.print('   => possibly significant disparity')
+        else:
+            self.print('   => likely significant disparity')                                                         
