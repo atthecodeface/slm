@@ -422,9 +422,9 @@ class Mapping(Core):
         self.hsl_aspect_averages = self.hsl_aspect_df.groupby('groups')['hsl'].mean()
         bins = np.deg2rad(bins[:-1]+half_bin_width)
         hsl = self.hsl_aspect_averages.values
-        south_hsl = (hsl[0]+hsl[-1])/2.0
-        hsl[0]  = south_hsl
-        hsl[-1] = south_hsl
+        west_hsl = (hsl[0]+hsl[-1])/2.0
+        hsl[0]  = west_hsl
+        hsl[-1] = west_hsl
         self.hsl_aspect_averages_array = np.stack((hsl,bins),axis=1)
         
         haa = self.hsl_aspect_averages_array
@@ -433,7 +433,6 @@ class Mapping(Core):
         hsl_south_array = hsl[asp<=0.0]
         hsl_north_array = hsl[asp>=0.0]
         if -asp[0]==asp[-1]:
-            pdebug('wrapped')
             self.hsl_mean     = np.mean(hsl[1:])
         else:
             self.hsl_mean     = np.mean(hsl)
@@ -443,9 +442,8 @@ class Mapping(Core):
         self.hsl_ns_disparity_normed = self.hsl_ns_disparity/self.hsl_mean
         
         self.hsl_stddev       = np.std(hsl)
-        self.hsl_split_stddev = np.mean(np.array(
-            [np.std(hsl_split[~np.isnan(hsl_split)])
-             for hsl_split in np.split(haa[1:,0],4)]))
+        self.hsl_split_stddev = np.mean(np.array([np.std(hsl_split[~np.isnan(hsl_split)])
+                                                for hsl_split in np.split(haa[1:,0],4)]))
         self.hsl_split_stddev_normed = self.hsl_split_stddev/self.hsl_mean
 
         hsl_complex_vector_array = (np.array([rect(ha[0],ha[1]) for ha in haa]))
