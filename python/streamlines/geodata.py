@@ -233,15 +233,25 @@ class Geodata(Core):
 
     def make_dtm_mask(self):
         """
-        TBD
+        Create a raw 'DTM' mask array that masks off NaNs, sub-threshold elevations,
+        and the fringing pad pixels. Add it to the list of active masks.
+
+        Attributes:
+            self.dtm_mask_array (numpy.ndarray bool):
+            self.active_masks (list):
         """ 
+        # Raw "DTM" mask grid is the same size as the DTM ROI
         mask_unpadded_array = np.zeros_like(self.roi_array,dtype=np.bool8)
+        # Mask off NaNs
         mask_unpadded_array[np.isnan(self.roi_array)] = True
+        # Also mask off elevations below the h_min threshold if required
         if self.h_min!='none':
             mask_unpadded_array[self.roi_array<=self.h_min] = True
+        # Pad this "DTM" mask grid
         self.dtm_mask_array = np.pad(mask_unpadded_array,
                                      (int(self.pad_width), int(self.pad_width)), 
                                      'constant', constant_values=(True,True))
+        # Add this "DTM" mask to the list of active masks (actually, it'll be the first)
         self.add_active_mask(self.dtm_mask_array)
 
     def make_basins_mask(self):

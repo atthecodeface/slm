@@ -78,6 +78,12 @@ class Analysis(Core):
 
         self.print('**Analysis end**\n')  
       
+    def estimate_channel_threshold(self):
+        """
+        TBD
+        """
+        self.compute_marginal_distribn_dslt()
+        
     def compute_marginal_distribn(self, x_array,y_array,mask_array=None,
                                   up_down_idx_x=0, up_down_idx_y=0, 
                                   n_hist_bins=None, n_pdf_points=None, 

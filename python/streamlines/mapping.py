@@ -49,11 +49,104 @@ class Mapping(Core):
         TBD.
         """
         self.print('\n**Mapping begin**') 
+        
+        # 1st pass:
+        #    - coarsely (sub)segment and label using an imposed threshold
+        #       - map_channels()
+        #       - connect_channel_pixels()
+        #       - thin_channels()
+        #       - map_channel_heads()
+        #       - count_downchannels()
+        #       - flag_downchannels()
+        #       - label_confluences()
+        #       - segment_downchannels()
+        #       - link_hillslopes()
+        #       - segment_hillslopes()
+        #       - subsegment_flanks()
+        #
+        #    - keep coarse subsegment labels array
+        #
+        #    - estimate approximate channel threshold for whole ROI
+        #       - analysis.estimate_channel_threshold()
+        #
+        #    - keep fine subsegment labels array
+        
+        # 2nd pass:
+        #    - loop over coarse subsegments
+        #       - add (not) coarse subsegment to list of active masks
+        #
+        #       - estimate channel threshold for coarse subsegment
+        #
+        #       - finely (sub)segment and label using approximate channel threshold
+        #          - map_channels()
+        #          - connect_channel_pixels()
+        #          - thin_channels()
+        #          - map_channel_heads()
+        #          - count_downchannels()
+        #          - flag_downchannels()
+        #          - label_confluences()
+        #          - segment_downchannels()
+        #          - link_hillslopes()
+        #          - segment_hillslopes()
+        #          - subsegment_flanks()
+        #
+        #       - measure partial HSL on fine subsegments within the coarse subsegment
+        #          - map_midslope()
+        #          - map_ridges()
+        #          - measure_hsl()
+        #
+        #       - merge partial HSL onto aggregating HSL array
+        #
+        #       - remove (not) coarse subsegment from list of active masks
+        #
+        #    - map (median & mean filter) aggregate HSL measurements
+        
+        #
+        
+        # Active masks presumably set:  
+        #    - geodata.dtm_mask_array
+        #    - geodata.basin_mask_array (if set)
+        #    - preprocess.uv_mask_array
+        
         self.prepare()
-        self.mapping_segments_channels()
+        self.mapping_segments_channels(threshold=self.imposed_channel_threshold)
+        # Estimate whole-ROI, approximate channel threshold
+        self.analysis.estimate_channel_threshold()
+
         self.mapping_hsl_ridges_midslopes_aspect()
+        
         self.print('**Mapping end**\n')  
                 
+    def prepare(self):
+        self.print('Preparing...',end='')  
+        try:
+            del self.mapping_array
+        except:
+            pass
+        try:
+            del self.data
+        except:
+            pass
+        try:
+            del self.label_array
+        except:
+            pass
+        try:
+            del self.hsl_array
+        except:
+            pass
+        try:
+            del self.hsl_smoothed_array
+        except:
+            pass
+        self.mapping_array = self.trace.mapping_array.copy()
+        self.data = Data( mask_array    = self.geodata.merge_active_masks(),
+                          uv_array      = self.preprocess.uv_array,
+                          mapping_array = self.mapping_array )  
+        self.verbose = self.state.verbose
+        self.info = Info(self.trace, mapping=self)
+        self.print('done')    
+            
     def mapping_segments_channels(self):
         """
         TBD.
@@ -122,44 +215,12 @@ class Mapping(Core):
         self.print('**Mapping HSL, ridges, midslopes, aspect end**\n')  
         
 
-    def prepare(self):
-        self.print('Preparing...',end='')  
-        try:
-            del self.mapping_array
-        except:
-            pass
-        try:
-            del self.data
-        except:
-            pass
-        try:
-            del self.label_array
-        except:
-            pass
-        try:
-            del self.hsl_array
-        except:
-            pass
-        try:
-            del self.hsl_smoothed_array
-        except:
-            pass
-        self.mapping_array = self.trace.mapping_array.copy()
-        self.data = Data( mask_array    = self.geodata.merge_active_masks(),
-                          uv_array      = self.preprocess.uv_array,
-                          mapping_array = self.mapping_array )  
-        self.verbose = self.state.verbose
-        self.info = Info(self.trace, mapping=self)
-        self.print('done')    
-            
-    def map_channels(self):
+    def map_channels(self, threshold=None):
         self.print('Channels...',end='')
-        if self.imposed_channel_threshold:
-            slt_threshold = self.imposed_channel_threshold
-        else:
-            slt_threshold = self.analysis.mpdf_dslt.channel_threshold_x
+        if threshold is None:
+            threshold = self.analysis.mpdf_dslt.channel_threshold_x
         # Designate channel pixels according to dslt pdf analysis
-        self.data.mapping_array[  (self.trace.slt_array[:,:,0]>=slt_threshold)
+        self.data.mapping_array[  (self.trace.slt_array[:,:,0]>=threshold)
                         & (self.trace.slt_array[:,:,0]*2>=self.trace.slc_array[:,:,0])
                                 ] = self.info.is_channel                                
         self.print('done')  
@@ -439,7 +500,7 @@ class Mapping(Core):
         self.hsl_mean_south   = np.mean(hsl_south_array)
         self.hsl_mean_north   = np.mean(hsl_north_array)
         self.hsl_ns_disparity = np.abs(self.hsl_mean_north-self.hsl_mean_south)
-        self.hsl_ns_disparity_normed = self.hsl_ns_disparity/self.hsl_mean
+        self.hsl_ns_disparity_normed = self.hsl_ns_disparity/self.hsl_mean/2.0
         
         self.hsl_stddev       = np.std(hsl)
         self.hsl_split_stddev = np.mean(np.array([np.std(hsl_split[~np.isnan(hsl_split)])
@@ -467,11 +528,11 @@ class Mapping(Core):
                    +' {:2.1f}m (all)'
                    .format(self.hsl_stddev) )
         self.print('HSL N-S disparity:'
-                   +'\t\t\t {0:2.1f}m <=> {1:2.1f}m ~ {2:2.1f}m'
+                   +'\t\t\t {0:2.1f}mN <=> {1:2.1f}mS  2∆≈{2:2.1f}m'
                    .format(self.hsl_mean_north, self.hsl_mean_south,
                            self.hsl_ns_disparity) )
         self.print('HSL N-S relative disparity vs variation:'
-                   +' {0:2.1f}% vs {1:2.1f}% (rel seg)'
+                   +' {0:2.1f}%NS vs {1:2.1f}%'
                    .format(self.hsl_ns_disparity_normed*100,
                            self.hsl_split_stddev_normed*100) )
         self.print('HSL N-S disparity degree of confidence:\t {0:2.1f}'

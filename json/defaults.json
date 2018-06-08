@@ -14,7 +14,7 @@
 		"do_preprocess" : true,	
 		"do_condition" : true,	
 		"do_trace" : true,	
-		"do_analysis" : true,
+		"do_analysis" : false,
 		"do_mapping" : true,
 		"do_plot" : true,
 		"do_save_state" : false,	
