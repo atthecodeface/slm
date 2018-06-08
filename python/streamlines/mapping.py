@@ -427,22 +427,28 @@ class Mapping(Core):
         hsl[-1] = south_hsl
         self.hsl_aspect_averages_array = np.stack((hsl,bins),axis=1)
         
-        hsl_south_array = self.hsl_aspect_averages_array[1:(n_bins//2-2), 0]
-        hsl_north_array = self.hsl_aspect_averages_array[(n_bins//2+1):-2,0]
-        self.hsl_mean_south = np.mean(hsl_south_array[~np.isnan(hsl_south_array)])
-        self.hsl_mean_north = np.mean(hsl_north_array[~np.isnan(hsl_north_array)])
-        self.hsl_mean = (self.hsl_mean_north+self.hsl_mean_south)/2.0
+        haa = self.hsl_aspect_averages_array
+        hsl = haa[~np.isnan(haa[:,0]),0]
+        asp = haa[~np.isnan(haa[:,0]),1]
+        hsl_south_array = hsl[asp<=0.0]
+        hsl_north_array = hsl[asp>=0.0]
+        if -asp[0]==asp[-1]:
+            pdebug('wrapped')
+            self.hsl_mean     = np.mean(hsl[1:])
+        else:
+            self.hsl_mean     = np.mean(hsl)
+        self.hsl_mean_south   = np.mean(hsl_south_array)
+        self.hsl_mean_north   = np.mean(hsl_north_array)
         self.hsl_ns_disparity = np.abs(self.hsl_mean_north-self.hsl_mean_south)
         self.hsl_ns_disparity_normed = self.hsl_ns_disparity/self.hsl_mean
         
+        self.hsl_stddev       = np.std(hsl)
         self.hsl_split_stddev = np.mean(np.array(
             [np.std(hsl_split[~np.isnan(hsl_split)])
-             for hsl_split in np.split(self.hsl_aspect_averages_array[1:,0],4)]))
+             for hsl_split in np.split(haa[1:,0],4)]))
         self.hsl_split_stddev_normed = self.hsl_split_stddev/self.hsl_mean
 
-        hsl_complex_vector_array \
-            = (np.array([rect(ha[0],ha[1]) 
-                         for ha in self.hsl_aspect_averages_array]))
+        hsl_complex_vector_array = (np.array([rect(ha[0],ha[1]) for ha in haa]))
         hsl_mean_complex_vector \
             = np.mean(hsl_complex_vector_array[~np.isnan(hsl_complex_vector_array)])
         mhsl = polar(hsl_mean_complex_vector)
@@ -455,17 +461,28 @@ class Mapping(Core):
         self.print('done')  
         
     def check_hsl_ns_disparity(self):
-        self.print('\nHSL north-south disparity vs overall variation:'
-                   +'   {0:2.1f}% / {1:2.1f}%'
+        self.print('HSL mean:'
+                   +'\t\t\t\t {:2.1f}m'
+                   .format(self.hsl_mean)
+                   +' ± {:2.1f}m (seg)'
+                   .format(self.hsl_split_stddev)
+                   +' {:2.1f}m (all)'
+                   .format(self.hsl_stddev) )
+        self.print('HSL N-S disparity:'
+                   +'\t\t\t {0:2.1f}m <=> {1:2.1f}m ~ {2:2.1f}m'
+                   .format(self.hsl_mean_north, self.hsl_mean_south,
+                           self.hsl_ns_disparity) )
+        self.print('HSL N-S relative disparity vs variation:'
+                   +' {0:2.1f}% vs {1:2.1f}% (rel seg)'
                    .format(self.hsl_ns_disparity_normed*100,
                            self.hsl_split_stddev_normed*100) )
-        self.print('HSL north-south disparity degree of confidence:   {0:2.1f}'
+        self.print('HSL N-S disparity degree of confidence:\t {0:2.1f}'
                    .format(self.hsl_ns_disparity_confidence) )
         if self.hsl_ns_disparity_confidence<0.5:
-            self.print('   => no significant disparity')
+            self.print('\t\t\t=> no significant disparity')
         elif self.hsl_ns_disparity_confidence<1.0:
-            self.print('   => likely no significant disparity')
+            self.print('\t\t\t=> likely no significant disparity')
         elif self.hsl_ns_disparity_confidence<2.0:
-            self.print('   => possibly significant disparity')
+            self.print('\t\t\t=> possibly significant disparity')
         else:
-            self.print('   => likely significant disparity')                                                         
+            self.print('\t\t\t=> likely significant disparity')                                                         
