@@ -91,7 +91,7 @@ class Mapping(Core):
         #          - subsegment_flanks()
         #
         #       - measure partial HSL on fine subsegments within the coarse subsegment
-        #          - map_midslope()
+        #          - map_midslopes()
         #          - map_ridges()
         #          - measure_hsl()
         #
@@ -101,19 +101,46 @@ class Mapping(Core):
         #
         #    - map (median & mean filter) aggregate HSL measurements
         
-        #
+        # Post HSL:
+        #    - map aspect
+        #    - compute HSL(aspect)
         
         # Active masks presumably set:  
         #    - geodata.dtm_mask_array
         #    - geodata.basin_mask_array (if set)
         #    - preprocess.uv_mask_array
-        
+        #
+
+        # Pass §1
+        #
         self.prepare()
         self.mapping_segments_channels(threshold=self.imposed_channel_threshold)
+        self.coarse_label_array = self.label_array
+        
         # Estimate whole-ROI, approximate channel threshold
         self.analysis.estimate_channel_threshold()
 
-        self.mapping_hsl_ridges_midslopes_aspect()
+        # Pass §2
+        #
+        for label in self.hillslope_labels:
+            # Create a mask array for this coarse subsegment and add to active list
+            coarse_mask_array \
+                = np.zeros_like(self.coarse_label_array, dtype=np.bool)
+            coarse_mask_array[self.coarse_label_array!=label] = True
+            self.add_active_mask(coarse_mask_array)
+            # Compute slt pdf and estimate channel threshold from it
+            self.analysis.estimate_channel_threshold()
+            # Get ready to map HSL
+            self.prepare()
+            # Map channel heads, thin channel pixels, subsegments
+            self.mapping_segments_channels()
+            # Map ridges and midslopes
+            self.map_midslopes()
+            self.map_ridges()
+            # Measure HSL from ridges or midslopes to thin channels per subsegment
+            self.measure_hsl()
+            # Delete this coarse mask from the active list
+            self.remove_active_mask(coarse_mask_array)
         
         self.print('**Mapping end**\n')  
                 
@@ -152,69 +179,49 @@ class Mapping(Core):
         TBD.
         """
         self.print('\n**Mapping segments and channels begin**') 
-        
         # Use downstream slt,sla pdfs to designate pixels as channels
         self.map_channels()
-        
         # Join up disconnected channel pixels if they are not too widely spaced
         self.connect_channel_pixels()
-        
         # Skeletonize channel pixels into thin network
         self.thin_channels()
-        
         # Locate upstream ends of thinned channel network & designate as heads
         self.map_channel_heads()
-        
         # Link downstream from channel heads
         self.count_downchannels()
-                
         # Count downstream from channel heads
         self.flag_downchannels()
-        
         # Map locations of channel confluences & designate types
         self.label_confluences()
-        
         # Label channel segments with channel head idxs
         self.segment_downchannels()
-        
         # Designate downstream linkages for all hillslope pixels
         self.link_hillslopes()
-        
         # Label correspondingly upstream hillslope pixels
         self.segment_hillslopes()
-        
         # Designate as L or R of channel to subsegment hillslope flanks
         self.subsegment_flanks()
-
         self.print('**Mapping segments and channels end**\n')  
         
-    def mapping_hsl_ridges_midslopes_aspect(self):
+    def mapping_ridges_midslopes_hsl_aspect(self):
         """
         TBD.
         """
-        self.print('\n**Mapping HSL, ridges, midslopes, aspect begin**') 
-        
-        # Use up and downstream sla to designate midslope pixels
-        self.map_midslope()
-        
-        # Use up and downstream sla to designate ridge pixels
+        self.print('\n**Mapping ridges, midslopes, HSL, aspect begin**') 
+        # Use up- and downstream sla to designate midslope pixels
+        self.map_midslopes()
+        # Use up- and downstream sla to designate ridge pixels
         self.map_ridges()
-        
         # Measure mean streamline distances from midslope to channel pixels
         self.measure_hsl()
-        #    - no atomics
-        
         # Measure mean streamline distances from midslope to channel pixels
         self.map_hsl()
-        #    - no GPU
-        
         # Gradient-thresholded hillslope horizontal orientation = aspect
         self.map_aspect()
         self.compute_hsl_aspect()
+        self.print('**Mapping ridges, midslopes, HSL, aspect end**\n')  
         
-        self.print('**Mapping HSL, ridges, midslopes, aspect end**\n')  
         
-
     def map_channels(self, threshold=None):
         self.print('Channels...',end='')
         if threshold is None:
@@ -305,7 +312,7 @@ class Mapping(Core):
         
 # class HSL():
         
-    def map_midslope(self):
+    def map_midslopes(self):
         self.print('Midslopes...',end='')  
         dsla = self.trace.sla_array[:,:,0]
         usla = self.trace.sla_array[:,:,1]
