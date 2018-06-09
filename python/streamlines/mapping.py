@@ -43,7 +43,48 @@ class Mapping(Core):
         self.cl_state = Initialize_cl(self.state.cl_src_path, 
                                       self.state.cl_platform, 
                                       self.state.cl_device )
-        
+    
+    def _augment(self, plot):
+        self.plot = plot
+     
+    def prepare(self, channel_threshold=None, segmentation_threshold=None):
+        self.print('Preparing...',end='')  
+        try:
+            del self.mapping_array
+        except:
+            pass
+        try:
+            del self.data
+        except:
+            pass
+        try:
+            del self.label_array
+        except:
+            pass
+        try:
+            del self.hsl_array
+        except:
+            pass
+        try:
+            del self.hsl_smoothed_array
+        except:
+            pass
+        self.mapping_array = self.trace.mapping_array.copy()
+        self.data = Data( mask_array    = self.geodata.merge_active_masks(),
+                          uv_array      = self.preprocess.uv_array,
+                          mapping_array = self.mapping_array )  
+        self.verbose = self.state.verbose
+        if channel_threshold is None:
+            self.channel_threshold = self.analysis.mpdf_dslt.channel_threshold_x
+        else:
+            self.channel_threshold = channel_threshold
+        if segmentation_threshold is None:
+            self.segmentation_threshold = self.fine_segmentation_threshold
+        else:
+            self.segmentation_threshold = segmentation_threshold
+        self.info = Info(self.trace, mapping=self)
+        self.print('done')    
+            
     def do(self):
         """
         TBD.
@@ -70,6 +111,7 @@ class Mapping(Core):
         #       - analysis.estimate_channel_threshold()
         #
         #    - keep fine subsegment labels array
+        self.pass1()
         
         # 2nd pass:
         #    - loop over coarse subsegments
@@ -100,6 +142,7 @@ class Mapping(Core):
         #       - remove (not) coarse subsegment from list of active masks
         #
         #    - map (median & mean filter) aggregate HSL measurements
+        self.pass2()
         
         # Post HSL:
         #    - map aspect
@@ -111,25 +154,33 @@ class Mapping(Core):
         #    - preprocess.uv_mask_array
         #
 
+    def pass1(self):
         # Pass §1
         #
-        self.prepare()
-        self.mapping_segments_channels(threshold=self.imposed_channel_threshold)
+        self.geodata.reset_active_masks()
+        self.prepare(channel_threshold=self.coarse_channel_threshold,
+                     segmentation_threshold=self.coarse_segmentation_threshold)
+        self.mapping_segments_channels()
         self.coarse_label_array = self.label_array
         
         # Estimate whole-ROI, approximate channel threshold
         self.analysis.estimate_channel_threshold()
+        self.plot.plot_marginal_pdf_dslt()
+        self.info.channel_threshold = self.analysis.mpdf_dslt.channel_threshold_x
 
+    def pass2(self):
         # Pass §2
         #
-        for label in self.hillslope_labels:
+        unique_labels = np.unique(self.coarse_label_array)
+        self.coarse_labels = unique_labels[unique_labels!=0].astype(np.int32)
+        for coarse_label in self.coarse_labels:
             # Create a mask array for this coarse subsegment and add to active list
-            coarse_mask_array \
-                = np.zeros_like(self.coarse_label_array, dtype=np.bool)
-            coarse_mask_array[self.coarse_label_array!=label] = True
-            self.add_active_mask(coarse_mask_array)
+            coarse_mask_array = np.zeros_like(self.coarse_label_array, dtype=np.bool)
+            coarse_mask_array[self.coarse_label_array!=coarse_label] = True
+            self.geodata.add_active_mask({'coarse_mask_array': coarse_mask_array})
             # Compute slt pdf and estimate channel threshold from it
             self.analysis.estimate_channel_threshold()
+            self.plot.plot_marginal_pdf_dslt()
             # Get ready to map HSL
             self.prepare()
             # Map channel heads, thin channel pixels, subsegments
@@ -140,40 +191,10 @@ class Mapping(Core):
             # Measure HSL from ridges or midslopes to thin channels per subsegment
             self.measure_hsl()
             # Delete this coarse mask from the active list
-            self.remove_active_mask(coarse_mask_array)
+            self.geodata.remove_active_mask('coarse_mask_array')
         
         self.print('**Mapping end**\n')  
                 
-    def prepare(self):
-        self.print('Preparing...',end='')  
-        try:
-            del self.mapping_array
-        except:
-            pass
-        try:
-            del self.data
-        except:
-            pass
-        try:
-            del self.label_array
-        except:
-            pass
-        try:
-            del self.hsl_array
-        except:
-            pass
-        try:
-            del self.hsl_smoothed_array
-        except:
-            pass
-        self.mapping_array = self.trace.mapping_array.copy()
-        self.data = Data( mask_array    = self.geodata.merge_active_masks(),
-                          uv_array      = self.preprocess.uv_array,
-                          mapping_array = self.mapping_array )  
-        self.verbose = self.state.verbose
-        self.info = Info(self.trace, mapping=self)
-        self.print('done')    
-            
     def mapping_segments_channels(self):
         """
         TBD.
@@ -222,12 +243,11 @@ class Mapping(Core):
         self.print('**Mapping ridges, midslopes, HSL, aspect end**\n')  
         
         
-    def map_channels(self, threshold=None):
+    def map_channels(self):
         self.print('Channels...',end='')
-        if threshold is None:
-            threshold = self.analysis.mpdf_dslt.channel_threshold_x
         # Designate channel pixels according to dslt pdf analysis
-        self.data.mapping_array[  (self.trace.slt_array[:,:,0]>=threshold)
+        self.data.mapping_array[  
+                          (self.trace.slt_array[:,:,0]>=self.info.channel_threshold)
                         & (self.trace.slt_array[:,:,0]*2>=self.trace.slc_array[:,:,0])
                                 ] = self.info.is_channel                                
         self.print('done')  
@@ -360,15 +380,13 @@ class Mapping(Core):
                                        ((self.data.mapping_array & flag)>0)
                                        &   (~self.data.mask_array)
                                                 ].astype(np.int32)).ravel().copy()
-        # BUG sort of - cleaner ways to create a zero array than this
+        unique_labels = np.unique(self.data.traj_label_array)
+        self.hillslope_labels = unique_labels[unique_labels!=0].astype(np.int32)
+
         self.data.traj_length_array \
             = np.zeros_like(self.data.traj_label_array,dtype=np.float32)
-        
         lengths.hsl(self.cl_state, self.info, self.data, self.verbose)
-
-        unique_labels = np.unique(self.data.traj_label_array)
-        self.hillslope_labels \
-            = unique_labels[unique_labels!=0].astype(np.int32)
+        
         df  = pd.DataFrame(np.zeros((self.data.traj_length_array.shape[0],), 
                                     dtype=[('label', np.int32), ('length', np.float32)]))
         df['label']  = self.data.traj_label_array

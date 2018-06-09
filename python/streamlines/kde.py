@@ -31,6 +31,7 @@ def estimate_bivariate_pdf( distbn ):
         
     """
     verbose = distbn.verbose
+    gpu_verbose = distbn.gpu_verbose
     vprint(verbose,'Estimating bivariate pdf...',end='')
     
     # Prepare CL essentials
@@ -75,7 +76,7 @@ def estimate_bivariate_pdf( distbn ):
     histogram_array \
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
                       distbn, action='histogram',  is_bivariate=True, 
-                      sl_array=sl_array, verbose=verbose)
+                      sl_array=sl_array, verbose=verbose, gpu_verbose=gpu_verbose)
         
     vprint(verbose,'kernel filtering rows...',end='')
     # PDF
@@ -84,7 +85,7 @@ def estimate_bivariate_pdf( distbn ):
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
                       distbn, action='partial_pdf',  is_bivariate=True, 
                       histogram_array=histogram_array,
-                      verbose=verbose)
+                      verbose=verbose, gpu_verbose=gpu_verbose)
 
     vprint(verbose,'kernel filtering columns...',end='')
     cl_kernel_fn = 'pdf_bivariate_cols'
@@ -92,7 +93,7 @@ def estimate_bivariate_pdf( distbn ):
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
                       distbn,  action='full_pdf',  is_bivariate=True, 
                       partial_pdf_array=partial_pdf_array,
-                      verbose=verbose)
+                      verbose=verbose, gpu_verbose=gpu_verbose)
     # Done
     vprint(verbose,'done')
     return (pdf_array/(np.sum(pdf_array)*bin_dx*bin_dy), 
@@ -113,6 +114,7 @@ def estimate_univariate_pdf( distbn, do_detrend=False, logx_vec=None):
         
     """
     verbose = distbn.verbose
+    gpu_verbose = distbn.gpu_verbose
     vprint(verbose,'Estimating univariate pdf...',end='')
     
     # Prepare CL essentials
@@ -150,7 +152,7 @@ def estimate_univariate_pdf( distbn, do_detrend=False, logx_vec=None):
     histogram_array \
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
                       distbn, action='histogram', sl_array=sl_array, 
-                      verbose=verbose)
+                      verbose=verbose, gpu_verbose=gpu_verbose)
         
     if do_detrend:
         x = logx_vec
@@ -170,7 +172,7 @@ def estimate_univariate_pdf( distbn, do_detrend=False, logx_vec=None):
     pdf_array \
         = gpu_compute(device, context, queue, cl_kernel_source, cl_kernel_fn, 
                       distbn, action='full_pdf', histogram_array=histogram_array,
-                      verbose=verbose)
+                      verbose=verbose, gpu_verbose=gpu_verbose)
     # Done
     vprint(verbose,'done')
     
@@ -181,7 +183,7 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, distbn,
                  action='histogram', is_bivariate=False, 
                  sl_array=None,  histogram_array=None, 
                  partial_pdf_array=None,  pdf_array=None, 
-                 verbose=False ):
+                 verbose=False, gpu_verbose=False ):
     """
     Carry out GPU computation of histogram.
     
@@ -250,7 +252,7 @@ def gpu_compute( device, context, queue, cl_kernel_source, cl_kernel_fn, distbn,
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         program = cl.Program(context, cl_kernel_source).build(options=compile_options)
-    pocl.report_build_log(program, device, verbose)
+    pocl.report_build_log(program, device, gpu_verbose)
     # Set the GPU kernel
     kernel = getattr(program,cl_kernel_fn)
     # Designate buffered arrays

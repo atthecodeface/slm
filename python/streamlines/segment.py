@@ -54,7 +54,7 @@ def segment_channels( cl_state, info, data, verbose ):
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'segment_downchannels'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
 
     # Relabel channel segments in simple sequence 1,2,3,... 
     #  instead of using array indices as labels
@@ -109,7 +109,7 @@ def segment_hillslopes( cl_state, info, data, verbose ):
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'segment_hillslopes'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
 
     # Done
     vprint(verbose,'...done')  
@@ -155,7 +155,7 @@ def subsegment_flanks( cl_state, info, data, verbose ):
     # Do integrations on the GPU
     if ( info.n_seed_points>0 ):
         cl_state.kernel_fn = 'subsegment_channel_edges'
-        pocl.gpu_compute(cl_state, info, array_dict, verbose)
+        pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
             
     # Trace downstream from all non-left-flank hillslope pixels
     flag = is_leftflank | is_thinchannel
@@ -165,7 +165,7 @@ def subsegment_flanks( cl_state, info, data, verbose ):
     info.n_seed_points = seed_point_array.shape[0]
     # Do integrations on the GPU
     cl_state.kernel_fn = 'subsegment_flanks'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
 
     # Trace downstream from all right-flank hillslope pixels
     flag = is_leftflank | is_thinchannel
@@ -175,7 +175,7 @@ def subsegment_flanks( cl_state, info, data, verbose ):
     info.n_seed_points = seed_point_array.shape[0]
     # Do integrations on the GPU
     cl_state.kernel_fn = 'fix_right_flanks'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
     # Trace downstream from all left-flank hillslope pixels
     flag = is_leftflank
@@ -185,7 +185,7 @@ def subsegment_flanks( cl_state, info, data, verbose ):
     info.n_seed_points = seed_point_array.shape[0]
     # Do integrations on the GPU
     cl_state.kernel_fn = 'fix_left_flanks'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
     # Done
     vprint(verbose,'...done')  

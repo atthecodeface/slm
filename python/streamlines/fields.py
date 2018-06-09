@@ -29,7 +29,8 @@ class Fields():
                     cl_src_path         = None,
                     info                = None,
                     data                = None,
-                    verbose             = False ):
+                    verbose             = False,
+                    gpu_verbose         = False ):
         """
         Initialize.
         
@@ -40,6 +41,7 @@ class Fields():
             info (obj):
             data (obj):
             verbose (bool):
+            gpu_verbose (bool):
         """
         self.platform, self.device, self.context \
             = pocl.prepare_cl_context(which_cl_platform, which_cl_device)
@@ -49,6 +51,7 @@ class Fields():
         self.info                = info
         self.data                = data
         self.verbose             = verbose
+        self.gpu_verbose         = gpu_verbose
         
     def integrate(self):
         """
@@ -219,12 +222,12 @@ class Fields():
             # Compile the CL code
             compile_options = pocl.set_compile_options(info, 'INTEGRATE_FIELDS', 
                                                        downup_sign=downup_sign)
-            vprint(self.verbose,'Compile options:\n',compile_options)
+            vprint(self.gpu_verbose,'Compile options:\n',compile_options)
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 program = cl.Program(context,
                                      cl_kernel_source).build(options=compile_options)
-            pocl.report_build_log(program, device, self.verbose)
+            pocl.report_build_log(program, device, self.gpu_verbose)
             
             # Set the GPU kernel
             kernel = program.integrate_fields
@@ -234,18 +237,18 @@ class Fields():
             kernel.set_scalar_arg_dtypes( [None]*len(buffer_dict) )
             
             # Trace the streamlines on the GPU
-            vprint(self.verbose,
+            vprint(self.gpu_verbose,
                    '#### GPU/OpenCL computation: {0} work items... ####'
                    .format(global_size[0]))
-            pocl.report_kernel_info(device,kernel,self.verbose)
+            pocl.report_kernel_info(device,kernel,self.gpu_verbose)
             elapsed_time \
                 = pocl.adaptive_enqueue_nd_range_kernel(
                                                 queue, kernel, global_size, 
                                                 local_size, n_work_items,
                                                 chunk_size_factor=chunk_size_factor,
                                                 max_time_per_kernel=max_time_per_kernel,
-                                                verbose=self.verbose )
-            vprint(self.verbose,
+                                                verbose=self.gpu_verbose )
+            vprint(self.gpu_verbose,
                    '#### ...elapsed time for {1} work items: {0:.3f}s ####'
                    .format(elapsed_time,global_size[0]))
             queue.finish()   

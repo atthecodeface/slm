@@ -9,6 +9,11 @@
         "basins" : [701,702],
 		"do_basin_masking" : true
 	},
+
+	"mapping": {
+		"coarse_segmentation_threshold" : 2000,
+		"coarse_channel_threshold" : 200
+	},
 	
 	"plot": {
         "mhsl_pdf_x_stretch" : 1.4

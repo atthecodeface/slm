@@ -51,7 +51,7 @@ def map_channel_heads(cl_state, info, data, verbose):
 #     pdebug('map_channel_heads seed_point_array:',seed_point_array.shape)
     # Do integrations on the GPU
     cl_state.kernel_fn = 'map_channel_heads'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
     # Done
     vprint(verbose,'...done')  
@@ -86,7 +86,7 @@ def prune_channel_heads(cl_state, info, data, verbose):
 #     pdebug('prune_channel_heads seed_point_array:',seed_point_array)
     # Do integrations on the GPU
     cl_state.kernel_fn = 'prune_channel_heads'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
     # Done
     vprint(verbose,'...done')  

@@ -53,7 +53,7 @@ def label_confluences( cl_state, info, data, verbose ):
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'label_confluences'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
     # Done
     vprint(verbose,'...done')  

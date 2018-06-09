@@ -16,7 +16,7 @@ __all__ = ['link_hillslopes']
 
 pdebug = print
 
-def link_hillslopes( cl_state, info, data, verbose ):
+def link_hillslopes( cl_state, info, data, verbose):
     """
     Link hillslope pixels downstream.
     
@@ -52,7 +52,7 @@ def link_hillslopes( cl_state, info, data, verbose ):
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'link_hillslopes'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
     # Done
     vprint(verbose,'...done')  

@@ -64,7 +64,7 @@ def hsl( cl_state, info, data, verbose, do_use_ridges=False ):
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'hillslope_lengths'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
     # Scale by two if we measured only half hillslope lengths from midslope pixels
     if not do_use_ridges:

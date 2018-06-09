@@ -53,7 +53,7 @@ def connect_channel_pixels(cl_state, info, data, verbose):
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'connect_channels'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
     # Done
     vprint(verbose,'...done')  

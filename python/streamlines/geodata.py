@@ -27,6 +27,14 @@ class Geodata(Core):
     streamline mask layer.
         
     """
+    def __init__(self,state,imported_parameters):
+        """
+        TBD
+        """
+        super().__init__(state,imported_parameters) 
+        self.state = state
+        self.active_masks_dict = {}
+
     def do(self):
         """
         Wrapper method to read DTM file and drainage basins file and 
@@ -252,7 +260,7 @@ class Geodata(Core):
                                      (int(self.pad_width), int(self.pad_width)), 
                                      'constant', constant_values=(True,True))
         # Add this "DTM" mask to the list of active masks (actually, it'll be the first)
-        self.add_active_mask(self.dtm_mask_array)
+        self.add_active_mask({'dtm_mask_array': self.dtm_mask_array})
 
     def make_basins_mask(self):
         """
@@ -282,30 +290,38 @@ class Geodata(Core):
         self.basin_fatmask_array = np.pad(basin_fatmask_unpadded_array, 
                                           (int(self.pad_width), int(self.pad_width)), 
                                           'constant', constant_values=(True,True))
-        self.add_active_mask(self.basin_mask_array)
+        self.add_active_mask({'basin_mask_array': self.basin_mask_array})
 
-    def add_active_mask(self, mask_array):
+    def add_active_mask(self, mask_item):
         """
         TBD
         """ 
-        try:
-            self.active_masks += [mask_array]
-        except:
-            self.active_masks = [mask_array]
+        self.active_masks_dict.update(mask_item)
         
-    def remove_active_mask(self, mask_array):
+    def remove_active_mask(self, mask_name):
         """
         TBD
         """ 
-        active_masks = [mask for mask in self.active_masks if mask is not mask_array]
-        self.active_masks = active_masks
+        self.active_masks_dict.pop(mask_name)
+        
+    def reset_active_masks(self):
+        """
+        TBD
+        """ 
+        masks_keep_list = ['dtm_mask_array', 'basin_mask_array', 'uv_mask_array']
+        # Rebuild dict since in-situ deletion in list comprehension doesn't work
+        self.active_masks_dict \
+            = {k: self.active_masks_dict[k] for k in self.active_masks_dict 
+                                            if  k in masks_keep_list}
         
     def merge_active_masks(self):
         """
         TBD
         """ 
-        mask_array = self.active_masks[0].copy()
-        for active_mask in self.active_masks[1:]:
-            mask_array |= active_mask
-        return mask_array
+        for idx, mask_array in enumerate(self.active_masks_dict.values()):
+            if idx==0:
+                active_mask_array = mask_array.copy()
+            else:
+                active_mask_array |= mask_array
+        return active_mask_array
         

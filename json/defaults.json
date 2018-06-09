@@ -1,6 +1,7 @@
 {
 	"state": {
 		"verbose" : true,
+		"gpu_verbose" : false,
 		"debug" : false,
 		"noisy" : false,
 		"cl_platform" : 0,
@@ -109,8 +110,9 @@
 
 	"mapping": {
 		"do_measure_hsl_from_ridges" : false,
-		"segmentation_threshold" : 20,
-		"imposed_channel_threshold" : false,
+		"fine_segmentation_threshold" : 20,
+		"coarse_segmentation_threshold" : 20000,
+		"coarse_channel_threshold" : 3000,
 		"n_hsl_averaging_threshold" : 5,
 		"hsl_median_radius" : 5,
 		"hsl_mean_radius"  : 50,

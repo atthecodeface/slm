@@ -124,7 +124,8 @@ class Analysis(Core):
                                              cl_platform=self.state.cl_platform, 
                                              cl_device=self.state.cl_device,
                                              debug=self.state.debug,
-                                             verbose=self.state.verbose )
+                                             verbose=self.state.verbose,
+                                             gpu_verbose=self.state.gpu_verbose )
         if method=='opencl':
             uv_distbn.compute_kde_opencl(kernel=kernel, bandwidth=bandwidth)
         elif method=='sklearn':
@@ -260,8 +261,7 @@ class Analysis(Core):
                                kernel=None, bandwidth=None, method=None,
                                logx_min=None, logy_min=None, 
                                logx_max=None, logy_max=None, 
-                               upstream_modal_length=None,
-                               verbose=False):
+                               upstream_modal_length=None):
         """
         TBD
         """
@@ -296,7 +296,8 @@ class Analysis(Core):
                                             cl_platform=self.state.cl_platform, 
                                             cl_device=self.state.cl_device,
                                             debug=self.state.debug,
-                                            verbose=self.state.verbose )
+                                            verbose=self.state.verbose,
+                                            gpu_verbose=self.state.gpu_verbose )
         
         if method=='opencl':
             bv_distbn.compute_kde_opencl(kernel=kernel, bandwidth=bandwidth)
@@ -326,8 +327,7 @@ class Analysis(Core):
                                             up_down_idx_x=up_down_idx_x,
                                             up_down_idx_y=up_down_idx_y,
                                             logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            verbose=self.state.verbose)
+                                            logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
     def compute_joint_distribn_dsla_dslt(self):
@@ -351,8 +351,7 @@ class Analysis(Core):
                                           up_down_idx_x=up_down_idx_x,
                                           up_down_idx_y=up_down_idx_y,
                                           logx_min=logx_min,logy_min=logy_min, 
-                                          logx_max=logx_max,logy_max=logy_max,
-                                          verbose=self.state.verbose)
+                                          logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
     def compute_joint_distribn_dslt_dslc(self):
@@ -376,8 +375,7 @@ class Analysis(Core):
                                           up_down_idx_x=up_down_idx_x,
                                           up_down_idx_y=up_down_idx_y,
                                           logx_min=logx_min,logy_min=logy_min, 
-                                          logx_max=logx_max,logy_max=logy_max,
-                                          verbose=self.state.verbose)
+                                          logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
     def compute_joint_distribn_usla_uslt(self):
@@ -396,8 +394,7 @@ class Analysis(Core):
                                             up_down_idx_x=up_down_idx_x,
                                             up_down_idx_y=up_down_idx_y,
                                             logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            verbose=self.state.verbose)
+                                            logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
     def compute_joint_distribn_uslt_dslt(self):
@@ -415,8 +412,7 @@ class Analysis(Core):
                                             up_down_idx_x=up_down_idx_x,
                                             up_down_idx_y=up_down_idx_y,
                                             logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            verbose=self.state.verbose)
+                                            logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
     def compute_joint_distribn_dsla_dslc(self):
@@ -440,8 +436,7 @@ class Analysis(Core):
                                           up_down_idx_x=up_down_idx_x,
                                           up_down_idx_y=up_down_idx_y,
                                           logx_min=logx_min,logy_min=logy_min, 
-                                          logx_max=logx_max,logy_max=logy_max,
-                                          verbose=self.state.verbose)
+                                          logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
     def compute_joint_distribn_usla_uslc(self):
@@ -460,8 +455,7 @@ class Analysis(Core):
                                             up_down_idx_x=up_down_idx_x,
                                             up_down_idx_y=up_down_idx_y,
                                             logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            verbose=self.state.verbose)
+                                            logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
     def compute_joint_distribn_uslc_dslc(self):
@@ -479,8 +473,7 @@ class Analysis(Core):
                                             up_down_idx_x=up_down_idx_x,
                                             up_down_idx_y=up_down_idx_y,
                                             logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            verbose=self.state.verbose)
+                                            logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
 
@@ -501,7 +494,7 @@ class Univariate_distribution():
                  search_cdf_min=0.95, search_cdf_max=0.99,
                  logx_min=None, logy_min=None, logx_max=None, logy_max=None,
                  cl_src_path=None, cl_platform=None, cl_device=None,
-                 debug=False, verbose=False):
+                 debug=False, verbose=False, gpu_verbose=False):
         if logx_min is None:
             logx_min = logx_array[logx_array>np.finfo(np.float32).min].min()
         if logx_max is None:
@@ -548,6 +541,7 @@ class Univariate_distribution():
         
         self.debug = debug
         self.verbose = verbose
+        self.gpu_verbose = gpu_verbose
 
     def print(self, *args, **kwargs):
         if self.verbose:
@@ -635,6 +629,8 @@ class Univariate_distribution():
             self.print('Mode @ {0:2.2f}m'.format(self.mode_x))
         except:
             self.print('Failed to find mode')
+            self.mode_i = self.pdf.shape[0]//2
+            self.mode_x = 100.0
 
     def locate_threshold(self):
         x_vec = self.x_vec
@@ -678,7 +674,7 @@ class Bivariate_distribution():
                  method='opencl', n_hist_bins=2048, n_pdf_points=256, 
                  logx_min=None, logy_min=None, logx_max=None, logy_max=None,
                  cl_src_path=None, cl_platform=None, cl_device=None,
-                 debug=False, verbose=False):
+                 debug=False, verbose=False, gpu_verbose=False):
         self.logx_data = logx_array
         self.logy_data = logy_array
         if logx_min is None:
@@ -748,6 +744,7 @@ class Bivariate_distribution():
              
         self.debug = debug
         self.verbose = verbose
+        self.gpu_verbose = gpu_verbose
 
     def print(self, *args, **kwargs):
         if self.verbose:

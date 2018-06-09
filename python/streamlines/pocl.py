@@ -430,9 +430,9 @@ def gpu_compute(cl_state, info, array_dict, verbose):
     # Prepare memory, buffers 
     buffer_dict = prepare_buffers(context, array_dict, verbose)    
 
-    # Specify this integration job's parameters
-    global_size         = [info.n_seed_points,1]
-    local_size          = [info.n_work_items,1]
+    # Specify size (# of workitems) and number of workgroups
+    global_size = [info.n_seed_points,1]
+    local_size  = [info.n_work_items,1]
 
     # Compile the CL code
     compile_options = set_compile_options(info, kernel_fn, downup_sign=1)

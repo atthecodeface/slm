@@ -54,7 +54,7 @@ class Info():
             = subpixel_seed_span/(np.float32(trace.subpixel_seed_point_density)-1.0 
                                   if trace.subpixel_seed_point_density>1 else 1.0)
         self.debug =                   np.bool8(state.debug)
-        self.verbose =                 np.bool8(state.verbose)
+        self.verbose =                 np.bool8(state.gpu_verbose)
         self.n_trajectory_seed_points= np.uint32(trace.n_trajectory_seed_points)
         self.n_seed_points =           np.uint32(0)
         self.n_padded_seed_points =    np.uint32(0)
@@ -98,10 +98,15 @@ class Info():
         if mapping is not None:
             self.segmentation_threshold     = np.uint32(mapping.segmentation_threshold)
             self.do_measure_hsl_from_ridges = mapping.do_measure_hsl_from_ridges
+            try:
+                self.channel_threshold      = np.uint32(mapping.channel_threshold)
+            except:
+                pass
         else:
             self.segmentation_threshold     = np.uint32(0)
             self.do_measure_hsl_from_ridges = False
-        
+            self.channel_threshold = 0
+            
         self.left_flank_addition = 2147483648
         flags = [
             'is_channel',         # 1
@@ -202,7 +207,8 @@ class Trace(Core):
                                     data                = data,
                                     do_trace_downstream = self.do_trace_downstream,
                                     do_trace_upstream   = self.do_trace_upstream,
-                                    verbose             = self.state.verbose )
+                                    verbose             = self.state.verbose,
+                                    gpu_verbose         = self.state.gpu_verbose )
         trajectories.integrate()
         # Only preserve what we need from the trajectories class instance
         self.seed_point_array       = trajectories.data.seed_point_array
@@ -222,7 +228,8 @@ class Trace(Core):
                         cl_src_path         = self.state.cl_src_path,
                         info                = Info(self),
                         data                = data,
-                        verbose             = self.state.verbose )
+                        verbose             = self.state.verbose,
+                        gpu_verbose         = self.state.gpu_verbose )
         fields.integrate()
         # Only preserve what we need from the trajectories class instance
         self.slc_array = fields.data.slc_array
