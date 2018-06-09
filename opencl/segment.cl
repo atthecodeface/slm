@@ -583,7 +583,8 @@ __kernel void fix_left_flanks(
         label_array[hillslope_idx] = label_array[idx];
 //            break;
     }
-    if ( ((~label_array[idx])&LEFT_FLANK_ADDITION) ) {
+    if ( ((~label_array[idx])&LEFT_FLANK_ADDITION)
+            && ((~mapping_array[idx])&IS_THINCHANNEL) ) {
         // We've reached a right-flank channel, so grab its label and apply it to
         //   the source hillslope pixel
         // No need for atomic here since we're writing to the source pixel

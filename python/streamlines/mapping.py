@@ -162,6 +162,10 @@ class Mapping(Core):
                      segmentation_threshold=self.coarse_segmentation_threshold)
         self.mapping_segments_channels()
         self.coarse_label_array = self.label_array
+        self.list_subsegments(do_without_ridges_midslopes=True)
+        self.coarse_labels = np.sort(self.hillslope_labels)
+        self.plot.plot_channels(window_size_factor=3)
+        self.plot.plot_segments(window_size_factor=3)
         
         # Estimate whole-ROI, approximate channel threshold
         self.analysis.estimate_channel_threshold()
@@ -170,10 +174,9 @@ class Mapping(Core):
 
     def pass2(self):
         # Pass §2
-        #
-        unique_labels = np.unique(self.coarse_label_array)
-        self.coarse_labels = unique_labels[unique_labels!=0].astype(np.int32)
+        self.print('Subsegment labels: {}'.format(self.coarse_labels[::-1]))
         for coarse_label in self.coarse_labels:
+            self.print('Mapping HSL on subsegment #{}'.format(coarse_label))
             # Create a mask array for this coarse subsegment and add to active list
             coarse_mask_array = np.zeros_like(self.coarse_label_array, dtype=np.bool)
             coarse_mask_array[self.coarse_label_array!=coarse_label] = True
@@ -181,10 +184,12 @@ class Mapping(Core):
             # Compute slt pdf and estimate channel threshold from it
             self.analysis.estimate_channel_threshold()
             self.plot.plot_marginal_pdf_dslt()
+            self.plot.plot_segments(window_size_factor=3)
             # Get ready to map HSL
             self.prepare()
             # Map channel heads, thin channel pixels, subsegments
             self.mapping_segments_channels()
+            self.plot.plot_channels(window_size_factor=3)
             # Map ridges and midslopes
             self.map_midslopes()
             self.map_ridges()
@@ -229,6 +234,8 @@ class Mapping(Core):
         TBD.
         """
         self.print('\n**Mapping ridges, midslopes, HSL, aspect begin**') 
+        # Make subsegment label list
+        self.list_subsegments()
         # Use up- and downstream sla to designate midslope pixels
         self.map_midslopes()
         # Use up- and downstream sla to designate ridge pixels
@@ -329,6 +336,21 @@ class Mapping(Core):
                  + self.info.left_flank_addition )
         self.label_array = self.data.label_array
         
+    def list_subsegments(self, do_without_ridges_midslopes=False):
+        if do_without_ridges_midslopes:
+            self.data.traj_label_array \
+                = self.data.label_array[~self.data.mask_array].astype(np.int32).ravel()
+        else:
+            if self.do_measure_hsl_from_ridges:
+                flag = self.info.is_ridge
+            else:
+                flag = self.info.is_midslope
+            self.data.traj_label_array \
+                = self.data.label_array[
+                     ((self.data.mapping_array & flag)>0) & (~self.data.mask_array)
+                                        ].astype(np.int32).ravel()
+        unique_labels = np.unique(self.data.traj_label_array)
+        self.hillslope_labels = unique_labels[unique_labels!=0].astype(np.int32)
         
 # class HSL():
         
@@ -372,16 +394,16 @@ class Mapping(Core):
         self.print('done')  
 
     def measure_hsl(self):
-        if self.do_measure_hsl_from_ridges:
-            flag = self.info.is_ridge
-        else:
-            flag = self.info.is_midslope
-        self.data.traj_label_array = (self.data.label_array[
-                                       ((self.data.mapping_array & flag)>0)
-                                       &   (~self.data.mask_array)
-                                                ].astype(np.int32)).ravel().copy()
-        unique_labels = np.unique(self.data.traj_label_array)
-        self.hillslope_labels = unique_labels[unique_labels!=0].astype(np.int32)
+#         if self.do_measure_hsl_from_ridges:
+#             flag = self.info.is_ridge
+#         else:
+#             flag = self.info.is_midslope
+#         self.data.traj_label_array = (self.data.label_array[
+#                                        ((self.data.mapping_array & flag)>0)
+#                                        &   (~self.data.mask_array)
+#                                                 ].astype(np.int32)).ravel().copy()
+#         unique_labels = np.unique(self.data.traj_label_array)
+#         self.hillslope_labels = unique_labels[unique_labels!=0].astype(np.int32)
 
         self.data.traj_length_array \
             = np.zeros_like(self.data.traj_label_array,dtype=np.float32)

@@ -783,6 +783,16 @@ class Plot(Core):
                                       aspect=colorbar_aspect)
             cbar = plt.colorbar(im, cax=cax, orientation="horizontal")
             cbar.set_label(colorbar_title)
+
+        is_thinchannel = self.mapping.info.is_thinchannel
+        grid_array = (self.mapping.mapping_array & is_thinchannel).copy().astype(np.bool)
+        im = axes.imshow(np.flipud(grid_array.T), 
+                  cmap='Greys', 
+                  extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds],
+                  alpha=0.5,
+                  interpolation=self.interpolation_method
+                  )
+
         self._force_display(fig)
         self._record_fig(fig_name,fig)
 

@@ -9,6 +9,9 @@
         "basins" : [701,702],
 		"do_basin_masking" : true
 	},
+	"analysis": {
+		"marginal_distbn_kde_bandwidth" : 10.0
+	},
 
 	"mapping": {
 		"coarse_segmentation_threshold" : 2000,
