@@ -650,7 +650,8 @@ class Univariate_distribution():
         all_extrema_i = argrelextrema(np.reshape(detrended_pdf,n_bins,), 
                                       np.less, order=3)[0]
         all_extrema_i = np.concatenate((all_extrema_i,np.array([n_bins-1],)))
-        pdebug(all_extrema_i)
+        self.print('Located extrema at:   x={}m'.format(
+                    [np.uint32(np.round(x_vec[i][0],0)) for i in all_extrema_i]))
         # Choose lowest-cdf minimum given cdf threshold 
         #   - if necessary, progressively lowered until a minimum is found
         search_cdf_min = self.search_cdf_min
@@ -662,7 +663,8 @@ class Univariate_distribution():
             if len(extrema_i)>=1:
                 break
             search_cdf_min -= 0.01
-        pdebug(extrema_i)
+        self.print('Selected extrema at:  x={}m'.format(
+                    [np.uint32(np.round(x_vec[i][0],0)) for i in extrema_i]))
         try:
             self.channel_threshold_i = extrema_i[0]
             self.channel_threshold_x = x_vec[extrema_i[0]][0]

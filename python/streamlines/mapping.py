@@ -183,8 +183,8 @@ class Mapping(Core):
         self.print('\n**Pass#2 begin**') 
         self.state.reset_active_masks()
         self.print('Subsegment labels: {}'.format(self.coarse_labels))
-        for coarse_label in self.coarse_labels:
-#         for coarse_label in self.coarse_labels[::-1]:
+#         for coarse_label in self.coarse_labels:
+        for coarse_label in self.coarse_labels[::-1]:
             self.print('Mapping HSL on subsegment #{}'.format(coarse_label))
             # Create a mask array for this coarse subsegment and add to active list
             coarse_mask_array = np.zeros_like(self.coarse_label_array, dtype=np.bool)
@@ -201,14 +201,15 @@ class Mapping(Core):
             self.prepare()
             # Map channel heads, thin channel pixels, subsegments
             self.mapping_segments_channels()
-            self.list_subsegments(do_without_ridges_midslopes=True)
-            self.plot.plot_channels(window_size_factor=3)
-            self.plot.plot_segments(window_size_factor=3)
             # Map ridges and midslopes
             self.map_midslopes()
             self.map_ridges()
+            self.list_subsegments(do_without_ridges_midslopes=False)
+            self.plot.plot_segments(window_size_factor=3)
+            self.plot.plot_channels(window_size_factor=3)
             # Measure HSL from ridges or midslopes to thin channels per subsegment
             self.measure_hsl()
+            self.map_hsl()
             # Delete this coarse mask from the active list
             self.state.remove_active_mask('coarse_mask_array')
         
@@ -248,12 +249,12 @@ class Mapping(Core):
         TBD.
         """
         self.print('\n**Mapping ridges, midslopes, HSL, aspect begin**') 
-        # Make subsegment label list
-        self.list_subsegments()
         # Use up- and downstream sla to designate midslope pixels
         self.map_midslopes()
         # Use up- and downstream sla to designate ridge pixels
         self.map_ridges()
+        # Make subsegment label list
+        self.list_subsegments()
         # Measure mean streamline distances from midslope to channel pixels
         self.measure_hsl()
         # Measure mean streamline distances from midslope to channel pixels
@@ -350,24 +351,6 @@ class Mapping(Core):
                  + self.info.left_flank_addition )
         self.label_array = self.data.label_array
         
-    def list_subsegments(self, do_without_ridges_midslopes=False):
-        if do_without_ridges_midslopes:
-            self.data.traj_label_array \
-                = self.data.label_array[~self.data.mask_array].astype(np.int32).ravel()
-        else:
-            if self.do_measure_hsl_from_ridges:
-                flag = self.info.is_ridge
-            else:
-                flag = self.info.is_midslope
-            self.data.traj_label_array \
-                = self.data.label_array[
-                     ((self.data.mapping_array & flag)>0) & (~self.data.mask_array)
-                                        ].astype(np.int32).ravel()
-        unique_labels = np.unique(self.data.traj_label_array)
-        self.hillslope_labels = unique_labels[unique_labels!=0].astype(np.int32)
-        
-# class HSL():
-        
     def map_midslopes(self):
         self.print('Midslopes...',end='')  
         dsla = self.trace.sla_array[:,:,0]
@@ -407,7 +390,26 @@ class Mapping(Core):
         self.data.mapping_array[skeleton_ridge_array] |= self.info.is_ridge
         self.print('done')  
 
+    def list_subsegments(self, do_without_ridges_midslopes=False):
+        self.print('Listing subsegments...',end='')  
+        if do_without_ridges_midslopes:
+            self.data.traj_label_array \
+                = self.data.label_array[~self.data.mask_array].astype(np.int32).ravel()
+        else:
+            if self.do_measure_hsl_from_ridges:
+                flag = self.info.is_ridge
+            else:
+                flag = self.info.is_midslope
+            self.data.traj_label_array \
+                = self.data.label_array[
+                     ((self.data.mapping_array & flag)>0) & (~self.data.mask_array)
+                                        ].astype(np.int32).ravel()
+        unique_labels = np.unique(self.data.traj_label_array)
+        self.hillslope_labels = unique_labels[unique_labels!=0].astype(np.int32)
+        self.print('...done')  
+                
     def measure_hsl(self):
+        self.print('Measuring hillslope lengths wrapper...',flush=True)
 #         if self.do_measure_hsl_from_ridges:
 #             flag = self.info.is_ridge
 #         else:
@@ -444,6 +446,7 @@ class Mapping(Core):
                 self.hsl_array[self.data.label_array==idx] = row['mean [m]']
             else:
                 self.hsl_array[self.data.label_array==idx] = 0
+        self.print('done')  
 
     def map_hsl(self):
         self.print('Mapping hillslope lengths...',end='',flush=True)
