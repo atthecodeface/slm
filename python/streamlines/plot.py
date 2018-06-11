@@ -238,7 +238,7 @@ class Plot(Core):
         Hillshade view of ROI of DTM (overlay method)
         """
         if self.geodata.do_basin_masking:                
-            mask_array = self.geodata.merge_active_masks()[
+            mask_array = self.state.merge_active_masks()[
                 self.geodata.pad_width:-self.geodata.pad_width,
                 self.geodata.pad_width:-self.geodata.pad_width]
         else:
@@ -351,7 +351,7 @@ class Plot(Core):
                 do_plot_color_relief=False, color_alpha=0,
                 hillshade_alpha=self.channel_shaded_relief_hillshade_alpha)
 
-        mask_array = self.geodata.merge_active_masks()
+        mask_array = self.state.merge_active_masks()
         
         grid_array = np.rad2deg(self.mapping.aspect_array.copy())
 #         grid_array[30:70,30:60] = 0
@@ -511,7 +511,7 @@ class Plot(Core):
         is_subsegmenthead  = self.mapping.info.is_subsegmenthead
         is_loop            = self.mapping.info.is_loop
         
-        active_mask_array = self.geodata.merge_active_masks()
+        active_mask_array = self.state.merge_active_masks()
         
         grid_array = (self.mapping.mapping_array & is_thinchannel).copy().astype(np.bool)
         mask_array = active_mask_array | ~(grid_array)
@@ -720,13 +720,12 @@ class Plot(Core):
         TBD
         """
         if mask_array is None:
-            mask_array = np.zeros_like(grid_array).astype(np.bool)            
-        mask_array = mask_array[self.geodata.pad_width:-self.geodata.pad_width,
-                                self.geodata.pad_width:-self.geodata.pad_width]
+            mask_array = np.zeros_like(grid_array).astype(np.bool)
+        pad = self.geodata.pad_width     
+        mask_array = mask_array[pad:-pad,
+                                pad:-pad]
         if self.geodata.do_basin_masking:
-            mask_array |= self.geodata.merge_active_masks()[
-                self.geodata.pad_width:-self.geodata.pad_width,
-                self.geodata.pad_width:-self.geodata.pad_width]
+            mask_array |= self.state.merge_active_masks()[pad:-pad,pad:-pad]
             
         if self.seed_point_marker_size==0:
             seed_point_marker = 'g,'
@@ -748,8 +747,7 @@ class Plot(Core):
         else:
             grid_alpha = 1.0
 
-        grid_array = grid_array[self.geodata.pad_width:-self.geodata.pad_width,
-                                self.geodata.pad_width:-self.geodata.pad_width]
+        grid_array = grid_array[pad:-pad,pad:-pad]
         extra_mask_array = grid_array.astype(np.bool)
         mask_array = mask_array | (~extra_mask_array)
 
@@ -784,14 +782,18 @@ class Plot(Core):
             cbar = plt.colorbar(im, cax=cax, orientation="horizontal")
             cbar.set_label(colorbar_title)
 
-        is_thinchannel = self.mapping.info.is_thinchannel
-        grid_array = (self.mapping.mapping_array & is_thinchannel).copy().astype(np.bool)
-        im = axes.imshow(np.flipud(grid_array.T), 
-                  cmap='Greys', 
-                  extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds],
-                  alpha=0.5,
-                  interpolation=self.interpolation_method
-                  )
+        try:
+            is_thinchannel = self.mapping.info.is_thinchannel
+            grid_array = ( self.mapping.mapping_array[pad:-pad,pad:-pad] 
+                           & is_thinchannel ).astype(np.bool)
+            im = axes.imshow(np.flipud(grid_array.T), 
+                      cmap='Blues', 
+                      extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds],
+                      alpha=0.5,
+                      interpolation=self.interpolation_method
+                      )
+        except:
+            pass
 
         self._force_display(fig)
         self._record_fig(fig_name,fig)
@@ -835,18 +837,15 @@ class Plot(Core):
                 z_max = np.percentile(self.mapping.hsl_smoothed_array,99.0)  
             else:
                 z_max = self.contour_hsl_z_max     
+        pad = self.geodata.pad_width
         grid_array = np.clip(self.mapping.hsl_smoothed_array.copy(),z_min,z_max)
 #         if n_contours is None and self.contour_hsl_n_contours!='auto':
 #                 n_contours = self.contour_hsl_n_contours
         if linewidth is None:
             linewidth = self.contour_hsl_linewidth
                 
-        mask_array = self.geodata.merge_active_masks()[
-                        self.geodata.pad_width:-self.geodata.pad_width,
-                        self.geodata.pad_width:-self.geodata.pad_width].copy()
-        mask_array[(self.mapping.label_array[
-                        self.geodata.pad_width:-self.geodata.pad_width,
-                        self.geodata.pad_width:-self.geodata.pad_width]==0)] = True
+        mask_array = self.state.merge_active_masks()[pad:-pad,pad:-pad].copy()
+        mask_array[(self.mapping.label_array[pad:-pad,pad:-pad]==0)] = True
         if do_shaded_relief:
             hillshade_alpha = self.grid_shaded_relief_hillshade_alpha
             hsl_alpha = 0.3
@@ -1031,11 +1030,11 @@ class Plot(Core):
                           self.geodata.y_roi_n_pixel_centers)
         axes.streamplot(x_pixel_centers_array,y_pixel_centers_array,
                       np.ma.array(self.preprocess.uv_array[:,:,0],
-                                  mask=self.geodata.merge_active_masks()).T[
+                                  mask=self.state.merge_active_masks()).T[
                         self.geodata.pad_width:-self.geodata.pad_width,
                         self.geodata.pad_width:-self.geodata.pad_width],
                       np.ma.array(self.preprocess.uv_array[:,:,1],
-                                  mask=self.geodata.merge_active_masks()).T[
+                                  mask=self.state.merge_active_masks()).T[
                         self.geodata.pad_width:-self.geodata.pad_width,
                         self.geodata.pad_width:-self.geodata.pad_width], 
                       density=min(1.0,self.classical_streamplot_density), 
@@ -1083,13 +1082,13 @@ class Plot(Core):
                                 decimation_factor,axis=1,n=2)
             m = decimate( 
                     decimate(
-                        ~self.geodata.merge_active_masks(),
+                        ~self.state.merge_active_masks(),
                             decimation_factor,axis=0,n=2), 
                                 decimation_factor,axis=1,n=2)
         else:
             u = self.preprocess.uv_array[:,:,0]
             v = self.preprocess.uv_array[:,:,1]
-            m = ~self.geodata.merge_active_masks()
+            m = ~self.state.merge_active_masks()
         # Normalize for clarity
         speed = np.hypot(u,v)
         u = u/speed

@@ -22,10 +22,10 @@ pdebug = print
 
 class Data():    
     def __init__(self,
-                 mask_array          = None,
-                 uv_array            = None,
-                 mapping_array       = None,
-                 traj_stats_df       = None):
+                 mask_array      = None,
+                 uv_array        = None,
+                 mapping_array   = None,
+                 traj_stats_df   = None):
         self.mask_array          = mask_array
         self.uv_array            = uv_array
         self.mapping_array       = mapping_array
@@ -198,9 +198,10 @@ class Trace(Core):
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
         """
-        data = Data( mask_array    = self.geodata.merge_active_masks(),
+        data = Data( mask_array    = self.state.merge_active_masks(),
                      uv_array      = self.preprocess.uv_array,
-                     mapping_array = self.mapping_array )
+                     mapping_array = self.mapping_array # Currently unused
+                     )
         trajectories = Trajectories(self.state.cl_platform, self.state.cl_device,
                                     cl_src_path         = self.state.cl_src_path,
                                     info                = Info(self),
@@ -220,9 +221,9 @@ class Trace(Core):
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
         """
-        data = Data( mask_array    = self.geodata.merge_active_masks(),
+        data = Data( mask_array    = self.state.merge_active_masks(),
                      uv_array      = self.preprocess.uv_array,
-                     mapping_array = self.mapping_array,
+                     mapping_array = self.mapping_array, # Currently unused
                      traj_stats_df = self.traj_stats_df )
         fields = Fields(self.state.cl_platform, self.state.cl_device,
                         cl_src_path         = self.state.cl_src_path,
@@ -235,5 +236,4 @@ class Trace(Core):
         self.slc_array = fields.data.slc_array
         self.slt_array = fields.data.slt_array
         self.sla_array = fields.data.sla_array
-        
         

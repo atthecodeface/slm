@@ -324,4 +324,38 @@ class State(Core):
 #             [print(npz_array) for npz_array in arrays.files]
 #             print('')
         del arrays
+        
+    def add_active_mask(self, mask_item):
+        """
+        TBD
+        """ 
+        self.active_masks_dict.update(mask_item)
+        
+    def remove_active_mask(self, mask_name):
+        """
+        TBD
+        """ 
+        self.active_masks_dict.pop(mask_name)
+        
+    def reset_active_masks(self):
+        """
+        TBD
+        """ 
+        masks_keep_list = ['dtm_mask_array', 'basin_mask_array', 'uv_mask_array']
+        # Rebuild dict since in-situ deletion in list comprehension doesn't work
+        self.active_masks_dict \
+            = {k: self.active_masks_dict[k] for k in self.active_masks_dict 
+                                            if  k in masks_keep_list}
+        
+    def merge_active_masks(self):
+        """
+        TBD
+        """ 
+        for idx, mask_array in enumerate(self.active_masks_dict.values()):
+            if idx==0:
+                active_mask_array = mask_array.copy()
+            else:
+                active_mask_array |= mask_array
+        return active_mask_array
+        
                 

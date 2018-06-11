@@ -4,6 +4,7 @@ Miscellaneous useful functions for PyOpenCL code
 
 import numpy as np
 import pandas as pd
+from scipy.ndimage.morphology import binary_dilation, generate_binary_structure
 import os
 os.environ['PYTHONUNBUFFERED']='True'
 import sys
@@ -117,3 +118,8 @@ def compute_stats(traj_length_array, traj_nsteps_array, pixel_size, verbose):
                                  index=lnds_indexes)
     vprint(verbose,lnds_stats_df.T)
     return lnds_stats_df
+
+def dilate(undilated_array, n_iterations=1):
+    dilation_structure = generate_binary_structure(2, 2)
+    return binary_dilation(undilated_array, structure=dilation_structure, 
+                           iterations=n_iterations)

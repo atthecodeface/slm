@@ -19,7 +19,7 @@ environ['PYTHONUNBUFFERED']='True'
 
 from streamlines.core  import Core
 from streamlines       import connect, channelheads, countlink, label, \
-                              segment, linkhillslopes, lengths
+                              segment, linkhillslopes, lengths, useful
 from streamlines.trace import Info, Data
 from streamlines.pocl  import Initialize_cl
 
@@ -47,49 +47,17 @@ class Mapping(Core):
     def _augment(self, plot):
         self.plot = plot
      
-    def prepare(self, channel_threshold=None, segmentation_threshold=None):
-        self.print('Preparing...',end='')  
-        try:
-            del self.mapping_array
-        except:
-            pass
-        try:
-            del self.data
-        except:
-            pass
-        try:
-            del self.label_array
-        except:
-            pass
-        try:
-            del self.hsl_array
-        except:
-            pass
-        try:
-            del self.hsl_smoothed_array
-        except:
-            pass
-        self.mapping_array = self.trace.mapping_array.copy()
-        self.data = Data( mask_array    = self.geodata.merge_active_masks(),
-                          uv_array      = self.preprocess.uv_array,
-                          mapping_array = self.mapping_array )  
-        self.verbose = self.state.verbose
-        if channel_threshold is None:
-            self.channel_threshold = self.analysis.mpdf_dslt.channel_threshold_x
-        else:
-            self.channel_threshold = channel_threshold
-        if segmentation_threshold is None:
-            self.segmentation_threshold = self.fine_segmentation_threshold
-        else:
-            self.segmentation_threshold = segmentation_threshold
-        self.info = Info(self.trace, mapping=self)
-        self.print('done')    
-            
     def do(self):
         """
         TBD.
         """
         self.print('\n**Mapping begin**') 
+
+        # Active masks presumably set:  
+        #    - geodata.dtm_mask_array
+        #    - geodata.basin_mask_array (if set)
+        #    - preprocess.uv_mask_array
+        #
         
         # 1st pass:
         #    - coarsely (sub)segment and label using an imposed threshold
@@ -147,17 +115,54 @@ class Mapping(Core):
         # Post HSL:
         #    - map aspect
         #    - compute HSL(aspect)
-        
-        # Active masks presumably set:  
-        #    - geodata.dtm_mask_array
-        #    - geodata.basin_mask_array (if set)
-        #    - preprocess.uv_mask_array
-        #
+        self.print('**Mapping end**\n')  
 
+    def prepare(self, channel_threshold=None, segmentation_threshold=None):
+        self.print('Preparing...',end='')  
+        try:
+            del self.mapping_array
+        except:
+            pass
+        try:
+            del self.data
+        except:
+            pass
+        try:
+            del self.label_array
+        except:
+            pass
+        try:
+            del self.hsl_array
+        except:
+            pass
+        try:
+            del self.hsl_smoothed_array
+        except:
+            pass
+        self.mapping_array = np.zeros_like(self.trace.mapping_array).astype(np.uint32)
+        if self.mapping_array[self.mapping_array>0]!=[]:
+            self.print('Mapping array should be empty at this point'
+                       +' - carrying on regardless')
+        self.data = Data( mask_array    = self.state.merge_active_masks(),
+                          uv_array      = self.preprocess.uv_array,
+                          mapping_array = self.mapping_array )  
+        self.verbose = self.state.verbose
+        if channel_threshold is None:
+            self.channel_threshold = self.analysis.mpdf_dslt.channel_threshold_x
+        else:
+            self.channel_threshold = channel_threshold
+        if segmentation_threshold is None:
+            self.segmentation_threshold = self.fine_segmentation_threshold
+        else:
+            self.segmentation_threshold = segmentation_threshold
+        self.info = Info(self.trace, mapping=self)
+        self.print('done')    
+            
     def pass1(self):
         # Pass §1
         #
-        self.geodata.reset_active_masks()
+        self.print('\n**Pass#1 begin**') 
+        self.state.reset_active_masks()
         self.prepare(channel_threshold=self.coarse_channel_threshold,
                      segmentation_threshold=self.coarse_segmentation_threshold)
         self.mapping_segments_channels()
@@ -169,36 +174,45 @@ class Mapping(Core):
         
         # Estimate whole-ROI, approximate channel threshold
         self.analysis.estimate_channel_threshold()
-        self.plot.plot_marginal_pdf_dslt()
+#         self.plot.plot_marginal_pdf_dslt()
         self.info.channel_threshold = self.analysis.mpdf_dslt.channel_threshold_x
+        self.print('\n**Pass#1  end**') 
 
     def pass2(self):
         # Pass §2
-        self.print('Subsegment labels: {}'.format(self.coarse_labels[::-1]))
+        self.print('\n**Pass#2 begin**') 
+        self.state.reset_active_masks()
+        self.print('Subsegment labels: {}'.format(self.coarse_labels))
         for coarse_label in self.coarse_labels:
+#         for coarse_label in self.coarse_labels[::-1]:
             self.print('Mapping HSL on subsegment #{}'.format(coarse_label))
             # Create a mask array for this coarse subsegment and add to active list
             coarse_mask_array = np.zeros_like(self.coarse_label_array, dtype=np.bool)
-            coarse_mask_array[self.coarse_label_array!=coarse_label] = True
-            self.geodata.add_active_mask({'coarse_mask_array': coarse_mask_array})
+            coarse_mask_array[self.coarse_label_array==coarse_label] = True
+            n_iterations = (2 if coarse_label<0 else 1)
+            coarse_mask_array= np.invert(useful.dilate(coarse_mask_array,
+                                                       n_iterations=n_iterations))
+            self.state.add_active_mask({'coarse_mask_array': coarse_mask_array})
             # Compute slt pdf and estimate channel threshold from it
+#             self.plot.plot_marginal_pdf_dslt()
             self.analysis.estimate_channel_threshold()
-            self.plot.plot_marginal_pdf_dslt()
-            self.plot.plot_segments(window_size_factor=3)
+
             # Get ready to map HSL
             self.prepare()
             # Map channel heads, thin channel pixels, subsegments
             self.mapping_segments_channels()
+            self.list_subsegments(do_without_ridges_midslopes=True)
             self.plot.plot_channels(window_size_factor=3)
+            self.plot.plot_segments(window_size_factor=3)
             # Map ridges and midslopes
             self.map_midslopes()
             self.map_ridges()
             # Measure HSL from ridges or midslopes to thin channels per subsegment
             self.measure_hsl()
             # Delete this coarse mask from the active list
-            self.geodata.remove_active_mask('coarse_mask_array')
+            self.state.remove_active_mask('coarse_mask_array')
         
-        self.print('**Mapping end**\n')  
+        self.print('\n**Pass#2  end**') 
                 
     def mapping_segments_channels(self):
         """
@@ -248,8 +262,8 @@ class Mapping(Core):
         self.map_aspect()
         self.compute_hsl_aspect()
         self.print('**Mapping ridges, midslopes, HSL, aspect end**\n')  
-        
-        
+
+
     def map_channels(self):
         self.print('Channels...',end='')
         # Designate channel pixels according to dslt pdf analysis

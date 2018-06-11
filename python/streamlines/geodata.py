@@ -16,7 +16,8 @@ import json
 
 pdebug=print
 
-from streamlines.core import Core
+from streamlines.core   import Core
+from streamlines import useful
 
 __all__ = ['Geodata']
 
@@ -260,7 +261,7 @@ class Geodata(Core):
                                      (int(self.pad_width), int(self.pad_width)), 
                                      'constant', constant_values=(True,True))
         # Add this "DTM" mask to the list of active masks (actually, it'll be the first)
-        self.add_active_mask({'dtm_mask_array': self.dtm_mask_array})
+        self.state.add_active_mask({'dtm_mask_array': self.dtm_mask_array})
 
     def make_basins_mask(self):
         """
@@ -276,13 +277,14 @@ class Geodata(Core):
         basin_mask_unpadded_array = np.zeros_like(self.basins_array,dtype=np.bool8)
         for basin in self.basins:
             basin_mask_unpadded_array[self.basins_array==basin] = True
-        dilation_structure = generate_binary_structure(2, 2)
-        basin_fatmask_unpadded_array = binary_dilation(basin_mask_unpadded_array, 
-                                                   structure=dilation_structure, 
-                                                   iterations=1)
+#         dilation_structure = generate_binary_structure(2, 2)
+#         basin_fatmask_unpadded_array = binary_dilation(basin_mask_unpadded_array, 
+#                                                    structure=dilation_structure, 
+#                                                    iterations=1)
+        basin_fatmask_unpadded_array = useful.dilate(basin_mask_unpadded_array, 2)
         # True = masked out; False = data we want to see
-        basin_mask_unpadded_array = np.invert(basin_mask_unpadded_array)    
-        basin_fatmask_unpadded_array = np.invert(basin_fatmask_unpadded_array)
+        basin_mask_unpadded_array    = np.invert(basin_mask_unpadded_array)    
+        basin_fatmask_unpadded_array = np.invert(basin_fatmask_unpadded_array)    
             
         self.basin_mask_array = np.pad(basin_mask_unpadded_array,
                                        (int(self.pad_width),int(self.pad_width)), 
@@ -290,38 +292,5 @@ class Geodata(Core):
         self.basin_fatmask_array = np.pad(basin_fatmask_unpadded_array, 
                                           (int(self.pad_width), int(self.pad_width)), 
                                           'constant', constant_values=(True,True))
-        self.add_active_mask({'basin_mask_array': self.basin_mask_array})
+        self.state.add_active_mask({'basin_mask_array': self.basin_mask_array})
 
-    def add_active_mask(self, mask_item):
-        """
-        TBD
-        """ 
-        self.active_masks_dict.update(mask_item)
-        
-    def remove_active_mask(self, mask_name):
-        """
-        TBD
-        """ 
-        self.active_masks_dict.pop(mask_name)
-        
-    def reset_active_masks(self):
-        """
-        TBD
-        """ 
-        masks_keep_list = ['dtm_mask_array', 'basin_mask_array', 'uv_mask_array']
-        # Rebuild dict since in-situ deletion in list comprehension doesn't work
-        self.active_masks_dict \
-            = {k: self.active_masks_dict[k] for k in self.active_masks_dict 
-                                            if  k in masks_keep_list}
-        
-    def merge_active_masks(self):
-        """
-        TBD
-        """ 
-        for idx, mask_array in enumerate(self.active_masks_dict.values()):
-            if idx==0:
-                active_mask_array = mask_array.copy()
-            else:
-                active_mask_array |= mask_array
-        return active_mask_array
-        
