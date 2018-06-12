@@ -107,6 +107,10 @@ class Mapping(Core):
         #       - merge partial HSL onto aggregating HSL array
         #
         #       - remove (not) coarse subsegment from list of active masks
+        self.pass2()
+        
+        # 3rd pass:
+
         #
         #    - map (median & mean filter) aggregate HSL measurements
         self.pass2()
@@ -116,8 +120,9 @@ class Mapping(Core):
         #    - compute HSL(aspect)
         self.print('**Mapping end**\n')  
 
-    def prepare(self, channel_threshold=None, segmentation_threshold=None):
+    def prepare_arrays_data_mask(self):
         self.print('Preparing...',end='')  
+        self.verbose = self.state.verbose
         try:
             del self.mapping_array
         except:
@@ -130,12 +135,59 @@ class Mapping(Core):
             del self.label_array
         except:
             pass
-#         try:
-#             del self.hsl_array
-#         except:
-#             pass
+        self.mapping_array = np.zeros_like(self.trace.mapping_array).astype(np.uint32)
+        self.data = Data( mask_array    = self.state.merge_active_masks(),
+                          uv_array      = self.preprocess.uv_array,
+                          mapping_array = self.mapping_array )  
+        self.print('done')    
+            
+    def pass1(self):
+        # Pass §1
+        #
+        self.print('\n**Pass#1 begin**')
+        # Only deploy border padding, uv-error, and basin+?height-threshold masks
+        self.state.reset_active_masks()
+        # Ensure a fresh start with data, mapping sub-objects
+        self.prepare_arrays_data_mask()
+        # Create an info object for passing parameters to CL wrappers etc
+        self.info = Info(self.trace, mapping=self)
+        # Force bogus channel delineation at coarse scale
+        self.info.channel_threshold=self.coarse_channel_threshold
+        # Force subsegmentation at coarse scale
+        self.info.segmentation_threshold=self.coarse_segmentation_threshold
+        # Do the forced coarse channel mapping & subsegmentation
+        self.mapping_segments_channels()
+        # Save the coarse subsegmentation labels
+        self.coarse_label_array = self.label_array
+        # Make a list of all the subsegments with enough ridge/midslope pixels for HSL
+        self.select_subsegments(do_without_ridges_midslopes=True)
+        self.coarse_labels = np.sort(self.hillslope_labels)
+        # Record a mask built from all pixels outside the listed subsegments
+        self.merged_coarse_mask = np.ones_like(self.coarse_label_array,dtype=np.bool)
+        for label in self.coarse_labels:
+            self.merged_coarse_mask[self.coarse_label_array==label] = False
+        self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask})
+        # Viz the coarse channels & subsegmentation
+        self.plot.plot_channels(window_size_factor=3)
+        self.plot.plot_segments(window_size_factor=3)
+#         # Estimate whole-ROI, approximate channel threshold
+#         self.info.channel_threshold = self.analysis.estimate_channel_threshold()
+#         self.plot.plot_marginal_pdf_dslt()
+        self.print('\n**Pass#1  end**') 
+
+    def prepare_pass2(self, channel_threshold=None, segmentation_threshold=None):
+        self.print('Preparing...',end='')  
+        self.verbose = self.state.verbose
         try:
-            del self.hsl_smoothed_array
+            del self.mapping_array
+        except:
+            pass
+        try:
+            del self.data
+        except:
+            pass
+        try:
+            del self.label_array
         except:
             pass
         self.mapping_array = np.zeros_like(self.trace.mapping_array).astype(np.uint32)
@@ -145,42 +197,20 @@ class Mapping(Core):
         self.data = Data( mask_array    = self.state.merge_active_masks(),
                           uv_array      = self.preprocess.uv_array,
                           mapping_array = self.mapping_array )  
-        self.verbose = self.state.verbose
-        if channel_threshold is None:
-            self.channel_threshold = self.analysis.mpdf_dslt.channel_threshold_x
-        else:
-            self.channel_threshold = channel_threshold
-        if segmentation_threshold is None:
-            self.segmentation_threshold = self.fine_segmentation_threshold
-        else:
-            self.segmentation_threshold = segmentation_threshold
-        self.info = Info(self.trace, mapping=self)
+#         if channel_threshold is None:
+#             self.channel_threshold = self.analysis.mpdf_dslt.channel_threshold_x
+#         else:
+#             self.channel_threshold = channel_threshold
+#         if segmentation_threshold is None:
+#             self.segmentation_threshold = self.fine_segmentation_threshold
+#         else:
+#             self.segmentation_threshold = segmentation_threshold
+#         self.info = Info(self.trace, mapping=self)
         self.print('done')    
             
-    def pass1(self):
-        # Pass §1
-        #
-        self.print('\n**Pass#1 begin**') 
-        self.state.reset_active_masks()
-        self.prepare(channel_threshold=self.coarse_channel_threshold,
-                     segmentation_threshold=self.coarse_segmentation_threshold)
-        self.mapping_segments_channels()
-        self.coarse_label_array = self.label_array
-        self.select_subsegments(do_without_ridges_midslopes=True)
-        self.coarse_labels = np.sort(self.hillslope_labels)
-        self.plot.plot_channels(window_size_factor=3)
-        self.plot.plot_segments(window_size_factor=3)
-        
-        # Estimate whole-ROI, approximate channel threshold
-        self.analysis.estimate_channel_threshold()
-#         self.plot.plot_marginal_pdf_dslt()
-        self.info.channel_threshold = self.analysis.mpdf_dslt.channel_threshold_x
-        self.print('\n**Pass#1  end**') 
-
     def pass2(self):
         # Pass §2
         self.print('\n**Pass#2 begin**') 
-        self.state.reset_active_masks()
         self.print('Subsegment labels: {}'.format(self.coarse_labels))
         try:
             del self.hsl_array
@@ -193,48 +223,68 @@ class Mapping(Core):
             is_left_or_right = ('left' if coarse_label<0 else 'right')
             self.print('\nMapping HSL on subsegment #{0} ({1})'
                        .format(coarse_label,is_left_or_right))
+            
+            # Basic masking first
+            self.state.reset_active_masks()
             # Create a mask array for this coarse subsegment and add to active list
-            raw_coarse_mask_array = np.zeros_like(self.coarse_label_array, dtype=np.bool)
+            segment_mask_array = np.zeros_like(self.coarse_label_array, dtype=np.bool)
             # Start with inverted raw mask
-            raw_coarse_mask_array[self.coarse_label_array==coarse_label] = True
+            segment_mask_array[self.coarse_label_array==coarse_label] = True
             # Spread mask by 2 if left or 1 if right flank subsegment
             #   (left spread needs to 1st encompass bordering right-flank channel pixels)
             n_iterations = (2 if is_left_or_right=='left' else 1)
-            coarse_mask_array = np.invert(useful.dilate(raw_coarse_mask_array.copy(),
-                                                        n_iterations=n_iterations))
+            dilated_segment_mask_array=np.invert(useful.dilate(segment_mask_array.copy(),
+                                                              n_iterations=n_iterations))
             # Now invert the raw mask as well
-            raw_coarse_mask_array = np.invert(raw_coarse_mask_array)
+            segment_mask_array = np.invert(segment_mask_array)
             # Deploy the dilated coarse-subsegment mask
-            self.state.add_active_mask({'coarse_mask_array': coarse_mask_array})
-            # Compute slt pdf and estimate channel threshold from it
-#             self.plot.plot_marginal_pdf_dslt()
-            self.analysis.estimate_channel_threshold()
+            self.state.add_active_mask({'dilated_segment':dilated_segment_mask_array})
+            
             # Get ready to map HSL
-            self.prepare()
+            self.prepare_arrays_data_mask()
+            self.info = Info(self.trace, mapping=self)
+#             self.info.channel_threshold=self.coarse_channel_threshold
+            self.info.segmentation_threshold=self.fine_segmentation_threshold
+            # Compute slt pdf and estimate channel threshold from it
+            try:
+                self.info.channel_threshold = self.analysis.estimate_channel_threshold()
+            except: 
+                continue
+            self.plot.plot_marginal_pdf_dslt()
+            
             # Map channel heads, thin channel pixels, subsegments
             self.mapping_segments_channels()
             # Map ridges and midslopes
             self.map_midslopes()
             self.map_ridges()
             self.select_subsegments(do_without_ridges_midslopes=False)
-            self.plot.plot_segments(window_size_factor=3)
-            self.plot.plot_channels(window_size_factor=3)
+#             self.plot.plot_segments(window_size_factor=3)
+#             self.plot.plot_channels(window_size_factor=3)
             # Measure HSL from ridges or midslopes to thin channels per subsegment
             self.measure_hsl()
             # Remove dilated coarse-subsegment mask
-            self.state.remove_active_mask('coarse_mask_array')
+            self.state.remove_active_mask('dilated_segment')
+            
             # Replace with the raw coarse-subsegment mask
-            self.state.add_active_mask({'raw_coarse_mask_array': raw_coarse_mask_array})
+            self.state.add_active_mask({'raw_segment': segment_mask_array})
             # Add this coarse subsegment's HSL data to the 'global' HSL map
             self.merge_hsl()
             # Delete this coarse mask from the active list
             self.state.reset_active_masks()
             self.plot.plot_hsl(window_size_factor=3.5)
-            del raw_coarse_mask_array, coarse_mask_array
+            del segment_mask_array, dilated_segment_mask_array
         
-        self.map_hsl()
-        self.state.reset_active_masks()
         self.print('\n**Pass#2  end**') 
+                
+    def pass3(self):        
+        # Pass §3
+        self.print('\n**Pass#3 begin**') 
+        self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask})
+        self.map_hsl()
+        self.map_aspect()
+        self.compute_hsl_aspect()
+#         self.state.reset_active_masks()
+        self.print('\n**Pass#3 end**') 
                 
     def mapping_segments_channels(self):
         """

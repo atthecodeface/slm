@@ -261,7 +261,7 @@ class Geodata(Core):
                                      (int(self.pad_width), int(self.pad_width)), 
                                      'constant', constant_values=(True,True))
         # Add this "DTM" mask to the list of active masks (actually, it'll be the first)
-        self.state.add_active_mask({'dtm_mask_array': self.dtm_mask_array})
+        self.state.add_active_mask({'dtm': self.dtm_mask_array})
 
     def make_basins_mask(self):
         """
@@ -292,5 +292,5 @@ class Geodata(Core):
         self.basin_fatmask_array = np.pad(basin_fatmask_unpadded_array, 
                                           (int(self.pad_width), int(self.pad_width)), 
                                           'constant', constant_values=(True,True))
-        self.state.add_active_mask({'basin_mask_array': self.basin_mask_array})
+        self.state.add_active_mask({'basin': self.basin_mask_array})
 

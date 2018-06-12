@@ -316,7 +316,7 @@ class State(Core):
         """
         TBD
         """ 
-        masks_keep_list = ['dtm_mask_array', 'basin_mask_array', 'uv_mask_array']
+        masks_keep_list = ['dtm', 'basin', 'uv']
         # Rebuild dict since in-situ deletion in list comprehension doesn't work
         self.active_masks_dict \
             = {k: self.active_masks_dict[k] for k in self.active_masks_dict 

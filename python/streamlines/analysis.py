@@ -83,6 +83,7 @@ class Analysis(Core):
         TBD
         """
         self.compute_marginal_distribn_dslt()
+        return self.mpdf_dslt.channel_threshold_x
         
     def compute_marginal_distribn(self, x_array,y_array,mask_array=None,
                                   up_down_idx_x=0, up_down_idx_y=0, 
