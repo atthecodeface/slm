@@ -26,7 +26,7 @@ def hsl( cl_state, info, data, verbose, do_use_ridges=False ):
         data (obj):
         verbose (bool):
     """
-    vprint(verbose,'Measuring hillslope lengths...',end='')
+    vprint(verbose,'Computing lengths...',end='')
     
     # Prepare CL essentials
     cl_state.kernel_source \

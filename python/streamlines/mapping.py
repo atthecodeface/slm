@@ -250,7 +250,7 @@ class Mapping(Core):
                 self.info.channel_threshold = self.analysis.estimate_channel_threshold()
             except: 
                 continue
-            self.plot.plot_marginal_pdf_dslt()
+#             self.plot.plot_marginal_pdf_dslt()
             
             # Map channel heads, thin channel pixels, subsegments
             self.mapping_segments_channels()
@@ -271,7 +271,7 @@ class Mapping(Core):
             self.merge_hsl()
             # Delete this coarse mask from the active list
             self.state.reset_active_masks()
-            self.plot.plot_hsl(window_size_factor=3.5)
+#             self.plot.plot_hsl(window_size_factor=3.5)
             del segment_mask_array, dilated_segment_mask_array
         
         self.print('\n**Pass#2  end**') 
@@ -482,7 +482,7 @@ class Mapping(Core):
         self.print('...done')  
                 
     def measure_hsl(self):
-        self.print('Measuring hillslope lengths wrapper...')
+        self.print('Measuring hillslope lengths...')
 #         if self.do_measure_hsl_from_ridges:
 #             flag = self.info.is_ridge
 #         else:
@@ -527,7 +527,8 @@ class Mapping(Core):
         if self.hsl_array is None:
             self.hsl_array = np.zeros_like(self.data.hsl_array)
             self.print('created HSL array...',end='')
-        self.print('merging...',end='')
+        else:
+            self.print('merging with prior HSL...',end='')
         self.hsl_array[(~mask_array) & (~np.isnan(self.hsl_array))] \
             += self.data.hsl_array[(~mask_array) & (~np.isnan(self.hsl_array))]
         self.print('done')  
