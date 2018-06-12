@@ -9,9 +9,34 @@ import os
 os.environ['PYTHONUNBUFFERED']='True'
 import sys
 
-__all__ = ['vprint','create_seeds','pick_seeds','compute_stats']
+__all__ = ['true_size','neatly','vprint','create_seeds','pick_seeds','compute_stats',
+           'dilate']
 
 pdebug = print
+
+def true_size(subobject):
+    """
+    TBD
+    """
+    # For semi-obscure reasons, Pympler does better if we enquire about a hard copy of the object
+    try:
+        sizeof = asizeof(subobject.copy())
+    except:
+        sizeof = asizeof(subobject)            
+    return sizeof
+    
+def neatly(byte_size):
+    """Returns a human readable string reprentation of bytes"""
+    units=['B ','kB','MB','GB']  # Note: actually MiB etc
+    for unit in units:
+        if byte_size>=1024:
+            byte_size = byte_size/1024.0
+        else:
+            break
+    if unit=='GB':
+        return str(int(0.5+10*byte_size)/10)+unit
+    else:
+        return str(int(0.5+byte_size))+unit
 
 def vprint(verbose, *args, **kwargs):
     """

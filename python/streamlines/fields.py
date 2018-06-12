@@ -14,8 +14,7 @@ environ['PYTHONUNBUFFERED']='True'
 environ['PYOPENCL_NO_CACHE']='True'
 environ['PYOPENCL_COMPILER_OUTPUT']='0'
 from streamlines        import pocl
-from streamlines.state  import neatly
-from streamlines.useful import vprint, create_seeds
+from streamlines.useful import neatly, vprint, create_seeds
 
 __all__ = ['Fields']
 

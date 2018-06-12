@@ -401,7 +401,7 @@ class Analysis(Core):
         """
         TBD
         """
-        self.print('Computing joint distribution "uslt_dslt"...',flush=True)
+        self.print('Computing joint distribution "uslt_dslt"...')
         x_array,y_array = self.trace.slt_array,self.trace.slt_array
         up_down_idx_x, up_down_idx_y = 1,0
         (logx_min, logx_max, logy_min, logy_max) \
@@ -462,7 +462,7 @@ class Analysis(Core):
         """
         TBD
         """
-        self.print('Computing joint distribution "uslc_dslc"...',flush=True)
+        self.print('Computing joint distribution "uslc_dslc"...')
         x_array,y_array = self.trace.slc_array,self.trace.slc_array
         up_down_idx_x, up_down_idx_y = 1,0
         (logx_min, logx_max, logy_min, logy_max) \

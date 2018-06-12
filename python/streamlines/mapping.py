@@ -13,7 +13,6 @@ from scipy.ndimage            import gaussian_filter
 from scipy.ndimage.morphology import binary_fill_holes
 from scipy.ndimage.morphology import binary_dilation,generate_binary_structure
 import warnings
-import sys
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
@@ -131,10 +130,10 @@ class Mapping(Core):
             del self.label_array
         except:
             pass
-        try:
-            del self.hsl_array
-        except:
-            pass
+#         try:
+#             del self.hsl_array
+#         except:
+#             pass
         try:
             del self.hsl_smoothed_array
         except:
@@ -167,7 +166,7 @@ class Mapping(Core):
                      segmentation_threshold=self.coarse_segmentation_threshold)
         self.mapping_segments_channels()
         self.coarse_label_array = self.label_array
-        self.list_subsegments(do_without_ridges_midslopes=True)
+        self.select_subsegments(do_without_ridges_midslopes=True)
         self.coarse_labels = np.sort(self.hillslope_labels)
         self.plot.plot_channels(window_size_factor=3)
         self.plot.plot_segments(window_size_factor=3)
@@ -183,20 +182,33 @@ class Mapping(Core):
         self.print('\n**Pass#2 begin**') 
         self.state.reset_active_masks()
         self.print('Subsegment labels: {}'.format(self.coarse_labels))
-#         for coarse_label in self.coarse_labels:
-        for coarse_label in self.coarse_labels[::-1]:
-            self.print('Mapping HSL on subsegment #{}'.format(coarse_label))
+        try:
+            del self.hsl_array
+        except:
+            pass
+        self.hsl_array = None
+#         for coarse_label in [-1,1]:
+        for coarse_label in self.coarse_labels:
+#         for coarse_label in self.coarse_labels[::-1]:
+            is_left_or_right = ('left' if coarse_label<0 else 'right')
+            self.print('\nMapping HSL on subsegment #{0} ({1})'
+                       .format(coarse_label,is_left_or_right))
             # Create a mask array for this coarse subsegment and add to active list
-            coarse_mask_array = np.zeros_like(self.coarse_label_array, dtype=np.bool)
-            coarse_mask_array[self.coarse_label_array==coarse_label] = True
-            n_iterations = (2 if coarse_label<0 else 1)
-            coarse_mask_array= np.invert(useful.dilate(coarse_mask_array,
-                                                       n_iterations=n_iterations))
+            raw_coarse_mask_array = np.zeros_like(self.coarse_label_array, dtype=np.bool)
+            # Start with inverted raw mask
+            raw_coarse_mask_array[self.coarse_label_array==coarse_label] = True
+            # Spread mask by 2 if left or 1 if right flank subsegment
+            #   (left spread needs to 1st encompass bordering right-flank channel pixels)
+            n_iterations = (2 if is_left_or_right=='left' else 1)
+            coarse_mask_array = np.invert(useful.dilate(raw_coarse_mask_array.copy(),
+                                                        n_iterations=n_iterations))
+            # Now invert the raw mask as well
+            raw_coarse_mask_array = np.invert(raw_coarse_mask_array)
+            # Deploy the dilated coarse-subsegment mask
             self.state.add_active_mask({'coarse_mask_array': coarse_mask_array})
             # Compute slt pdf and estimate channel threshold from it
 #             self.plot.plot_marginal_pdf_dslt()
             self.analysis.estimate_channel_threshold()
-
             # Get ready to map HSL
             self.prepare()
             # Map channel heads, thin channel pixels, subsegments
@@ -204,15 +216,24 @@ class Mapping(Core):
             # Map ridges and midslopes
             self.map_midslopes()
             self.map_ridges()
-            self.list_subsegments(do_without_ridges_midslopes=False)
+            self.select_subsegments(do_without_ridges_midslopes=False)
             self.plot.plot_segments(window_size_factor=3)
             self.plot.plot_channels(window_size_factor=3)
             # Measure HSL from ridges or midslopes to thin channels per subsegment
             self.measure_hsl()
-            self.map_hsl()
-            # Delete this coarse mask from the active list
+            # Remove dilated coarse-subsegment mask
             self.state.remove_active_mask('coarse_mask_array')
+            # Replace with the raw coarse-subsegment mask
+            self.state.add_active_mask({'raw_coarse_mask_array': raw_coarse_mask_array})
+            # Add this coarse subsegment's HSL data to the 'global' HSL map
+            self.merge_hsl()
+            # Delete this coarse mask from the active list
+            self.state.reset_active_masks()
+            self.plot.plot_hsl(window_size_factor=3.5)
+            del raw_coarse_mask_array, coarse_mask_array
         
+        self.map_hsl()
+        self.state.reset_active_masks()
         self.print('\n**Pass#2  end**') 
                 
     def mapping_segments_channels(self):
@@ -254,7 +275,7 @@ class Mapping(Core):
         # Use up- and downstream sla to designate ridge pixels
         self.map_ridges()
         # Make subsegment label list
-        self.list_subsegments()
+        self.select_subsegments()
         # Measure mean streamline distances from midslope to channel pixels
         self.measure_hsl()
         # Measure mean streamline distances from midslope to channel pixels
@@ -295,8 +316,9 @@ class Mapping(Core):
         channelheads.map_channel_heads(self.cl_state, self.info, self.data, 
                                        self.verbose)
         mapping_array = self.data.mapping_array
-        channelheads.prune_channel_heads(self.cl_state, self.info, self.data, 
-                                         self.verbose)
+        # Hack
+#         channelheads.prune_channel_heads(self.cl_state, self.info, self.data, 
+#                                          self.verbose)
         
     def count_downchannels(self):
         self.data.count_array = np.zeros_like(self.mapping_array, dtype=np.uint32)
@@ -390,18 +412,19 @@ class Mapping(Core):
         self.data.mapping_array[skeleton_ridge_array] |= self.info.is_ridge
         self.print('done')  
 
-    def list_subsegments(self, do_without_ridges_midslopes=False):
-        self.print('Listing subsegments...',end='')  
+    def select_subsegments(self, do_without_ridges_midslopes=False):
+        self.print('Selecting subsegments for HSL mapping...',end='')  
         if do_without_ridges_midslopes:
             self.data.traj_label_array \
                 = self.data.label_array[~self.data.mask_array].astype(np.int32).ravel()
         else:
             if self.do_measure_hsl_from_ridges:
                 flag = self.info.is_ridge
+                self.print('measuring from ridges...')
             else:
                 flag = self.info.is_midslope
-            self.data.traj_label_array \
-                = self.data.label_array[
+                self.print('measuring from midslopes...')
+            self.data.traj_label_array = self.data.label_array[
                      ((self.data.mapping_array & flag)>0) & (~self.data.mask_array)
                                         ].astype(np.int32).ravel()
         unique_labels = np.unique(self.data.traj_label_array)
@@ -409,7 +432,7 @@ class Mapping(Core):
         self.print('...done')  
                 
     def measure_hsl(self):
-        self.print('Measuring hillslope lengths wrapper...',flush=True)
+        self.print('Measuring hillslope lengths wrapper...')
 #         if self.do_measure_hsl_from_ridges:
 #             flag = self.info.is_ridge
 #         else:
@@ -440,38 +463,46 @@ class Mapping(Core):
         stats_df.set_index('label',inplace=True)
         self.hsl_stats_df = stats_df
         
-        self.hsl_array=np.zeros_like(self.data.label_array,dtype=np.float32)
+        self.data.hsl_array=np.zeros_like(self.data.label_array,dtype=np.float32)
         for idx,row in stats_df.iterrows():
             if row['count']>=self.n_hsl_averaging_threshold:
-                self.hsl_array[self.data.label_array==idx] = row['mean [m]']
+                self.data.hsl_array[self.data.label_array==idx] = row['mean [m]']
             else:
-                self.hsl_array[self.data.label_array==idx] = 0
+                self.data.hsl_array[self.data.label_array==idx] = 0
+        self.print('...done')  
+
+    def merge_hsl(self):
+        self.print('Merging hillslope lengths...',end='')
+        mask_array = self.state.merge_active_masks()
+        if self.hsl_array is None:
+            self.hsl_array = np.zeros_like(self.data.hsl_array)
+            self.print('created HSL array...',end='')
+        self.print('merging...',end='')
+        self.hsl_array[(~mask_array) & (~np.isnan(self.hsl_array))] \
+            += self.data.hsl_array[(~mask_array) & (~np.isnan(self.hsl_array))]
         self.print('done')  
 
     def map_hsl(self):
-        self.print('Mapping hillslope lengths...',end='',flush=True)
-        sys.stdout.flush()
+        self.print('Mapping hillslope lengths...',end='')
         
-        hsl = self.hsl_array
-        hsl_bool = hsl.astype(np.bool)
+        hsl         = self.hsl_array
+        hsl_bool    = hsl.astype(np.bool)
         hsl_clipped = np.ma.array(hsl, mask=~hsl_bool)
-        hsl_min = np.min(hsl_clipped)
-        hsl_max = np.max(hsl_clipped)
+        hsl_min     = np.min(hsl_clipped)
+        hsl_max     = np.max(hsl_clipped)
         hsl_clipped = 65535*(hsl_clipped-hsl_min)/(hsl_max-hsl_min)
-        hsl_masked = np.ma.array(hsl_clipped.astype(np.uint16),mask=~hsl_bool)
+        hsl_masked  = np.ma.array(hsl_clipped.astype(np.uint16),mask=~hsl_bool)
 
         median_radius = int(self.hsl_median_radius/self.geodata.roi_pixel_size)
         mean_radius   = int(self.hsl_mean_radius/self.geodata.roi_pixel_size)
-        median_disk = disk(median_radius)
-        mean_disk   = disk(mean_radius)
+        median_disk   = disk(median_radius)
+        mean_disk     = disk(mean_radius)
         
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.print('median filtering with {0}m ({1}-pixel) diameter disk...'
                        .format(self.hsl_median_radius,median_radius), 
-                       end='',flush=True)
-            if self.state.verbose:
-                sys.stdout.flush()
+                       end='')
             # Strangely, mask logic is backwards for median(): 
             #    - true pixels are used (median-filtered), while false are untouched
             if median_radius==0:
@@ -481,9 +512,7 @@ class Mapping(Core):
                                          mask=~hsl_bool)
             self.print('mean filtering with {0}m ({1}-pixel) diameter disk...'
                        .format(self.hsl_mean_radius,mean_radius),
-                       end='',flush=True) 
-            if self.state.verbose:
-                sys.stdout.flush()
+                       end='') 
             hsl_median_nm = mean(hsl_median,mean_disk)
             
         self.hsl_smoothed_array \
@@ -493,8 +522,7 @@ class Mapping(Core):
         self.print('done')  
         
     def map_aspect(self):
-        self.print('Computing hillslope aspect...',end='',flush=True)
-        sys.stdout.flush()
+        self.print('Computing hillslope aspect...',end='')
 
         slope_threshold = self.aspect_slope_threshold
         median_radius   = self.aspect_median_filter_radius/self.geodata.pixel_size
@@ -503,6 +531,7 @@ class Mapping(Core):
         is_channel      = self.info.is_channel
         mapping_array   = self.data.mapping_array
         mask_array      = np.zeros_like(mapping_array, dtype=np.bool)
+        # Hack - fix masking for multipass
         slope_array[((mapping_array & is_channel)==is_channel)] = 0.0
         if self.do_aspect_median_filtering:
             sf = np.max(slope_array)/255.0
@@ -520,8 +549,7 @@ class Mapping(Core):
         self.print('done')  
                                                          
     def compute_hsl_aspect(self, n_bins=None, hsl_averaging_threshold=None):
-        self.print('Computing hillslope length-aspect function...',end='',flush=True)
-        sys.stdout.flush()
+        self.print('Computing hillslope length-aspect function...',end='')
         
         if n_bins is None:
             n_bins = 60
@@ -529,7 +557,8 @@ class Mapping(Core):
             hsl_averaging_threshold = self.hsl_averaging_threshold
         
         pad           = self.geodata.pad_width
-        mask_array    = self.data.mask_array[pad:-pad,pad:-pad]
+        # Hack - fix masking for multipass
+        mask_array    = self.data.mask_array[pad:-pad,pad:-pad] & False
         aspect_array  = self.aspect_array[pad:-pad,pad:-pad].copy()[~mask_array]
         hsl_array     = self.hsl_smoothed_array.copy()[~mask_array]
         aspect_array  = np.rad2deg(aspect_array[hsl_array>hsl_averaging_threshold])

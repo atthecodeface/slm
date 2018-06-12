@@ -25,7 +25,6 @@ def hsl( cl_state, info, data, verbose, do_use_ridges=False ):
         info (obj):
         data (obj):
         verbose (bool):
-        
     """
     vprint(verbose,'Measuring hillslope lengths...',end='')
     

@@ -6,8 +6,7 @@ import pyopencl       as cl
 import pyopencl.tools as cltools
 import numpy as np
 import os
-from streamlines        import state
-from streamlines.useful import vprint
+from streamlines.useful import neatly, vprint
 import warnings
 
 os.environ['PYOPENCL_COMPILER_OUTPUT']='0'
@@ -303,10 +302,10 @@ def report_device_info(cl_platform, cl_device, platform, device, verbose):
         print('OpenCL platform #{0} = {1}'.format(cl_platform,platform))
         print('OpenCL device #{0} = {1}'.format(cl_device,device))
         n_bytes = device.get_info(cl.device_info.GLOBAL_MEM_SIZE)
-        print('Global memory size: {} bytes = {}'.format(n_bytes,state.neatly(n_bytes)))
+        print('Global memory size: {} bytes = {}'.format(n_bytes,neatly(n_bytes)))
         n_bytes = device.get_info(cl.device_info.MAX_MEM_ALLOC_SIZE)
         print('Max memory alloc size: {} bytes = {}'
-                            .format(n_bytes,state.neatly(n_bytes)))
+                            .format(n_bytes,neatly(n_bytes)))
         
         device_info_list = [s for s in dir(cl.device_info) if not s.startswith('__')]
         for s in device_info_list:

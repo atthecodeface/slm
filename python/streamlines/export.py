@@ -27,7 +27,7 @@ class Export(Core):
         """
         Export all Matplotlib plots
         """
-        self.print('\n**Export plots begin**', flush=True) 
+        self.print('\n**Export plots begin**') 
             
         if not os.path.exists(os.path.join(*self.export_path)):
             self.print('Creating export directory "{}"'
@@ -52,7 +52,7 @@ class Export(Core):
 #                 filename = filestem+'_'+fig_item[0]+'.'+format
 #                 self.print('Exporting <{0}> to "{1}"'.format( fig_item[0],filename ) )
 #                 fig_obj.savefig(filename,format=format,**self.options)
-        self.print('**Export plots end**\n', flush=True)  
+        self.print('**Export plots end**\n')  
         
     def savefigs(self, fig_name=None, filestem=None):
         fig_items = self.plot.figs.items()

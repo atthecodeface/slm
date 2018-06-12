@@ -181,7 +181,7 @@ class Trace(Core):
             slt_array (numpy.ndarray):
             sla_array (numpy.ndarray):
             """
-        self.print('\n**Trace begin**', flush=True)  
+        self.print('\n**Trace begin**')  
         # Create mapping flag array 
         self.mapping_array = np.zeros((self.geodata.roi_nx+2*self.geodata.pad_width,
                                        self.geodata.roi_ny+2*self.geodata.pad_width),
@@ -191,7 +191,7 @@ class Trace(Core):
         # Map mean streamline integrations downstream and upstream
         self.compute_fields()
         # Done
-        self.print('**Trace end**\n', flush=True)  
+        self.print('**Trace end**\n')  
 
     def compute_trajectories(self):
         """

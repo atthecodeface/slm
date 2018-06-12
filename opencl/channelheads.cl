@@ -104,8 +104,12 @@ __kernel void map_channel_heads(
 #define CHECK_THINCHANNEL(nbr_vec_x,nbr_vec_y) { \
            idx = get_array_idx((float2)(nbr_vec_x,nbr_vec_y)); \
            flag += ( (CHECK_IS_THINCHANNEL(idx) ) \
-                   | CHECK_IS_MASKED(idx)*16); \
+                     ); \
         }
+
+// check for masked nbr - turned off
+//| CHECK_IS_MASKED(idx)*16);
+
 //*CHECK_ISNOT_CHANNELHEAD(idx)
 
 // Check all eight pixel-nbr directions

@@ -44,13 +44,13 @@ class Geodata(Core):
         Attributes:
             self.dtm_path (str): absolute path to DTM file (should really be a list)
         """
-        self.print('\n**Geodata begin**', flush=True)  
+        self.print('\n**Geodata begin**')  
         self.read_dtm_file()
         self.make_dtm_mask()
         if self.do_basin_masking:
             self.read_basins_file()
             self.make_basins_mask()
-        self.print('**Geodata end**\n', flush=True)  
+        self.print('**Geodata end**\n')  
 
     def read_geotiff(self, path, filename):
         """

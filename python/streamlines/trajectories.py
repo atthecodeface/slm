@@ -15,8 +15,7 @@ os.environ['PYOPENCL_NO_CACHE']='True'
 os.environ['PYOPENCL_COMPILER_OUTPUT']='0'
 
 from streamlines import pocl
-from streamlines.state import neatly
-from streamlines.useful import vprint, create_seeds, compute_stats
+from streamlines.useful import neatly, vprint, create_seeds, compute_stats
 
 __all__ = ['Trajectories']
 
