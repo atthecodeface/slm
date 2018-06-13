@@ -326,154 +326,6 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig(fig_name,fig)
     
-    def plot_aspect(self, window_size_factor=None,cmap=None,do_plot_contours=False):
-        """
-        TBD
-        """
-        fig_name='aspect'
-        window_title='aspect'
-        try:
-            self.mapping.aspect_array
-        except: 
-            self.print('Aspect array not computed')
-
-        if cmap==None:
-            cmap = 'RdYlBu' #'seismic'  #bwr
-        do_flip_cmap=False
-        do_balance_cmap=True
-                            
-        fig,axes = self._new_figure(window_title=window_title,
-                                    x_pixel_scale=self.geodata.roi_pixel_size,
-                                    y_pixel_scale=self.geodata.roi_pixel_size,
-                                    window_size_factor=window_size_factor)
-
-        self.plot_roi_shaded_relief_overlay(axes,
-                do_plot_color_relief=False, color_alpha=0,
-                hillshade_alpha=self.channel_shaded_relief_hillshade_alpha)
-
-        mask_array = self.state.merge_active_masks()
-        
-        grid_array = np.rad2deg(self.mapping.aspect_array.copy())
-#         grid_array[30:70,30:60] = 0
-        
-        im = self.plot_simple_grid(grid_array, mask_array, axes, cmap=cmap, 
-                                   alpha=0.5, do_vlimit=False, v_min=-180, v_max=+180)
-        
-        if do_plot_contours:
-            pad = self.geodata.pad_width
-            self.plot_contours_overlay(axes,
-                                       grid_array[pad:-pad,pad:-pad].T,
-                                       mask=mask_array[pad:-pad,pad:-pad],
-                                       contour_interval=10,
-                                       linewidth=1,
-                                       contour_label_suffix='', 
-                                       contour_label_fontsize=10)
-        
-        divider = make_axes_locatable(axes)
-        cax = divider.append_axes("bottom", size="4%", 
-                                  pad=0.5, aspect=0.04)
-        cbar = plt.colorbar(im, cax=cax, ticks=np.arange(-180,270,90), 
-                            orientation="horizontal")
-        cbar.set_label(r'aspect (degrees from east)')
-
-        self._force_display(fig)
-        self._record_fig(fig_name,fig)
-
-    def plot_hsl_aspect_distribution(self, window_size_factor=None, cmap=None):
-        try:
-            hsl_aspect_array = self.mapping.hsl_aspect_averages_array
-        except: 
-            self.print('HSL-aspect array not computed')
-            
-        fig_name='hsl_aspect_distribution'
-        window_title='HSL-aspect distribution'
-                    
-        fig,axes = self._new_figure(window_title=window_title,
-                                    x_pixel_scale=self.geodata.roi_pixel_size,
-                                    y_pixel_scale=self.geodata.roi_pixel_size,
-                                    window_size_factor=window_size_factor,
-                                    projection='polar')
-        hsl = hsl_aspect_array[:,0][~np.isnan(hsl_aspect_array[:,0])]
-        asp = hsl_aspect_array[:,1][~np.isnan(hsl_aspect_array[:,0])]
-        hsl_max = np.max(hsl)
-        hsl_min = np.min(hsl)
-        n_bins  = hsl.shape[0]
-        hsl_north = hsl[asp>=0.0]
-        asp_north = asp[asp>=0.0]
-        hsl_south = hsl[asp<=0.0]
-        asp_south = asp[asp<=0.0]
-        hsl_north = np.concatenate( 
-            (np.array(hsl_north[0:1]), hsl_north, 
-             (np.array(hsl_south[0:1])+np.array(hsl_north[-2:-1]))/2.0 ) )
-        asp_north = np.concatenate(
-            (np.array([0.0]), asp_north, np.array([np.pi])) )
-        hsl_south = np.concatenate(
-             ( (np.array(hsl_south[0:1])+np.array(hsl_north[-2:-1]))/2.0, 
-              hsl_south, np.array(hsl_south[-2:-1])))
-        asp_south = np.concatenate(
-             (np.array([-np.pi]), asp_south, np.array([0.0])) )
-        if cmap is None:
-            cmap = 'Greys'
-        cmap = mpl.cm.get_cmap(cmap)
-        rgba_north = cmap((self.mapping.hsl_mean_north-hsl_min)/(hsl_max-hsl_min))
-        rgba_south = cmap((self.mapping.hsl_mean_south-hsl_min)/(hsl_max-hsl_min))
-        axes.fill_between(asp_north, hsl_north, facecolor=rgba_north, alpha=0.4)
-        axes.fill_between(asp_south, hsl_south, facecolor=rgba_south, alpha=0.4)
-        axes.plot(asp, hsl, 'black', lw=1)
-        
-#         axes.set_theta_zero_location('N')
-#         axes.set_theta_direction(-1)
-        c_interval = 5
-        while c_interval<=100:
-            c_max = np.ceil(hsl_max//c_interval)*c_interval
-            c_count = c_max/c_interval
-            if c_count<=5:
-                break
-            c_interval *= 2        
-        bands = np.arange(0,c_max+2*c_interval,c_interval).astype(np.uint32)
-        band_labels = ['{}m'.format(band) for band in bands]
-        axes.set_rgrids(bands, labels=band_labels, color='blue',style=None)
-        angles = np.arange(0,360,45).astype(np.uint32)
-        spc = u'\N{space}'
-        angle_labels = [spc*6+r'0$\degree$ = E',r'45$\degree$',
-                        r'90$\degree$ = N',r'135$\degree$',
-                        r'$\pm$180$\degree$'+spc*6, r'-135$\degree$'+spc*5,
-                        r'-90$\degree$ = S',r'-45$\degree$']
-        axes.set_thetagrids(angles, labels=angle_labels)
-#         axes.tick_params(pad=8)
-        axes.grid(color='blue',alpha=0.5,linestyle='dashed')
-        
-        mha = np.deg2rad(self.mapping.hsl_mean_azimuth)
-        mhm = self.mapping.hsl_mean_magnitude
-        mhl = hsl_max/2.0
-        head_length = 40   # hack - how to correctly scale??
-        arrow_style = ArrowStyle.Fancy(head_length=head_length,head_width=head_length/2,
-                                      tail_width=1)
-        arrow_patch = FancyArrowPatch((mha-np.pi,mhl/3.0), (mha,mhl),
-                                      shrinkA=1, shrinkB=1,
-                                      arrowstyle=arrow_style,
-                                      facecolor='blue', edgecolor='blue', 
-                                      linewidth=4)
-        axes.add_patch(arrow_patch)
-        axes.plot(mha,mhm,'.',ms=40,color='blue')
-        axes.plot(mha,mhm,'.',ms=30,color='lightblue')
-
-        color = 'purple'
-        h_position = hsl_max/1.8
-        axes.text(+np.deg2rad(145), h_position, 
-                  r'$\overline{\mathbf{L}}_\mathbf{N}=$'+'{:2.0f}m'
-                    .format(self.mapping.hsl_mean_north),
-                  size=18, color=color, fontweight='bold',
-                  horizontalalignment='center', verticalalignment='center')
-        axes.text(-np.deg2rad(145), h_position, 
-                  r'$\overline{\mathbf{L}}_\mathbf{S}=$'+'{:2.0f}m'
-                    .format(self.mapping.hsl_mean_south),
-                  size=18, color=color, fontweight='bold',
-                  horizontalalignment='center', verticalalignment='center')
-
-        self._force_display(fig)
-        self._record_fig(fig_name,fig)
-
     def plot_channels(self, window_size_factor=None):
         try:
             self.mapping.mapping_array
@@ -703,9 +555,7 @@ class Plot(Core):
         if linewidth is None:
             linewidth = self.contour_hsl_linewidth
                 
-        mask_array = self.state.merge_active_masks()[pad:-pad,pad:-pad].copy()
-        # Hack - need to rebuild label_array during multipass         
-#         mask_array[(self.mapping.label_array[pad:-pad,pad:-pad]==0)] = True
+        mask_array = self.state.merge_active_masks()[pad:-pad,pad:-pad]
         if do_shaded_relief:
             hillshade_alpha = self.grid_shaded_relief_hillshade_alpha
             hsl_alpha = 0.3
@@ -735,6 +585,150 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig(fig_name,fig)
     
+    def plot_aspect(self, window_size_factor=None,cmap=None,do_plot_contours=False):
+        """
+        TBD
+        """
+        fig_name='aspect'
+        window_title='aspect'
+        try:
+            self.mapping.aspect_array
+        except: 
+            self.print('Aspect array not computed')
+
+        if cmap==None:
+            cmap = 'RdYlBu' #'seismic'  #bwr
+        do_flip_cmap=False
+        do_balance_cmap=True
+                            
+        fig,axes = self._new_figure(window_title=window_title,
+                                    x_pixel_scale=self.geodata.roi_pixel_size,
+                                    y_pixel_scale=self.geodata.roi_pixel_size,
+                                    window_size_factor=window_size_factor)
+
+        mask_array = self.state.merge_active_masks()
+        grid_array = np.rad2deg(self.mapping.aspect_array.copy())
+        
+        self.plot_roi_shaded_relief_overlay(axes,
+                do_plot_color_relief=False, color_alpha=0,
+                hillshade_alpha=self.channel_shaded_relief_hillshade_alpha)
+        im = self.plot_simple_grid(grid_array, mask_array, axes, cmap=cmap, 
+                                   alpha=0.5, do_vlimit=False, v_min=-180, v_max=+180)
+        if do_plot_contours:
+            pad = self.geodata.pad_width
+            self.plot_contours_overlay(axes,
+                                       grid_array[pad:-pad,pad:-pad].T,
+                                       mask=mask_array[pad:-pad,pad:-pad],
+                                       contour_interval=10,
+                                       linewidth=1,
+                                       contour_label_suffix='', 
+                                       contour_label_fontsize=10)
+        
+        divider = make_axes_locatable(axes)
+        cax = divider.append_axes("bottom", size="4%", 
+                                  pad=0.5, aspect=0.04)
+        cbar = plt.colorbar(im, cax=cax, ticks=np.arange(-180,270,90), 
+                            orientation="horizontal")
+        cbar.set_label(r'aspect (degrees from east)')
+
+        self._force_display(fig)
+        self._record_fig(fig_name,fig)
+
+    def plot_hsl_aspect_distribution(self, window_size_factor=None, cmap=None):
+        try:
+            hsl_aspect_array = self.mapping.hsl_aspect_averages_array
+        except: 
+            self.print('HSL-aspect array not computed')
+            
+        fig_name='hsl_aspect_distribution'
+        window_title='HSL-aspect distribution'
+                    
+        fig,axes = self._new_figure(window_title=window_title,
+                                    x_pixel_scale=self.geodata.roi_pixel_size,
+                                    y_pixel_scale=self.geodata.roi_pixel_size,
+                                    window_size_factor=window_size_factor,
+                                    projection='polar')
+        hsl = hsl_aspect_array[:,0][~np.isnan(hsl_aspect_array[:,0])]
+        asp = hsl_aspect_array[:,1][~np.isnan(hsl_aspect_array[:,0])]
+        hsl_max = np.max(hsl)
+        hsl_min = np.min(hsl)
+        n_bins  = hsl.shape[0]
+        hsl_north = hsl[asp>=0.0]
+        asp_north = asp[asp>=0.0]
+        hsl_south = hsl[asp<=0.0]
+        asp_south = asp[asp<=0.0]
+        hsl_north = np.concatenate( 
+            (np.array(hsl_north[0:1]), hsl_north, 
+             (np.array(hsl_south[0:1])+np.array(hsl_north[-2:-1]))/2.0 ) )
+        asp_north = np.concatenate(
+            (np.array([0.0]), asp_north, np.array([np.pi])) )
+        hsl_south = np.concatenate(
+             ( (np.array(hsl_south[0:1])+np.array(hsl_north[-2:-1]))/2.0, 
+              hsl_south, np.array(hsl_south[-2:-1])))
+        asp_south = np.concatenate(
+             (np.array([-np.pi]), asp_south, np.array([0.0])) )
+        if cmap is None:
+            cmap = 'Greys'
+        cmap = mpl.cm.get_cmap(cmap)
+        rgba_north = cmap((self.mapping.hsl_mean_north-hsl_min)/(hsl_max-hsl_min))
+        rgba_south = cmap((self.mapping.hsl_mean_south-hsl_min)/(hsl_max-hsl_min))
+        axes.fill_between(asp_north, hsl_north, facecolor=rgba_north, alpha=0.4)
+        axes.fill_between(asp_south, hsl_south, facecolor=rgba_south, alpha=0.4)
+        axes.plot(asp, hsl, 'black', lw=1)
+        
+#         axes.set_theta_zero_location('N')
+#         axes.set_theta_direction(-1)
+        c_interval = 5
+        while c_interval<=100:
+            c_max = np.ceil(hsl_max//c_interval)*c_interval
+            c_count = c_max/c_interval
+            if c_count<=5:
+                break
+            c_interval *= 2        
+        bands = np.arange(0,c_max+2*c_interval,c_interval).astype(np.uint32)
+        band_labels = ['{}m'.format(band) for band in bands]
+        axes.set_rgrids(bands, labels=band_labels, color='blue',style=None)
+        angles = np.arange(0,360,45).astype(np.uint32)
+        spc = u'\N{space}'
+        angle_labels = [spc*6+r'0$\degree$ = E',r'45$\degree$',
+                        r'90$\degree$ = N',r'135$\degree$',
+                        r'$\pm$180$\degree$'+spc*6, r'-135$\degree$'+spc*5,
+                        r'-90$\degree$ = S',r'-45$\degree$']
+        axes.set_thetagrids(angles, labels=angle_labels)
+#         axes.tick_params(pad=8)
+        axes.grid(color='blue',alpha=0.5,linestyle='dashed')
+        
+        mha = np.deg2rad(self.mapping.hsl_mean_azimuth)
+        mhm = self.mapping.hsl_mean_magnitude
+        mhl = hsl_max/2.0
+        head_length = 40   # hack - how to correctly scale??
+        arrow_style = ArrowStyle.Fancy(head_length=head_length,head_width=head_length/2,
+                                      tail_width=1)
+        arrow_patch = FancyArrowPatch((mha-np.pi,mhl/3.0), (mha,mhl),
+                                      shrinkA=1, shrinkB=1,
+                                      arrowstyle=arrow_style,
+                                      facecolor='blue', edgecolor='blue', 
+                                      linewidth=4)
+        axes.add_patch(arrow_patch)
+        axes.plot(mha,mhm,'.',ms=40,color='blue')
+        axes.plot(mha,mhm,'.',ms=30,color='lightblue')
+
+        color = 'purple'
+        h_position = hsl_max/1.8
+        axes.text(+np.deg2rad(145), h_position, 
+                  r'$\overline{\mathbf{L}}_\mathbf{N}=$'+'{:2.0f}m'
+                    .format(self.mapping.hsl_mean_north),
+                  size=18, color=color, fontweight='bold',
+                  horizontalalignment='center', verticalalignment='center')
+        axes.text(-np.deg2rad(145), h_position, 
+                  r'$\overline{\mathbf{L}}_\mathbf{S}=$'+'{:2.0f}m'
+                    .format(self.mapping.hsl_mean_south),
+                  size=18, color=color, fontweight='bold',
+                  horizontalalignment='center', verticalalignment='center')
+
+        self._force_display(fig)
+        self._record_fig(fig_name,fig)
+
     def plot_contours_overlay(self,axes,Z,mask=None, n_contours=None,
                               contour_interval=None, linewidth=None,
                               contour_label_suffix='m', contour_label_fontsize=12):

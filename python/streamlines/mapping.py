@@ -10,8 +10,8 @@ from skimage.morphology    import skeletonize, thin, medial_axis, disk
 from skimage.filters       import gaussian
 from skimage.filters.rank  import mean,median
 from scipy.ndimage            import gaussian_filter
-from scipy.ndimage.morphology import binary_fill_holes
-from scipy.ndimage.morphology import binary_dilation,generate_binary_structure
+from scipy.ndimage.morphology import binary_fill_holes, grey_dilation, \
+                                     binary_dilation, generate_binary_structure
 import warnings
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
@@ -249,6 +249,7 @@ class Mapping(Core):
             try:
                 self.info.channel_threshold = self.analysis.estimate_channel_threshold()
             except: 
+                self.state.remove_active_mask('dilated_segment')
                 continue
 #             self.plot.plot_marginal_pdf_dslt()
             
@@ -536,40 +537,40 @@ class Mapping(Core):
     def map_hsl(self):
         self.print('Mapping hillslope lengths...',end='')
         
-        hsl         = self.hsl_array
-        hsl_bool    = hsl.astype(np.bool)
-        hsl_clipped = np.ma.array(hsl, mask=~hsl_bool)
-        hsl_min     = np.min(hsl_clipped)
-        hsl_max     = np.max(hsl_clipped)
-        hsl_clipped = 65535*(hsl_clipped-hsl_min)/(hsl_max-hsl_min)
-        hsl_masked  = np.ma.array(hsl_clipped.astype(np.uint16),mask=~hsl_bool)
+        hsl         = self.hsl_array.copy()
+        mask        = self.state.merge_active_masks()
+        pad         = self.geodata.pad_width
+        hsl_min     = np.min(hsl)
+        hsl_max     = np.max(hsl)
+        hsl_clipped = (65535*(hsl-hsl_min)/(hsl_max-hsl_min)).astype(np.uint16)
+
+        mean_radius   = int(self.hsl_mean_radius/self.geodata.roi_pixel_size)
+        mean_disk     = disk(mean_radius)
 
         median_radius = int(self.hsl_median_radius/self.geodata.roi_pixel_size)
-        mean_radius   = int(self.hsl_mean_radius/self.geodata.roi_pixel_size)
-        median_disk   = disk(median_radius)
-        mean_disk     = disk(mean_radius)
+#         median_disk   = disk(median_radius)
         
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            self.print('median filtering with {0}m ({1}-pixel) diameter disk...'
-                       .format(self.hsl_median_radius,median_radius), 
-                       end='')
             # Strangely, mask logic is backwards for median(): 
             #    - true pixels are used (median-filtered), while false are untouched
             if median_radius==0:
-                hsl_median = hsl_masked
+                hsl_median = hsl_clipped
             else:
-                hsl_median = np.ma.array(median(hsl_masked,median_disk,mask=hsl_bool),
-                                         mask=~hsl_bool)
+                self.print('median filtering with {0}m ({1}-pixel) diameter disk...'
+                           .format(self.hsl_median_radius,median_radius), end='')
+                hsl_median= grey_dilation(hsl_clipped,size=(median_radius,median_radius))
+                hsl_median[~mask] = hsl_clipped[~mask]
+#                 hsl_median = np.ma.array(median(hsl_masked,median_disk,mask=~hsl_bool),
+#                                          mask=~hsl_bool)
+
             self.print('mean filtering with {0}m ({1}-pixel) diameter disk...'
-                       .format(self.hsl_mean_radius,mean_radius),
-                       end='') 
-            hsl_median_nm = mean(hsl_median,mean_disk)
+                       .format(self.hsl_mean_radius,mean_radius), end='') 
+            hsl_mean = mean(hsl_median,mean_disk)
             
         self.hsl_smoothed_array \
-            = ((hsl_median_nm[self.geodata.pad_width:-self.geodata.pad_width,
-                              self.geodata.pad_width:-self.geodata.pad_width]
-                                .astype(np.float32))/65535)*(hsl_max-hsl_min)+hsl_min
+            = (((hsl_mean[pad:-pad,pad:-pad].astype(np.float32))/65535)
+                                *(hsl_max-hsl_min)+hsl_min)
         self.print('done')  
         
     def map_aspect(self):
@@ -609,8 +610,14 @@ class Mapping(Core):
         
         pad           = self.geodata.pad_width
         # Hack - fix masking for multipass
-        mask_array    = self.data.mask_array[pad:-pad,pad:-pad] & False
+#         mask_array    = self.data.mask_array[pad:-pad,pad:-pad] & False
+        self.state.reset_active_masks()
+        self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask})
+        pdebug(self.state.active_masks_dict.keys())
+        mask_array    = self.state.merge_active_masks()[pad:-pad,pad:-pad]
         aspect_array  = self.aspect_array[pad:-pad,pad:-pad].copy()[~mask_array]
+#         for x in aspect_array[aspect_array<0]:
+#             pdebug(x)
         hsl_array     = self.hsl_smoothed_array.copy()[~mask_array]
         aspect_array  = np.rad2deg(aspect_array[hsl_array>hsl_averaging_threshold])
         hsl_array     = hsl_array[hsl_array>hsl_averaging_threshold]
