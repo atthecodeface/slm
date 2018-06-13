@@ -4,13 +4,39 @@ Miscellaneous useful functions for PyOpenCL code
 
 import numpy as np
 import pandas as pd
+from scipy.ndimage.morphology import binary_dilation, generate_binary_structure
 import os
 os.environ['PYTHONUNBUFFERED']='True'
 import sys
 
-__all__ = ['vprint','create_seeds','pick_seeds','compute_stats']
+__all__ = ['true_size','neatly','vprint','create_seeds','pick_seeds','compute_stats',
+           'dilate']
 
 pdebug = print
+
+def true_size(subobject):
+    """
+    TBD
+    """
+    # For semi-obscure reasons, Pympler does better if we enquire about a hard copy of the object
+    try:
+        sizeof = asizeof(subobject.copy())
+    except:
+        sizeof = asizeof(subobject)            
+    return sizeof
+    
+def neatly(byte_size):
+    """Returns a human readable string reprentation of bytes"""
+    units=['B ','kB','MB','GB']  # Note: actually MiB etc
+    for unit in units:
+        if byte_size>=1024:
+            byte_size = byte_size/1024.0
+        else:
+            break
+    if unit=='GB':
+        return str(int(0.5+10*byte_size)/10)+unit
+    else:
+        return str(int(0.5+byte_size))+unit
 
 def vprint(verbose, *args, **kwargs):
     """
@@ -117,3 +143,8 @@ def compute_stats(traj_length_array, traj_nsteps_array, pixel_size, verbose):
                                  index=lnds_indexes)
     vprint(verbose,lnds_stats_df.T)
     return lnds_stats_df
+
+def dilate(undilated_array, n_iterations=1):
+    dilation_structure = generate_binary_structure(2, 2)
+    return binary_dilation(undilated_array, structure=dilation_structure, 
+                           iterations=n_iterations)

@@ -16,7 +16,8 @@ import json
 
 pdebug=print
 
-from streamlines.core import Core
+from streamlines.core   import Core
+from streamlines import useful
 
 __all__ = ['Geodata']
 
@@ -27,6 +28,14 @@ class Geodata(Core):
     streamline mask layer.
         
     """
+    def __init__(self,state,imported_parameters):
+        """
+        TBD
+        """
+        super().__init__(state,imported_parameters) 
+        self.state = state
+        self.active_masks_dict = {}
+
     def do(self):
         """
         Wrapper method to read DTM file and drainage basins file and 
@@ -35,13 +44,13 @@ class Geodata(Core):
         Attributes:
             self.dtm_path (str): absolute path to DTM file (should really be a list)
         """
-        self.print('\n**Geodata begin**', flush=True)  
+        self.print('\n**Geodata begin**')  
         self.read_dtm_file()
         self.make_dtm_mask()
         if self.do_basin_masking:
             self.read_basins_file()
             self.make_basins_mask()
-        self.print('**Geodata end**\n', flush=True)  
+        self.print('**Geodata end**\n')  
 
     def read_geotiff(self, path, filename):
         """
@@ -233,16 +242,26 @@ class Geodata(Core):
 
     def make_dtm_mask(self):
         """
-        TBD
+        Create a raw 'DTM' mask array that masks off NaNs, sub-threshold elevations,
+        and the fringing pad pixels. Add it to the list of active masks.
+
+        Attributes:
+            self.dtm_mask_array (numpy.ndarray bool):
+            self.active_masks (list):
         """ 
+        # Raw "DTM" mask grid is the same size as the DTM ROI
         mask_unpadded_array = np.zeros_like(self.roi_array,dtype=np.bool8)
+        # Mask off NaNs
         mask_unpadded_array[np.isnan(self.roi_array)] = True
+        # Also mask off elevations below the h_min threshold if required
         if self.h_min!='none':
             mask_unpadded_array[self.roi_array<=self.h_min] = True
+        # Pad this "DTM" mask grid
         self.dtm_mask_array = np.pad(mask_unpadded_array,
                                      (int(self.pad_width), int(self.pad_width)), 
                                      'constant', constant_values=(True,True))
-        self.add_active_mask(self.dtm_mask_array)
+        # Add this "DTM" mask to the list of active masks (actually, it'll be the first)
+        self.state.add_active_mask({'dtm': self.dtm_mask_array})
 
     def make_basins_mask(self):
         """
@@ -258,13 +277,14 @@ class Geodata(Core):
         basin_mask_unpadded_array = np.zeros_like(self.basins_array,dtype=np.bool8)
         for basin in self.basins:
             basin_mask_unpadded_array[self.basins_array==basin] = True
-        dilation_structure = generate_binary_structure(2, 2)
-        basin_fatmask_unpadded_array = binary_dilation(basin_mask_unpadded_array, 
-                                                   structure=dilation_structure, 
-                                                   iterations=1)
+#         dilation_structure = generate_binary_structure(2, 2)
+#         basin_fatmask_unpadded_array = binary_dilation(basin_mask_unpadded_array, 
+#                                                    structure=dilation_structure, 
+#                                                    iterations=1)
+        basin_fatmask_unpadded_array = useful.dilate(basin_mask_unpadded_array, 2)
         # True = masked out; False = data we want to see
-        basin_mask_unpadded_array = np.invert(basin_mask_unpadded_array)    
-        basin_fatmask_unpadded_array = np.invert(basin_fatmask_unpadded_array)
+        basin_mask_unpadded_array    = np.invert(basin_mask_unpadded_array)    
+        basin_fatmask_unpadded_array = np.invert(basin_fatmask_unpadded_array)    
             
         self.basin_mask_array = np.pad(basin_mask_unpadded_array,
                                        (int(self.pad_width),int(self.pad_width)), 
@@ -272,30 +292,5 @@ class Geodata(Core):
         self.basin_fatmask_array = np.pad(basin_fatmask_unpadded_array, 
                                           (int(self.pad_width), int(self.pad_width)), 
                                           'constant', constant_values=(True,True))
-        self.add_active_mask(self.basin_mask_array)
+        self.state.add_active_mask({'basin': self.basin_mask_array})
 
-    def add_active_mask(self, mask_array):
-        """
-        TBD
-        """ 
-        try:
-            self.active_masks += [mask_array]
-        except:
-            self.active_masks = [mask_array]
-        
-    def remove_active_mask(self, mask_array):
-        """
-        TBD
-        """ 
-        active_masks = [mask for mask in self.active_masks if mask is not mask_array]
-        self.active_masks = active_masks
-        
-    def merge_active_masks(self):
-        """
-        TBD
-        """ 
-        mask_array = self.active_masks[0].copy()
-        for active_mask in self.active_masks[1:]:
-            mask_array |= active_mask
-        return mask_array
-        

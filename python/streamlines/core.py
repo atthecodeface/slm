@@ -63,6 +63,9 @@ class Core():
                 self.state.obj_list += [self]
             except:
                 pass
+        else:
+            self.active_masks_dict = {}
+            pdebug(self.active_masks_dict)
             
         workflow_class_name = self.__module__.split('.')[1]
         for item in imported_parameters[workflow_class_name].items():
@@ -140,11 +143,13 @@ class Core():
 
     def print(self, *args, **kwargs):
         if self.state.verbose:
-            print(*args, **kwargs)
+            print(*args, **kwargs, flush=True)
+            sys.stdout.flush()
 
     def pprint(self, *args, **kwargs):
         if self.state.verbose:
-            pprint.pprint(*args, **kwargs)
+            pprint.pprint(*args, **kwargs, flush=True)
+            sys.stdout.flush()
 
     def vprint(self, *args, **kwargs):
         if self.state.verbose:

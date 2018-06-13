@@ -54,7 +54,7 @@ def segment_channels( cl_state, info, data, verbose ):
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'segment_downchannels'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
 
     # Relabel channel segments in simple sequence 1,2,3,... 
     #  instead of using array indices as labels
@@ -64,7 +64,7 @@ def segment_channels( cl_state, info, data, verbose ):
     for idx,label in enumerate(channel_segment_labels_array):
         data.label_array[data.label_array==label]=idx+1
     n_segments = idx+1
-    vprint(verbose, ' number of segments={}...'.format(n_segments),end='')
+    vprint(verbose, ' -- number of segments={}'.format(n_segments))
 
     # Done
     vprint(verbose,'...done')  
@@ -109,7 +109,7 @@ def segment_hillslopes( cl_state, info, data, verbose ):
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'segment_hillslopes'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
 
     # Done
     vprint(verbose,'...done')  
@@ -125,7 +125,7 @@ def subsegment_flanks( cl_state, info, data, verbose ):
         verbose (bool):
         
     """
-    vprint(verbose,'Subsegmenting flanks...')
+    vprint(verbose,'Subsegmenting left & right flanks...')
     
     # Prepare CL essentials
     cl_state.kernel_source \
@@ -155,7 +155,7 @@ def subsegment_flanks( cl_state, info, data, verbose ):
     # Do integrations on the GPU
     if ( info.n_seed_points>0 ):
         cl_state.kernel_fn = 'subsegment_channel_edges'
-        pocl.gpu_compute(cl_state, info, array_dict, verbose)
+        pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
             
     # Trace downstream from all non-left-flank hillslope pixels
     flag = is_leftflank | is_thinchannel
@@ -165,7 +165,7 @@ def subsegment_flanks( cl_state, info, data, verbose ):
     info.n_seed_points = seed_point_array.shape[0]
     # Do integrations on the GPU
     cl_state.kernel_fn = 'subsegment_flanks'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
 
     # Trace downstream from all right-flank hillslope pixels
     flag = is_leftflank | is_thinchannel
@@ -175,7 +175,7 @@ def subsegment_flanks( cl_state, info, data, verbose ):
     info.n_seed_points = seed_point_array.shape[0]
     # Do integrations on the GPU
     cl_state.kernel_fn = 'fix_right_flanks'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
     # Trace downstream from all left-flank hillslope pixels
     flag = is_leftflank
@@ -185,7 +185,11 @@ def subsegment_flanks( cl_state, info, data, verbose ):
     info.n_seed_points = seed_point_array.shape[0]
     # Do integrations on the GPU
     cl_state.kernel_fn = 'fix_left_flanks'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
+    
+    n_left_right_subsegments = np.unique(data.label_array).shape[0]
+    vprint(verbose, ' -- number of left & right subsegments={}'
+           .format(n_left_right_subsegments))
     
     # Done
     vprint(verbose,'...done')  

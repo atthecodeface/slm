@@ -191,6 +191,8 @@ class Streamlining(Core):
                                   self.geodata,self.preprocess,self.trace,self.analysis)
         self.plot       = Plot(self.state,imported_parameters, self.geodata,
                                self.preprocess, self.trace, self.analysis, self.mapping)
+        # Hackish way to allow plotting from mapping
+        self.mapping._augment(self.plot)
         self.export     = Export(self.state,imported_parameters,self.plot)
         # Used by State.save_state()
         self.state.trace = self.trace

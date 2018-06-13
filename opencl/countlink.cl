@@ -94,7 +94,9 @@ __kernel void count_downchannels(
             atomic_or(&mapping_array[idx],IS_THINCHANNEL);
             // Link to here from the last pixel,
             // i.e., point the previous pixel to this its downstream neighbor
-            if (!mask_array[prev_idx]) atomic_xchg(&link_array[prev_idx],idx);
+            // Hack
+            atomic_xchg(&link_array[prev_idx],idx);
+//            if (!mask_array[prev_idx]) atomic_xchg(&link_array[prev_idx],idx);
             // If we've landed on a pixel whose channel length count
             //    exceeds our counter, we must have stepped off a minor onto a major
             //    channel, and thus need to stop
@@ -105,7 +107,9 @@ __kernel void count_downchannels(
             prev_idx = idx;
         }
     }
-    if (!mask_array[prev_idx]) atomic_xchg(&link_array[prev_idx],idx);
+    // Hack
+    atomic_xchg(&link_array[prev_idx],idx);
+//    if (!mask_array[prev_idx]) atomic_xchg(&link_array[prev_idx],idx);
     return;
 }
 #endif
@@ -164,7 +168,7 @@ __kernel void flag_downchannels(
     // Counter=1 at channel head (set by count_downchannels)
     atomic_xchg(&count_array[idx],counter);
     atomic_or(&mapping_array[idx],IS_THINCHANNEL);
-    // Integrate downstream until the masked boundary is reached
+    // Step downstream until the masked boundary is reached
     while (!mask_array[idx] && prev_idx!=idx && counter<1000u*MAX_N_STEPS) {
         prev_idx = idx;
         idx = link_array[idx];

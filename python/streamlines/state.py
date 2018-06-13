@@ -17,34 +17,10 @@ from collections     import ChainMap
 from pprint import pprint
 
 from streamlines.core import Core
+from streamlines.useful import neatly, true_size
 pdebug = print
 
 __all__ = ['State']
-
-def true_size(subobject):
-    """
-    TBD
-    """
-    # For semi-obscure reasons, Pympler does better if we enquire about a hard copy of the object
-    try:
-        sizeof = asizeof(subobject.copy())
-    except:
-        sizeof = asizeof(subobject)            
-    return sizeof
-    
-def neatly(byte_size):
-    """Returns a human readable string reprentation of bytes"""
-    units=['B ','kB','MB','GB']  # Note: actually MiB etc
-    for unit in units:
-        if byte_size>=1024:
-            byte_size = byte_size/1024.0
-        else:
-            break
-    if unit=='GB':
-        return str(int(0.5+10*byte_size)/10)+unit
-    else:
-        return str(int(0.5+byte_size))+unit
-
 
 class State(Core):
     """
@@ -80,12 +56,12 @@ class State(Core):
         Build dictionary of lists of workflow class instance variables, grouped 
         according to how they can be exported to files.
         """
-        self.print('\n**Inventorize run state begin**', flush=True)  
+        self.print('\n**Inventorize run state begin**')  
         self.inventory = {}
         for obj in self.obj_list:
             self.print(obj)
             obj.inventorize(self)
-        self.print('**Inventorize run state end**\n', flush=True)
+        self.print('**Inventorize run state end**\n')
      
     def get_dict_of_jsonables(self):
         """
@@ -107,7 +83,7 @@ class State(Core):
 #                     continue
                 jsonable_obj = getattr(obj,jsonable_item)
                 jsonable_export_list += [{jsonable_item : jsonable_obj} ]
-                total_usage += self.true_size(jsonable_obj)
+                total_usage += true_size(jsonable_obj)
             d = dict(ChainMap(*jsonable_export_list))
             full_jsonable_export_list += [{obj_name : d}]
         return dict(ChainMap(*full_jsonable_export_list)), total_usage
@@ -126,7 +102,7 @@ class State(Core):
             filename = filestem+'_'+obj_name+'.npz'
             
             self.print('Saving "'+obj_name+'" state np arrays to: "'+filename+'"...', 
-                      end='',flush=True)
+                      end='')
             
             nparray_export_list = []
             for nparray in self.inventory[obj_name]['nparray']:
@@ -134,7 +110,7 @@ class State(Core):
                                          getattr(obj,nparray)} ]
             np.savez_compressed(filename, **dict(ChainMap(*nparray_export_list)))
             
-            self.print('...done', flush=True)
+            self.print('...done')
 
     def get_sizes_of_nparrays(self):
         """
@@ -149,7 +125,7 @@ class State(Core):
             obj_name = obj.__module__.split('.')[1]            
             total_usage = 0
             for nparray in self.inventory[obj_name]['nparray']:
-                total_usage += self.true_size(getattr(obj,nparray))
+                total_usage += true_size(getattr(obj,nparray))
 
         return total_usage
     
@@ -164,7 +140,7 @@ class State(Core):
         """
         Collect list of streamline numpy arrays 
         """   
-        return sum([self.true_size(arr) for arr in array_list])
+        return sum([true_size(arr) for arr in array_list])
         
     def save_state(self):
         """
@@ -172,18 +148,17 @@ class State(Core):
         """
 
         #################################################################
-        self.print('\n**Save state begin**', flush=True)  
+        self.print('\n**Save state begin**')  
         #################################################################
             
         if not os.path.exists(os.path.join(*self.export_path)):
             self.print('State directory doesn\'t exist: creating "%s"'
-                      % os.path.join(*self.export_path), flush=True)  
+                      % os.path.join(*self.export_path))  
             try:
                 os.mkdir(os.path.join(*self.export_path))
             except:
                 raise OSError('Cannot create state directory "'
-                              + str(os.path.join(*self.export_path)) + '"', 
-                              flush=True)
+                              + str(os.path.join(*self.export_path)) + '"')
         else:
             if not os.path.isdir(os.path.join(*self.export_path)):
                 err = '"'+os.path.join(*self.export_path) +'" is not a directory'
@@ -197,7 +172,7 @@ class State(Core):
         # JSONables
         filename = filestem+'.json'
         self.print('Saving runtime state JSONable parameters to: "'+filename+'"...', 
-                  end='',flush=True)       
+                  end='')       
         dict_of_jsonable_dicts, total_jsonable_usage = self.get_dict_of_jsonables()
 #         pdebug('\n\n\nAllegedly jsonable dict:', dict_of_jsonable_dicts)
 #         pdebug('\n\n\nAllegedly jsonable dict:', json.dumps(dict_of_jsonable_dicts,indent=3))
@@ -225,7 +200,7 @@ class State(Core):
 #         pdebug(copy_dict_of_jsonable_dicts)
         with open(filename,'w') as fp:
             json.dump(copy_dict_of_jsonable_dicts, fp, sort_keys=True, indent=4)
-        self.print('...done', flush=True)
+        self.print('...done')
 
         # Numpy arrays
         self.savez_dicts_of_nparrays(filestem)
@@ -239,21 +214,21 @@ class State(Core):
                                             self.trace.streamline_arrays_list[1]]]:
             filename = filestem+'_'+up_or_down_str
             self.print('Saving '+up_or_down_str+'lines to: "'+filename+'.npz'+'"...', 
-                      end='',flush=True)
+                      end='')
             streamlines_dict = self.get_streamlines_dict(array_list)
             total_streamlines_usage += self.get_streamlines_sizes(array_list)
             np.savez_compressed(filename, **streamlines_dict)
             del(streamlines_dict)
-            self.print('...done', flush=True)
+            self.print('...done')
 
         #################################################################
         self.print('Total JSONable memory usage:', 
-                  self.neatly(total_jsonable_usage))
+                  neatly(total_jsonable_usage))
         self.print('Total numpy arrays memory usage (exc streamlines):', 
-                  self.neatly(total_nparray_usage))
+                  neatly(total_nparray_usage))
         self.print('Total streamline arrays memory usage:', 
-                  self.neatly(total_streamlines_usage))
-        self.print('**Save state end**\n', flush=True)
+                  neatly(total_streamlines_usage))
+        self.print('**Save state end**\n')
         #################################################################
 
 #     def read_state(self,filename):
@@ -291,7 +266,7 @@ class State(Core):
                     if self.noisy:
                         print('\nSkip writing of DTM since we can fetch from original')
                     continue
-                self.print(item, end=' ', flush=True)
+                self.print(item, end=' ')
                 if 'array_list' not in item:
 #                     if self.noisy:
 #                         print(item)
@@ -324,4 +299,38 @@ class State(Core):
 #             [print(npz_array) for npz_array in arrays.files]
 #             print('')
         del arrays
+        
+    def add_active_mask(self, mask_item):
+        """
+        TBD
+        """ 
+        self.active_masks_dict.update(mask_item)
+        
+    def remove_active_mask(self, mask_name):
+        """
+        TBD
+        """ 
+        self.active_masks_dict.pop(mask_name)
+        
+    def reset_active_masks(self):
+        """
+        TBD
+        """ 
+        masks_keep_list = ['dtm', 'basin', 'uv']
+        # Rebuild dict since in-situ deletion in list comprehension doesn't work
+        self.active_masks_dict \
+            = {k: self.active_masks_dict[k] for k in self.active_masks_dict 
+                                            if  k in masks_keep_list}
+        
+    def merge_active_masks(self):
+        """
+        TBD
+        """ 
+        for idx, mask_array in enumerate(self.active_masks_dict.values()):
+            if idx==0:
+                active_mask_array = mask_array.copy()
+            else:
+                active_mask_array |= mask_array
+        return active_mask_array
+        
                 

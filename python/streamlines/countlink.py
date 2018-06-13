@@ -53,7 +53,7 @@ def count_downchannels( cl_state, info, data, verbose ):
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'count_downchannels'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
     # Done
     vprint(verbose,'...done')  
@@ -96,7 +96,7 @@ def flag_downchannels( cl_state, info, data, verbose, do_reset_count=True ):
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'flag_downchannels'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
     # Done
     vprint(verbose,'...done')  

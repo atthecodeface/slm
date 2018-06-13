@@ -14,11 +14,6 @@
 		"do_basin_masking" : false
 	},
 
-	"mapping": {
-		"Xsegmentation_threshold" : 20000,
-		"Ximposed_channel_threshold" : 3000
-	},
-
 	"plot": {
         "plot_hsl_colorbar_aspect" : 0.05,
         "Xcontour_hsl_n_contours" : 19,

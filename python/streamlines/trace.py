@@ -22,10 +22,10 @@ pdebug = print
 
 class Data():    
     def __init__(self,
-                 mask_array          = None,
-                 uv_array            = None,
-                 mapping_array       = None,
-                 traj_stats_df       = None):
+                 mask_array      = None,
+                 uv_array        = None,
+                 mapping_array   = None,
+                 traj_stats_df   = None):
         self.mask_array          = mask_array
         self.uv_array            = uv_array
         self.mapping_array       = mapping_array
@@ -54,7 +54,7 @@ class Info():
             = subpixel_seed_span/(np.float32(trace.subpixel_seed_point_density)-1.0 
                                   if trace.subpixel_seed_point_density>1 else 1.0)
         self.debug =                   np.bool8(state.debug)
-        self.verbose =                 np.bool8(state.verbose)
+        self.verbose =                 np.bool8(state.gpu_verbose)
         self.n_trajectory_seed_points= np.uint32(trace.n_trajectory_seed_points)
         self.n_seed_points =           np.uint32(0)
         self.n_padded_seed_points =    np.uint32(0)
@@ -96,12 +96,17 @@ class Info():
         self.jitter_magnitude =         np.float32(trace.jitter_magnitude)
         self.interchannel_max_n_steps = np.uint32(interchannel_max_n_steps)
         if mapping is not None:
-            self.segmentation_threshold     = np.uint32(mapping.segmentation_threshold)
             self.do_measure_hsl_from_ridges = mapping.do_measure_hsl_from_ridges
+#             self.segmentation_threshold     = np.uint32(mapping.segmentation_threshold)
+#             try:
+#                 self.channel_threshold      = np.uint32(mapping.channel_threshold)
+#             except:
+#                 pass
         else:
-            self.segmentation_threshold     = np.uint32(0)
             self.do_measure_hsl_from_ridges = False
-        
+            self.segmentation_threshold     = np.uint32(0)
+            self.channel_threshold = 0
+            
         self.left_flank_addition = 2147483648
         flags = [
             'is_channel',         # 1
@@ -176,7 +181,7 @@ class Trace(Core):
             slt_array (numpy.ndarray):
             sla_array (numpy.ndarray):
             """
-        self.print('\n**Trace begin**', flush=True)  
+        self.print('\n**Trace begin**')  
         # Create mapping flag array 
         self.mapping_array = np.zeros((self.geodata.roi_nx+2*self.geodata.pad_width,
                                        self.geodata.roi_ny+2*self.geodata.pad_width),
@@ -186,23 +191,25 @@ class Trace(Core):
         # Map mean streamline integrations downstream and upstream
         self.compute_fields()
         # Done
-        self.print('**Trace end**\n', flush=True)  
+        self.print('**Trace end**\n')  
 
     def compute_trajectories(self):
         """
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
         """
-        data = Data( mask_array    = self.geodata.merge_active_masks(),
+        data = Data( mask_array    = self.state.merge_active_masks(),
                      uv_array      = self.preprocess.uv_array,
-                     mapping_array = self.mapping_array )
+                     mapping_array = self.mapping_array # Currently unused
+                     )
         trajectories = Trajectories(self.state.cl_platform, self.state.cl_device,
                                     cl_src_path         = self.state.cl_src_path,
                                     info                = Info(self),
                                     data                = data,
                                     do_trace_downstream = self.do_trace_downstream,
                                     do_trace_upstream   = self.do_trace_upstream,
-                                    verbose             = self.state.verbose )
+                                    verbose             = self.state.verbose,
+                                    gpu_verbose         = self.state.gpu_verbose )
         trajectories.integrate()
         # Only preserve what we need from the trajectories class instance
         self.seed_point_array       = trajectories.data.seed_point_array
@@ -214,19 +221,19 @@ class Trace(Core):
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
         """
-        data = Data( mask_array    = self.geodata.merge_active_masks(),
+        data = Data( mask_array    = self.state.merge_active_masks(),
                      uv_array      = self.preprocess.uv_array,
-                     mapping_array = self.mapping_array,
+                     mapping_array = self.mapping_array, # Currently unused
                      traj_stats_df = self.traj_stats_df )
         fields = Fields(self.state.cl_platform, self.state.cl_device,
                         cl_src_path         = self.state.cl_src_path,
                         info                = Info(self),
                         data                = data,
-                        verbose             = self.state.verbose )
+                        verbose             = self.state.verbose,
+                        gpu_verbose         = self.state.gpu_verbose )
         fields.integrate()
         # Only preserve what we need from the trajectories class instance
         self.slc_array = fields.data.slc_array
         self.slt_array = fields.data.slt_array
         self.sla_array = fields.data.sla_array
-        
         

@@ -399,7 +399,7 @@ class Preprocess(Core):
         self.uv_mask_array = np.zeros_like(self.geodata.dtm_mask_array)
         self.uv_mask_array[  np.isnan(self.uv_array[:,:,0]) 
                            | np.isnan(self.uv_array[:,:,1]) ] = True
-        self.geodata.add_active_mask(self.uv_mask_array)
+        self.state.add_active_mask({'uv': self.uv_mask_array})
         self.uv_array[self.uv_mask_array] = [0.0,0.0]
         self.print('done')
         

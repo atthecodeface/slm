@@ -78,6 +78,13 @@ class Analysis(Core):
 
         self.print('**Analysis end**\n')  
       
+    def estimate_channel_threshold(self):
+        """
+        TBD
+        """
+        self.compute_marginal_distribn_dslt()
+        return self.mpdf_dslt.channel_threshold_x
+        
     def compute_marginal_distribn(self, x_array,y_array,mask_array=None,
                                   up_down_idx_x=0, up_down_idx_y=0, 
                                   n_hist_bins=None, n_pdf_points=None, 
@@ -118,7 +125,8 @@ class Analysis(Core):
                                              cl_platform=self.state.cl_platform, 
                                              cl_device=self.state.cl_device,
                                              debug=self.state.debug,
-                                             verbose=self.state.verbose )
+                                             verbose=self.state.verbose,
+                                             gpu_verbose=self.state.gpu_verbose )
         if method=='opencl':
             uv_distbn.compute_kde_opencl(kernel=kernel, bandwidth=bandwidth)
         elif method=='sklearn':
@@ -138,7 +146,7 @@ class Analysis(Core):
         """
         self.print('Computing marginal distribution "dsla"...')
         x_array, y_array = self.trace.sla_array, self.trace.slc_array, 
-        mask_array = self.geodata.merge_active_masks()
+        mask_array = self.state.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
@@ -157,7 +165,7 @@ class Analysis(Core):
         """
         self.print('Computing marginal distribution "usla"...')
         x_array, y_array = self.trace.sla_array, self.trace.slc_array
-        mask_array = self.geodata.merge_active_masks()
+        mask_array = self.state.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
@@ -176,7 +184,7 @@ class Analysis(Core):
         """
         self.print('Computing marginal distribution "dslt"...')
         x_array, y_array = self.trace.slt_array, self.trace.sla_array
-        mask_array = self.geodata.merge_active_masks()
+        mask_array = self.state.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
@@ -195,7 +203,7 @@ class Analysis(Core):
         """
         self.print('Computing marginal distribution "uslt"...')
         x_array, y_array = self.trace.slt_array, self.trace.sla_array
-        mask_array = self.geodata.merge_active_masks()
+        mask_array = self.state.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
@@ -214,7 +222,7 @@ class Analysis(Core):
         """
         self.print('Computing marginal distribution "dslc"...')
         x_array, y_array = self.trace.slc_array, self.trace.sla_array
-        mask_array = self.geodata.merge_active_masks()
+        mask_array = self.state.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slc_min','pdf_slc_max',
@@ -233,7 +241,7 @@ class Analysis(Core):
         """
         self.print('Computing marginal distribution "uslc"...')
         x_array, y_array = self.trace.slc_array, self.trace.sla_array
-        mask_array = self.geodata.merge_active_masks()
+        mask_array = self.state.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slc_min','pdf_slc_max',
@@ -254,8 +262,7 @@ class Analysis(Core):
                                kernel=None, bandwidth=None, method=None,
                                logx_min=None, logy_min=None, 
                                logx_max=None, logy_max=None, 
-                               upstream_modal_length=None,
-                               verbose=False):
+                               upstream_modal_length=None):
         """
         TBD
         """
@@ -290,7 +297,8 @@ class Analysis(Core):
                                             cl_platform=self.state.cl_platform, 
                                             cl_device=self.state.cl_device,
                                             debug=self.state.debug,
-                                            verbose=self.state.verbose )
+                                            verbose=self.state.verbose,
+                                            gpu_verbose=self.state.gpu_verbose )
         
         if method=='opencl':
             bv_distbn.compute_kde_opencl(kernel=kernel, bandwidth=bandwidth)
@@ -310,7 +318,7 @@ class Analysis(Core):
         """
         self.print('Computing joint distribution "dsla_usla"...')
         x_array,y_array = self.trace.sla_array,self.trace.sla_array
-        mask_array = self.geodata.merge_active_masks()
+        mask_array = self.state.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 0,1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
@@ -320,8 +328,7 @@ class Analysis(Core):
                                             up_down_idx_x=up_down_idx_x,
                                             up_down_idx_y=up_down_idx_y,
                                             logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            verbose=self.state.verbose)
+                                            logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
     def compute_joint_distribn_dsla_dslt(self):
@@ -330,7 +337,7 @@ class Analysis(Core):
         """
         self.print('Computing joint distribution "dsla_dslt"...')
         x_array,y_array = self.trace.sla_array,self.trace.slt_array
-        mask_array = self.geodata.merge_active_masks()
+        mask_array = self.state.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
@@ -345,8 +352,7 @@ class Analysis(Core):
                                           up_down_idx_x=up_down_idx_x,
                                           up_down_idx_y=up_down_idx_y,
                                           logx_min=logx_min,logy_min=logy_min, 
-                                          logx_max=logx_max,logy_max=logy_max,
-                                          verbose=self.state.verbose)
+                                          logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
     def compute_joint_distribn_dslt_dslc(self):
@@ -355,7 +361,7 @@ class Analysis(Core):
         """
         self.print('Computing joint distribution "dslt_dslc"...')
         x_array,y_array = self.trace.slt_array,self.trace.slc_array
-        mask_array = self.geodata.merge_active_masks()
+        mask_array = self.state.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
@@ -370,8 +376,7 @@ class Analysis(Core):
                                           up_down_idx_x=up_down_idx_x,
                                           up_down_idx_y=up_down_idx_y,
                                           logx_min=logx_min,logy_min=logy_min, 
-                                          logx_max=logx_max,logy_max=logy_max,
-                                          verbose=self.state.verbose)
+                                          logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
     def compute_joint_distribn_usla_uslt(self):
@@ -380,7 +385,7 @@ class Analysis(Core):
         """
         self.print('Computing joint distribution "usla_uslt"...')
         x_array,y_array = self.trace.sla_array,self.trace.slt_array
-        mask_array = self.geodata.merge_active_masks()
+        mask_array = self.state.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 1,1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
@@ -390,15 +395,14 @@ class Analysis(Core):
                                             up_down_idx_x=up_down_idx_x,
                                             up_down_idx_y=up_down_idx_y,
                                             logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            verbose=self.state.verbose)
+                                            logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
     def compute_joint_distribn_uslt_dslt(self):
         """
         TBD
         """
-        self.print('Computing joint distribution "uslt_dslt"...',flush=True)
+        self.print('Computing joint distribution "uslt_dslt"...')
         x_array,y_array = self.trace.slt_array,self.trace.slt_array
         up_down_idx_x, up_down_idx_y = 1,0
         (logx_min, logx_max, logy_min, logy_max) \
@@ -409,8 +413,7 @@ class Analysis(Core):
                                             up_down_idx_x=up_down_idx_x,
                                             up_down_idx_y=up_down_idx_y,
                                             logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            verbose=self.state.verbose)
+                                            logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
     def compute_joint_distribn_dsla_dslc(self):
@@ -419,7 +422,7 @@ class Analysis(Core):
         """
         self.print('Computing joint distribution "dsla_dslc"...')
         x_array,y_array = self.trace.sla_array,self.trace.slc_array
-        mask_array = self.geodata.merge_active_masks()
+        mask_array = self.state.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
@@ -434,8 +437,7 @@ class Analysis(Core):
                                           up_down_idx_x=up_down_idx_x,
                                           up_down_idx_y=up_down_idx_y,
                                           logx_min=logx_min,logy_min=logy_min, 
-                                          logx_max=logx_max,logy_max=logy_max,
-                                          verbose=self.state.verbose)
+                                          logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
     def compute_joint_distribn_usla_uslc(self):
@@ -444,7 +446,7 @@ class Analysis(Core):
         """
         self.print('Computing joint distribution "usla_uslc"...')
         x_array,y_array = self.trace.sla_array,self.trace.slc_array
-        mask_array = self.geodata.merge_active_masks()
+        mask_array = self.state.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 1,1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
@@ -454,15 +456,14 @@ class Analysis(Core):
                                             up_down_idx_x=up_down_idx_x,
                                             up_down_idx_y=up_down_idx_y,
                                             logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            verbose=self.state.verbose)
+                                            logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
     def compute_joint_distribn_uslc_dslc(self):
         """
         TBD
         """
-        self.print('Computing joint distribution "uslc_dslc"...',flush=True)
+        self.print('Computing joint distribution "uslc_dslc"...')
         x_array,y_array = self.trace.slc_array,self.trace.slc_array
         up_down_idx_x, up_down_idx_y = 1,0
         (logx_min, logx_max, logy_min, logy_max) \
@@ -473,8 +474,7 @@ class Analysis(Core):
                                             up_down_idx_x=up_down_idx_x,
                                             up_down_idx_y=up_down_idx_y,
                                             logx_min=logx_min,logy_min=logy_min, 
-                                            logx_max=logx_max,logy_max=logy_max,
-                                            verbose=self.state.verbose)
+                                            logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
 
@@ -495,7 +495,7 @@ class Univariate_distribution():
                  search_cdf_min=0.95, search_cdf_max=0.99,
                  logx_min=None, logy_min=None, logx_max=None, logy_max=None,
                  cl_src_path=None, cl_platform=None, cl_device=None,
-                 debug=False, verbose=False):
+                 debug=False, verbose=False, gpu_verbose=False):
         if logx_min is None:
             logx_min = logx_array[logx_array>np.finfo(np.float32).min].min()
         if logx_max is None:
@@ -542,21 +542,22 @@ class Univariate_distribution():
         
         self.debug = debug
         self.verbose = verbose
+        self.gpu_verbose = gpu_verbose
 
     def print(self, *args, **kwargs):
         if self.verbose:
             print(*args, **kwargs)
 
     def compute_kde_scipy(self, bw_method='scott'):
-        self.kde.bw_method = bw_method
-        self.kde.model \
+        self.bw_method = bw_method
+        self.model \
             = gaussian_kde(self.logx_data.reshape((self.n_data_x,)), 
-                           bw_method=self.kde.bw_method)
-        self.kde.pdf \
-            = self.kde.model.pdf(self.x_vec.reshape((self.x_vec.shape[0],)))
-        self.kde.pdf = self.kde.pdf.reshape((self.x_vec.shape[0],1))
-        self.kde.cdf = np.cumsum(self.kde.pdf)*self.dlogx
-        if not np.isclose(self.kde.cdf[-1], 1.0, rtol=5e-3):
+                           bw_method=self.bw_method)
+        self.pdf \
+            = self.model.pdf(self.x_vec.reshape((self.x_vec.shape[0],)))
+        self.pdf = self.kde.pdf.reshape((self.x_vec.shape[0],1))
+        self.cdf = np.cumsum(self.pdf)*self.dlogx
+        if not np.isclose(self.cdf[-1], 1.0, rtol=5e-3):
             self.print(
                 'Error/imprecision when computing cumulative probability distribution:',
                        'pdf integrates to {:3f} not to 1.0'.format(self.kde.cdf[-1]))
@@ -572,18 +573,20 @@ class Univariate_distribution():
 #         if kernel=='epanechnikov':
 #             self.bandwidth *= 2.0
 #         pdebug(self.logx_data.shape,self.x_vec.shape)
-        self.kde.model = KernelDensity(kernel=self.kernel, 
-                                 bandwidth=self.bandwidth).fit(self.logx_data)
+        self.model = KernelDensity(kernel=self.kernel, 
+                                   bandwidth=self.bandwidth).fit(self.logx_data)
         # Exponentiation needed here because of the (odd) way sklearn generates
         # log pdf values in its score_samples() method
-        self.kde.pdf \
-            = np.exp(self.kde.model.score_samples(self.logx_vec)) \
-                                         .reshape((self.n_pdf_points,1))
-        self.kde.cdf = np.cumsum(self.kde.pdf)*self.dlogx
+        self.pdf = np.exp(self.model.score_samples(self.logx_vec))\
+                            .reshape((self.n_pdf_points,1))
+        self.cdf = np.cumsum(self.pdf)*self.dlogx
+        cdf_max = self.cdf[-1]
+        self.pdf /= cdf_max
+        self.cdf /= cdf_max
         if not np.isclose(self.kde.cdf[-1], 1.0, rtol=5e-3):
             self.print(
                 'Error/imprecision when computing cumulative probability distribution:',
-                       'pdf integrates to {:3f} not to 1.0'.format(self.kde.cdf[-1]))
+                       'pdf integrates to {:3f} not to 1.0'.format(self.cdf[-1]))
 
     def compute_kde_opencl(self, kernel='epanechnikov', bandwidth=0.15):
         self.kernel = kernel
@@ -598,13 +601,17 @@ class Univariate_distribution():
         self.pdf, self.histogram \
             = kde.estimate_univariate_pdf( self )
         self.cdf = np.cumsum(self.pdf)*self.bin_dx
+        cdf_max = self.cdf[-1]
+        self.pdf /= cdf_max
+        self.cdf /= cdf_max
         if not np.isclose(self.cdf[-1], 1.0, rtol=5e-3):
             self.print(
                 'Error/imprecision when computing cumulative probability distribution:',
                        'pdf integrates to {:3f} not to 1.0'.format(self.cdf[-1]))
-        self.detrended_pdf, self.detrended_histogram \
-            = kde.estimate_univariate_pdf( self, do_detrend=True,
-                                           logx_vec=self.logx_vec_histogram )
+        # Hack - turning off detrending for now
+#         self.detrended_pdf, self.detrended_histogram \
+#             = kde.estimate_univariate_pdf( self, do_detrend=True,
+#                                            logx_vec=self.logx_vec_histogram )
 
     def statistics(self):
         logx = self.logx_vec
@@ -626,9 +633,11 @@ class Univariate_distribution():
         try:
             self.mode_i = peaks[0]
             self.mode_x = self.x_vec[peaks[0]][0]
-            self.print('Mode @ {0:2.2f}m'.format(self.mode_x))
+            self.print('Mode @ {0:.0f}m'.format(self.mode_x))
         except:
             self.print('Failed to find mode')
+            self.mode_i = self.pdf.shape[0]//2
+            self.mode_x = 100.0
 
     def locate_threshold(self):
         x_vec = self.x_vec
@@ -638,26 +647,36 @@ class Univariate_distribution():
         detrended_pdf = pdf/norm.pdf(np.log(x_vec),np.log(self.mean),
                                      np.log(self.stddev))
 #         detrended_pdf = self.detrended_pdf
-        all_extrema_i = argrelextrema(np.reshape(detrended_pdf,pdf.shape[0],), 
-                                  np.less, order=3)[0]
+        n_bins = pdf.shape[0]
+        all_extrema_i = argrelextrema(np.reshape(detrended_pdf,n_bins,), 
+                                      np.less, order=3)[0]
+        all_extrema_i = np.concatenate((all_extrema_i,np.array([n_bins-1],)))
+        self.print('Located pdf extrema at:   x={}m'.format(
+                    [np.uint32(np.round(x_vec[i][0],0)) for i in all_extrema_i]))
+        self.print('Corresponding cdf values:   {}'.format(
+                    [(np.round(cdf[i],3)) for i in all_extrema_i]))
         # Choose lowest-cdf minimum given cdf threshold 
         #   - if necessary, progressively lowered until a minimum is found
         search_cdf_min = self.search_cdf_min
-        while (search_cdf_min>=0.80):          
+        while (search_cdf_min>=0.70):          
             extrema_i = [extremum_i for extremum_i in all_extrema_i 
-                         if x_vec[extremum_i]>mode_x \
-                            and (cdf[extremum_i]>search_cdf_min
-                                 and cdf[extremum_i]<self.search_cdf_max)]
+                         if x_vec[extremum_i]>=mode_x \
+                            and (     cdf[extremum_i]>=search_cdf_min
+                                  and cdf[extremum_i]<=self.search_cdf_max ) ]
             if len(extrema_i)>=1:
                 break
             search_cdf_min -= 0.01
+        self.print('Selected pdf minimum/a at:  x={}m'.format(
+                    [np.uint32(np.round(x_vec[i][0],0)) for i in extrema_i]))
         try:
             self.channel_threshold_i = extrema_i[0]
             self.channel_threshold_x = x_vec[extrema_i[0]][0]
-            self.print('Threshold @ cdf={0:0.3}  x={1:2.0f}m'.format(
+            self.print('Threshold inferred @ cdf={0:0.3}  x={1:2.0f}m'.format(
                 cdf[self.channel_threshold_i],self.channel_threshold_x))
         except:
-            self.print('Failed to locate threshold: cannot find any minima in range')
+            self.print('Failed to locate threshold: cannot find cdf minima in range'
+                       +' {0:0.3f}-{1:0.3f} for x ≥ {2:.0f}m'
+                       .format(search_cdf_min,self.search_cdf_max,mode_x))
 
 
 class Bivariate_distribution():
@@ -672,7 +691,7 @@ class Bivariate_distribution():
                  method='opencl', n_hist_bins=2048, n_pdf_points=256, 
                  logx_min=None, logy_min=None, logx_max=None, logy_max=None,
                  cl_src_path=None, cl_platform=None, cl_device=None,
-                 debug=False, verbose=False):
+                 debug=False, verbose=False, gpu_verbose=False):
         self.logx_data = logx_array
         self.logy_data = logy_array
         if logx_min is None:
@@ -742,6 +761,7 @@ class Bivariate_distribution():
              
         self.debug = debug
         self.verbose = verbose
+        self.gpu_verbose = gpu_verbose
 
     def print(self, *args, **kwargs):
         if self.verbose:

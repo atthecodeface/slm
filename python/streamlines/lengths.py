@@ -25,9 +25,8 @@ def hsl( cl_state, info, data, verbose, do_use_ridges=False ):
         info (obj):
         data (obj):
         verbose (bool):
-        
     """
-    vprint(verbose,'Measuring hillslope lengths...',end='')
+    vprint(verbose,'Computing lengths...',end='')
     
     # Prepare CL essentials
     cl_state.kernel_source \
@@ -44,15 +43,16 @@ def hsl( cl_state, info, data, verbose, do_use_ridges=False ):
     pixel_size  = info.pixel_size
     if do_use_ridges:
         flag    = is_ridge
-        vprint(verbose,'from ridges...')
+        vprint(verbose,'from ridges...',end='')
     else:
         flag    = is_midslope
-        vprint(verbose,'from midslopes...')
+        vprint(verbose,'from midslopes...',end='')
     seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
                                   flag=flag, pad=pad)
 #     pdebug(seed_point_array*2+np.array([2800,2800]))
     if ( seed_point_array.shape[0]!=data.traj_length_array.shape[0] ):
-        print('\nMismatched midslope/ridge point arrays: seed pts={0} traj len={1}'
+        raise ValueError(
+            'Mismatched midslope/ridge point arrays: seed pts={0} traj len={1}'
               .format(seed_point_array.shape,data.traj_length_array.shape))
     array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
@@ -64,7 +64,7 @@ def hsl( cl_state, info, data, verbose, do_use_ridges=False ):
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'hillslope_lengths'
-    pocl.gpu_compute(cl_state, info, array_dict, verbose)
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
     # Scale by two if we measured only half hillslope lengths from midslope pixels
     if not do_use_ridges:
