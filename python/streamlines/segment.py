@@ -64,7 +64,7 @@ def segment_channels( cl_state, info, data, verbose ):
     for idx,label in enumerate(channel_segment_labels_array):
         data.label_array[data.label_array==label]=idx+1
     n_segments = idx+1
-    vprint(verbose, ' number of segments={}...'.format(n_segments),end='')
+    vprint(verbose, ' -- number of segments={}'.format(n_segments))
 
     # Done
     vprint(verbose,'...done')  
@@ -125,7 +125,7 @@ def subsegment_flanks( cl_state, info, data, verbose ):
         verbose (bool):
         
     """
-    vprint(verbose,'Subsegmenting flanks...')
+    vprint(verbose,'Subsegmenting left & right flanks...')
     
     # Prepare CL essentials
     cl_state.kernel_source \
@@ -186,6 +186,10 @@ def subsegment_flanks( cl_state, info, data, verbose ):
     # Do integrations on the GPU
     cl_state.kernel_fn = 'fix_left_flanks'
     pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
+    
+    n_left_right_subsegments = np.unique(data.label_array).shape[0]
+    vprint(verbose, ' -- number of left & right subsegments={}'
+           .format(n_left_right_subsegments))
     
     # Done
     vprint(verbose,'...done')  

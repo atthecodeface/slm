@@ -129,7 +129,8 @@ class Plot(Core):
         TBD
         """
         self.print('Recording figure "{}"'.format(fig_name))
-        self.figs.update({fig_name : fig})        
+        self.figs.update({fig_name : fig})  
+        return fig_name     
 
     def _force_display(self, fig):
         """
@@ -1313,7 +1314,7 @@ class Plot(Core):
 
         # Display & record
         self._force_display(fig)
-        self._record_fig(fig_name,fig)    
+        return self._record_fig(fig_name,fig)    
         
     def plot_marginal_pdf_dsla(self):
         """
@@ -1360,8 +1361,8 @@ class Plot(Core):
         except:
             self.print('"'+title+'" not computed: cannot plot')
             return
-        self.plot_marginal_pdf(marginal_distbn, fig_name=fig_name, 
-                               title=title, x_label=x_label,y_label=y_label)
+        return self.plot_marginal_pdf(marginal_distbn, fig_name=fig_name, 
+                                      title=title, x_label=x_label,y_label=y_label)
         
     def plot_marginal_pdf_uslt(self):
         """

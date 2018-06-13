@@ -51,73 +51,9 @@ class Mapping(Core):
         TBD.
         """
         self.print('\n**Mapping begin**') 
-
-        # Active masks presumably set:  
-        #    - geodata.dtm_mask_array
-        #    - geodata.basin_mask_array (if set)
-        #    - preprocess.uv_mask_array
-        #
-        
-        # 1st pass:
-        #    - coarsely (sub)segment and label using an imposed threshold
-        #       - map_channels()
-        #       - connect_channel_pixels()
-        #       - thin_channels()
-        #       - map_channel_heads()
-        #       - count_downchannels()
-        #       - flag_downchannels()
-        #       - label_confluences()
-        #       - segment_downchannels()
-        #       - link_hillslopes()
-        #       - segment_hillslopes()
-        #       - subsegment_flanks()
-        #
-        #    - keep coarse subsegment labels array
-        #
-        #    - estimate approximate channel threshold for whole ROI
-        #       - analysis.estimate_channel_threshold()
-        #
-        #    - keep fine subsegment labels array
         self.pass1()
-        
-        # 2nd pass:
-        #    - loop over coarse subsegments
-        #       - add (not) coarse subsegment to list of active masks
-        #
-        #       - estimate channel threshold for coarse subsegment
-        #
-        #       - finely (sub)segment and label using approximate channel threshold
-        #          - map_channels()
-        #          - connect_channel_pixels()
-        #          - thin_channels()
-        #          - map_channel_heads()
-        #          - count_downchannels()
-        #          - flag_downchannels()
-        #          - label_confluences()
-        #          - segment_downchannels()
-        #          - link_hillslopes()
-        #          - segment_hillslopes()
-        #          - subsegment_flanks()
-        #
-        #       - measure partial HSL on fine subsegments within the coarse subsegment
-        #          - map_midslopes()
-        #          - map_ridges()
-        #          - measure_hsl()
-        #
-        #       - merge partial HSL onto aggregating HSL array
-        #
-        #       - remove (not) coarse subsegment from list of active masks
         self.pass2()
-        
-        # 3rd pass:
-
-        #
-        #    - map (median & mean filter) aggregate HSL measurements
         self.pass3()
-        
-        # Post HSL:
-        #    - map aspect
-        #    - compute HSL(aspect)
         self.print('**Mapping end**\n')  
 
     def prepare_arrays_data_mask(self):
@@ -217,12 +153,12 @@ class Mapping(Core):
         except:
             pass
         self.hsl_array = None
-#         for coarse_label in [-1,1]:
-        for coarse_label in self.coarse_labels:
-#         for coarse_label in self.coarse_labels[::-1]:
+        n_segments = self.coarse_labels.shape[0]
+#         for idx,coarse_label in enumerate([-93]):
+        for idx,coarse_label in enumerate(self.coarse_labels):
             is_left_or_right = ('left' if coarse_label<0 else 'right')
-            self.print('\nMapping HSL on subsegment #{0} ({1})'
-                       .format(coarse_label,is_left_or_right))
+            self.print('\n--- Mapping HSL on subsegment §{0} = {1}/{2} ({3})'
+                       .format(coarse_label,idx+1,n_segments,is_left_or_right))
             
             # Basic masking first
             self.state.reset_active_masks()
@@ -246,15 +182,22 @@ class Mapping(Core):
 #             self.info.channel_threshold=self.coarse_channel_threshold
             self.info.segmentation_threshold=self.fine_segmentation_threshold
             # Compute slt pdf and estimate channel threshold from it
+#             del self.plot.figs[self.plot.plot_marginal_pdf_dslt()]
             try:
                 self.info.channel_threshold = self.analysis.estimate_channel_threshold()
             except: 
                 self.state.remove_active_mask('dilated_segment')
                 continue
-#             self.plot.plot_marginal_pdf_dslt()
+
             
             # Map channel heads, thin channel pixels, subsegments
-            self.mapping_segments_channels()
+            try:
+                self.mapping_segments_channels()
+            except:
+                self.state.remove_active_mask('dilated_segment')
+                self.print('Failed during segment/channel mapping')
+                continue
+                
             # Map ridges and midslopes
             self.map_midslopes()
             self.map_ridges()
@@ -262,9 +205,19 @@ class Mapping(Core):
 #             self.plot.plot_segments(window_size_factor=3)
 #             self.plot.plot_channels(window_size_factor=3)
             # Measure HSL from ridges or midslopes to thin channels per subsegment
-            self.measure_hsl()
-            # Remove dilated coarse-subsegment mask
-            self.state.remove_active_mask('dilated_segment')
+            try:
+                self.measure_hsl()
+                # Remove dilated coarse-subsegment mask
+                self.state.remove_active_mask('dilated_segment')
+                self.print('Mean HSL = {0:0.1f}m'
+                           .format(np.mean(self.data.hsl_array[
+                               (self.data.hsl_array>self.n_hsl_averaging_threshold)
+                               & (~np.isnan(self.data.hsl_array))
+                               ])))
+            except:
+                self.state.remove_active_mask('dilated_segment')
+                self.print('Unable to map HSL')
+                continue
             
             # Replace with the raw coarse-subsegment mask
             self.state.add_active_mask({'raw_segment': segment_mask_array})
@@ -291,7 +244,7 @@ class Mapping(Core):
         """
         TBD.
         """
-        self.print('\n**Mapping segments and channels begin**') 
+#         self.print('\n**Mapping segments and channels begin**') 
         # Use downstream slt,sla pdfs to designate pixels as channels
         self.map_channels()
         # Join up disconnected channel pixels if they are not too widely spaced
@@ -314,13 +267,13 @@ class Mapping(Core):
         self.segment_hillslopes()
         # Designate as L or R of channel to subsegment hillslope flanks
         self.subsegment_flanks()
-        self.print('**Mapping segments and channels end**\n')  
+#         self.print('**Mapping segments and channels end**\n')  
         
     def mapping_ridges_midslopes_hsl_aspect(self):
         """
         TBD.
         """
-        self.print('\n**Mapping ridges, midslopes, HSL, aspect begin**') 
+#         self.print('\n**Mapping ridges, midslopes, HSL, aspect begin**') 
         # Use up- and downstream sla to designate midslope pixels
         self.map_midslopes()
         # Use up- and downstream sla to designate ridge pixels
@@ -334,7 +287,7 @@ class Mapping(Core):
         # Gradient-thresholded hillslope horizontal orientation = aspect
         self.map_aspect()
         self.compute_hsl_aspect()
-        self.print('**Mapping ridges, midslopes, HSL, aspect end**\n')  
+#         self.print('**Mapping ridges, midslopes, HSL, aspect end**\n')  
 
 
     def map_channels(self):

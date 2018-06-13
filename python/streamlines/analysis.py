@@ -633,7 +633,7 @@ class Univariate_distribution():
         try:
             self.mode_i = peaks[0]
             self.mode_x = self.x_vec[peaks[0]][0]
-            self.print('Mode @ {0:2.2f}m'.format(self.mode_x))
+            self.print('Mode @ {0:.0f}m'.format(self.mode_x))
         except:
             self.print('Failed to find mode')
             self.mode_i = self.pdf.shape[0]//2
@@ -651,12 +651,14 @@ class Univariate_distribution():
         all_extrema_i = argrelextrema(np.reshape(detrended_pdf,n_bins,), 
                                       np.less, order=3)[0]
         all_extrema_i = np.concatenate((all_extrema_i,np.array([n_bins-1],)))
-        self.print('Located extrema at:   x={}m'.format(
+        self.print('Located pdf extrema at:   x={}m'.format(
                     [np.uint32(np.round(x_vec[i][0],0)) for i in all_extrema_i]))
+        self.print('Corresponding cdf values:   {}'.format(
+                    [(np.round(cdf[i],3)) for i in all_extrema_i]))
         # Choose lowest-cdf minimum given cdf threshold 
         #   - if necessary, progressively lowered until a minimum is found
         search_cdf_min = self.search_cdf_min
-        while (search_cdf_min>=0.80):          
+        while (search_cdf_min>=0.70):          
             extrema_i = [extremum_i for extremum_i in all_extrema_i 
                          if x_vec[extremum_i]>=mode_x \
                             and (     cdf[extremum_i]>=search_cdf_min
@@ -664,15 +666,17 @@ class Univariate_distribution():
             if len(extrema_i)>=1:
                 break
             search_cdf_min -= 0.01
-        self.print('Selected extrema at:  x={}m'.format(
+        self.print('Selected pdf minimum/a at:  x={}m'.format(
                     [np.uint32(np.round(x_vec[i][0],0)) for i in extrema_i]))
         try:
             self.channel_threshold_i = extrema_i[0]
             self.channel_threshold_x = x_vec[extrema_i[0]][0]
-            self.print('Threshold @ cdf={0:0.3}  x={1:2.0f}m'.format(
+            self.print('Threshold inferred @ cdf={0:0.3}  x={1:2.0f}m'.format(
                 cdf[self.channel_threshold_i],self.channel_threshold_x))
         except:
-            self.print('Failed to locate threshold: cannot find any minima in range')
+            self.print('Failed to locate threshold: cannot find cdf minima in range'
+                       +' {0:0.3f}-{1:0.3f} for x ≥ {2:.0f}m'
+                       .format(search_cdf_min,self.search_cdf_max,mode_x))
 
 
 class Bivariate_distribution():
