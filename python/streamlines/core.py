@@ -65,7 +65,6 @@ class Core():
                 pass
         else:
             self.active_masks_dict = {}
-            pdebug(self.active_masks_dict)
             
         workflow_class_name = self.__module__.split('.')[1]
         for item in imported_parameters[workflow_class_name].items():
@@ -148,7 +147,7 @@ class Core():
 
     def pprint(self, *args, **kwargs):
         if self.state.verbose:
-            pprint.pprint(*args, **kwargs, flush=True)
+            pprint.pprint(*args, **kwargs)
             sys.stdout.flush()
 
     def vprint(self, *args, **kwargs):

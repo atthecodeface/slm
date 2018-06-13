@@ -172,7 +172,9 @@ class Streamlining(Core):
                     repo = git.Repo(repo_path)
                     # Grab its summary - seems to be the fastest way to get git info
                     summary = repo.git.show('--summary').split('\n')
-                    git_info = [[summary[0]]+[summary[1].split(' <')[0]]+[summary[2]]]
+                    git_info = [  [summary[0]]+[summary[1].split(' <')[0]]+[summary[2]] 
+                                + ([summary[4]] if summary[4]!='' else []) 
+                                + ([summary[5]] if summary[5]!='' else []) ]
                     setattr(self.state,repo_name+'_gitinfo',git_info)
                     # Print git info if verbose mode is on
                     self.print('{} git:'.format(repo_name))
