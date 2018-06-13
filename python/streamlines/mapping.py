@@ -641,6 +641,8 @@ class Mapping(Core):
         self.print('done')  
         
     def check_hsl_ns_disparity(self):
+        is_n_or_s_disparity \
+            = ('north' if self.hsl_mean_north>self.hsl_mean_south else 'south')
         self.print('HSL mean:'
                    +'\t\t\t     {:2.1f}m'
                    .format(self.hsl_mean)
@@ -659,10 +661,10 @@ class Mapping(Core):
         self.print('HSL N-S disparity deg of confidence: {0:2.1f}'
                    .format(self.hsl_ns_disparity_confidence) )
         if self.hsl_ns_disparity_confidence<0.5:
-            self.print('\t\t\t\t=> no significant disparity')
+            self.print('\t\t\t\t=> very weak {} disparity'.format(is_n_or_s_disparity))
         elif self.hsl_ns_disparity_confidence<1.0:
-            self.print('\t\t\t\t=> likely no significant disparity')
+            self.print('\t\t\t\t=> weak {} disparity'.format(is_n_or_s_disparity))
         elif self.hsl_ns_disparity_confidence<2.0:
-            self.print('\t\t\t\t=> possibly significant disparity')
+            self.print('\t\t\t\t=> moderate {} disparity'.format(is_n_or_s_disparity))
         else:
-            self.print('\t\t\t\t=> likely significant disparity')                                                         
+            self.print('\t\t\t\t=> strong {} disparity'.format(is_n_or_s_disparity))                                                         
