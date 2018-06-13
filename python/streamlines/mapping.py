@@ -113,7 +113,7 @@ class Mapping(Core):
 
         #
         #    - map (median & mean filter) aggregate HSL measurements
-        self.pass2()
+        self.pass3()
         
         # Post HSL:
         #    - map aspect
@@ -168,8 +168,8 @@ class Mapping(Core):
             self.merged_coarse_mask[self.coarse_label_array==label] = False
         self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask})
         # Viz the coarse channels & subsegmentation
-        self.plot.plot_channels(window_size_factor=3)
-        self.plot.plot_segments(window_size_factor=3)
+#         self.plot.plot_channels(window_size_factor=3)
+#         self.plot.plot_segments(window_size_factor=3)
 #         # Estimate whole-ROI, approximate channel threshold
 #         self.info.channel_threshold = self.analysis.estimate_channel_threshold()
 #         self.plot.plot_marginal_pdf_dslt()
@@ -544,28 +544,27 @@ class Mapping(Core):
         hsl_max     = np.max(hsl)
         hsl_clipped = (65535*(hsl-hsl_min)/(hsl_max-hsl_min)).astype(np.uint16)
 
-        mean_radius   = int(self.hsl_mean_radius/self.geodata.roi_pixel_size)
-        mean_disk     = disk(mean_radius)
-
-        median_radius = int(self.hsl_median_radius/self.geodata.roi_pixel_size)
+        mdr       = int(self.hsl_mean_radius/self.geodata.roi_pixel_size)
+        mean_disk = disk(mdr)
+        dfw       = int(self.hsl_dilation_width/self.geodata.roi_pixel_size)
 #         median_disk   = disk(median_radius)
         
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             # Strangely, mask logic is backwards for median(): 
             #    - true pixels are used (median-filtered), while false are untouched
-            if median_radius==0:
+            if mdr==0:
                 hsl_median = hsl_clipped
             else:
-                self.print('median filtering with {0}m ({1}-pixel) diameter disk...'
-                           .format(self.hsl_median_radius,median_radius), end='')
-                hsl_median= grey_dilation(hsl_clipped,size=(median_radius,median_radius))
+                self.print('dilation with {0}m ({1}-pixel) width filter...'
+                           .format(self.hsl_dilation_width,dfw), end='')
+                hsl_median= grey_dilation(hsl_clipped,size=(dfw,dfw))
                 hsl_median[~mask] = hsl_clipped[~mask]
 #                 hsl_median = np.ma.array(median(hsl_masked,median_disk,mask=~hsl_bool),
 #                                          mask=~hsl_bool)
 
             self.print('mean filtering with {0}m ({1}-pixel) diameter disk...'
-                       .format(self.hsl_mean_radius,mean_radius), end='') 
+                       .format(self.hsl_mean_radius*2,mdr*2), end='') 
             hsl_mean = mean(hsl_median,mean_disk)
             
         self.hsl_smoothed_array \
@@ -603,59 +602,77 @@ class Mapping(Core):
     def compute_hsl_aspect(self, n_bins=None, hsl_averaging_threshold=None):
         self.print('Computing hillslope length-aspect function...',end='')
         
+        # Default to aspect bins 6° wide
         if n_bins is None:
             n_bins = 60
+        # HSL value below hsl_averaging_threshold will be ignored
         if hsl_averaging_threshold is None:
             hsl_averaging_threshold = self.hsl_averaging_threshold
-        
-        pad           = self.geodata.pad_width
-        # Hack - fix masking for multipass
-#         mask_array    = self.data.mask_array[pad:-pad,pad:-pad] & False
+        # Shorthand
+        pad = self.geodata.pad_width
+        # Use basic masks plus the merged coarse-subsegmentation mask
         self.state.reset_active_masks()
         self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask})
-        pdebug(self.state.active_masks_dict.keys())
-        mask_array    = self.state.merge_active_masks()[pad:-pad,pad:-pad]
-        aspect_array  = self.aspect_array[pad:-pad,pad:-pad].copy()[~mask_array]
-#         for x in aspect_array[aspect_array<0]:
-#             pdebug(x)
-        hsl_array     = self.hsl_smoothed_array.copy()[~mask_array]
-        aspect_array  = np.rad2deg(aspect_array[hsl_array>hsl_averaging_threshold])
-        hsl_array     = hsl_array[hsl_array>hsl_averaging_threshold]
+        # Also exclude any np.ma masked pixels in self.aspect_array
+        mask_array   =   self.state.merge_active_masks()[pad:-pad,pad:-pad] \
+                       | self.aspect_array[pad:-pad,pad:-pad].mask
+        # Fetch non-masked aspect and HSL values
+        aspect_array = self.aspect_array[pad:-pad,pad:-pad][~mask_array]
+        hsl_array    = self.hsl_smoothed_array[~mask_array]
+        # Convert aspect to degrees
+        aspect_array = np.rad2deg(aspect_array[hsl_array>hsl_averaging_threshold])
+        # Exclude "negligibly" small HSL values aka near zero mismeasurements
+        hsl_array    = hsl_array[hsl_array>hsl_averaging_threshold]
+        # Combine into HSL(aspect) array
         hsl_aspect_array = np.stack( (hsl_array,aspect_array), axis=1)
-        
         # Sort in-place using column 1 (aspect) as key
         self.hsl_aspect_array = hsl_aspect_array[hsl_aspect_array[:,1].argsort()]
+        # Convert into a pandas dataframe for easier processing
         self.hsl_aspect_df    = pd.DataFrame(data=self.hsl_aspect_array,
                                              columns=['hsl','aspect'])
+        # Likely 3° bin half-width and 6° bin width
         half_bin_width = 180/n_bins
         bin_width = half_bin_width*2
+        # Vector of all bin edges, e.g., -183°,-177°,...,+177°,+183°
         bins = np.linspace(-180,+180+bin_width,n_bins+2)-half_bin_width
+        # Group HSL values using degree-valued bin edges
         self.hsl_aspect_df['groups'] = pd.cut(self.hsl_aspect_df['aspect'], bins)
+        # Average HSL values in each group
         self.hsl_aspect_averages = self.hsl_aspect_df.groupby('groups')['hsl'].mean()
-        bins = np.deg2rad(bins[:-1]+half_bin_width)
         hsl = self.hsl_aspect_averages.values
+        # Force HSL(±180°) values to match
         west_hsl = (hsl[0]+hsl[-1])/2.0
         hsl[0]  = west_hsl
         hsl[-1] = west_hsl
+        # Convert bins to radians
+        bins = np.deg2rad(bins[:-1]+half_bin_width)
+        # Combine into average-HSL(aspect) array
         self.hsl_aspect_averages_array = np.stack((hsl,bins),axis=1)
-        
+        # Shorthand
         haa = self.hsl_aspect_averages_array
         hsl = haa[~np.isnan(haa[:,0]),0]
         asp = haa[~np.isnan(haa[:,0]),1]
+        # Split into N and S HSL arrays
         hsl_south_array = hsl[asp<=0.0]
         hsl_north_array = hsl[asp>=0.0]
+        # If we have HSL() at +180° and -180°, don't repeat in mean
         if -asp[0]==asp[-1]:
             self.hsl_mean     = np.mean(hsl[1:])
         else:
             self.hsl_mean     = np.mean(hsl)
-        self.hsl_mean_south   = np.mean(hsl_south_array)
-        self.hsl_mean_north   = np.mean(hsl_north_array)
+        # Mean HSL north and south
+        self.hsl_mean_south = (np.mean(hsl_south_array) if hsl_south_array!=[] else 0.0)
+        self.hsl_mean_north = (np.mean(hsl_north_array) if hsl_north_array!=[] else 0.0)
+        # Disparity between north and south means
         self.hsl_ns_disparity = np.abs(self.hsl_mean_north-self.hsl_mean_south)
         self.hsl_ns_disparity_normed = self.hsl_ns_disparity/self.hsl_mean/2.0
-        
-        self.hsl_stddev       = np.std(hsl)
-        self.hsl_split_stddev = np.mean(np.array([np.std(hsl_split[~np.isnan(hsl_split)])
-                                                for hsl_split in np.split(haa[1:,0],4)]))
+        # Overall HSL standard deviation
+        self.hsl_stddev = np.std(hsl)
+        # Split HSL(aspect) into n_hsl_split groups e.g. 4 to compute std devn
+        hsl_split = np.array([np.std(hsl_split[~np.isnan(hsl_split)])
+                              if hsl_split[~np.isnan(hsl_split)]!=[] else 0.0
+                              for hsl_split in np.split(haa[1:,0],self.n_hsl_split)  ])
+        self.hsl_split_stddev = (np.mean(hsl_split) if hsl_split!=[] else 0.0)
         self.hsl_split_stddev_normed = self.hsl_split_stddev/self.hsl_mean
 
         hsl_complex_vector_array = (np.array([rect(ha[0],ha[1]) for ha in haa]))
@@ -672,27 +689,27 @@ class Mapping(Core):
         
     def check_hsl_ns_disparity(self):
         self.print('HSL mean:'
-                   +'\t\t\t\t {:2.1f}m'
+                   +'\t\t\t     {:2.1f}m'
                    .format(self.hsl_mean)
-                   +' ± {:2.1f}m (seg)'
+                   +' ± {:2.1f}m (split)'
                    .format(self.hsl_split_stddev)
                    +' {:2.1f}m (all)'
                    .format(self.hsl_stddev) )
         self.print('HSL N-S disparity:'
-                   +'\t\t\t {0:2.1f}mN <=> {1:2.1f}mS  2∆≈{2:2.1f}m'
+                   +'\t\t     {0:2.1f}mN <=> {1:2.1f}mS  2∆≈{2:2.1f}m'
                    .format(self.hsl_mean_north, self.hsl_mean_south,
                            self.hsl_ns_disparity) )
-        self.print('HSL N-S relative disparity vs variation:'
+        self.print('HSL N-S rel disparity vs variation: '
                    +' {0:2.1f}%NS vs {1:2.1f}%'
                    .format(self.hsl_ns_disparity_normed*100,
                            self.hsl_split_stddev_normed*100) )
-        self.print('HSL N-S disparity degree of confidence:\t {0:2.1f}'
+        self.print('HSL N-S disparity deg of confidence: {0:2.1f}'
                    .format(self.hsl_ns_disparity_confidence) )
         if self.hsl_ns_disparity_confidence<0.5:
-            self.print('\t\t\t=> no significant disparity')
+            self.print('\t\t\t\t=> no significant disparity')
         elif self.hsl_ns_disparity_confidence<1.0:
-            self.print('\t\t\t=> likely no significant disparity')
+            self.print('\t\t\t\t=> likely no significant disparity')
         elif self.hsl_ns_disparity_confidence<2.0:
-            self.print('\t\t\t=> possibly significant disparity')
+            self.print('\t\t\t\t=> possibly significant disparity')
         else:
-            self.print('\t\t\t=> likely significant disparity')                                                         
+            self.print('\t\t\t\t=> likely significant disparity')                                                         

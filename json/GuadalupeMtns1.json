@@ -10,12 +10,14 @@
 		"do_basin_masking" : true
 	},
 	"analysis": {
-		"marginal_distbn_kde_bandwidth" : 10.0
+		"marginal_distbn_kde_bandwidth" : 12.0,
+		"search_cdf_max" : 0.999
 	},
 
 	"mapping": {
 		"coarse_segmentation_threshold" : 2000,
-		"coarse_channel_threshold" : 200
+		"coarse_channel_threshold" : 200,
+		"n_hsl_averaging_threshold" : 5
 	},
 	
 	"plot": {

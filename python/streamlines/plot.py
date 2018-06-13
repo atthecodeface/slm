@@ -657,16 +657,17 @@ class Plot(Core):
         asp_north = asp[asp>=0.0]
         hsl_south = hsl[asp<=0.0]
         asp_south = asp[asp<=0.0]
-        hsl_north = np.concatenate( 
-            (np.array(hsl_north[0:1]), hsl_north, 
-             (np.array(hsl_south[0:1])+np.array(hsl_north[-2:-1]))/2.0 ) )
-        asp_north = np.concatenate(
-            (np.array([0.0]), asp_north, np.array([np.pi])) )
-        hsl_south = np.concatenate(
-             ( (np.array(hsl_south[0:1])+np.array(hsl_north[-2:-1]))/2.0, 
-              hsl_south, np.array(hsl_south[-2:-1])))
-        asp_south = np.concatenate(
-             (np.array([-np.pi]), asp_south, np.array([0.0])) )
+        if hsl_north!=[] and hsl_south!=[]:
+            hsl_north = np.concatenate( 
+                (np.array(hsl_north[0:1]), hsl_north, 
+                 (np.array(hsl_south[0:1])+np.array(hsl_north[-2:-1]))/2.0 ) )
+            asp_north = np.concatenate(
+                (np.array([0.0]), asp_north, np.array([np.pi])) )
+            hsl_south = np.concatenate(
+                 ( (np.array(hsl_south[0:1])+np.array(hsl_north[-2:-1]))/2.0, 
+                  hsl_south, np.array(hsl_south[-2:-1])))
+            asp_south = np.concatenate(
+                 (np.array([-np.pi]), asp_south, np.array([0.0])) )
         if cmap is None:
             cmap = 'Greys'
         cmap = mpl.cm.get_cmap(cmap)

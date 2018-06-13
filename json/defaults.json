@@ -70,7 +70,7 @@
 	"analysis": {
 		"search_cdf_min" : 0.95,
 		"search_cdf_max" : 0.995,
-		"marginal_distbn_kde_bandwidth" : 6.0,
+		"marginal_distbn_kde_bandwidth" : 10.0,
 		"joint_distbn_kde_bandwidth"    : 5.0,
 
 		"n_hist_bins" :  2048,
@@ -111,13 +111,14 @@
 	"mapping": {
 		"do_measure_hsl_from_ridges" : false,
 		"fine_segmentation_threshold" : 20,
-		"coarse_segmentation_threshold" : 20000,
-		"coarse_channel_threshold" : 3000,
+		"coarse_channel_threshold"      : 3000,
+		"coarse_segmentation_threshold" : 300,
 		"n_hsl_averaging_threshold" : 5,
-		"hsl_median_radius" : 42,
+		"hsl_dilation_width" : 51,
 		"hsl_mean_radius"  : 30,
 		"uv_median_radius" : 100,
 		"hsl_averaging_threshold" : 5.0,
+		"n_hsl_split" : 4,
 		"midslope_filter_sigma" : 5.0,
 		"midslope_threshold" : 0.03,
 		"ridge_filter_sigma" : 4.0,
