@@ -4,6 +4,10 @@
 		"dtm_file" : "Gabilan_DTM0_resampled1m_fillsinks0p01deg.tif",
 		"data_path" : ["$SLMDATA","GabilanMesa"]
 	},
+
+	"plot": {
+        "contour_hsl_label_fontsize" : 5
+	},
 	
 	"export": {
 		"export_path" : ["$SLMXPT","GabilanMesa3"]

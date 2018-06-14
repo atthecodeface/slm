@@ -168,14 +168,14 @@ class Mapping(Core):
             self.map_midslopes()
             self.map_ridges()
             self.select_subsegments(do_without_ridges_midslopes=False)
-            self.print('Selected {} subsegments'.format(self.n_segments))
+            self.print('Selected {} subsegments'.format(self.n_subsegments))
 
             # Measure HSL from ridges or midslopes to thin channels per subsegment
             try:
                 is_df_empty = self.measure_hsl()
             except:
-                self.state.remove_active_mask('dilated_segment')
                 self.print('Unable to map HSL here - skipping')
+                self.state.remove_active_mask('dilated_segment')
                 continue
             hsl_nonan = self.data.hsl_array[~np.isnan(self.data.hsl_array)]
             hsl_nonan = hsl_nonan[hsl_nonan>=self.hsl_averaging_threshold]
@@ -403,6 +403,7 @@ class Mapping(Core):
                                         ].astype(np.int32).ravel()
         unique_labels = np.unique(self.data.traj_label_array)
         self.hillslope_labels = unique_labels[unique_labels!=0].astype(np.int32)
+        self.n_subsegments = unique_labels.shape[0]
         self.print('...done')  
                 
     def measure_hsl(self):
@@ -591,16 +592,29 @@ class Mapping(Core):
         hsl_split = np.array([np.std(hsl_split[~np.isnan(hsl_split)])
                               if hsl_split[~np.isnan(hsl_split)]!=[] else 0.0
                               for hsl_split in np.split(haa[1:,0],self.n_hsl_split)  ])
+        # Compute mean split std devn
         self.hsl_split_stddev = (np.mean(hsl_split) if hsl_split!=[] else 0.0)
+        # Normalize split std devn by mean = coefficient of variation
         self.hsl_split_stddev_normed = self.hsl_split_stddev/self.hsl_mean
-
-        hsl_complex_vector_array = (np.array([rect(ha[0],ha[1]) for ha in haa]))
-        hsl_mean_complex_vector \
-            = np.mean(hsl_complex_vector_array[~np.isnan(hsl_complex_vector_array)])
+        # Eliminate NaNs from hsl_aspect_averages_array
+        haa[np.isnan(haa[:,0])]=0.0
+        # Convert HSL(aspect) vectors into complex numbers
+        hsl_complex_vec_array = (np.array([rect(ha[0],ha[1]) for ha in haa]))
+        hsl_complex_vec_array = hsl_complex_vec_array[~np.isnan(hsl_complex_vec_array)]
+        # Compute the mean complex HSL vector
+        hsl_mean_complex_vector = np.mean(hsl_complex_vec_array)
+        # Convert the mean complex HSL vector back into a polar vector HSL,aspect
         mhsl = polar(hsl_mean_complex_vector)
+#         pdebug()
+#         pdebug(hsl_complex_vec_array)
+#         pdebug('hsl_mean_complex_vector',hsl_mean_complex_vector)
+#         pdebug('mhsl',mhsl)
         self.hsl_mean_magnitude = mhsl[0]
         self.hsl_mean_azimuth = np.rad2deg(mhsl[1])
-        
+        # Calculate a confidence measure for any N-S disparity
+        #   - effectively a signal:noise ratio 
+        #         =    (N HSL_mean - S HSL_mean)/2
+        #              /(mean split HSL std devn)
         self.hsl_ns_disparity_confidence \
             = self.hsl_ns_disparity_normed/self.hsl_split_stddev_normed
 

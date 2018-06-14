@@ -310,7 +310,8 @@ class State(Core):
         """
         TBD
         """ 
-        self.active_masks_dict.pop(mask_name)
+        if mask_name in self.active_masks_dict.keys():
+            self.active_masks_dict.pop(mask_name)
         
     def reset_active_masks(self):
         """
