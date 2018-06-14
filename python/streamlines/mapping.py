@@ -121,8 +121,8 @@ class Mapping(Core):
             pass
         self.hsl_array = None
         n_segments = self.coarse_labels.shape[0]
-        for idx,coarse_label in enumerate([71]):
-#         for idx,coarse_label in enumerate(self.coarse_labels):
+#         for idx,coarse_label in enumerate([71]):
+        for idx,coarse_label in enumerate(self.coarse_labels):
             is_left_or_right = ('left' if coarse_label<0 else 'right')
             self.print('\n--- Mapping HSL on subsegment §{0} = {1}/{2} ({3})'
                        .format(coarse_label,idx+1,n_segments,is_left_or_right))
