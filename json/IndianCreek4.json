@@ -7,6 +7,10 @@
 		"basins_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed3k.tif",
 		"do_basin_masking" : false
 	},
+	
+	"analysis": {
+		"marginal_distbn_kde_bandwidth" : 12.0
+	},
 
 	"plot": {
         "mhsl_pdf_x_stretch" : 0.8,

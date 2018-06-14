@@ -9,6 +9,7 @@
         "basins" : [701,702],
 		"do_basin_masking" : true
 	},
+	
 	"analysis": {
 		"marginal_distbn_kde_bandwidth" : 12.0,
 		"search_cdf_max" : 0.999

@@ -69,8 +69,9 @@
 
 	"analysis": {
 		"search_cdf_min" : 0.95,
-		"search_cdf_max" : 0.995,
-		"marginal_distbn_kde_bandwidth" : 10.0,
+		"search_cdf_max" : 0.999,
+		"Xsearch_cdf_max" : 0.995,
+		"marginal_distbn_kde_bandwidth" : 12.0,
 		"joint_distbn_kde_bandwidth"    : 5.0,
 
 		"n_hist_bins" :  2048,
@@ -118,6 +119,7 @@
 		"hsl_mean_radius"  : 30,
 		"uv_median_radius" : 100,
 		"hsl_averaging_threshold" : 5.0,
+		"n_aspect_bins" : 60,
 		"n_hsl_split" : 4,
 		"midslope_filter_sigma" : 5.0,
 		"midslope_threshold" : 0.03,
