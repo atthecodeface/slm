@@ -121,8 +121,8 @@ class Mapping(Core):
             pass
         self.hsl_array = None
         n_segments = self.coarse_labels.shape[0]
-#         for idx,coarse_label in enumerate([103]):
-        for idx,coarse_label in enumerate(self.coarse_labels):
+        for idx,coarse_label in enumerate([71]):
+#         for idx,coarse_label in enumerate(self.coarse_labels):
             is_left_or_right = ('left' if coarse_label<0 else 'right')
             self.print('\n--- Mapping HSL on subsegment §{0} = {1}/{2} ({3})'
                        .format(coarse_label,idx+1,n_segments,is_left_or_right))
@@ -168,6 +168,7 @@ class Mapping(Core):
             self.map_midslopes()
             self.map_ridges()
             self.select_subsegments(do_without_ridges_midslopes=False)
+            self.print('Selected {} subsegments'.format(self.n_segments))
 
             # Measure HSL from ridges or midslopes to thin channels per subsegment
             try:
@@ -176,16 +177,17 @@ class Mapping(Core):
                 self.state.remove_active_mask('dilated_segment')
                 self.print('Unable to map HSL here - skipping')
                 continue
-            if is_df_empty:
+            hsl_nonan = self.data.hsl_array[~np.isnan(self.data.hsl_array)]
+            hsl_nonan = hsl_nonan[hsl_nonan>=self.hsl_averaging_threshold]
+            if is_df_empty or hsl_nonan.shape[0]==0:
                 self.print('No HSL values in dataframe - skipping')
                 self.state.remove_active_mask('dilated_segment')
                 continue
+            hsl_mean  = np.mean(hsl_nonan)
             
-            self.state.remove_active_mask('dilated_segment')
             # Remove dilated coarse-subsegment mask
-            hsl_nonan = self.data.hsl_array[~np.isnan(self.data.hsl_array)]
-            hsl_nonan = hsl_nonan[hsl_nonan>self.n_hsl_averaging_threshold]
-            self.print('Mean HSL = {0:0.1f}m'.format(np.mean(hsl_nonan)))
+            self.state.remove_active_mask('dilated_segment')
+            self.print('Mean HSL = {0:0.1f}m'.format(hsl_mean))
 
             # Replace with the raw coarse-subsegment mask
             self.state.add_active_mask({'raw_segment': segment_mask_array})
@@ -428,7 +430,7 @@ class Mapping(Core):
         self.hsl_df = df
         
         stats_df = pd.DataFrame(self.hillslope_labels,columns=['label'])
-        stats_list = ( ('count','count'),('mean','mean [m]'), ('std','stddev [m]') )
+        stats_list = ( ('count','count'), ('mean','mean [m]'), ('std','stddev [m]') )
         for stat in stats_list:
             stats_df = stats_df.join( getattr(df.groupby('label'),stat[0])() ,on='label')
             stats_df.rename(index=str, columns={'length':stat[1]}, inplace=True)
@@ -537,9 +539,9 @@ class Mapping(Core):
         aspect_array = self.aspect_array[pad:-pad,pad:-pad][~mask_array]
         hsl_array    = self.hsl_smoothed_array[~mask_array]
         # Convert aspect to degrees
-        aspect_array = np.rad2deg(aspect_array[hsl_array>hsl_averaging_threshold])
+        aspect_array = np.rad2deg(aspect_array[hsl_array>=hsl_averaging_threshold])
         # Exclude "negligibly" small HSL values aka near zero mismeasurements
-        hsl_array    = hsl_array[hsl_array>hsl_averaging_threshold]
+        hsl_array    = hsl_array[hsl_array>=hsl_averaging_threshold]
         # Combine into HSL(aspect) array
         hsl_aspect_array = np.stack( (hsl_array,aspect_array), axis=1)
         # Sort in-place using column 1 (aspect) as key
