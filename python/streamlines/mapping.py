@@ -85,11 +85,15 @@ class Mapping(Core):
     def _switch_back_to_verbose_mode(self):
         self.state.verbose = self.verbose_backup
 
+    def report_progress(self ,idx, n_segments):
+        progress = ((idx+1)/n_segments)*100.0
+        vprint(self.verbose_backup, '{:2.1f}% '.format(progress),end='')
+
     def get_bbox(self, array):
         x = np.any(array, axis=0)
         y = np.any(array, axis=1)
-        x_min, x_max = np.where(x)[0][[0, -1]]
-        y_min, y_max = np.where(y)[0][[0, -1]]
+        x_min, x_max = np.where(x)[0][[0,-1]]
+        y_min, y_max = np.where(y)[0][[0,-1]]
         return x_min,x_max, y_min,y_max
 
     def pass1(self):
@@ -134,7 +138,6 @@ class Mapping(Core):
         # Count how many coarse subsegments need to be iterated over
         n_segments = self.coarse_labels.shape[0]
 #         for idx,coarse_label in enumerate([71]):
-#         vprint(True, '{:2.1f}% '.format(0/n_segments),end='')
         # Iterate over the coarse subsegments
         for idx,coarse_label in enumerate(self.coarse_labels):
             # Flag if subsegment is left or right flank
@@ -142,69 +145,48 @@ class Mapping(Core):
             is_left_or_right = ('left' if coarse_label<0 else 'right')
             self.print('\n--- Mapping HSL on subsegment §{0} = {1}/{2} ({3})'
                        .format(coarse_label,idx+1,n_segments,is_left_or_right))
-
             # Basic masking first
             self.state.reset_active_masks()
-            # Create a mask array for this coarse subsegment and add to active list
-            segment_mask_array = np.zeros_like(self.coarse_label_array, dtype=np.bool)
-            # Start with inverted raw mask
-            segment_mask_array[self.coarse_label_array==coarse_label] = True
-            # Spread mask by 2 if left or 1 if right flank subsegment
-            #   (left spread needs to 1st encompass bordering right-flank channel pixels)
-            n_iterations = (2 if is_left_or_right=='left' else 1)
-            dilated_segment_mask_array=np.invert(useful.dilate(segment_mask_array.copy(),
-                                                              n_iterations=n_iterations))
-            # Now invert the raw mask as well
-            segment_mask_array = np.invert(segment_mask_array)
-            # Deploy this iteration's dilated coarse-subsegment mask
-            self.state.add_active_mask({'dilated_segment':dilated_segment_mask_array})
-            
-            # Define bbox
-            bbox_dilated_segment = self.get_bbox(~dilated_segment_mask_array)
-            self.print('Dilated subsegment mask bbox = {}'.format(bbox_dilated_segment))
-
+            # Create a raw+dilated mask arrays for this coarse subsegment
+            segment_mask_array, dilated_segment_mask_array \
+                = self.create_coarse_subsegment_mask(coarse_label, is_left_or_right)
+            # Deploy the dilated coarse-subsegment mask
+            # BBOX
+            self.state.add_active_mask({'dilated_segment': dilated_segment_mask_array})
             # Report % progress
-            progress = ((idx+1)/n_segments)*100.0
-            vprint(self.verbose_backup, '{:2.1f}% '.format(progress),end='')
-
+            self.report_progress(idx, n_segments)
             # Get ready to map HSL
+            # BBOX
             self.prepare_arrays_data_mask()
+            # BBOX
             self.info = Info(self.state, self.geodata, self.trace, mapping=self)
-            self.info.segmentation_threshold=self.fine_segmentation_threshold
+            self.info.segmentation_threshold = self.fine_segmentation_threshold
             # Compute slt pdf and estimate channel threshold from it
-            try:
-                self.info.channel_threshold = self.analysis.estimate_channel_threshold()
-            except: 
-                self.print('Failed channel threshold estimation')
+            self.info.channel_threshold \
+                = self.analysis.estimate_channel_threshold(verbose=self.verbose_backup)
+            if self.info.channel_threshold is None \
+               or not self.do_map_channels_segments(): 
                 self.state.remove_active_mask('dilated_segment')
                 continue
-
-            # Map channel heads, thin channel pixels, subsegments
-            try:
-                self.do_map_channels_segments()
-            except:
-                self.print('Failed during segment/channel mapping')
-                self.state.remove_active_mask('dilated_segment')
-                continue
-                
             # Map ridges and midslopes
+            # BBOX
             self.map_midslopes()
+            # BBOX
             self.map_ridges()
             # Find the HSL-mappable subsegments
             self.select_subsegments(do_without_ridges_midslopes=False)
             self.print('Selected {} subsegments'.format(self.n_subsegments))
-
             # Measure HSL from ridges or midslopes to thin channels per subsegment
             if not self.measure_hsl():
                 self.state.remove_active_mask('dilated_segment')
                 continue
             vprint(self.verbose_backup, 'Mean HSL = {0:0.1f}m'.format(self.hsl_mean))
-
             # Remove this iteration's dilated coarse-subsegment mask
             self.state.remove_active_mask('dilated_segment')
             # Replace with this iteration's raw coarse-subsegment mask
             self.state.add_active_mask({'raw_segment': segment_mask_array})
             # Deploy this coarse subsegment's HSL data to the 'global' HSL map
+            # BBOX
             self.merge_hsl()
             # Delete this iteration's raw coarse mask from the active list
             self.state.remove_active_mask('raw_segment')
@@ -222,32 +204,59 @@ class Mapping(Core):
         self.state.remove_active_mask('merged_coarse')
         self.print('**Pass#3 end**') 
                 
+    def create_coarse_subsegment_mask(self, coarse_label, is_left_or_right):
+        # BBOX
+        segment_mask_array = np.zeros_like(self.coarse_label_array, dtype=np.bool)
+        # Start with inverted raw mask
+        # BBOX
+        segment_mask_array[self.coarse_label_array==coarse_label] = True
+        # Spread mask by 2 if left or 1 if right flank subsegment
+        #   (left spread needs to 1st encompass bordering right-flank channel pixels)
+        n_iterations = (2 if is_left_or_right=='left' else 1)
+        # BBOX
+        dilated_segment_mask_array=np.invert(useful.dilate(segment_mask_array.copy(),
+                                                          n_iterations=n_iterations))
+        # Now invert the raw mask as well
+        segment_mask_array = np.invert(segment_mask_array)
+        # Define bbox
+        bbox_dilated_segment = self.get_bbox(~dilated_segment_mask_array)
+        self.print('Dilated subsegment mask bbox = {}'.format(bbox_dilated_segment))
+        return segment_mask_array, dilated_segment_mask_array
+
     def do_map_channels_segments(self):
         """
         TBD.
         """
-        # Use downstream slt,sla pdfs to designate pixels as channels
-        self.map_channels()
-        # Join up disconnected channel pixels if they are not too widely spaced
-        self.connect_channel_pixels()
-        # Skeletonize channel pixels into thin network
-        self.thin_channels()
-        # Locate upstream ends of thinned channel network & designate as heads
-        self.map_channel_heads()
-        # Link downstream from channel heads
-        self.count_downchannels()
-        # Count downstream from channel heads
-        self.flag_downchannels()
-        # Map locations of channel confluences & designate types
-        self.label_confluences()
-        # Label channel segments with channel head idxs
-        self.segment_downchannels()
-        # Designate downstream linkages for all hillslope pixels
-        self.link_hillslopes()
-        # Label correspondingly upstream hillslope pixels
-        self.segment_hillslopes()
-        # Designate as L or R of channel to subsegment hillslope flanks
-        self.subsegment_flanks()
+        try:
+            # Use downstream slt,sla pdfs to designate pixels as channels
+            self.map_channels()
+            # Join up disconnected channel pixels if they are not too widely spaced
+            self.connect_channel_pixels()
+            # Skeletonize channel pixels into thin network
+            self.thin_channels()
+            # Locate upstream ends of thinned channel network & designate as heads
+            self.map_channel_heads()
+            # Link downstream from channel heads
+            self.count_downchannels()
+            # Count downstream from channel heads
+            self.flag_downchannels()
+            # Map locations of channel confluences & designate types
+            self.label_confluences()
+            # Label channel segments with channel head idxs
+            self.segment_downchannels()
+            # Designate downstream linkages for all hillslope pixels
+            self.link_hillslopes()
+            # Label correspondingly upstream hillslope pixels
+            self.segment_hillslopes()
+            # Designate as L or R of channel to subsegment hillslope flanks
+            self.subsegment_flanks()
+            # Success
+            return True
+        except Exception as error:
+            # Failure
+            vprint(self.verbose_backup,
+                   'Failed during channel & segment mapping:', error)
+            return False
       
         
     def map_channels(self):
@@ -256,7 +265,7 @@ class Mapping(Core):
         self.data.mapping_array[  
                           (self.trace.slt_array[:,:,0]>=self.info.channel_threshold)
                         & (self.trace.slt_array[:,:,0]*2>=self.trace.slc_array[:,:,0])
-                                ] = self.info.is_channel                                
+                                ] = self.info.is_channel   
         self.print('done')  
 
     def connect_channel_pixels(self):
@@ -277,10 +286,9 @@ class Mapping(Core):
         self.print('done')  
 
     def map_channel_heads(self):
-        channelheads.map_channel_heads(self.cl_state, self.info, self.data, 
-                                       self.verbose)
+        channelheads.map_channel_heads(self.cl_state, self.info, self.data, self.verbose)
         mapping_array = self.data.mapping_array
-        # Hack
+        # Hack?
 #         channelheads.prune_channel_heads(self.cl_state, self.info, self.data, 
 #                                          self.verbose)
         

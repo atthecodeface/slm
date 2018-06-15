@@ -9,7 +9,8 @@ from sklearn.neighbors import KernelDensity
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
-from streamlines.core import Core
+from streamlines.core   import Core
+from streamlines.useful import vprint
 from streamlines import kde
 
 __all__ = ['Analysis','Univariate_distribution','Bivariate_distribution']
@@ -78,12 +79,21 @@ class Analysis(Core):
 
         self.print('**Analysis end**\n')  
       
-    def estimate_channel_threshold(self):
+    def estimate_channel_threshold(self, verbose=None):
         """
         TBD
         """
-        self.compute_marginal_distribn_dslt()
-        return self.mpdf_dslt.channel_threshold_x
+        if verbose is None:
+            verbose=self.verbose
+        try:
+            self.compute_marginal_distribn_dslt()
+            return self.mpdf_dslt.channel_threshold_x
+        except AttributeError as error:
+            self.print('Failed to estimate channel threshold:', error)
+            return None
+        except Exception as error:
+            vprint(verbose,'Failed to estimate channel threshold:', repr(error))
+            return None
         
     def compute_marginal_distribn(self, x_array,y_array,mask_array=None,
                                   up_down_idx_x=0, up_down_idx_y=0, 
