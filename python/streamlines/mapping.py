@@ -175,7 +175,6 @@ class Mapping(Core):
             self.map_ridges()
             # Find the HSL-mappable subsegments
             self.select_subsegments(do_without_ridges_midslopes=False)
-            self.print('Selected {} subsegments'.format(self.n_subsegments))
             # Measure HSL from ridges or midslopes to thin channels per subsegment
             if not self.measure_hsl():
                 self.state.remove_active_mask('dilated_segment')
@@ -201,7 +200,7 @@ class Mapping(Core):
         self.map_hsl()
         self.map_aspect()
         self.compute_hsl_aspect()
-        self.state.remove_active_mask('merged_coarse')
+#         self.state.remove_active_mask('merged_coarse')
         self.print('**Pass#3 end**') 
                 
     def create_coarse_subsegment_mask(self, coarse_label, is_left_or_right):
@@ -394,6 +393,7 @@ class Mapping(Core):
         unique_labels         = np.unique(self.data.traj_label_array)
         self.hillslope_labels = unique_labels[unique_labels!=0].astype(np.int32)
         self.n_subsegments    = unique_labels.shape[0]
+        self.print('selected {}'.format(self.n_subsegments))
         self.print('...done')  
                 
     def measure_hsl(self):
