@@ -111,6 +111,13 @@ class Mapping(Core):
 #         self.plot.plot_marginal_pdf_dslt()
         self.print('\n**Pass#1  end**') 
 
+    def get_bbox(self, array):
+        x = np.any(array, axis=0)
+        y = np.any(array, axis=1)
+        x_min, x_max = np.where(x)[0][[0, -1]]
+        y_min, y_max = np.where(y)[0][[0, -1]]
+        return x_min,x_max, y_min,y_max
+
     def pass2(self):
         # Pass §2
         self.print('\n**Pass#2 begin**') 
@@ -142,6 +149,10 @@ class Mapping(Core):
             segment_mask_array = np.invert(segment_mask_array)
             # Deploy the dilated coarse-subsegment mask
             self.state.add_active_mask({'dilated_segment':dilated_segment_mask_array})
+            
+            # Define bbox
+            bbox_dilated_segment = self.get_bbox(~dilated_segment_mask_array)
+            pdebug('Dilated subsegment mask bbox = {}'.format(bbox_dilated_segment))
             
             # Get ready to map HSL
             self.prepare_arrays_data_mask()
