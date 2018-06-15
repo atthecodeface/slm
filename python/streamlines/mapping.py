@@ -248,6 +248,7 @@ class Mapping(Core):
         self.segment_hillslopes()
         # Designate as L or R of channel to subsegment hillslope flanks
         self.subsegment_flanks()
+      
         
     def map_channels(self):
         self.print('Channels...',end='')
@@ -625,7 +626,7 @@ class Mapping(Core):
         self.print('HSL N-S rel disparity vs variation: '
                    +'  {0:2.1f}% ({1:2.1f}m) NS vs {2:2.1f}% ({3:2.1f}m)'
                    .format(self.hsl_ns_disparity_normed*100,
-                           self.hsl_ns_disparity/2.0,
+                           self.hsl_ns_disparity,
                            self.hsl_split_stddev_normed*100,
                            self.hsl_split_stddev) )
         self.print('HSL N-S disparity signal-noise ratio: ∆/σ = {0:2.1f}'
