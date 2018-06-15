@@ -17,11 +17,10 @@ from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
 from streamlines.core   import Core
+from streamlines.useful import Data, Info, vprint
 from streamlines        import connect, channelheads, countlink, label, \
                                segment, linkhillslopes, lengths, useful
-from streamlines.trace  import Info, Data
 from streamlines.pocl   import Initialize_cl
-from streamlines.useful import vprint
 
 __all__ = ['Mapping']
 
@@ -86,6 +85,13 @@ class Mapping(Core):
     def _switch_back_to_verbose_mode(self):
         self.state.verbose = self.verbose_backup
 
+    def get_bbox(self, array):
+        x = np.any(array, axis=0)
+        y = np.any(array, axis=1)
+        x_min, x_max = np.where(x)[0][[0, -1]]
+        y_min, y_max = np.where(y)[0][[0, -1]]
+        return x_min,x_max, y_min,y_max
+
     def pass1(self):
         self.print('\n**Pass#1 begin**')
         self._switch_to_quiet_mode()
@@ -94,7 +100,7 @@ class Mapping(Core):
         # Ensure a fresh start with data, mapping sub-objects
         self.prepare_arrays_data_mask()
         # Create an info object for passing parameters to CL wrappers etc
-        self.info = Info(self.trace, mapping=self)
+        self.info = Info(self.state, self.geodata, self.trace, mapping=self)
         # Force bogus channel delineation at coarse scale
         self.info.channel_threshold=self.coarse_channel_threshold
         # Force subsegmentation at coarse scale
@@ -106,44 +112,37 @@ class Mapping(Core):
         # Make a list of all the subsegments with enough ridge/midslope pixels for HSL
         self.select_subsegments(do_without_ridges_midslopes=True)
         self.coarse_labels = np.sort(self.hillslope_labels)
-        # Record a mask built from all pixels outside the listed subsegments
+        # Generate a mask of all pixels outside the listed subsegments
         self.merged_coarse_mask = np.ones_like(self.coarse_label_array,dtype=np.bool)
         for label in self.coarse_labels:
             self.merged_coarse_mask[self.coarse_label_array==label] = False
-        self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask})
-        # Viz the coarse channels & subsegmentation
-#         self.plot.plot_channels(window_size_factor=3)
-#         self.plot.plot_segments(window_size_factor=3)
-#         # Estimate whole-ROI, approximate channel threshold
-#         self.info.channel_threshold = self.analysis.estimate_channel_threshold()
-#         self.plot.plot_marginal_pdf_dslt()
         self._switch_back_to_verbose_mode()
         self.print('**Pass#1 end**') 
-
-    def get_bbox(self, array):
-        x = np.any(array, axis=0)
-        y = np.any(array, axis=1)
-        x_min, x_max = np.where(x)[0][[0, -1]]
-        y_min, y_max = np.where(y)[0][[0, -1]]
-        return x_min,x_max, y_min,y_max
 
     def pass2(self):
         self.print('\n**Pass#2 begin**') 
         self._switch_to_quiet_mode()
         self.print('Subsegment labels: {}'.format(self.coarse_labels))
+        # Mask off all but these coarse subsegments
+        self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask})
+        # Initialize the HSL grid
         try:
             del self.hsl_array
         except:
             pass
         self.hsl_array = None
+        # Count how many coarse subsegments need to be iterated over
         n_segments = self.coarse_labels.shape[0]
 #         for idx,coarse_label in enumerate([71]):
 #         vprint(True, '{:2.1f}% '.format(0/n_segments),end='')
+        # Iterate over the coarse subsegments
         for idx,coarse_label in enumerate(self.coarse_labels):
+            # Flag if subsegment is left or right flank
+            #   - important because a left flank subseg omits the channel pixels
             is_left_or_right = ('left' if coarse_label<0 else 'right')
             self.print('\n--- Mapping HSL on subsegment §{0} = {1}/{2} ({3})'
                        .format(coarse_label,idx+1,n_segments,is_left_or_right))
-            
+
             # Basic masking first
             self.state.reset_active_masks()
             # Create a mask array for this coarse subsegment and add to active list
@@ -157,7 +156,7 @@ class Mapping(Core):
                                                               n_iterations=n_iterations))
             # Now invert the raw mask as well
             segment_mask_array = np.invert(segment_mask_array)
-            # Deploy the dilated coarse-subsegment mask
+            # Deploy this iteration's dilated coarse-subsegment mask
             self.state.add_active_mask({'dilated_segment':dilated_segment_mask_array})
             
             # Define bbox
@@ -170,14 +169,13 @@ class Mapping(Core):
 
             # Get ready to map HSL
             self.prepare_arrays_data_mask()
-            self.info = Info(self.trace, mapping=self)
-#             self.info.channel_threshold=self.coarse_channel_threshold
+            self.info = Info(self.state, self.geodata, self.trace, mapping=self)
             self.info.segmentation_threshold=self.fine_segmentation_threshold
             # Compute slt pdf and estimate channel threshold from it
-#             del self.plot.figs[self.plot.plot_marginal_pdf_dslt()]
             try:
                 self.info.channel_threshold = self.analysis.estimate_channel_threshold()
             except: 
+                self.print('Failed channel threshold estimation')
                 self.state.remove_active_mask('dilated_segment')
                 continue
 
@@ -185,8 +183,8 @@ class Mapping(Core):
             try:
                 self.do_map_channels_segments()
             except:
-                self.state.remove_active_mask('dilated_segment')
                 self.print('Failed during segment/channel mapping')
+                self.state.remove_active_mask('dilated_segment')
                 continue
                 
             # Map ridges and midslopes
@@ -202,15 +200,14 @@ class Mapping(Core):
                 continue
             vprint(self.verbose_backup, 'Mean HSL = {0:0.1f}m'.format(self.hsl_mean))
 
-            # Remove dilated coarse-subsegment mask
+            # Remove this iteration's dilated coarse-subsegment mask
             self.state.remove_active_mask('dilated_segment')
-            # Replace with the raw coarse-subsegment mask
+            # Replace with this iteration's raw coarse-subsegment mask
             self.state.add_active_mask({'raw_segment': segment_mask_array})
-            # Add this coarse subsegment's HSL data to the 'global' HSL map
+            # Deploy this coarse subsegment's HSL data to the 'global' HSL map
             self.merge_hsl()
-            # Delete this coarse mask from the active list
+            # Delete this iteration's raw coarse mask from the active list
             self.state.remove_active_mask('raw_segment')
-#             self.plot.plot_hsl(window_size_factor=3.5)
             del segment_mask_array, dilated_segment_mask_array
                     
         self._switch_back_to_verbose_mode()
@@ -222,13 +219,13 @@ class Mapping(Core):
         self.map_hsl()
         self.map_aspect()
         self.compute_hsl_aspect()
+        self.state.remove_active_mask('merged_coarse')
         self.print('**Pass#3 end**') 
                 
     def do_map_channels_segments(self):
         """
         TBD.
         """
-#         self.print('\n**Mapping segments and channels begin**') 
         # Use downstream slt,sla pdfs to designate pixels as channels
         self.map_channels()
         # Join up disconnected channel pixels if they are not too widely spaced
@@ -251,7 +248,6 @@ class Mapping(Core):
         self.segment_hillslopes()
         # Designate as L or R of channel to subsegment hillslope flanks
         self.subsegment_flanks()
-#         self.print('**Mapping segments and channels end**\n')  
         
     def map_channels(self):
         self.print('Channels...',end='')
@@ -350,13 +346,7 @@ class Mapping(Core):
         midslope_array[ (~mask) & (np.fabs(
             gaussian_filter((np.arctan2(dsla,usla)-np.pi/4), self.midslope_filter_sigma))
                              <=self.midslope_threshold)] = True
-#         dilation_structure = generate_binary_structure(2, 2)
-#         fat_midslope_array = binary_dilation(midslope_array, 
-#                                              structure=dilation_structure, iterations=1)
-#         filled_midslope_array = binary_fill_holes(midslope_array)
         skeleton_midslope_array = skeletonize(midslope_array)
-#         fat_midslope_array = binary_dilation(skeleton_midslope_array, 
-#                                              structure=dilation_structure, iterations=1)
         self.data.mapping_array[skeleton_midslope_array] |= self.info.is_midslope
         self.print('done')  
 
@@ -370,12 +360,10 @@ class Mapping(Core):
             gaussian_filter((np.arctan2(dsla,usla)-np.pi/4), self.ridge_filter_sigma))
                              <= -(np.pi/4)*self.ridge_threshold)] = True
         dilation_structure = generate_binary_structure(2, 2)
-        fat_ridge_array = binary_dilation(ridge_array, 
-                                          structure=dilation_structure, iterations=1)
-        filled_ridge_array = binary_fill_holes(fat_ridge_array)
+        fat_ridge_array    = binary_dilation(ridge_array, 
+                                             structure=dilation_structure, iterations=1)
+        filled_ridge_array   = binary_fill_holes(fat_ridge_array)
         skeleton_ridge_array = skeletonize(filled_ridge_array)
-#         fat_ridge_array = binary_dilation(skeleton_ridge_array, 
-#                                           structure=dilation_structure, iterations=1)
         self.data.mapping_array[skeleton_ridge_array] |= self.info.is_ridge
         self.print('done')  
 
@@ -394,9 +382,9 @@ class Mapping(Core):
             self.data.traj_label_array = self.data.label_array[
                      ((self.data.mapping_array & flag)>0) & (~self.data.mask_array)
                                         ].astype(np.int32).ravel()
-        unique_labels = np.unique(self.data.traj_label_array)
+        unique_labels         = np.unique(self.data.traj_label_array)
         self.hillslope_labels = unique_labels[unique_labels!=0].astype(np.int32)
-        self.n_subsegments = unique_labels.shape[0]
+        self.n_subsegments    = unique_labels.shape[0]
         self.print('...done')  
                 
     def measure_hsl(self):
@@ -504,7 +492,6 @@ class Mapping(Core):
         is_channel      = self.info.is_channel
         mapping_array   = self.data.mapping_array
         mask_array      = np.zeros_like(mapping_array, dtype=np.bool)
-        # Hack - fix masking for multipass
         slope_array[((mapping_array & is_channel)==is_channel)] = 0.0
         if self.do_aspect_median_filtering:
             sf = np.max(slope_array)/255.0
@@ -579,15 +566,15 @@ class Mapping(Core):
         hsl_north_array = hsl[asp>=0.0]
         # If we have HSL() at +180° and -180°, don't repeat in mean
         if -asp[0]==asp[-1]:
-            self.hsl_mean     = np.mean(hsl[1:])
+            self.hsl_mean = np.mean(hsl[1:])
         else:
-            self.hsl_mean     = np.mean(hsl)
+            self.hsl_mean = np.mean(hsl)
         # Mean HSL north and south
         self.hsl_mean_south = (np.mean(hsl_south_array) if hsl_south_array!=[] else 0.0)
         self.hsl_mean_north = (np.mean(hsl_north_array) if hsl_north_array!=[] else 0.0)
         # Disparity between north and south means
         self.hsl_ns_disparity = np.abs(self.hsl_mean_north-self.hsl_mean_south)
-        self.hsl_ns_disparity_normed = self.hsl_ns_disparity/self.hsl_mean/2.0
+        self.hsl_ns_disparity_normed = self.hsl_ns_disparity/self.hsl_mean
         # Overall HSL standard deviation
         self.hsl_stddev = np.std(hsl)
         # Split HSL(aspect) into n_hsl_split groups e.g. 4 to compute std devn
@@ -615,40 +602,40 @@ class Mapping(Core):
         self.hsl_mean_azimuth = np.rad2deg(mhsl[1])
         # Calculate a confidence measure for any N-S disparity
         #   - effectively a signal:noise ratio 
-        #         =    (N HSL_mean - S HSL_mean)/2
-        #              /(mean split HSL std devn)
-        self.hsl_ns_disparity_confidence \
-            = self.hsl_ns_disparity_normed/self.hsl_split_stddev_normed
+        #     defined as reciprocal coefficient of variation
+        #         =    (N HSL_mean - S HSL_mean)/(mean split HSL std devn)
+        self.hsl_ns_disparity_confidence = self.hsl_ns_disparity/self.hsl_split_stddev
 
         self.print('done')  
         
     def check_hsl_ns_disparity(self):
         is_n_or_s_disparity \
             = ('north' if self.hsl_mean_north>self.hsl_mean_south else 'south')
-        self.print('HSL mean:'
-                   +'\t\t\t     {:2.1f}m'
+        self.print('HSL mean ± σ(split), σ(all):'
+                   +'\t      {:2.1f}m'
                    .format(self.hsl_mean)
                    +' ± {:2.1f}m (split)'
                    .format(self.hsl_split_stddev)
                    +' {:2.1f}m (all)'
                    .format(self.hsl_stddev) )
         self.print('HSL N-S disparity:'
-                   +'\t\t     {0:2.1f}mN <=> {1:2.1f}mS  2∆≈{2:2.1f}m'
+                   +'\t\t      {0:2.1f}mN vs {1:2.1f}mS   ∆≈{2:2.1f}m'
                    .format(self.hsl_mean_north, self.hsl_mean_south,
                            self.hsl_ns_disparity) )
         self.print('HSL N-S rel disparity vs variation: '
-                   +' {0:2.1f}% ({1:2.1f}m) NS vs {2:2.1f}% ({3:2.1f}m)'
+                   +'  {0:2.1f}% ({1:2.1f}m) NS vs {2:2.1f}% ({3:2.1f}m)'
                    .format(self.hsl_ns_disparity_normed*100,
                            self.hsl_ns_disparity/2.0,
                            self.hsl_split_stddev_normed*100,
                            self.hsl_split_stddev) )
-        self.print('HSL N-S disparity deg of confidence: {0:2.1f}'
+        self.print('HSL N-S disparity signal-noise ratio: ∆/σ = {0:2.1f}'
                    .format(self.hsl_ns_disparity_confidence) )
+        indent = '\t'*5
         if self.hsl_ns_disparity_confidence<0.5:
-            self.print('\t\t\t\t=> very weak {} disparity'.format(is_n_or_s_disparity))
+            self.print(indent+'=> very weak {} disparity'.format(is_n_or_s_disparity))
         elif self.hsl_ns_disparity_confidence<1.0:
-            self.print('\t\t\t\t=> weak {} disparity'.format(is_n_or_s_disparity))
+            self.print(indent+'=> weak {} disparity'.format(is_n_or_s_disparity))
         elif self.hsl_ns_disparity_confidence<2.0:
-            self.print('\t\t\t\t=> moderate {} disparity'.format(is_n_or_s_disparity))
+            self.print(indent+'=> moderate {} disparity'.format(is_n_or_s_disparity))
         else:
-            self.print('\t\t\t\t=> strong {} disparity'.format(is_n_or_s_disparity))                                                         
+            self.print(indent+'=> strong {} disparity'.format(is_n_or_s_disparity))                                                         

@@ -531,7 +531,6 @@ class Univariate_distribution():
         self.x_vec = np.exp(self.logx_vec)
         self.dlogx = self.logx_vec[1]-self.logx_vec[0]
  
-        self.method = method
         self.search_cdf_min = search_cdf_min
         self.search_cdf_max = search_cdf_max
         
@@ -719,7 +718,6 @@ class Bivariate_distribution():
                            & (logy_array>=logy_min) & (logy_array<=logy_max)]
                 ]).T
         self.logxy_data = logxy_data.copy().astype(dtype=np.float32)
-            
         # x,y meshgrid for sampling the bivariate pdf f(x,y)
         # For some weird reason, the numbers of points in x,y need to be complex-valued 
         self.logx_mesh,self.logy_mesh \
@@ -727,40 +725,29 @@ class Bivariate_distribution():
                        logy_min:logy_max:np.complex(n_pdf_points)]
         self.logxy_data_indexes = np.vstack([self.logx_mesh.ravel(), 
                                              self.logy_mesh.ravel()]).T
-                                             
-        self.logx_min = logx_min
-        self.logx_max = logx_max
-        self.logy_min = logy_min
-        self.logy_max = logy_max
-        self.logx_range = self.logx_max-self.logx_min
-        self.logy_range = self.logy_max-self.logy_min
-        self.n_data = self.logxy_data.shape[0]
-        self.n_hist_bins = n_hist_bins
+        self.logx_min     = logx_min
+        self.logx_max     = logx_max
+        self.logy_min     = logy_min
+        self.logy_max     = logy_max
+        self.logx_range   = self.logx_max-self.logx_min
+        self.logy_range   = self.logy_max-self.logy_min
+        self.n_data       = self.logxy_data.shape[0]
+        self.n_hist_bins  = n_hist_bins
         self.n_pdf_points = n_pdf_points
-        self.bin_dx = self.logx_range/self.n_hist_bins
-        self.pdf_dx = self.logx_range/self.n_pdf_points
-        self.bin_dy = self.logy_range/self.n_hist_bins
-        self.pdf_dy = self.logy_range/self.n_pdf_points
-
-        self.x_mesh = np.exp(self.logx_mesh)
-        self.y_mesh = np.exp(self.logy_mesh)
-#         self.x_vec = self.x_mesh[:,0]
-#         self.y_vec = self.y_mesh[0,:]
-
-        self.method = method
-        self.mode_ij_list = [None,None]
-        self.mode_xy_list = [None,None]
-        self.mode_max_list = [None,None]
-        self.near_mode_vec_list = [None,None]
-        self.mode_cluster_ij_list = [None,None]
+        self.bin_dx       = self.logx_range/self.n_hist_bins
+        self.pdf_dx       = self.logx_range/self.n_pdf_points
+        self.bin_dy       = self.logy_range/self.n_hist_bins
+        self.pdf_dy       = self.logy_range/self.n_pdf_points
+        self.x_mesh       = np.exp(self.logx_mesh)
+        self.y_mesh       = np.exp(self.logy_mesh)
+        self.pixel_size   = pixel_size
         
-        self.pixel_size = pixel_size
         self.cl_src_path = cl_src_path
         self.cl_platform = cl_platform
-        self.cl_device = cl_device  
+        self.cl_device   = cl_device  
              
-        self.debug = debug
-        self.verbose = verbose
+        self.debug       = debug
+        self.verbose     = verbose
         self.gpu_verbose = gpu_verbose
 
     def print(self, *args, **kwargs):

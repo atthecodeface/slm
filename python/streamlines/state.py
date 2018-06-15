@@ -14,7 +14,6 @@ import numpy as np
 import json
 from pympler.asizeof import asizeof
 from collections     import ChainMap
-from pprint import pprint
 
 from streamlines.core import Core
 from streamlines.useful import neatly, true_size
@@ -259,7 +258,6 @@ class State(Core):
 #             print('writing to',filename)
             self.print('Writing to HDF5 group "nparrays":')
 #             group.create_dataset('dtm_array', data=self.dtm_array)
-#             group.create_dataset('roi_array', data=self.roi_array)
             for item in nparray_list:
 
                 if item=='dtm_array':

@@ -65,8 +65,7 @@ class Streamlining(Core):
         (4) references to methods needed for its work,
             e.g., preprocess.find_blockages(), trace.do();
         (5) attributes and references to objects generated during its work, 
-            notably data arrays containing results, 
-            e.g., geodata.roi_array, trace.streamline_arrays_list.
+            notably data arrays containing results
         """
         
         #

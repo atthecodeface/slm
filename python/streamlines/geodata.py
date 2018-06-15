@@ -9,15 +9,12 @@ Todo:
 import os
 import numpy as np
 from scipy.ndimage.morphology import binary_dilation, generate_binary_structure
-from osgeo import gdal
 import json
-# Needs GDAL. Had issues with 2.2.0 and had to do:
-#    pip install gdal==2.1.3
 
 pdebug=print
 
 from streamlines.core   import Core
-from streamlines import useful
+from streamlines.useful import read_geotiff, dilate
 
 __all__ = ['Geodata']
 
@@ -52,40 +49,6 @@ class Geodata(Core):
             self.make_basins_mask()
         self.print('**Geodata end**\n')  
 
-    def read_geotiff(self, path, filename):
-        """
-        Read GeoTIFF file.
-        Assumes file contains a single-band 2d grid of equal x-y dimension pixels.
-
-        Args:
-            path (str): Path to folder containing GeoTIFF file to be read
-            filename (str): GeoTIFF filename
-        
-        Raises:
-            ValueError if file cannot be opened for reading
-            
-        Returns:
-            numpy.ndarray, float: Numpy array of GeoTIFF grid, size (in meters) 
-                                    of a grid pixel
-        """          
-        fullpath_filename = os.path.join(path,filename)
-        if self.state.noisy:
-            self.print(fullpath_filename)
-        tiff=gdal.Open(fullpath_filename)
-        if tiff is None:
-            raise ValueError('Cannot open GeoTIFF file "%s" for reading' % fullpath_filename)
-        geotransform = tiff.GetGeoTransform()
-        x_easting_bottomleft  = geotransform[0]
-        y_northing_bottomleft = geotransform[3]+geotransform[5]
-        pixel_size = geotransform[1]
-        self.print('DTM GeoTIFF coordinate "geotransform":',geotransform)
-        if not np.isclose(pixel_size,geotransform[5]*(-1),rtol=1e-3):
-            raise ValueError(
-                'Pixel x=%g and y=%g dimensions not equal in "%s": cannot handle non-square pixels'
-                             % (pixel_size,(-1)*geotransform[5],fullpath_filename) )
-        return (tiff.GetRasterBand(1).ReadAsArray().copy().astype(np.float32), 
-                pixel_size, geotransform)
-        
     def read_dtm_file(self):
         """
         Read GeoTIFF-format DTM file into numpy array and parse out important metadata, 
@@ -124,7 +87,7 @@ class Geodata(Core):
         self.print('Reading DTM from GeoTIFF file "%s/%s"'
               % (self.dtm_path,self.dtm_file))
         self.dtm_array, self.pixel_size, self.geotransform\
-             = self.read_geotiff(self.dtm_path,self.dtm_file)
+             = read_geotiff(self.dtm_path, self.dtm_file)
         self.x_easting_bottomleft  = self.geotransform[0]
         self.y_northing_bottomleft = self.geotransform[3] \
                                       +self.geotransform[5]*self.dtm_array.shape[0]
@@ -183,11 +146,13 @@ class Geodata(Core):
                                           self.roi_array.shape[1], dtype=np.float32)
         self.roi_nx = len(self.x_roi_n_pixel_centers)
         self.roi_ny = len(self.y_roi_n_pixel_centers)
+        self.roi_padded_nx = self.roi_nx+2*self.pad_width
+        self.roi_padded_ny = self.roi_ny+2*self.pad_width
         
-        self.print('ROI pixel bounds: ', [[self.roi_x_bounds[0],self.roi_x_bounds[-1]-1], 
-                                     [self.roi_y_bounds[0],self.roi_y_bounds[-1]-1]])
+        self.print('ROI pixel bounds: ',[[self.roi_x_bounds[0],self.roi_x_bounds[-1]-1], 
+                                         [self.roi_y_bounds[0],self.roi_y_bounds[-1]-1]])
         self.print('ROI pixel grid: ',  self.roi_nx, 'x', self.roi_ny, 
-              '= {:,} pixels'.format(self.roi_nx*self.roi_ny))
+                                    '= {:,} pixels'.format(self.roi_nx*self.roi_ny))
 
         ######################################################
         ## Extremely important: 
@@ -228,7 +193,7 @@ class Geodata(Core):
         """ 
         self.print('Reading basins from GeoTIFF file "%s/%s"'
               % (self.dtm_path,self.basins_file))
-        basins_array, _, _ = self.read_geotiff(self.dtm_path,self.basins_file)
+        basins_array, _, _ = read_geotiff(self.dtm_path,self.basins_file)
         # Check size
         if (self.dtm_array.shape[1]!=basins_array.shape[1] 
             or self.dtm_array.shape[0]!=basins_array.shape[0]):
@@ -281,7 +246,7 @@ class Geodata(Core):
 #         basin_fatmask_unpadded_array = binary_dilation(basin_mask_unpadded_array, 
 #                                                    structure=dilation_structure, 
 #                                                    iterations=1)
-        basin_fatmask_unpadded_array = useful.dilate(basin_mask_unpadded_array, 2)
+        basin_fatmask_unpadded_array = dilate(basin_mask_unpadded_array, 2)
         # True = masked out; False = data we want to see
         basin_mask_unpadded_array    = np.invert(basin_mask_unpadded_array)    
         basin_fatmask_unpadded_array = np.invert(basin_fatmask_unpadded_array)    

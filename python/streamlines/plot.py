@@ -12,21 +12,21 @@ Map and graph plotting
 #  mpl_toolkits.axes_grid1
 
 import numpy as np
-from numpy  import pi, arctan, arctan2, sin, cos, sqrt
-from random import shuffle, seed
+from   numpy  import pi, arctan, arctan2, sin, cos, sqrt
+from   random import shuffle, seed
 import matplotlib as mpl
 from   matplotlib import streamplot
 import matplotlib.pyplot   as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.ticker   as ticker
-from matplotlib.pyplot  import streamplot
-from matplotlib.colors  import LinearSegmentedColormap
-from matplotlib.patches import ArrowStyle, FancyArrowPatch
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+from   matplotlib.pyplot  import streamplot
+from   matplotlib.colors  import LinearSegmentedColormap
+from   matplotlib.patches import ArrowStyle, FancyArrowPatch
+from   mpl_toolkits.axes_grid1 import make_axes_locatable
 import colorsys
-from scipy.stats   import norm
-from scipy.signal  import decimate
-from os import environ
+from   scipy.stats  import norm
+from   scipy.signal import decimate
+from   os import environ
 environ['PYTHONUNBUFFERED']='True'
 import warnings
 with warnings.catch_warnings():
