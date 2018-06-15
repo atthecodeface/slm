@@ -16,11 +16,12 @@ import warnings
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
-from streamlines.core  import Core
-from streamlines       import connect, channelheads, countlink, label, \
-                              segment, linkhillslopes, lengths, useful
-from streamlines.trace import Info, Data
-from streamlines.pocl  import Initialize_cl
+from streamlines.core   import Core
+from streamlines        import connect, channelheads, countlink, label, \
+                               segment, linkhillslopes, lengths, useful
+from streamlines.trace  import Info, Data
+from streamlines.pocl   import Initialize_cl
+from streamlines.useful import vprint
 
 __all__ = ['Mapping']
 
@@ -77,10 +78,19 @@ class Mapping(Core):
                           mapping_array = self.mapping_array )  
         self.print('done')    
             
+    def _switch_to_quiet_mode(self):
+        self.verbose_backup = self.state.verbose
+        self.verbose = True
+        self.state.verbose = self.state.very_verbose
+
+    def _switch_back_to_verbose_mode(self):
+        self.state.verbose = self.verbose_backup
+
     def pass1(self):
         # Pass §1
         #
         self.print('\n**Pass#1 begin**')
+        self._switch_to_quiet_mode()
         # Only deploy border padding, uv-error, and basin+?height-threshold masks
         self.state.reset_active_masks()
         # Ensure a fresh start with data, mapping sub-objects
@@ -109,7 +119,8 @@ class Mapping(Core):
 #         # Estimate whole-ROI, approximate channel threshold
 #         self.info.channel_threshold = self.analysis.estimate_channel_threshold()
 #         self.plot.plot_marginal_pdf_dslt()
-        self.print('\n**Pass#1  end**') 
+        self._switch_back_to_verbose_mode()
+        self.print('**Pass#1 end**') 
 
     def get_bbox(self, array):
         x = np.any(array, axis=0)
@@ -121,6 +132,7 @@ class Mapping(Core):
     def pass2(self):
         # Pass §2
         self.print('\n**Pass#2 begin**') 
+        self._switch_to_quiet_mode()
         self.print('Subsegment labels: {}'.format(self.coarse_labels))
         try:
             del self.hsl_array
@@ -129,6 +141,7 @@ class Mapping(Core):
         self.hsl_array = None
         n_segments = self.coarse_labels.shape[0]
 #         for idx,coarse_label in enumerate([71]):
+#         vprint(True, '{:2.1f}% '.format(0/n_segments),end='')
         for idx,coarse_label in enumerate(self.coarse_labels):
             is_left_or_right = ('left' if coarse_label<0 else 'right')
             self.print('\n--- Mapping HSL on subsegment §{0} = {1}/{2} ({3})'
@@ -152,8 +165,12 @@ class Mapping(Core):
             
             # Define bbox
             bbox_dilated_segment = self.get_bbox(~dilated_segment_mask_array)
-            pdebug('Dilated subsegment mask bbox = {}'.format(bbox_dilated_segment))
-            
+            self.print('Dilated subsegment mask bbox = {}'.format(bbox_dilated_segment))
+
+            # Report % progress
+            progress = ((idx+1)/n_segments)*100.0
+            vprint(self.verbose_backup, '{:2.1f}% '.format(progress),end='')
+
             # Get ready to map HSL
             self.prepare_arrays_data_mask()
             self.info = Info(self.trace, mapping=self)
@@ -198,7 +215,7 @@ class Mapping(Core):
             
             # Remove dilated coarse-subsegment mask
             self.state.remove_active_mask('dilated_segment')
-            self.print('Mean HSL = {0:0.1f}m'.format(hsl_mean))
+            vprint(self.verbose_backup, 'Mean HSL = {0:0.1f}m'.format(hsl_mean))
 
             # Replace with the raw coarse-subsegment mask
             self.state.add_active_mask({'raw_segment': segment_mask_array})
@@ -208,8 +225,9 @@ class Mapping(Core):
             self.state.reset_active_masks()
 #             self.plot.plot_hsl(window_size_factor=3.5)
             del segment_mask_array, dilated_segment_mask_array
-        
-        self.print('\n**Pass#2  end**') 
+                    
+        self._switch_back_to_verbose_mode()
+        self.print('\n**Pass#2 end**') 
                 
     def pass3(self):        
         # Pass §3
@@ -219,7 +237,7 @@ class Mapping(Core):
         self.map_aspect()
         self.compute_hsl_aspect()
 #         self.state.reset_active_masks()
-        self.print('\n**Pass#3 end**') 
+        self.print('**Pass#3 end**') 
                 
     def mapping_segments_channels(self):
         """

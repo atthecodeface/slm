@@ -150,8 +150,3 @@ class Core():
             pprint.pprint(*args, **kwargs)
             sys.stdout.flush()
 
-    def vprint(self, *args, **kwargs):
-        if self.state.verbose:
-            print(*args, **kwargs, flush=True)
-            # Try to really force this line to print before the GPU prints anything
-            sys.stdout.flush()

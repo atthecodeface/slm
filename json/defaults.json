@@ -1,6 +1,7 @@
 {
 	"state": {
 		"verbose" : true,
+		"very_verbose" : false,
 		"gpu_verbose" : false,
 		"debug" : false,
 		"noisy" : false,
