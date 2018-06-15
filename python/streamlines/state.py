@@ -304,12 +304,15 @@ class State(Core):
         """
         TBD
         """ 
-        self.active_masks_dict.update(mask_item)
+        # Don't try to add if already there
+        if list(mask_item.keys())[0] not in self.active_masks_dict.keys():
+            self.active_masks_dict.update(mask_item)
         
     def remove_active_mask(self, mask_name):
         """
         TBD
         """ 
+        # Don't try to remove if not there
         if mask_name in self.active_masks_dict.keys():
             self.active_masks_dict.pop(mask_name)
         
@@ -317,6 +320,7 @@ class State(Core):
         """
         TBD
         """ 
+        # Clear all but the most basic masks
         masks_keep_list = ['dtm', 'basin', 'uv']
         # Rebuild dict since in-situ deletion in list comprehension doesn't work
         self.active_masks_dict \
@@ -327,6 +331,7 @@ class State(Core):
         """
         TBD
         """ 
+        # Create a mask from a blend of all those active
         for idx, mask_array in enumerate(self.active_masks_dict.values()):
             if idx==0:
                 active_mask_array = mask_array.copy()

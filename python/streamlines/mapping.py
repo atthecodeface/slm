@@ -87,8 +87,6 @@ class Mapping(Core):
         self.state.verbose = self.verbose_backup
 
     def pass1(self):
-        # Pass §1
-        #
         self.print('\n**Pass#1 begin**')
         self._switch_to_quiet_mode()
         # Only deploy border padding, uv-error, and basin+?height-threshold masks
@@ -102,7 +100,7 @@ class Mapping(Core):
         # Force subsegmentation at coarse scale
         self.info.segmentation_threshold=self.coarse_segmentation_threshold
         # Do the forced coarse channel mapping & subsegmentation
-        self.mapping_segments_channels()
+        self.do_map_channels_segments()
         # Save the coarse subsegmentation labels
         self.coarse_label_array = self.label_array
         # Make a list of all the subsegments with enough ridge/midslope pixels for HSL
@@ -130,7 +128,6 @@ class Mapping(Core):
         return x_min,x_max, y_min,y_max
 
     def pass2(self):
-        # Pass §2
         self.print('\n**Pass#2 begin**') 
         self._switch_to_quiet_mode()
         self.print('Subsegment labels: {}'.format(self.coarse_labels))
@@ -186,7 +183,7 @@ class Mapping(Core):
 
             # Map channel heads, thin channel pixels, subsegments
             try:
-                self.mapping_segments_channels()
+                self.do_map_channels_segments()
             except:
                 self.state.remove_active_mask('dilated_segment')
                 self.print('Failed during segment/channel mapping')
@@ -195,34 +192,24 @@ class Mapping(Core):
             # Map ridges and midslopes
             self.map_midslopes()
             self.map_ridges()
+            # Find the HSL-mappable subsegments
             self.select_subsegments(do_without_ridges_midslopes=False)
             self.print('Selected {} subsegments'.format(self.n_subsegments))
 
             # Measure HSL from ridges or midslopes to thin channels per subsegment
-            try:
-                is_df_empty = self.measure_hsl()
-            except:
-                self.print('Unable to map HSL here - skipping')
+            if not self.measure_hsl():
                 self.state.remove_active_mask('dilated_segment')
                 continue
-            hsl_nonan = self.data.hsl_array[~np.isnan(self.data.hsl_array)]
-            hsl_nonan = hsl_nonan[hsl_nonan>=self.hsl_averaging_threshold]
-            if is_df_empty or hsl_nonan.shape[0]==0:
-                self.print('No HSL values in dataframe - skipping')
-                self.state.remove_active_mask('dilated_segment')
-                continue
-            hsl_mean  = np.mean(hsl_nonan)
-            
+            vprint(self.verbose_backup, 'Mean HSL = {0:0.1f}m'.format(self.hsl_mean))
+
             # Remove dilated coarse-subsegment mask
             self.state.remove_active_mask('dilated_segment')
-            vprint(self.verbose_backup, 'Mean HSL = {0:0.1f}m'.format(hsl_mean))
-
             # Replace with the raw coarse-subsegment mask
             self.state.add_active_mask({'raw_segment': segment_mask_array})
             # Add this coarse subsegment's HSL data to the 'global' HSL map
             self.merge_hsl()
             # Delete this coarse mask from the active list
-            self.state.reset_active_masks()
+            self.state.remove_active_mask('raw_segment')
 #             self.plot.plot_hsl(window_size_factor=3.5)
             del segment_mask_array, dilated_segment_mask_array
                     
@@ -230,16 +217,14 @@ class Mapping(Core):
         self.print('\n**Pass#2 end**') 
                 
     def pass3(self):        
-        # Pass §3
         self.print('\n**Pass#3 begin**') 
         self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask})
         self.map_hsl()
         self.map_aspect()
         self.compute_hsl_aspect()
-#         self.state.reset_active_masks()
         self.print('**Pass#3 end**') 
                 
-    def mapping_segments_channels(self):
+    def do_map_channels_segments(self):
         """
         TBD.
         """
@@ -268,27 +253,6 @@ class Mapping(Core):
         self.subsegment_flanks()
 #         self.print('**Mapping segments and channels end**\n')  
         
-    def mapping_ridges_midslopes_hsl_aspect(self):
-        """
-        TBD.
-        """
-#         self.print('\n**Mapping ridges, midslopes, HSL, aspect begin**') 
-        # Use up- and downstream sla to designate midslope pixels
-        self.map_midslopes()
-        # Use up- and downstream sla to designate ridge pixels
-        self.map_ridges()
-        # Make subsegment label list
-        self.select_subsegments()
-        # Measure mean streamline distances from midslope to channel pixels
-        self.measure_hsl()
-        # Measure mean streamline distances from midslope to channel pixels
-        self.map_hsl()
-        # Gradient-thresholded hillslope horizontal orientation = aspect
-        self.map_aspect()
-        self.compute_hsl_aspect()
-#         self.print('**Mapping ridges, midslopes, HSL, aspect end**\n')  
-
-
     def map_channels(self):
         self.print('Channels...',end='')
         # Designate channel pixels according to dslt pdf analysis
@@ -437,17 +401,6 @@ class Mapping(Core):
                 
     def measure_hsl(self):
         self.print('Measuring hillslope lengths...')
-#         if self.do_measure_hsl_from_ridges:
-#             flag = self.info.is_ridge
-#         else:
-#             flag = self.info.is_midslope
-#         self.data.traj_label_array = (self.data.label_array[
-#                                        ((self.data.mapping_array & flag)>0)
-#                                        &   (~self.data.mask_array)
-#                                                 ].astype(np.int32)).ravel().copy()
-#         unique_labels = np.unique(self.data.traj_label_array)
-#         self.hillslope_labels = unique_labels[unique_labels!=0].astype(np.int32)
-
         self.data.traj_length_array \
             = np.zeros_like(self.data.traj_label_array,dtype=np.float32)
         lengths.hsl(self.cl_state, self.info, self.data, self.verbose)
@@ -459,22 +412,42 @@ class Mapping(Core):
         df = df[df.label!=0]
         self.hsl_df = df
         
-        stats_df = pd.DataFrame(self.hillslope_labels,columns=['label'])
-        stats_list = ( ('count','count'), ('mean','mean [m]'), ('std','stddev [m]') )
-        for stat in stats_list:
-            stats_df = stats_df.join( getattr(df.groupby('label'),stat[0])() ,on='label')
-            stats_df.rename(index=str, columns={'length':stat[1]}, inplace=True)
-        stats_df.set_index('label',inplace=True)
-        self.hsl_stats_df = stats_df
+        try:
+            stats_df = pd.DataFrame(self.hillslope_labels,columns=['label'])
+            stats_list = ( ('count','count'), ('mean','mean [m]'), ('std','stddev [m]') )
+            for stat in stats_list:
+                stats_df = stats_df.join( getattr(df.groupby('label'),stat[0])() ,on='label')
+                stats_df.rename(index=str, columns={'length':stat[1]}, inplace=True)
+            stats_df.set_index('label',inplace=True)
+            self.hsl_stats_df = stats_df
+        except:
+            self.print('Problem constructing HSL stats dataframe')
+            return False
+            
+        try:   
+            self.data.hsl_array=np.zeros_like(self.data.label_array,dtype=np.float32)
+            for idx,row in stats_df.iterrows():
+                if row['count']>=self.n_hsl_averaging_threshold:
+                    self.data.hsl_array[self.data.label_array==idx] = row['mean [m]']
+                else:
+                    self.data.hsl_array[self.data.label_array==idx] = 0
+        except:
+            self.print('Problem parsing HSL stats dataframe')
+            return False
+
+        if self.hsl_stats_df.empty:
+            self.print('Unable to map HSL here - skipping')
+            return False
         
-        self.data.hsl_array=np.zeros_like(self.data.label_array,dtype=np.float32)
-        for idx,row in stats_df.iterrows():
-            if row['count']>=self.n_hsl_averaging_threshold:
-                self.data.hsl_array[self.data.label_array==idx] = row['mean [m]']
-            else:
-                self.data.hsl_array[self.data.label_array==idx] = 0
+        hsl_nonan = self.data.hsl_array[~np.isnan(self.data.hsl_array)]
+        hsl_nonan = hsl_nonan[hsl_nonan>=self.hsl_averaging_threshold]
+        if hsl_nonan.shape[0]==0:
+            self.print('No HSL values in dataframe - skipping')
+            return False
+        
+        self.hsl_mean  = np.mean(hsl_nonan)
         self.print('...done')  
-        return self.hsl_stats_df.empty
+        return True
 
     def merge_hsl(self):
         self.print('Merging hillslope lengths...',end='')
