@@ -148,10 +148,10 @@ class Mapping(Core):
             # Basic masking first
             self.state.reset_active_masks()
             # Create a raw+dilated mask arrays for this coarse subsegment
+            # BBOX
             segment_mask_array, dilated_segment_mask_array \
                 = self.create_coarse_subsegment_mask(coarse_label, is_left_or_right)
             # Deploy the dilated coarse-subsegment mask
-            # BBOX
             self.state.add_active_mask({'dilated_segment': dilated_segment_mask_array})
             # Report % progress
             self.report_progress(idx, n_segments)
@@ -162,10 +162,11 @@ class Mapping(Core):
             self.info = Info(self.state, self.geodata, self.trace, mapping=self)
             self.info.segmentation_threshold = self.fine_segmentation_threshold
             # Compute slt pdf and estimate channel threshold from it
+            # BBOX
             self.info.channel_threshold \
                 = self.analysis.estimate_channel_threshold(verbose=self.verbose_backup)
-            if self.info.channel_threshold is None \
-               or not self.do_map_channels_segments(): 
+            # BBOX
+            if self.info.channel_threshold is None or not self.do_map_channels_segments(): 
                 self.state.remove_active_mask('dilated_segment')
                 continue
             # Map ridges and midslopes
@@ -214,7 +215,7 @@ class Mapping(Core):
         n_iterations = (2 if is_left_or_right=='left' else 1)
         # BBOX
         dilated_segment_mask_array=np.invert(useful.dilate(segment_mask_array.copy(),
-                                                          n_iterations=n_iterations))
+                                                           n_iterations=n_iterations))
         # Now invert the raw mask as well
         segment_mask_array = np.invert(segment_mask_array)
         # Define bbox
