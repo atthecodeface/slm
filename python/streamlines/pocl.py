@@ -154,7 +154,7 @@ def set_compile_options(info, kernel_def, downup_sign=1,
             compile options
     """
     if job_type=='kde':
-        rtn_dict = {
+        compile_options_dict = {
             'bandwidth' :            'f',
             'n_data' :               'u',
             'n_hist_bins' :          'u',
@@ -176,13 +176,13 @@ def set_compile_options(info, kernel_def, downup_sign=1,
         }
         rtn_list =  ['-D','KERNEL_{}'.format(kernel_def.upper())]
         rtn_list += ['-D','KDF_IS_{}'.format(info.kernel.upper())]
-        for item in rtn_dict.items():
+        for item in compile_options_dict.items():
             value = getattr(info,item[0])
             list_item = ['-D','{0}={1}{2}'.format(item[0].upper(),value,item[1])]
             rtn_list += list_item
 
     else:
-        rtn_dict = {
+        compile_options_dict = {
             'n_seed_points' :               ('u',''),
             'downup_sign' :                 ('u', np.int8(downup_sign)),
             'integrator_step_factor' :      ('f',''),
@@ -193,10 +193,6 @@ def set_compile_options(info, kernel_def, downup_sign=1,
             'pixel_size' :                  ('f',''),
             'pad_width' :                   ('u',''),
             'pad_width_pp5' :               ('f',''),
-            'nx' :                          ('u',''),
-            'ny' :                          ('u',''),
-            'nxf' :                         ('f',''),
-            'nyf' :                         ('f',''),
             'nx_padded' :                   ('u',''),
             'ny_padded' :                   ('u',''),
             'nxy_padded' :                  ('u',''),
@@ -236,10 +232,10 @@ def set_compile_options(info, kernel_def, downup_sign=1,
             'verbose' :                     ('flag','')
         }
         if info.segmentation_threshold>0:
-            rtn_dict.update({'segmentation_threshold' : ('u','')})            
+            compile_options_dict.update({'segmentation_threshold' : ('u','')})            
 
         rtn_list = ['-D','KERNEL_{}'.format(kernel_def.upper())]
-        for item in rtn_dict.items():
+        for item in compile_options_dict.items():
             if item[1][0]=='flag':
                 if getattr(info,item[0]):
                     list_item = ['-D', '{}'.format(item[0].upper())]

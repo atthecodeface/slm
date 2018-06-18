@@ -36,6 +36,20 @@ class Info():
         self.geodata = geodata
         self.trace   = trace
         self.mapping = mapping
+
+        if mapping is not None:
+            self.do_measure_hsl_from_ridges = mapping.do_measure_hsl_from_ridges
+        else:
+            self.do_measure_hsl_from_ridges = False
+        if segmentation_threshold is not None:        
+            self.segmentation_threshold = segmentation_threshold
+        else:        
+            self.segmentation_threshold = np.uint32(0)
+        if channel_threshold is not None:
+            self.channel_threshold = channel_threshold
+        else:
+            self.channel_threshold = np.uint32(0)
+                    
         if trace.max_length==np.float32(0.0):
             max_length = np.finfo(numpy.float32).max
         else:
@@ -77,19 +91,6 @@ class Info():
         self.jitter_magnitude            = np.float32(trace.jitter_magnitude)
         self.interchannel_max_n_steps    = np.uint32(interchannel_max_n_steps)
         
-        if mapping is not None:
-            self.do_measure_hsl_from_ridges = mapping.do_measure_hsl_from_ridges
-        else:
-            self.do_measure_hsl_from_ridges = False
-        if segmentation_threshold is not None:        
-            self.segmentation_threshold = segmentation_threshold
-        else:        
-            self.segmentation_threshold = np.uint32(0)
-        if channel_threshold is not None:
-            self.channel_threshold = channel_threshold
-        else:
-            self.channel_threshold = np.uint32(0)
-            
         self.left_flank_addition = 2147483648
         flags = [
             'is_channel',         # 1
@@ -120,10 +121,6 @@ class Info():
         nyf        = np.float32(geodata.roi_ny)
         dt_max     = min(min(1.0/nxf,1.0/nyf),0.1)
         
-        self.nx            = np.uint32(geodata.roi_nx)
-        self.ny            = np.uint32(geodata.roi_ny)
-        self.nxf           = np.float32(nxf)
-        self.nyf           = np.float32(nyf)
         self.pad_width     = np.uint32(geodata.pad_width)
         self.pad_width_pp5 = np.float32(geodata.pad_width)+0.5
         self.nx_padded     = np.uint32(geodata.roi_padded_nx)
