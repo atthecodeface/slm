@@ -94,6 +94,7 @@ class Trace(Core):
                      mapping_array = self.mapping_array # Currently unused
                      )
         info = Info(self.state, self.geodata, self)
+        info.set_xy()
         trajectories = Trajectories(self.state.cl_platform, self.state.cl_device,
                                     cl_src_path         = self.state.cl_src_path,
                                     info                = info,
@@ -118,6 +119,7 @@ class Trace(Core):
                      mapping_array = self.mapping_array, # Currently unused
                      traj_stats_df = self.traj_stats_df )
         info = Info(self.state, self.geodata, self)
+        info.set_xy()
         fields = Fields(self.state.cl_platform, self.state.cl_device,
                         cl_src_path         = self.state.cl_src_path,
                         info                = info,

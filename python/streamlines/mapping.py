@@ -57,28 +57,6 @@ class Mapping(Core):
         self.pass3()
         self.print('**Mapping end**\n')  
 
-    def prepare_arrays_data_mask(self):
-        self.print('Preparing...',end='')  
-        self.verbose = self.state.verbose
-        try:
-            del self.mapping_array
-        except:
-            pass
-        try:
-            del self.data
-        except:
-            pass
-        # CUT
-        try:
-            del self.label_array
-        except:
-            pass
-        self.mapping_array = np.zeros_like(self.trace.mapping_array).astype(np.uint32)
-        self.data = Data( mask_array    = self.state.merge_active_masks(),
-                          uv_array      = self.preprocess.uv_array,
-                          mapping_array = self.mapping_array )  
-        self.print('done')    
-            
     def _switch_to_quiet_mode(self):
         self.verbose = True
         self.state.verbose = self.state.very_verbose
@@ -91,12 +69,52 @@ class Mapping(Core):
         vprint(self.vbackup, '{:2.1f}% '.format(progress),end='')
 
     def get_bbox(self, array):
-        x = np.any(array, axis=0)
-        y = np.any(array, axis=1)
-        x_min, x_max = np.where(x)[0][[0,-1]]
-        y_min, y_max = np.where(y)[0][[0,-1]]
+        # True for each column that has an element>0, false for columns with all zeros
+        cols = np.any(array, axis=0)
+        # True for each row that has an element>0, false for rows with all zeros
+        rows = np.any(array, axis=1)
+        # Get index spans where elements>0
+        x_min, x_max = np.where(rows)[0][[0,-1]]
+        y_min, y_max = np.where(cols)[0][[0,-1]]
+        # Return as bbox tuple
         return x_min,x_max, y_min,y_max
 
+    def create_coarse_subsegment_mask(self, coarse_label, is_left_or_right):
+        # BBOX
+        segment_mask_array = np.zeros_like(self.coarse_label_array, dtype=np.bool)
+        # Start with inverted raw mask
+        # BBOX
+        segment_mask_array[self.coarse_label_array==coarse_label] = True
+        # Spread mask by 2 if left or 1 if right flank subsegment
+        #   (left spread needs to 1st encompass bordering right-flank channel pixels)
+        n_iterations = (2 if is_left_or_right=='left' else 1)
+        # BBOX
+        dilated_segment_mask_array=np.invert(useful.dilate(segment_mask_array.copy(),
+                                                           n_iterations=n_iterations))
+        # Now invert the raw mask as well
+        segment_mask_array = np.invert(segment_mask_array)
+        # Define bbox
+        bbox_dilated_segment = self.get_bbox(~dilated_segment_mask_array)
+        self.print('Dilated subsegment mask bbox = {}'.format(bbox_dilated_segment))
+        return segment_mask_array, dilated_segment_mask_array, bbox_dilated_segment
+
+    def prepare_arrays_data_mask(self):
+        self.print('Preparing...',end='')  
+        self.verbose = self.state.verbose
+        try:
+            del self.mapping_array
+        except:
+            pass
+        try:
+            del self.data
+        except:
+            pass
+        self.mapping_array = np.zeros_like(self.trace.mapping_array).astype(np.uint32)
+        self.data = Data( mask_array    = self.state.merge_active_masks(),
+                          uv_array      = self.preprocess.uv_array,
+                          mapping_array = self.mapping_array )  
+        self.print('done')    
+            
     def pass1(self):
         self.print('\n**Pass#1 begin**')
 #         self._switch_to_quiet_mode()
@@ -108,10 +126,12 @@ class Mapping(Core):
         self.info = Info(self.state, self.geodata, self.trace, mapping=self,
                          segmentation_threshold=self.coarse_segmentation_threshold,
                          channel_threshold=self.coarse_channel_threshold)
+        self.info.set_xy()
         # Do the forced coarse channel mapping & subsegmentation
         self.do_map_channels_segments()
         # Save the coarse subsegmentation labels
-        self.coarse_label_array = self.label_array
+        self.coarse_label_array = self.data.label_array
+        self.label_array = self.coarse_label_array
         # Make a list of all the subsegments with enough ridge/midslope pixels for HSL
         self.select_subsegments(do_without_ridges_midslopes=True)
         self.coarse_labels = np.sort(self.hillslope_labels)
@@ -148,10 +168,11 @@ class Mapping(Core):
             self.state.reset_active_masks()
             # Create a raw+dilated mask arrays for this coarse subsegment
             # BBOX
-            segment_mask_array, dilated_segment_mask_array \
+            segment_mask_array, dilated_segment_mask_array, bbox \
                 = self.create_coarse_subsegment_mask(coarse_label, is_left_or_right)
             # Deploy the dilated coarse-subsegment mask
             self.state.add_active_mask({'dilated_segment': dilated_segment_mask_array})
+            self.print('Bounding box: {}'.format(bbox))
             # Report % progress
             self.report_progress(idx, n_segments)
             # Get ready to map HSL
@@ -165,6 +186,7 @@ class Mapping(Core):
             self.info = Info(self.state, self.geodata, self.trace, mapping=self,
                              segmentation_threshold=self.fine_segmentation_threshold,
                              channel_threshold=channel_threshold)
+            self.info.set_xy(bbox=bbox)
             # BBOX
             if channel_threshold is None or channel_threshold<20.0 \
                                          or not self.do_map_channels_segments(): 
@@ -205,25 +227,6 @@ class Mapping(Core):
 #         self.state.remove_active_mask('merged_coarse')
         self.print('**Pass#3 end**') 
                 
-    def create_coarse_subsegment_mask(self, coarse_label, is_left_or_right):
-        # BBOX
-        segment_mask_array = np.zeros_like(self.coarse_label_array, dtype=np.bool)
-        # Start with inverted raw mask
-        # BBOX
-        segment_mask_array[self.coarse_label_array==coarse_label] = True
-        # Spread mask by 2 if left or 1 if right flank subsegment
-        #   (left spread needs to 1st encompass bordering right-flank channel pixels)
-        n_iterations = (2 if is_left_or_right=='left' else 1)
-        # BBOX
-        dilated_segment_mask_array=np.invert(useful.dilate(segment_mask_array.copy(),
-                                                           n_iterations=n_iterations))
-        # Now invert the raw mask as well
-        segment_mask_array = np.invert(segment_mask_array)
-        # Define bbox
-        bbox_dilated_segment = self.get_bbox(~dilated_segment_mask_array)
-        self.print('Dilated subsegment mask bbox = {}'.format(bbox_dilated_segment))
-        return segment_mask_array, dilated_segment_mask_array
-
     def do_map_channels_segments(self):
         """
         TBD.
@@ -344,7 +347,6 @@ class Mapping(Core):
         self.data.label_array[self.data.label_array<0] \
             = - (  self.data.label_array[self.data.label_array<0] 
                  + self.info.left_flank_addition )
-        self.label_array = self.data.label_array
         
     def map_midslopes(self):
         self.print('Midslopes...',end='')  

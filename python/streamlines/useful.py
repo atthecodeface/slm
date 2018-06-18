@@ -32,6 +32,10 @@ class Data():
 class Info():    
     def __init__(self, state, geodata, trace, mapping=None, n_seed_points=None,
                  segmentation_threshold=None, channel_threshold=None):
+        self.state   = state
+        self.geodata = geodata
+        self.trace   = trace
+        self.mapping = mapping
         if trace.max_length==np.float32(0.0):
             max_length = np.finfo(numpy.float32).max
         else:
@@ -41,28 +45,8 @@ class Info():
             interchannel_max_n_steps = max_n_steps
         else:
             interchannel_max_n_steps = trace.interchannel_max_n_steps
-         
-        grid_scale = np.sqrt(np.float32(geodata.roi_nx*geodata.roi_ny))
-        nxf        = np.float32(geodata.roi_nx)
-        nyf        = np.float32(geodata.roi_ny)
-        dt_max     = min(min(1.0/nxf,1.0/nyf),0.1)
-        
-        self.nx            = np.uint32(geodata.roi_nx)
-        self.ny            = np.uint32(geodata.roi_ny)
-        self.nxf           = np.float32(nxf)
-        self.nyf           = np.float32(nyf)
-        self.pad_width     = np.uint32(geodata.pad_width)
-        self.pad_width_pp5 = np.float32(geodata.pad_width)+0.5
-        self.nx_padded     = np.uint32(geodata.roi_padded_nx)
-        self.ny_padded     = np.uint32(geodata.roi_padded_ny)
-        self.nxy_padded    = np.uint32( geodata.roi_padded_nx*geodata.roi_padded_ny )
-        self.x_max         = np.float32(nxf-0.5)
-        self.y_max         = np.float32(nyf-0.5)
-        self.grid_scale    = np.float32(grid_scale)
-        self.combo_factor  = np.float32(grid_scale*trace.integrator_step_factor)
-        self.dt_max        = np.float32(dt_max)
         self.max_n_steps   = np.uint32(max_n_steps)
-
+         
         seed_point_density = np.float32(trace.subpixel_seed_point_density)
         subpixel_seed_span = 1-1.0/seed_point_density
         subpixel_seed_step = subpixel_seed_span/max(seed_point_density, 1.0)
@@ -127,6 +111,30 @@ class Info():
             'is_blockage'         # 65536
             ]
         [setattr(self,flag,np.uint(2**idx)) for idx,flag in enumerate(flags)]
+
+    def set_xy(self, bbox=None):
+        geodata = self.geodata
+        trace   = self.trace
+        grid_scale = np.sqrt(np.float32(geodata.roi_nx*geodata.roi_ny))
+        nxf        = np.float32(geodata.roi_nx)
+        nyf        = np.float32(geodata.roi_ny)
+        dt_max     = min(min(1.0/nxf,1.0/nyf),0.1)
+        
+        self.nx            = np.uint32(geodata.roi_nx)
+        self.ny            = np.uint32(geodata.roi_ny)
+        self.nxf           = np.float32(nxf)
+        self.nyf           = np.float32(nyf)
+        self.pad_width     = np.uint32(geodata.pad_width)
+        self.pad_width_pp5 = np.float32(geodata.pad_width)+0.5
+        self.nx_padded     = np.uint32(geodata.roi_padded_nx)
+        self.ny_padded     = np.uint32(geodata.roi_padded_ny)
+        self.nxy_padded    = np.uint32( geodata.roi_padded_nx*geodata.roi_padded_ny )
+        self.x_max         = np.float32(nxf-0.5)
+        self.y_max         = np.float32(nyf-0.5)
+        self.grid_scale    = np.float32(grid_scale)
+        self.combo_factor  = np.float32(grid_scale*trace.integrator_step_factor)
+        self.dt_max        = np.float32(dt_max)
+
 
 def check_sizes(nx,ny,array_dict):
     for ad_item in array_dict.items():
