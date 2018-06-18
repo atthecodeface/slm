@@ -113,8 +113,8 @@ static inline void euler_step_record(float *dt, float  *dl,
     *dt = minmag(dt_x,dt_y);
     *vec += sgnd_uv_vec*(*dt);
     *vec = approximate(*vec);
-    *vec = (float2)( fmin(fmax((*vec)[0],-0.5f),X_MAX),
-                     fmin(fmax((*vec)[1],-0.5f),Y_MAX) );
+    *vec = (float2)( fmin(fmax((*vec)[0],-0.5f),NXF_MP5),
+                     fmin(fmax((*vec)[1],-0.5f),NYF_MP5) );
     *dl = fast_length(*vec-prev_vec);
     update_record_trajectory(*dl,l_trajectory,*vec,prev_vec,n_steps,trajectory_vec);
  }
@@ -236,8 +236,8 @@ static inline void euler_step_write_sl_data(float *dt, float *dl,
     *dt = minmag(dt_x,dt_y);
     *vec += sgnd_uv_vec*(*dt);
     *vec = approximate(*vec);
-    *vec = (float2)( fmin(fmax((*vec)[0],-0.5f),X_MAX),
-                     fmin(fmax((*vec)[1],-0.5f),Y_MAX) );
+    *vec = (float2)( fmin(fmax((*vec)[0],-0.5f),NXF_MP5),
+                     fmin(fmax((*vec)[1],-0.5f),NYF_MP5) );
     *dl = fast_length(*vec-prev_vec);
     update_trajectory_write_sl_data(*dl,l_trajectory,*vec,prev_vec,n_steps,
                                     idx, mask_array, slt_array, slc_array);
