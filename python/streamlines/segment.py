@@ -10,7 +10,7 @@ os.environ['PYTHONUNBUFFERED']='True'
 import warnings
 
 from streamlines import pocl
-from streamlines.useful import vprint, pick_seeds
+from streamlines.useful import vprint, pick_seeds, check_sizes
 
 __all__ = ['segment_channels','segment_hillslopes','subsegment_flanks']
 
@@ -51,6 +51,7 @@ def segment_channels( cl_state, info, data, verbose ):
                    'link':       {'array': data.link_array,       'rwf': 'RO'}, 
                    'label':      {'array': data.label_array,      'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'segment_downchannels'
@@ -106,6 +107,7 @@ def segment_hillslopes( cl_state, info, data, verbose ):
                    'link':       {'array': data.link_array,       'rwf': 'RO'}, 
                    'label':      {'array': data.label_array,      'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'segment_hillslopes'
@@ -151,6 +153,7 @@ def subsegment_flanks( cl_state, info, data, verbose ):
                    'link':          {'array': data.link_array,          'rwf': 'RO'}, 
                    'label':         {'array': data.label_array,         'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
     if ( info.n_seed_points>0 ):

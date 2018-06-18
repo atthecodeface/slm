@@ -11,7 +11,7 @@ os.environ['PYTHONUNBUFFERED']='True'
 import warnings
 
 from streamlines import pocl
-from streamlines.useful import vprint, pick_seeds
+from streamlines.useful import vprint, pick_seeds, check_sizes
 
 __all__ = ['map_channel_heads','prune_channel_heads']
 
@@ -48,6 +48,7 @@ def map_channel_heads(cl_state, info, data, verbose):
                    'uv':          {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':     {'array': data.mapping_array,    'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    check_sizes(info.nx_padded,info.ny_padded, array_dict)
 #     pdebug('map_channel_heads seed_point_array:',seed_point_array.shape)
     # Do integrations on the GPU
     cl_state.kernel_fn = 'map_channel_heads'
@@ -83,6 +84,7 @@ def prune_channel_heads(cl_state, info, data, verbose):
                    'uv':          {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':     {'array': data.mapping_array,    'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    check_sizes(info.nx_padded,info.ny_padded, array_dict)
 #     pdebug('prune_channel_heads seed_point_array:',seed_point_array)
     # Do integrations on the GPU
     cl_state.kernel_fn = 'prune_channel_heads'

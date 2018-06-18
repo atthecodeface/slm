@@ -10,7 +10,7 @@ os.environ['PYTHONUNBUFFERED']='True'
 import warnings
 
 from streamlines import pocl
-from streamlines.useful import vprint, pick_seeds
+from streamlines.useful import vprint, pick_seeds, check_sizes
 
 __all__ = ['label_confluences']
 
@@ -50,6 +50,7 @@ def label_confluences( cl_state, info, data, verbose ):
                    'count':      {'array': data.count_array,      'rwf': 'RW'}, 
                    'link':       {'array': data.link_array,       'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'label_confluences'

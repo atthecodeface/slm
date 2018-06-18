@@ -11,7 +11,7 @@ os.environ['PYTHONUNBUFFERED']='True'
 import warnings
 
 from streamlines import pocl
-from streamlines.useful import vprint, pick_seeds
+from streamlines.useful import vprint, pick_seeds, check_sizes
 
 __all__ = ['connect_channel_pixels']
 
@@ -50,6 +50,7 @@ def connect_channel_pixels(cl_state, info, data, verbose):
                    'uv':          {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':     {'array': data.mapping_array,    'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'connect_channels'

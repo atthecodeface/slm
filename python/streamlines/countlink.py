@@ -11,7 +11,7 @@ environ['PYTHONUNBUFFERED']='True'
 import warnings
 
 from streamlines        import pocl
-from streamlines.useful import vprint, pick_seeds
+from streamlines.useful import vprint, pick_seeds, check_sizes
 
 __all__ = ['count_downchannels','flag_downchannels']
 
@@ -43,13 +43,14 @@ def count_downchannels( cl_state, info, data, verbose ):
 #     pdebug('count down channels seed_point_array:',seed_point_array)
         
     # Specify arrays & CL buffers 
-    array_dict = {' seed_point': {'array': seed_point_array,      'rwf': 'RO'},
+    array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':    {'array': data.mapping_array,    'rwf': 'RW'}, 
                    'count':      {'array': data.count_array,      'rwf': 'RW'}, 
                    'link':       {'array': data.link_array,       'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'count_downchannels'
@@ -86,13 +87,14 @@ def flag_downchannels( cl_state, info, data, verbose, do_reset_count=True ):
 #     pdebug('flag down channels seed_point_array:',seed_point_array)
 
     # Specify arrays & CL buffers 
-    array_dict = {' seed_point': {'array': seed_point_array,      'rwf': 'RO'},
+    array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':    {'array': data.mapping_array,    'rwf': 'RW'}, 
                    'count':      {'array': data.count_array,      'rwf': 'RW'}, 
                    'link':       {'array': data.link_array,       'rwf': 'RO'} }
     info.n_seed_points = seed_point_array.shape[0]
+    check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'flag_downchannels'

@@ -42,6 +42,7 @@ class Mapping(Core):
         self.cl_state = Initialize_cl(self.state.cl_src_path, 
                                       self.state.cl_platform, 
                                       self.state.cl_device )
+        self.vbackup = self.state.verbose
     
     def _augment(self, plot):
         self.plot = plot
@@ -67,6 +68,7 @@ class Mapping(Core):
             del self.data
         except:
             pass
+        # CUT
         try:
             del self.label_array
         except:
@@ -78,16 +80,15 @@ class Mapping(Core):
         self.print('done')    
             
     def _switch_to_quiet_mode(self):
-        self.verbose_backup = self.state.verbose
         self.verbose = True
         self.state.verbose = self.state.very_verbose
 
     def _switch_back_to_verbose_mode(self):
-        self.state.verbose = self.verbose_backup
+        self.state.verbose = self.vbackup
 
     def report_progress(self ,idx, n_segments):
         progress = ((idx+1)/n_segments)*100.0
-        vprint(self.verbose_backup, '{:2.1f}% '.format(progress),end='')
+        vprint(self.vbackup, '{:2.1f}% '.format(progress),end='')
 
     def get_bbox(self, array):
         x = np.any(array, axis=0)
@@ -98,17 +99,15 @@ class Mapping(Core):
 
     def pass1(self):
         self.print('\n**Pass#1 begin**')
-        self._switch_to_quiet_mode()
+#         self._switch_to_quiet_mode()
         # Only deploy border padding, uv-error, and basin+?height-threshold masks
         self.state.reset_active_masks()
         # Ensure a fresh start with data, mapping sub-objects
         self.prepare_arrays_data_mask()
         # Create an info object for passing parameters to CL wrappers etc
-        self.info = Info(self.state, self.geodata, self.trace, mapping=self)
-        # Force bogus channel delineation at coarse scale
-        self.info.channel_threshold=self.coarse_channel_threshold
-        # Force subsegmentation at coarse scale
-        self.info.segmentation_threshold=self.coarse_segmentation_threshold
+        self.info = Info(self.state, self.geodata, self.trace, mapping=self,
+                         segmentation_threshold=self.coarse_segmentation_threshold,
+                         channel_threshold=self.coarse_channel_threshold)
         # Do the forced coarse channel mapping & subsegmentation
         self.do_map_channels_segments()
         # Save the coarse subsegmentation labels
@@ -120,12 +119,12 @@ class Mapping(Core):
         self.merged_coarse_mask = np.ones_like(self.coarse_label_array,dtype=np.bool)
         for label in self.coarse_labels:
             self.merged_coarse_mask[self.coarse_label_array==label] = False
-        self._switch_back_to_verbose_mode()
+#         self._switch_back_to_verbose_mode()
         self.print('**Pass#1 end**') 
 
     def pass2(self):
         self.print('\n**Pass#2 begin**') 
-        self._switch_to_quiet_mode()
+#         self._switch_to_quiet_mode()
         self.print('Subsegment labels: {}'.format(self.coarse_labels))
         # Mask off all but these coarse subsegments
         self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask})
@@ -158,15 +157,17 @@ class Mapping(Core):
             # Get ready to map HSL
             # BBOX
             self.prepare_arrays_data_mask()
-            # BBOX
-            self.info = Info(self.state, self.geodata, self.trace, mapping=self)
-            self.info.segmentation_threshold = self.fine_segmentation_threshold
             # Compute slt pdf and estimate channel threshold from it
             # BBOX
-            self.info.channel_threshold \
-                = self.analysis.estimate_channel_threshold(verbose=self.verbose_backup)
+            channel_threshold \
+                = self.analysis.estimate_channel_threshold(verbose=self.vbackup)
             # BBOX
-            if self.info.channel_threshold is None or not self.do_map_channels_segments(): 
+            self.info = Info(self.state, self.geodata, self.trace, mapping=self,
+                             segmentation_threshold=self.fine_segmentation_threshold,
+                             channel_threshold=channel_threshold)
+            # BBOX
+            if channel_threshold is None or channel_threshold<20.0 \
+                                         or not self.do_map_channels_segments(): 
                 self.state.remove_active_mask('dilated_segment')
                 continue
             # Map ridges and midslopes
@@ -180,7 +181,7 @@ class Mapping(Core):
             if not self.measure_hsl():
                 self.state.remove_active_mask('dilated_segment')
                 continue
-            vprint(self.verbose_backup, 'Mean HSL = {0:0.1f}m'.format(self.hsl_mean))
+            vprint(self.vbackup, 'Mean HSL = {0:0.1f}m'.format(self.hsl_mean))
             # Remove this iteration's dilated coarse-subsegment mask
             self.state.remove_active_mask('dilated_segment')
             # Replace with this iteration's raw coarse-subsegment mask
@@ -192,7 +193,7 @@ class Mapping(Core):
             self.state.remove_active_mask('raw_segment')
             del segment_mask_array, dilated_segment_mask_array
                     
-        self._switch_back_to_verbose_mode()
+#         self._switch_back_to_verbose_mode()
         self.print('\n**Pass#2 end**') 
                 
     def pass3(self):        
@@ -254,8 +255,8 @@ class Mapping(Core):
             return True
         except Exception as error:
             # Failure
-            vprint(self.verbose_backup,
-                   'Failed during channel & segment mapping:', error)
+            vprint(self.vbackup, 'Failed in "do_map_channels_segments":\n', error)
+            raise
             return False
       
         

@@ -12,7 +12,7 @@ import os
 os.environ['PYTHONUNBUFFERED']='True'
 import sys
 
-__all__ = ['Data', 'Info',
+__all__ = ['Data', 'Info','check_sizes',
            'read_geotiff','write_geotiff','true_size','neatly','vprint',
            'create_seeds','pick_seeds','compute_stats','dilate']
 
@@ -30,7 +30,8 @@ class Data():
         self.traj_stats_df       = traj_stats_df
         
 class Info():    
-    def __init__(self, state, geodata, trace, mapping=None, n_seed_points=None):
+    def __init__(self, state, geodata, trace, mapping=None, n_seed_points=None,
+                 segmentation_threshold=None, channel_threshold=None):
         if trace.max_length==np.float32(0.0):
             max_length = np.finfo(numpy.float32).max
         else:
@@ -42,65 +43,68 @@ class Info():
             interchannel_max_n_steps = trace.interchannel_max_n_steps
          
         grid_scale = np.sqrt(np.float32(geodata.roi_nx*geodata.roi_ny))
-        nxf = np.float32(geodata.roi_nx)
-        nyf = np.float32(geodata.roi_ny)
-        dt_max = min(min(1.0/nxf,1.0/nyf),0.1)
-        subpixel_seed_span = 1.0-1.0/np.float32(trace.subpixel_seed_point_density)
-        subpixel_seed_step \
-            = subpixel_seed_span/(np.float32(trace.subpixel_seed_point_density)-1.0 
-                                  if trace.subpixel_seed_point_density>1 else 1.0)
-        self.debug =                   np.bool8(state.debug)
-        self.verbose =                 np.bool8(state.gpu_verbose)
-        self.n_trajectory_seed_points= np.uint32(trace.n_trajectory_seed_points)
-        self.n_seed_points =           np.uint32(0)
-        self.n_padded_seed_points =    np.uint32(0)
-        self.do_shuffle =              np.bool8(trace.do_shuffle_seed_points)
-        self.shuffle_rng_seed =        np.uint32(trace.shuffle_rng_seed)
-        self.downup_sign =             np.float32(np.nan)
-        self.gpu_memory_limit_pc =        np.uint32(state.gpu_memory_limit_pc)
-        self.n_work_items =               np.uint32(state.n_work_items)
-        self.chunk_size_factor =          np.uint32(state.chunk_size_factor)
-        self.max_time_per_kernel =        np.float32(state.max_time_per_kernel)
-        self.integrator_step_factor =     np.float32(trace.integrator_step_factor)
-        self.max_integration_step_error = np.float32(trace.max_integration_step_error)
-        self.adjusted_max_error =         np.float32(0.85*np.sqrt(
-                                                  trace.max_integration_step_error))
-        self.max_length =   np.float32(max_length/geodata.roi_pixel_size)
-        self.pixel_size =   np.float32(geodata.roi_pixel_size)
-        self.integration_halt_threshold = np.float32(trace.integration_halt_threshold)
-        self.pad_width =    np.uint32(geodata.pad_width)
-        self.pad_width_pp5= np.float32(geodata.pad_width)+0.5
-        self.nx =           np.uint32(geodata.roi_nx)
-        self.ny =           np.uint32(geodata.roi_ny)
-        self.nxf =          np.float32(nxf)
-        self.nyf =          np.float32(nyf)
-        self.nx_padded =    np.uint32(geodata.roi_padded_nx)
-        self.ny_padded =    np.uint32(geodata.roi_padded_ny)
-        self.nxy_padded =   np.uint32( geodata.roi_padded_nx*geodata.roi_padded_ny )
-        self.x_max =        np.float32(nxf-0.5)
-        self.y_max =        np.float32(nyf-0.5)
-        self.grid_scale =   np.float32(grid_scale)
-        self.combo_factor = np.float32(grid_scale*trace.integrator_step_factor)
-        self.dt_max =       np.float32(dt_max)
-        self.max_n_steps =  np.uint32(max_n_steps)
-        self.trajectory_resolution =    np.uint32(trace.trajectory_resolution)
-        self.seeds_chunk_offset =       np.uint32(0)
+        nxf        = np.float32(geodata.roi_nx)
+        nyf        = np.float32(geodata.roi_ny)
+        dt_max     = min(min(1.0/nxf,1.0/nyf),0.1)
+        
+        self.nx            = np.uint32(geodata.roi_nx)
+        self.ny            = np.uint32(geodata.roi_ny)
+        self.nxf           = np.float32(nxf)
+        self.nyf           = np.float32(nyf)
+        self.pad_width     = np.uint32(geodata.pad_width)
+        self.pad_width_pp5 = np.float32(geodata.pad_width)+0.5
+        self.nx_padded     = np.uint32(geodata.roi_padded_nx)
+        self.ny_padded     = np.uint32(geodata.roi_padded_ny)
+        self.nxy_padded    = np.uint32( geodata.roi_padded_nx*geodata.roi_padded_ny )
+        self.x_max         = np.float32(nxf-0.5)
+        self.y_max         = np.float32(nyf-0.5)
+        self.grid_scale    = np.float32(grid_scale)
+        self.combo_factor  = np.float32(grid_scale*trace.integrator_step_factor)
+        self.dt_max        = np.float32(dt_max)
+        self.max_n_steps   = np.uint32(max_n_steps)
+
+        seed_point_density = np.float32(trace.subpixel_seed_point_density)
+        subpixel_seed_span = 1-1.0/seed_point_density
+        subpixel_seed_step = subpixel_seed_span/max(seed_point_density, 1.0)
+        
+        self.debug                       = np.bool8(state.debug)
+        self.verbose                     = np.bool8(state.gpu_verbose)
+        self.n_trajectory_seed_points    = np.uint32(trace.n_trajectory_seed_points)
+        self.n_seed_points               = np.uint32(0)
+        self.n_padded_seed_points        = np.uint32(0)
+        self.do_shuffle                  = np.bool8(trace.do_shuffle_seed_points)
+        self.shuffle_rng_seed            = np.uint32(trace.shuffle_rng_seed)
+        self.downup_sign                 = np.float32(np.nan)
+        self.gpu_memory_limit_pc         = np.uint32(state.gpu_memory_limit_pc)
+        self.n_work_items                = np.uint32(state.n_work_items)
+        self.chunk_size_factor           = np.uint32(state.chunk_size_factor)
+        self.max_time_per_kernel         = np.float32(state.max_time_per_kernel)
+        self.integrator_step_factor      = np.float32(trace.integrator_step_factor)
+        self.max_integration_step_error  = np.float32(trace.max_integration_step_error)
+        self.adjusted_max_error          = 0.85*np.sqrt(trace.max_integration_step_error)
+        self.integration_halt_threshold  = np.float32(trace.integration_halt_threshold)
+        self.max_length                  = np.float32(max_length/geodata.roi_pixel_size)
+        self.pixel_size                  = np.float32(geodata.roi_pixel_size)
+        self.trajectory_resolution       = np.uint32(trace.trajectory_resolution)
+        self.seeds_chunk_offset          = np.uint32(0)
         self.subpixel_seed_point_density = np.uint32(trace.subpixel_seed_point_density)
-        self.subpixel_seed_halfspan =   np.float32(subpixel_seed_span/2.0)
-        self.subpixel_seed_step =       np.float32(subpixel_seed_step)
-        self.jitter_magnitude =         np.float32(trace.jitter_magnitude)
-        self.interchannel_max_n_steps = np.uint32(interchannel_max_n_steps)
+        self.subpixel_seed_halfspan      = np.float32(subpixel_seed_span/2.0)
+        self.subpixel_seed_step          = np.float32(subpixel_seed_step)
+        self.jitter_magnitude            = np.float32(trace.jitter_magnitude)
+        self.interchannel_max_n_steps    = np.uint32(interchannel_max_n_steps)
+        
         if mapping is not None:
             self.do_measure_hsl_from_ridges = mapping.do_measure_hsl_from_ridges
-#             self.segmentation_threshold     = np.uint32(mapping.segmentation_threshold)
-#             try:
-#                 self.channel_threshold      = np.uint32(mapping.channel_threshold)
-#             except:
-#                 pass
         else:
             self.do_measure_hsl_from_ridges = False
-            self.segmentation_threshold     = np.uint32(0)
-            self.channel_threshold = 0
+        if segmentation_threshold is not None:        
+            self.segmentation_threshold = segmentation_threshold
+        else:        
+            self.segmentation_threshold = np.uint32(0)
+        if channel_threshold is not None:
+            self.channel_threshold = channel_threshold
+        else:
+            self.channel_threshold = np.uint32(0)
             
         self.left_flank_addition = 2147483648
         flags = [
@@ -123,6 +127,16 @@ class Info():
             'is_blockage'         # 65536
             ]
         [setattr(self,flag,np.uint(2**idx)) for idx,flag in enumerate(flags)]
+
+def check_sizes(nx,ny,array_dict):
+    for ad_item in array_dict.items():
+        array_name = ad_item[0]
+        if array_name not in ('seed_point','traj_length'):
+            array = ad_item[1]['array']
+            if array.shape[0]!=nx or array.shape[1]!=ny:
+                # raise ValueError
+                pdebug('Array "{0}" size {1} vs mismatches info {2}'
+                                 .format(array_name, array.shape, (nx,ny)) )
 
 def read_geotiff(path, filename):
     """

@@ -10,7 +10,7 @@ environ['PYTHONUNBUFFERED']='True'
 import warnings
 
 from streamlines        import pocl
-from streamlines.useful import vprint, pick_seeds
+from streamlines.useful import vprint, pick_seeds, check_sizes
 
 __all__ = ['hillslope_lengths']
 
@@ -61,6 +61,7 @@ def hsl( cl_state, info, data, verbose, do_use_ridges=False ):
                    'label':      {'array': data.label_array,      'rwf': 'RO'}, 
                    'traj_length':{'array': data.traj_length_array,'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'hillslope_lengths'

@@ -10,7 +10,7 @@ os.environ['PYTHONUNBUFFERED']='True'
 import warnings
 
 from streamlines import pocl
-from streamlines.useful import vprint, pick_seeds
+from streamlines.useful import vprint, pick_seeds, check_sizes
 
 __all__ = ['link_hillslopes']
 
@@ -42,13 +42,14 @@ def link_hillslopes( cl_state, info, data, verbose):
                                   flag=is_thinchannel, pad=pad)    
         
     # Specify arrays & CL buffers 
-    array_dict = {' seed_point': {'array': seed_point_array,      'rwf': 'RO'},
+    array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':    {'array': data.mapping_array,    'rwf': 'RW'}, 
                    'count':      {'array': data.count_array,      'rwf': 'RO'}, 
                    'link':       {'array': data.link_array,       'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
     cl_state.kernel_fn = 'link_hillslopes'
