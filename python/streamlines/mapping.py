@@ -98,21 +98,17 @@ class Mapping(Core):
         self.print('Dilated subsegment mask bbox = {}'.format(bbox_dilated_segment))
         return segment_mask_array, dilated_segment_mask_array, bbox_dilated_segment
 
-    def prepare_arrays_data_mask(self):
+    def prepare_arrays_data_mask(self, bbox=None):
         self.print('Preparing...',end='')  
         self.verbose = self.state.verbose
-        try:
-            del self.mapping_array
-        except:
-            pass
         try:
             del self.data
         except:
             pass
-        self.mapping_array = np.zeros_like(self.trace.mapping_array).astype(np.uint32)
+        mapping_array = np.zeros_like(self.trace.mapping_array).astype(np.uint32)
         self.data = Data( mask_array    = self.state.merge_active_masks(),
                           uv_array      = self.preprocess.uv_array,
-                          mapping_array = self.mapping_array )  
+                          mapping_array = mapping_array )  
         self.print('done')    
             
     def pass1(self):
@@ -120,18 +116,19 @@ class Mapping(Core):
 #         self._switch_to_quiet_mode()
         # Only deploy border padding, uv-error, and basin+?height-threshold masks
         self.state.reset_active_masks()
+        # Create an info object for passing parameters to CL wrappers etc
+        self.info = Info(self.state, self.geodata, self.trace, mapping=self)
+        self.info.set_xy()
+        self.info.set_thresholds(channel_threshold=self.coarse_channel_threshold,
+                            segmentation_threshold=self.coarse_segmentation_threshold)
         # Ensure a fresh start with data, mapping sub-objects
         self.prepare_arrays_data_mask()
-        # Create an info object for passing parameters to CL wrappers etc
-        self.info = Info(self.state, self.geodata, self.trace, mapping=self,
-                         segmentation_threshold=self.coarse_segmentation_threshold,
-                         channel_threshold=self.coarse_channel_threshold)
-        self.info.set_xy()
         # Do the forced coarse channel mapping & subsegmentation
         self.do_map_channels_segments()
         # Save the coarse subsegmentation labels
         self.coarse_label_array = self.data.label_array
         self.label_array = self.coarse_label_array
+        self.mapping_array = self.data.mapping_array.copy()
         # Make a list of all the subsegments with enough ridge/midslope pixels for HSL
         self.select_subsegments(do_without_ridges_midslopes=True)
         self.coarse_labels = np.sort(self.hillslope_labels)
@@ -171,26 +168,26 @@ class Mapping(Core):
             segment_mask_array, dilated_segment_mask_array, bbox \
                 = self.create_coarse_subsegment_mask(coarse_label, is_left_or_right)
             # Deploy the dilated coarse-subsegment mask
+            self.state.remove_active_mask('dilated_segment')
             self.state.add_active_mask({'dilated_segment': dilated_segment_mask_array})
             self.print('Bounding box: {}'.format(bbox))
+            
             # Report % progress
             self.report_progress(idx, n_segments)
+            self.info = Info(self.state, self.geodata, self.trace, mapping=self)
+            self.info.set_xy(bbox=bbox)
+            # Compute slt pdf and estimate channel threshold from it
+            # BBOX
+            ch_threshold = self.analysis.estimate_channel_threshold(verbose=self.vbackup)
+            if ch_threshold is None or ch_threshold<20.0: 
+                continue
+            self.info.set_thresholds(channel_threshold=ch_threshold,
+                                 segmentation_threshold=self.fine_segmentation_threshold)
             # Get ready to map HSL
             # BBOX
             self.prepare_arrays_data_mask()
-            # Compute slt pdf and estimate channel threshold from it
             # BBOX
-            channel_threshold \
-                = self.analysis.estimate_channel_threshold(verbose=self.vbackup)
-            # BBOX
-            self.info = Info(self.state, self.geodata, self.trace, mapping=self,
-                             segmentation_threshold=self.fine_segmentation_threshold,
-                             channel_threshold=channel_threshold)
-            self.info.set_xy(bbox=bbox)
-            # BBOX
-            if channel_threshold is None or channel_threshold<20.0 \
-                                         or not self.do_map_channels_segments(): 
-                self.state.remove_active_mask('dilated_segment')
+            if not self.do_map_channels_segments(): 
                 continue
             # Map ridges and midslopes
             # BBOX
@@ -201,7 +198,6 @@ class Mapping(Core):
             self.select_subsegments(do_without_ridges_midslopes=False)
             # Measure HSL from ridges or midslopes to thin channels per subsegment
             if not self.measure_hsl():
-                self.state.remove_active_mask('dilated_segment')
                 continue
             vprint(self.vbackup, 'Mean HSL = {0:0.1f}m'.format(self.hsl_mean))
             # Remove this iteration's dilated coarse-subsegment mask
@@ -280,7 +276,9 @@ class Mapping(Core):
         is_channel      = self.info.is_channel
         is_interchannel = self.info.is_interchannel
         mapping_array   = self.data.mapping_array
-        channel_array   = np.zeros_like(mapping_array, dtype=np.bool)
+        nx_padded       = self.info.nx_padded
+        ny_padded       = self.info.ny_padded
+        channel_array   = np.zeros((nx_padded,ny_padded), dtype=np.bool)
         channel_array[  ((mapping_array & is_channel)==is_channel)
                       | ((mapping_array & is_interchannel)==is_interchannel)
                      ] = True
@@ -297,8 +295,10 @@ class Mapping(Core):
 #                                          self.verbose)
         
     def count_downchannels(self):
-        self.data.count_array = np.zeros_like(self.mapping_array, dtype=np.uint32)
-        self.data.link_array  = np.zeros_like(self.mapping_array, dtype=np.uint32)
+        nx_padded = self.info.nx_padded
+        ny_padded = self.info.ny_padded
+        self.data.count_array = np.zeros((nx_padded,ny_padded), dtype=np.uint32)
+        self.data.link_array  = np.zeros((nx_padded,ny_padded), dtype=np.uint32)
         countlink.count_downchannels(self.cl_state, self.info, self.data, 
                                      self.verbose)
         
@@ -318,20 +318,15 @@ class Mapping(Core):
                                     self.verbose, do_reset_count=False)
         
     def segment_downchannels(self):
-        self.data.label_array = np.zeros_like(self.mapping_array, dtype=np.uint32)
+        nx_padded = self.info.nx_padded
+        ny_padded = self.info.ny_padded
+        self.data.label_array = np.zeros((nx_padded,ny_padded), dtype=np.uint32)
         self.n_segments = segment.segment_channels(self.cl_state, self.info, 
                                                    self.data, self.verbose)
         # Save the channel-only segment labeling for now
         self.data.channel_label_array = self.data.label_array.copy().astype(np.uint32)
         is_majorconfluence = self.info.is_majorconfluence
         
-#         thinchannel_array = np.zeros_like(self.mapping_array, dtype=np.bool)
-#         thinchannel_array[(self.mapping_array & self.info.is_thinchannel)!=0] |= True
-#         skeleton_thinchannel_array = skeletonize(thinchannel_array)
-#         self.mapping_array[(self.mapping_array & self.info.is_thinchannel)!=0] \
-#             ^= self.info.is_thinchannel
-#         self.mapping_array[skeleton_thinchannel_array] |= self.info.is_thinchannel        
-
     def link_hillslopes(self):
         linkhillslopes.link_hillslopes(self.cl_state, self.info, self.data,
                                        self.verbose)
@@ -343,6 +338,8 @@ class Mapping(Core):
     def subsegment_flanks(self):
         # Channel edges first, and then flanks
         segment.subsegment_flanks(self.cl_state, self.info, self.data, self.verbose)
+        #?????
+        pdebug(self.data.label_array.dtype)
         self.data.label_array = self.data.label_array.astype(dtype=np.int32)
         self.data.label_array[self.data.label_array<0] \
             = - (  self.data.label_array[self.data.label_array<0] 
@@ -353,8 +350,10 @@ class Mapping(Core):
         dsla = self.trace.sla_array[:,:,0]
         usla = self.trace.sla_array[:,:,1]
         mask = self.data.mask_array
-
-        midslope_array = np.zeros_like(dsla, dtype=np.bool)
+        nx_padded = self.info.nx_padded
+        ny_padded = self.info.ny_padded
+        pdebug('nx,ny:',dsla.shape, self.data.mask_array.shape)
+        midslope_array = np.zeros((nx_padded,ny_padded), dtype=np.bool)
         midslope_array[ (~mask) & (np.fabs(
             gaussian_filter((np.arctan2(dsla,usla)-np.pi/4), self.midslope_filter_sigma))
                              <=self.midslope_threshold)] = True
@@ -367,13 +366,16 @@ class Mapping(Core):
         dsla = self.trace.sla_array[:,:,0]
         usla = self.trace.sla_array[:,:,1]
         mask = self.data.mask_array
-        ridge_array = np.zeros_like(dsla, dtype=np.bool)
+        nx_padded = self.info.nx_padded
+        ny_padded = self.info.ny_padded
+        pdebug('nx,ny:',dsla.shape, self.data.mask_array.shape)
+        ridge_array = np.zeros((nx_padded,ny_padded), dtype=np.bool)
         ridge_array[ (~mask) & ((
             gaussian_filter((np.arctan2(dsla,usla)-np.pi/4), self.ridge_filter_sigma))
                              <= -(np.pi/4)*self.ridge_threshold)] = True
         dilation_structure = generate_binary_structure(2, 2)
-        fat_ridge_array    = binary_dilation(ridge_array, 
-                                             structure=dilation_structure, iterations=1)
+        fat_ridge_array    = binary_dilation(ridge_array, structure=dilation_structure, 
+                                             iterations=1)
         filled_ridge_array   = binary_fill_holes(fat_ridge_array)
         skeleton_ridge_array = skeletonize(filled_ridge_array)
         self.data.mapping_array[skeleton_ridge_array] |= self.info.is_ridge
@@ -424,9 +426,10 @@ class Mapping(Core):
         except:
             self.print('Problem constructing HSL stats dataframe')
             return False
-            
+        nx_padded = self.info.nx_padded
+        ny_padded = self.info.ny_padded
         try:   
-            self.data.hsl_array=np.zeros_like(self.data.label_array,dtype=np.float32)
+            self.data.hsl_array = np.zeros((nx_padded,ny_padded), dtype=np.float32)
             for idx,row in stats_df.iterrows():
                 if row['count']>=self.n_hsl_averaging_threshold:
                     self.data.hsl_array[self.data.label_array==idx] = row['mean [m]']
@@ -453,8 +456,10 @@ class Mapping(Core):
     def merge_hsl(self):
         self.print('Merging hillslope lengths...',end='')
         mask_array = self.state.merge_active_masks()
+        nx_padded = self.info.nx_padded
+        ny_padded = self.info.ny_padded
         if self.hsl_array is None:
-            self.hsl_array = np.zeros_like(self.data.hsl_array)
+            self.hsl_array = np.zeros((nx_padded,ny_padded), dtype=np.float32)
             self.print('created HSL array...',end='')
         else:
             self.print('merging with prior HSL...',end='')
@@ -504,7 +509,9 @@ class Mapping(Core):
         uv_array        = self.preprocess.uv_array.copy()
         is_channel      = self.info.is_channel
         mapping_array   = self.data.mapping_array
-        mask_array      = np.zeros_like(mapping_array, dtype=np.bool)
+        nx_padded       = self.info.nx_padded
+        ny_padded       = self.info.ny_padded
+        mask_array      = np.zeros((nx_padded,ny_padded), dtype=np.bool)
         slope_array[((mapping_array & is_channel)==is_channel)] = 0.0
         if self.do_aspect_median_filtering:
             sf = np.max(slope_array)/255.0

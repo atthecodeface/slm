@@ -30,8 +30,7 @@ class Data():
         self.traj_stats_df       = traj_stats_df
         
 class Info():    
-    def __init__(self, state, geodata, trace, mapping=None, n_seed_points=None,
-                 segmentation_threshold=None, channel_threshold=None):
+    def __init__(self, state, geodata, trace, mapping=None, n_seed_points=None):
         self.state   = state
         self.geodata = geodata
         self.trace   = trace
@@ -41,15 +40,9 @@ class Info():
             self.do_measure_hsl_from_ridges = mapping.do_measure_hsl_from_ridges
         else:
             self.do_measure_hsl_from_ridges = False
-        if segmentation_threshold is not None:        
-            self.segmentation_threshold = segmentation_threshold
-        else:        
-            self.segmentation_threshold = np.uint32(0)
-        if channel_threshold is not None:
-            self.channel_threshold = channel_threshold
-        else:
-            self.channel_threshold = np.uint32(0)
-                    
+        self.segmentation_threshold = np.uint32(0)
+        self.channel_threshold      = np.uint32(0)
+
         if trace.max_length==np.float32(0.0):
             max_length = np.finfo(numpy.float32).max
         else:
@@ -114,8 +107,8 @@ class Info():
         [setattr(self,flag,np.uint(2**idx)) for idx,flag in enumerate(flags)]
 
     def set_xy(self, bbox=None):
-        geodata = self.geodata
-        trace   = self.trace
+        geodata    = self.geodata
+        trace      = self.trace
         grid_scale = np.sqrt(np.float32(geodata.roi_nx*geodata.roi_ny))
         nxf        = np.float32(geodata.roi_nx)
         nyf        = np.float32(geodata.roi_ny)
@@ -132,6 +125,12 @@ class Info():
         self.combo_factor  = np.float32(grid_scale*trace.integrator_step_factor)
         self.dt_max        = np.float32(dt_max)
 
+    def set_thresholds(self,segmentation_threshold=None, channel_threshold=None):
+        if segmentation_threshold is not None:        
+            self.segmentation_threshold = segmentation_threshold
+        if channel_threshold is not None:
+            self.channel_threshold = channel_threshold
+                    
 
 def check_sizes(nx,ny,array_dict):
     for ad_item in array_dict.items():
