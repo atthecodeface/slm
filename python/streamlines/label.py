@@ -45,7 +45,7 @@ def label_confluences( cl_state, info, data, verbose ):
     array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
-                   'dn_slt':     {'array': data.dn_slt_array,     'rwf': 'RO'}, 
+                   'dn_slt':     {'array': data.slt_array[:,:,0], 'rwf': 'RO'}, 
                    'mapping':    {'array': data.mapping_array,    'rwf': 'RW'}, 
                    'count':      {'array': data.count_array,      'rwf': 'RW'}, 
                    'link':       {'array': data.link_array,       'rwf': 'RW'} }

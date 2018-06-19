@@ -292,8 +292,8 @@ class Mapping(Core):
     def map_channels(self, info, data):
         self.print('Channels...',end='')
         # Designate channel pixels according to dslt pdf analysis
-        slt = self.trace.slt_array[:,:,0]
-        slc = self.trace.slc_array[:,:,0]
+        slt = data.slt_array[:,:,0]
+        slc = data.slc_array[:,:,0]
         data.mapping_array[(slt>=info.channel_threshold) & (slt*2>=slc)]= info.is_channel   
         self.print('done')  
 
@@ -333,7 +333,6 @@ class Mapping(Core):
         countlink.flag_downchannels(self.cl_state, info, data, self.verbose)
 
     def label_confluences(self, info, data):
-        data.dn_slt_array = self.trace.slt_array[:,:,0].copy()
         label.label_confluences(self.cl_state, info, data, self.verbose)
         # Three passes to try to eliminate all 'parasite' streamlets
         countlink.flag_downchannels(self.cl_state, info, data, self.verbose)
@@ -367,8 +366,8 @@ class Mapping(Core):
         
     def map_midslopes(self, info, data):
         self.print('Midslopes...',end='')  
-        dsla = self.trace.sla_array[:,:,0]
-        usla = self.trace.sla_array[:,:,1]
+        dsla = data.sla_array[:,:,0]
+        usla = data.sla_array[:,:,1]
         mask = data.mask_array
         nxp = info.nx_padded
         nyp = info.ny_padded
@@ -382,8 +381,8 @@ class Mapping(Core):
 
     def map_ridges(self, info, data):
         self.print('Ridges...',end='')  
-        dsla = self.trace.sla_array[:,:,0]
-        usla = self.trace.sla_array[:,:,1]
+        dsla = data.sla_array[:,:,0]
+        usla = data.sla_array[:,:,1]
         mask = data.mask_array
         nxp = info.nx_padded
         nyp = info.ny_padded
