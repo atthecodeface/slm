@@ -194,6 +194,7 @@ class Analysis(Core):
         """
         self.print('Computing marginal distribution "dslt"...')
         x_array,y_array = data.slt_array, data.sla_array
+        pdebug('x_array.shape',x_array.shape)
         mask_array      = data.mask_array
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
