@@ -107,23 +107,21 @@ class Info():
         [setattr(self,flag,np.uint(2**idx)) for idx,flag in enumerate(flags)]
 
     def set_xy(self, bbox=None):
-        geodata    = self.geodata
-        trace      = self.trace
-        grid_scale = np.sqrt(np.float32(geodata.roi_nx*geodata.roi_ny))
-        nxf        = np.float32(geodata.roi_nx)
-        nyf        = np.float32(geodata.roi_ny)
-        dt_max     = min(min(1.0/nxf,1.0/nyf),0.1)
-        
+        geodata            = self.geodata
+        trace              = self.trace
+        self.bbox          = bbox
         self.pad_width     = np.uint32(geodata.pad_width)
         self.pad_width_pp5 = np.float32(geodata.pad_width)+0.5
         self.nx_padded     = np.uint32(geodata.roi_padded_nx)
         self.ny_padded     = np.uint32(geodata.roi_padded_ny)
         self.nxy_padded    = np.uint32( geodata.roi_padded_nx*geodata.roi_padded_ny )
+        nxf                = np.float32(geodata.roi_nx)
+        nyf                = np.float32(geodata.roi_ny)
         self.nxf_mp5       = np.float32(nxf-0.5)
         self.nyf_mp5       = np.float32(nyf-0.5)
-        self.grid_scale    = np.float32(grid_scale)
-        self.combo_factor  = np.float32(grid_scale*trace.integrator_step_factor)
-        self.dt_max        = np.float32(dt_max)
+        self.grid_scale    = np.float32(np.sqrt(nxf*nyf))
+        self.combo_factor  = np.float32(self.grid_scale*trace.integrator_step_factor)
+        self.dt_max        = np.float32(min(min(1.0/nxf,1.0/nyf),0.1))
 
     def set_thresholds(self,segmentation_threshold=None, channel_threshold=None):
         if segmentation_threshold is not None:        

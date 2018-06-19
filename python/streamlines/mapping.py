@@ -65,7 +65,7 @@ class Mapping(Core):
         self.state.verbose = self.vbackup
 
     def report_progress(self ,idx, n_segments):
-        progress = ((idx+1)/n_segments)*100.0
+        progress = ((idx)/n_segments)*100.0
         vprint(self.vbackup, '{:2.1f}% '.format(progress),end='')
 
     def get_bbox(self, array):
@@ -93,6 +93,9 @@ class Mapping(Core):
                                                            n_iterations=n_iterations))
         # Now invert the raw mask as well
         segment_mask_array = np.invert(segment_mask_array)
+        pad = self.geodata.pad_width
+        padded_mask_array = np.pad(dilated_segment_mask_array, (pad,pad),
+                                   'constant', constant_values=(True,True))
         # Define bbox
         bbox_dilated_segment = self.get_bbox(~dilated_segment_mask_array)
         self.print('Dilated subsegment mask bbox = {}'.format(bbox_dilated_segment))
@@ -156,11 +159,16 @@ class Mapping(Core):
 #         for idx,coarse_label in enumerate([71]):
         # Iterate over the coarse subsegments
         for idx,coarse_label in enumerate(self.coarse_labels):
+            # Report % progress
+            self.report_progress(idx, n_segments)
+            self.info = Info(self.state, self.geodata, self.trace, mapping=self)
+
             # Flag if subsegment is left or right flank
             #   - important because a left flank subseg omits the channel pixels
             is_left_or_right = ('left' if coarse_label<0 else 'right')
             self.print('\n--- Mapping HSL on subsegment §{0} = {1}/{2} ({3})'
                        .format(coarse_label,idx+1,n_segments,is_left_or_right))
+            
             # Basic masking first
             self.state.reset_active_masks()
             # Create a raw+dilated mask arrays for this coarse subsegment
@@ -168,13 +176,9 @@ class Mapping(Core):
             segment_mask_array, dilated_segment_mask_array, bbox \
                 = self.create_coarse_subsegment_mask(coarse_label, is_left_or_right)
             # Deploy the dilated coarse-subsegment mask
-            self.state.remove_active_mask('dilated_segment')
             self.state.add_active_mask({'dilated_segment': dilated_segment_mask_array})
             self.print('Bounding box: {}'.format(bbox))
             
-            # Report % progress
-            self.report_progress(idx, n_segments)
-            self.info = Info(self.state, self.geodata, self.trace, mapping=self)
             self.info.set_xy(bbox=bbox)
             # Compute slt pdf and estimate channel threshold from it
             # BBOX
@@ -183,12 +187,14 @@ class Mapping(Core):
                 continue
             self.info.set_thresholds(channel_threshold=ch_threshold,
                                  segmentation_threshold=self.fine_segmentation_threshold)
+            
             # Get ready to map HSL
             # BBOX
             self.prepare_arrays_data_mask()
             # BBOX
             if not self.do_map_channels_segments(): 
                 continue
+            
             # Map ridges and midslopes
             # BBOX
             self.map_midslopes()
@@ -202,6 +208,7 @@ class Mapping(Core):
             vprint(self.vbackup, 'Mean HSL = {0:0.1f}m'.format(self.hsl_mean))
             # Remove this iteration's dilated coarse-subsegment mask
             self.state.remove_active_mask('dilated_segment')
+            
             # Replace with this iteration's raw coarse-subsegment mask
             self.state.add_active_mask({'raw_segment': segment_mask_array})
             # Deploy this coarse subsegment's HSL data to the 'global' HSL map
@@ -209,9 +216,11 @@ class Mapping(Core):
             self.merge_hsl()
             # Delete this iteration's raw coarse mask from the active list
             self.state.remove_active_mask('raw_segment')
+            
             del segment_mask_array, dilated_segment_mask_array
                     
 #         self._switch_back_to_verbose_mode()
+        self.report_progress(idx+1, n_segments)
         self.print('\n**Pass#2 end**') 
                 
     def pass3(self):        

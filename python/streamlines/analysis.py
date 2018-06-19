@@ -93,7 +93,7 @@ class Analysis(Core):
             return None
         except Exception as error:
             vprint(verbose,'Failed to estimate channel threshold:', repr(error))
-            return None
+            raise
         
     def compute_marginal_distribn(self, x_array,y_array,mask_array=None,
                                   up_down_idx_x=0, up_down_idx_y=0, 

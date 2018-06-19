@@ -251,11 +251,10 @@ class Geodata(Core):
         basin_mask_unpadded_array    = np.invert(basin_mask_unpadded_array)    
         basin_fatmask_unpadded_array = np.invert(basin_fatmask_unpadded_array)    
             
-        self.basin_mask_array = np.pad(basin_mask_unpadded_array,
-                                       (int(self.pad_width),int(self.pad_width)), 
+        pad = self.pad_width
+        self.basin_mask_array = np.pad(basin_mask_unpadded_array, (pad,pad), 
                                        'constant', constant_values=(True,True))
-        self.basin_fatmask_array = np.pad(basin_fatmask_unpadded_array, 
-                                          (int(self.pad_width), int(self.pad_width)), 
+        self.basin_fatmask_array = np.pad(basin_fatmask_unpadded_array, (pad,pad), 
                                           'constant', constant_values=(True,True))
         self.state.add_active_mask({'basin': self.basin_mask_array})
 
