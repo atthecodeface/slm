@@ -101,15 +101,23 @@ class Mapping(Core):
         self.print('Dilated subsegment mask bbox = {}'.format(bbox_dilated_segment))
         return segment_mask_array, dilated_segment_mask_array, bbox_dilated_segment
 
-    def prepare_data(self, info):
+    def prepare_data(self, info, do_create_mapping_array=False,
+                     uv_array=None, mask_array=None, 
+                     sla_array=None, slc_array=None, slt_array=None):
         self.print('Preparing data...',end='')  
         self.verbose  = self.state.verbose
-        nxp = info.nx_padded
-        nyp = info.ny_padded
-        mapping_array = np.zeros((nxp,nyp), dtype=np.uint32)
-        data = Data( mask_array    = self.state.merge_active_masks(),
-                     uv_array      = self.preprocess.uv_array,
-                     mapping_array = mapping_array )  
+        if do_create_mapping_array:
+            nxp = info.nx_padded
+            nyp = info.ny_padded
+            mapping_array = np.zeros((nxp,nyp), dtype=np.uint32)
+        else:
+            mapping_array = None
+        data = Data( mask_array    = mask_array,
+                     uv_array      = uv_array,
+                     mapping_array = mapping_array,
+                     sla_array     = sla_array,
+                     slc_array     = slc_array,
+                     slt_array     = slt_array )  
         self.print('done')
         return data
             
@@ -124,7 +132,9 @@ class Mapping(Core):
         info.set_thresholds(channel_threshold=self.coarse_channel_threshold,
                             segmentation_threshold=self.coarse_segmentation_threshold)
         # Ensure a fresh start with data, mapping sub-objects
-        data = self.prepare_data(info)
+        data = self.prepare_data(info, do_create_mapping_array=True,
+                                 uv_array=self.preprocess.uv_array,
+                                 mask_array=self.state.merge_active_masks())
         # Do the forced coarse channel mapping & subsegmentation
         self.do_map_channels_segments(info, data)
         # Save the coarse subsegmentation labels
@@ -179,17 +189,25 @@ class Mapping(Core):
             self.print('Bounding box: {}'.format(bbox))
             
             info.set_xy(bbox=bbox)
-            # Compute slt pdf and estimate channel threshold from it
-            # BBOX
-            ch_threshold = self.analysis.estimate_channel_threshold(verbose=self.vbackup)
-            if ch_threshold is None or ch_threshold<20.0: 
-                continue
-            info.set_thresholds(channel_threshold=ch_threshold,
-                                 segmentation_threshold=self.fine_segmentation_threshold)
-            
+
             # Get ready to map HSL
             # BBOX
-            data = self.prepare_data(info)
+            data = self.prepare_data(info, do_create_mapping_array=True,
+                                     uv_array=self.preprocess.uv_array,
+                                     sla_array=self.trace.sla_array,
+                                     slc_array=self.trace.slc_array,
+                                     slt_array=self.trace.slt_array,
+                                     mask_array=self.state.merge_active_masks())
+
+            # Compute slt pdf and estimate channel threshold from it
+            # BBOX
+            channel_threshold = self.analysis.estimate_channel_threshold(data,
+                                                                    verbose=self.vbackup)
+            if channel_threshold is None or channel_threshold<20.0: 
+                continue
+            info.set_thresholds(channel_threshold=channel_threshold,
+                                 segmentation_threshold=self.fine_segmentation_threshold)
+            
             # BBOX
             if not self.do_map_channels_segments(info, data):
                 del data

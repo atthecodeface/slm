@@ -79,14 +79,14 @@ class Analysis(Core):
 
         self.print('**Analysis end**\n')  
       
-    def estimate_channel_threshold(self, verbose=None):
+    def estimate_channel_threshold(self, data, verbose=None):
         """
         TBD
         """
         if verbose is None:
             verbose=self.verbose
         try:
-            self.compute_marginal_distribn_dslt()
+            self.compute_marginal_distribn_dslt(data)
             return self.mpdf_dslt.channel_threshold_x
         except AttributeError as error:
             self.print('Failed to estimate channel threshold:', error)
@@ -188,13 +188,14 @@ class Analysis(Core):
                                              logx_max=logx_max,logy_max=logy_max)
         self.print('...done')            
         
-    def compute_marginal_distribn_dslt(self):
+    def compute_marginal_distribn_dslt(self, data):
         """
         TBD
         """
         self.print('Computing marginal distribution "dslt"...')
-        x_array, y_array = self.trace.slt_array, self.trace.sla_array
-        mask_array = self.state.merge_active_masks()
+        x_array    = data.slt_array
+        y_array    = data.sla_array
+        mask_array = data.mask_array
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',

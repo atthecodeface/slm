@@ -23,11 +23,17 @@ class Data():
                  mask_array      = None,
                  uv_array        = None,
                  mapping_array   = None,
-                 traj_stats_df   = None):
+                 traj_stats_df   = None,
+                 sla_array       = None,
+                 slc_array       = None,
+                 slt_array       = None):
         self.mask_array          = mask_array
         self.uv_array            = uv_array
         self.mapping_array       = mapping_array
         self.traj_stats_df       = traj_stats_df
+        self.sla_array           = sla_array
+        self.slc_array           = slc_array
+        self.slt_array           = slt_array
         
 class Info():    
     def __init__(self, state, geodata, trace, mapping=None, n_seed_points=None):
