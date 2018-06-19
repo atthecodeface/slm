@@ -105,11 +105,11 @@ class Analysis(Core):
         TBD
         """
         if mask_array is not None:
-            tx_array = x_array[~mask_array,up_down_idx_x].copy().astype(dtype=np.float32)
-            ty_array = y_array[~mask_array,up_down_idx_y].copy().astype(dtype=np.float32)
+            tx_array = x_array[~mask_array,up_down_idx_x].astype(dtype=np.float32)
+            ty_array = y_array[~mask_array,up_down_idx_y].astype(dtype=np.float32)
         else:
-            tx_array = x_array[:,:,up_down_idx_x].ravel().copy().astype(dtype=np.float32)
-            ty_array = y_array[:,:,up_down_idx_y].ravel().copy().astype(dtype=np.float32)
+            tx_array = x_array[:,:,up_down_idx_x].astype(dtype=np.float32).ravel()
+            ty_array = y_array[:,:,up_down_idx_y].astype(dtype=np.float32).ravel()
         logx_array = np.log(tx_array[(tx_array>0.0) & (ty_array>0.0)])
         logy_array = np.log(ty_array[(tx_array>0.0) & (ty_array>0.0)])
         if method is None:
@@ -159,7 +159,7 @@ class Analysis(Core):
         mask_array = self.state.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
+          = self._get_limits(['pdf_sla_min','pdf_sla_max',
                                    'pdf_slc_min','pdf_slc_max'])
         self.mpdf_dsla \
             = self.compute_marginal_distribn(x_array,y_array, mask_array,
@@ -178,7 +178,7 @@ class Analysis(Core):
         mask_array = self.state.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
+          = self._get_limits(['pdf_sla_min','pdf_sla_max',
                                    'pdf_slc_min','pdf_slc_max'])
         self.mpdf_usla \
             = self.compute_marginal_distribn(x_array,y_array, mask_array,
@@ -193,13 +193,11 @@ class Analysis(Core):
         TBD
         """
         self.print('Computing marginal distribution "dslt"...')
-        x_array    = data.slt_array
-        y_array    = data.sla_array
-        mask_array = data.mask_array
+        x_array,y_array = data.slt_array, data.sla_array
+        mask_array      = data.mask_array
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
-                                   'pdf_sla_min','pdf_sla_max'])
+          = self._get_limits(['pdf_slt_min','pdf_slt_max','pdf_sla_min','pdf_sla_max'])
         self.mpdf_dslt \
             = self.compute_marginal_distribn(x_array,y_array, mask_array,
                                              up_down_idx_x=up_down_idx_x,
@@ -217,7 +215,7 @@ class Analysis(Core):
         mask_array = self.state.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
+          = self._get_limits(['pdf_slt_min','pdf_slt_max',
                                    'pdf_sla_min','pdf_sla_max'])
         self.mpdf_uslt \
             = self.compute_marginal_distribn(x_array,y_array, mask_array,
@@ -236,7 +234,7 @@ class Analysis(Core):
         mask_array = self.state.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_slc_min','pdf_slc_max',
+          = self._get_limits(['pdf_slc_min','pdf_slc_max',
                                    'pdf_sla_min','pdf_sla_max'])
         self.mpdf_dslc \
             = self.compute_marginal_distribn(x_array,y_array, mask_array,
@@ -255,7 +253,7 @@ class Analysis(Core):
         mask_array = self.state.merge_active_masks()
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_slc_min','pdf_slc_max',
+          = self._get_limits(['pdf_slc_min','pdf_slc_max',
                                    'pdf_sla_min','pdf_sla_max'])
         self.mpdf_uslc \
             = self.compute_marginal_distribn(x_array,y_array, mask_array,
@@ -332,7 +330,7 @@ class Analysis(Core):
         mask_array = self.state.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 0,1
         (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
+          = self._get_limits(['pdf_sla_min','pdf_sla_max',
                                      'pdf_sla_min','pdf_sla_max'])
         self.jpdf_dsla_usla \
             = self.compute_joint_distribn(x_array,y_array, mask_array,
@@ -351,7 +349,7 @@ class Analysis(Core):
         mask_array = self.state.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
+          = self._get_limits(['pdf_sla_min','pdf_sla_max',
                                      'pdf_slt_min','pdf_slt_max'])
         try:
             mpdf_dsla = self.mpdf_dsla
@@ -375,7 +373,7 @@ class Analysis(Core):
         mask_array = self.state.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
+          = self._get_limits(['pdf_slt_min','pdf_slt_max',
                                      'pdf_slc_min','pdf_slc_max'])
         try:
             mpdf_dsla = self.mpdf_dsla
@@ -399,7 +397,7 @@ class Analysis(Core):
         mask_array = self.state.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 1,1
         (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
+          = self._get_limits(['pdf_sla_min','pdf_sla_max',
                                      'pdf_slt_min','pdf_slt_max'])
         self.jpdf_usla_uslt \
             = self.compute_joint_distribn(x_array,y_array, mask_array,
@@ -417,7 +415,7 @@ class Analysis(Core):
         x_array,y_array = self.trace.slt_array,self.trace.slt_array
         up_down_idx_x, up_down_idx_y = 1,0
         (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_slt_min','pdf_slt_max',
+          = self._get_limits(['pdf_slt_min','pdf_slt_max',
                                      'pdf_slt_min','pdf_slt_max'])
         self.jpdf_uslt_dslt \
             = self.compute_joint_distribn(x_array,y_array, mask_array,
@@ -436,7 +434,7 @@ class Analysis(Core):
         mask_array = self.state.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
+          = self._get_limits(['pdf_sla_min','pdf_sla_max',
                                      'pdf_slc_min','pdf_slc_max'])
         try:
             mpdf_dsla = self.mpdf_dsla
@@ -460,7 +458,7 @@ class Analysis(Core):
         mask_array = self.state.merge_active_masks()
         up_down_idx_x,up_down_idx_y = 1,1
         (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_sla_min','pdf_sla_max',
+          = self._get_limits(['pdf_sla_min','pdf_sla_max',
                                      'pdf_slc_min','pdf_slc_max'])
         self.jpdf_usla_uslc \
             = self.compute_joint_distribn(x_array,y_array, mask_array,
@@ -478,7 +476,7 @@ class Analysis(Core):
         x_array,y_array = self.trace.slc_array,self.trace.slc_array
         up_down_idx_x, up_down_idx_y = 1,0
         (logx_min, logx_max, logy_min, logy_max) \
-          = self._get_logminmaxes(['pdf_slc_min','pdf_slc_max',
+          = self._get_limits(['pdf_slc_min','pdf_slc_max',
                                      'pdf_slc_min','pdf_slc_max'])
         self.jpdf_uslc_dslc \
             = self.compute_joint_distribn(x_array,y_array, mask_array,
@@ -489,7 +487,7 @@ class Analysis(Core):
         self.print('...done')
 
 
-    def _get_logminmaxes(self, attr_list):
+    def _get_limits(self, attr_list):
         return [np.log(getattr(self,attr)) if hasattr(self,attr) else None 
                 for attr in attr_list]
         

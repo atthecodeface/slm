@@ -133,8 +133,11 @@ class Mapping(Core):
                             segmentation_threshold=self.coarse_segmentation_threshold)
         # Ensure a fresh start with data, mapping sub-objects
         data = self.prepare_data(info, do_create_mapping_array=True,
-                                 uv_array=self.preprocess.uv_array,
-                                 mask_array=self.state.merge_active_masks())
+                                     uv_array=self.preprocess.uv_array,
+                                     sla_array=self.trace.sla_array,
+                                     slc_array=self.trace.slc_array,
+                                     slt_array=self.trace.slt_array,
+                                     mask_array=self.state.merge_active_masks())
         # Do the forced coarse channel mapping & subsegmentation
         self.do_map_channels_segments(info, data)
         # Save the coarse subsegmentation labels
