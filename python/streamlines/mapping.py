@@ -231,6 +231,7 @@ class Mapping(Core):
         self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask})
         info = Info(self.state, self.trace, self.geodata.roi_pixel_size, mapping=self)
         info.set_xy(self.geodata.roi_nx,self.geodata.roi_ny,self.geodata.pad_width)
+        # No data obj needed - grid arrays provided by this mapping instance
         self.map_hsl(info)
         self.map_aspect(info)
         self.compute_hsl_aspect(info)
