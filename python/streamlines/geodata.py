@@ -145,10 +145,7 @@ class Geodata(Core):
                                                  self.roi_y_bounds[1]-0.5, 
                                           self.roi_array.shape[1], dtype=np.float32)
         self.roi_nx = len(self.x_roi_n_pixel_centers)
-        self.roi_ny = len(self.y_roi_n_pixel_centers)
-        self.roi_padded_nx = self.roi_nx+2*self.pad_width
-        self.roi_padded_ny = self.roi_ny+2*self.pad_width
-        
+        self.roi_ny = len(self.y_roi_n_pixel_centers)        
         self.print('ROI pixel bounds: ',[[self.roi_x_bounds[0],self.roi_x_bounds[-1]-1], 
                                          [self.roi_y_bounds[0],self.roi_y_bounds[-1]-1]])
         self.print('ROI pixel grid: ',  self.roi_nx, 'x', self.roi_ny, 

@@ -73,10 +73,6 @@ class Trace(Core):
             sla_array (numpy.ndarray):
             """
         self.print('\n**Trace begin**')  
-        # Create mapping flag array 
-        self.mapping_array = np.zeros((self.geodata.roi_padded_nx,
-                                       self.geodata.roi_padded_ny),
-                                       dtype=np.uint32)
         # Integrate streamlines downstream and upstream
         self.compute_trajectories()
         # Map mean streamline integrations downstream and upstream
@@ -91,17 +87,20 @@ class Trace(Core):
         """
         info = Info(self.state, self, self.geodata.roi_pixel_size)
         info.set_xy(self.geodata.roi_nx,self.geodata.roi_ny,self.geodata.pad_width)
-        data = Data( mask_array    = self.state.merge_active_masks(),
+        data = Data( info=info,
+                     mask_array    = self.state.merge_active_masks(),
                      uv_array      = self.preprocess.uv_array,
-                     mapping_array = self.mapping_array )
-        trajectories = Trajectories(self.state.cl_platform, self.state.cl_device,
-                                    cl_src_path         = self.state.cl_src_path,
-                                    info                = info,
-                                    data                = data,
-                                    do_trace_downstream = self.do_trace_downstream,
-                                    do_trace_upstream   = self.do_trace_upstream,
-                                    verbose             = self.state.verbose,
-                                    gpu_verbose         = self.state.gpu_verbose )
+                     mapping_array = self.mapping_array  # Likely = None
+                     )
+        trajectories = Trajectories( self.state.cl_platform, self.state.cl_device,
+                                     cl_src_path         = self.state.cl_src_path,
+                                     info                = info,
+                                     data                = data,
+                                     do_trace_downstream = self.do_trace_downstream,
+                                     do_trace_upstream   = self.do_trace_upstream,
+                                     verbose             = self.state.verbose,
+                                     gpu_verbose         = self.state.gpu_verbose 
+                                     )
         trajectories.integrate()
         # Only preserve what we need from the trajectories class instance
         self.seed_point_array       = trajectories.data.seed_point_array
@@ -115,16 +114,19 @@ class Trace(Core):
         """
         info = Info(self.state, self, self.geodata.roi_pixel_size)
         info.set_xy(self.geodata.roi_nx,self.geodata.roi_ny,self.geodata.pad_width)
-        data = Data( mask_array    = self.state.merge_active_masks(),
+        data = Data( info=info,
+                     mask_array    = self.state.merge_active_masks(),
                      uv_array      = self.preprocess.uv_array,
                      mapping_array = self.mapping_array, # Currently unused
-                     traj_stats_df = self.traj_stats_df )
-        fields = Fields(self.state.cl_platform, self.state.cl_device,
-                        cl_src_path         = self.state.cl_src_path,
-                        info                = info,
-                        data                = data,
-                        verbose             = self.state.verbose,
-                        gpu_verbose         = self.state.gpu_verbose )
+                     traj_stats_df = self.traj_stats_df 
+                     )
+        fields = Fields( self.state.cl_platform, self.state.cl_device,
+                         cl_src_path         = self.state.cl_src_path,
+                         info                = info,
+                         data                = data,
+                         verbose             = self.state.verbose,
+                         gpu_verbose         = self.state.gpu_verbose 
+                         )
         fields.integrate()
         # Only preserve what we need from the trajectories class instance
         self.slc_array = fields.data.slc_array

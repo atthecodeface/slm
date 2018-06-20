@@ -184,8 +184,8 @@ def find_and_fix_loops(roi_array,
     n_loops = np.uint32(0);
     # HACK: this malloc needs to be reined in and controlled more precisely
     where_looped_array = np.zeros((roi_nx*roi_ny,2),dtype=np.uint32)
-    for xi,x in enumerate(x_roi_n_pixel_centers[:-1]):
-        for yi,y in enumerate(y_roi_n_pixel_centers[:-1]):
+    for xi,x in enumerate(x_roi_n_pixel_centers):
+        for yi,y in enumerate(y_roi_n_pixel_centers):
             vecsum,divergence,curl = check_has_loop(xi,yi,u_array,v_array)
             if (vecsum<vecsum_threshold 
                     and divergence<=divergence_threshold 
@@ -380,17 +380,15 @@ class Preprocess(Core):
          
         if self.do_normalize_speed:
             speed_array = set_speed_field(u_array,v_array)
-            (u_array, v_array) \
-                = normalize_velocity_field(u_array,v_array,speed_array)
+            (u_array,v_array) = normalize_velocity_field(u_array,v_array,speed_array)
         else:
-            (u_array, v_array) \
-                = unnormalize_velocity_field(u_array,v_array,raw_speed_array)
+            (u_array,v_array)=unnormalize_velocity_field(u_array,v_array,raw_speed_array)
             
-        self.uv_array = np.stack( pad_arrays(u_array,v_array,self.geodata.pad_width), 
-                                  axis=2 ).copy().astype(dtype=np.float32)
-        self.slope_array = np.rad2deg(np.arctan(pad_array(raw_speed_array,
-                                                          self.geodata.pad_width)))\
-                                   .astype(dtype=np.float32)
+        pad = self.geodata.pad_width
+        self.uv_array = np.stack( pad_arrays(u_array,v_array,pad), axis=2 ) \
+                                .astype(dtype=np.float32)
+        self.slope_array = np.rad2deg(np.arctan(pad_array(raw_speed_array,pad))) \
+                                      .astype(dtype=np.float32)
         self.aspect_array = np.rad2deg(np.arctan2(self.uv_array[:,:,1],
                                                   self.uv_array[:,:,0]))
     

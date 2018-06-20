@@ -466,6 +466,8 @@ class Mapping(Core):
             += data.hsl_array[(~mask_array) & (~np.isnan(self.hsl_array))]
         self.print('done')  
 
+
+
     def map_hsl(self, info):
         self.print('Mapping hillslope lengths...',end='')
         
