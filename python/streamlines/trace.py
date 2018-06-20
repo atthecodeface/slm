@@ -85,13 +85,16 @@ class Trace(Core):
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
         """
+        mask_array = self.state.merge_active_masks()
+        bbox, bnx, bny = get_bbox(~mask_array)
+        pdebug('raw bbox',bbox)
         pad = self.geodata.pad_width
         nxp = self.geodata.roi_nx+pad*2
         nyp = self.geodata.roi_ny+pad*2
         mapping_array = np.zeros((nxp,nyp),dtype=np.uint32)
         info = Info(self.state, self, self.geodata.roi_pixel_size)
-        info.set_xy(self.geodata.roi_nx,self.geodata.roi_ny,self.geodata.pad_width)
-        data = Data( info=info,
+        info.set_xy(bnx,bny, pad)
+        data = Data( info=info, bbox=bbox, pad=pad,
                      mask_array    = self.state.merge_active_masks(),
                      uv_array      = self.preprocess.uv_array,
                      mapping_array = mapping_array
@@ -107,7 +110,9 @@ class Trace(Core):
                                      )
         trajectories.integrate()
         # Only preserve what we need from the trajectories class instance
-        self.seed_point_array       = trajectories.data.seed_point_array
+        offset_xy = np.array((bbox[0]-pad,bbox[2]-pad))
+        pdebug('offset bbox',bbox,offset_xy)
+        self.seed_point_array       = trajectories.data.seed_point_array+offset_xy
         self.streamline_arrays_list = trajectories.data.streamline_arrays_list
         self.traj_stats_df          = trajectories.data.traj_stats_df
 
