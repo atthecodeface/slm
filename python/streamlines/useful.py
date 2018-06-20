@@ -12,29 +12,49 @@ import os
 os.environ['PYTHONUNBUFFERED']='True'
 import sys
 
-__all__ = ['Data', 'Info','check_sizes',
+__all__ = ['Data', 'Info','check_sizes', 'prepare_data',
            'read_geotiff','write_geotiff','true_size','neatly','vprint',
            'create_seeds','pick_seeds','compute_stats','dilate']
 
 pdebug = print
 
 class Data():    
-    def __init__(self,
+    def __init__(self, info=None, bbox=None, 
                  mask_array      = None,
                  uv_array        = None,
                  mapping_array   = None,
                  traj_stats_df   = None,
                  sla_array       = None,
                  slc_array       = None,
-                 slt_array       = None):
-        self.mask_array          = mask_array
-        self.uv_array            = uv_array
-        self.mapping_array       = mapping_array
+                 slt_array       = None ):
+#     self.print('Preparing data...',end='')  
+#     self.verbose  = verbose
+        if bbox is not None:
+            bounds_grid = np.index_exp[bbox[0]:(bbox[1]+1), bbox[2]:(bbox[3]+1)]
+            bounds_slx  = np.index_exp[bbox[0]:(bbox[1]+1), bbox[2]:(bbox[3]+1),:]
+            pdebug(bounds_grid,bounds_slx)
+        else:
+            bounds_grid = np.index_exp[:,:]
+            bounds_slx  = np.index_exp[:,:,:]
+
+        if mapping_array is None:
+            nxp = info.nx_padded
+            nyp = info.ny_padded
+            mapping_array = np.zeros((nxp,nyp), dtype=np.uint32)
+
+        self.mask_array          = mask_array[bounds_grid]
+        if uv_array is not None:
+            self.uv_array            = uv_array[bounds_grid]
+        self.mapping_array       = mapping_array[bounds_grid]
+        if sla_array is not None:
+            self.sla_array       = sla_array[bounds_slx]
+        if slc_array is not None:
+            self.slc_array       = slc_array[bounds_slx]
+        if slt_array is not None:
+            self.slt_array       = slt_array[bounds_slx]
         self.traj_stats_df       = traj_stats_df
-        self.sla_array           = sla_array
-        self.slc_array           = slc_array
-        self.slt_array           = slt_array
-        
+#     self.print('done')
+
 class Info():    
     def __init__(self, state, geodata, trace, mapping=None, n_seed_points=None):
         self.state   = state

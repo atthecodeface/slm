@@ -17,9 +17,9 @@ from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
 from streamlines.core   import Core
-from streamlines.useful import Data, Info, vprint
+from streamlines.useful import Data, Info, vprint, dilate
 from streamlines        import connect, channelheads, countlink, label, \
-                               segment, linkhillslopes, lengths, useful
+                               segment, linkhillslopes, lengths
 from streamlines.pocl   import Initialize_cl
 
 __all__ = ['Mapping']
@@ -42,7 +42,8 @@ class Mapping(Core):
         self.cl_state = Initialize_cl(self.state.cl_src_path, 
                                       self.state.cl_platform, 
                                       self.state.cl_device )
-        self.vbackup = self.state.verbose
+        self.verbose = self.state.verbose
+        self.vbackup = self.verbose
     
     def _augment(self, plot):
         self.plot = plot
@@ -58,7 +59,7 @@ class Mapping(Core):
         self.print('**Mapping end**\n')  
 
     def _switch_to_quiet_mode(self):
-        self.verbose = True
+        self.verbose = self.state.verbose
         self.state.verbose = self.state.very_verbose
 
     def _switch_back_to_verbose_mode(self):
@@ -89,8 +90,8 @@ class Mapping(Core):
         #   (left spread needs to 1st encompass bordering right-flank channel pixels)
         n_iterations = (2 if is_left_or_right=='left' else 1)
         # BBOX
-        dilated_segment_mask_array=np.invert(useful.dilate(segment_mask_array.copy(),
-                                                           n_iterations=n_iterations))
+        dilated_segment_mask_array=np.invert(dilate(segment_mask_array.copy(),
+                                                   n_iterations=n_iterations))
         # Now invert the raw mask as well
         segment_mask_array = np.invert(segment_mask_array)
         pad = self.geodata.pad_width
@@ -101,33 +102,6 @@ class Mapping(Core):
         self.print('Dilated subsegment mask bbox = {}'.format(bbox_dilated_segment))
         return segment_mask_array, dilated_segment_mask_array, bbox_dilated_segment
 
-    def prepare_data(self, info, bbox=None, do_create_mapping_array=False,
-                     uv_array=None, mask_array=None, 
-                     sla_array=None, slc_array=None, slt_array=None):
-        self.print('Preparing data...',end='')  
-        self.verbose  = self.state.verbose
-        if bbox is not None:
-            bounds_grid = np.index_exp[bbox[0]:(bbox[1]+1), bbox[2]:(bbox[3]+1)]
-            bounds_slx  = np.index_exp[bbox[0]:(bbox[1]+1), bbox[2]:(bbox[3]+1),:]
-            pdebug(bounds_grid,bounds_slx)
-        else:
-            bounds_grid = np.index_exp[:,:]
-            bounds_slx  = np.index_exp[:,:,:]
-        if do_create_mapping_array:
-            nxp = info.nx_padded
-            nyp = info.ny_padded
-            mapping_array = np.zeros((nxp,nyp), dtype=np.uint32)
-        else:
-            mapping_array = None
-        data = Data( mask_array    = mask_array[bounds_grid],
-                     uv_array      = uv_array[bounds_grid],
-                     mapping_array = mapping_array[bounds_grid],
-                     sla_array     = sla_array[bounds_slx],
-                     slc_array     = slc_array[bounds_slx],
-                     slt_array     = slt_array[bounds_slx] )  
-        self.print('done')
-        return data
-            
     def pass1(self):
         self.print('\n**Pass#1 begin**')
 #         self._switch_to_quiet_mode()
@@ -139,12 +113,12 @@ class Mapping(Core):
         info.set_thresholds(channel_threshold=self.coarse_channel_threshold,
                             segmentation_threshold=self.coarse_segmentation_threshold)
         # Ensure a fresh start with data, mapping sub-objects
-        data = self.prepare_data(info, do_create_mapping_array=True,
-                                     uv_array=self.preprocess.uv_array,
-                                     sla_array=self.trace.sla_array,
-                                     slc_array=self.trace.slc_array,
-                                     slt_array=self.trace.slt_array,
-                                     mask_array=self.state.merge_active_masks())
+        data = Data( info=info, bbox=None, mapping_array=None,
+                     mask_array = self.state.merge_active_masks(),
+                     uv_array   = self.preprocess.uv_array,
+                     sla_array  = self.trace.sla_array,
+                     slc_array  = self.trace.slc_array,
+                     slt_array  = self.trace.slt_array )
         # Do the forced coarse channel mapping & subsegmentation
         self.do_map_channels_segments(info, data)
         # Save the coarse subsegmentation labels
@@ -178,16 +152,16 @@ class Mapping(Core):
 #         for idx,coarse_label in enumerate([71]):
         # Iterate over the coarse subsegments
         for idx,coarse_label in enumerate(self.coarse_labels):
-            # Report % progress
-            self.report_progress(idx, n_segments)
             info = Info(self.state, self.geodata, self.trace, mapping=self)
 
+            # Report % progress
+            self.report_progress(idx, n_segments)
+            
             # Flag if subsegment is left or right flank
             #   - important because a left flank subseg omits the channel pixels
             is_left_or_right = ('left' if coarse_label<0 else 'right')
-            self.print('\n--- Mapping HSL on subsegment §{0} = {1}/{2} ({3})'
+            self.print('--- Mapping HSL on subsegment §{0} = {1}/{2} ({3})'
                        .format(coarse_label,idx+1,n_segments,is_left_or_right))
-            
             # Basic masking first
             self.state.reset_active_masks()
             # Create a raw+dilated mask arrays for this coarse subsegment
@@ -201,13 +175,12 @@ class Mapping(Core):
             info.set_xy(bbox=bbox)
 
             # BBOX
-            data = self.prepare_data(info, do_create_mapping_array=True,
-                                     bbox=bbox,
-                                     uv_array=self.preprocess.uv_array,
-                                     sla_array=self.trace.sla_array,
-                                     slc_array=self.trace.slc_array,
-                                     slt_array=self.trace.slt_array,
-                                     mask_array=self.state.merge_active_masks())
+            data = Data( info=info, bbox=bbox, mapping_array=None, 
+                         mask_array = self.state.merge_active_masks(),
+                         uv_array   = self.preprocess.uv_array,
+                         sla_array  = self.trace.sla_array,
+                         slc_array  = self.trace.slc_array,
+                         slt_array  = self.trace.slt_array )
 
             # Compute slt pdf and estimate channel threshold from it
             # BBOX
@@ -220,15 +193,12 @@ class Mapping(Core):
                                 segmentation_threshold=self.fine_segmentation_threshold)
             
             # BBOX
-            data = self.prepare_data(info, do_create_mapping_array=True,
-                                     uv_array=self.preprocess.uv_array,
-                                     sla_array=self.trace.sla_array,
-                                     slc_array=self.trace.slc_array,
-                                     slt_array=self.trace.slt_array,
-                                     mask_array=self.state.merge_active_masks())
-            
-            
-            
+            data = Data( info=info,  bbox=None, mapping_array=None,
+                         mask_array = self.state.merge_active_masks(),
+                         uv_array   = self.preprocess.uv_array,
+                         sla_array  = self.trace.sla_array,
+                         slc_array  = self.trace.slc_array,
+                         slt_array  = self.trace.slt_array )
             
             # BBOX
             if not self.do_map_channels_segments(info, data):
