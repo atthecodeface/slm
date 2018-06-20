@@ -95,9 +95,9 @@ class Trace(Core):
         info = Info(self.state, self, self.geodata.roi_pixel_size)
         info.set_xy(bnx,bny, pad)
         data = Data( info=info, bbox=bbox, pad=pad,
-                     mask_array    = self.state.merge_active_masks(),
-                     uv_array      = self.preprocess.uv_array,
-                     mapping_array = mapping_array
+                     mapping_array = mapping_array,
+                     mask_array    = mask_array,
+                     uv_array      = self.preprocess.uv_array
                      )
         trajectories = Trajectories( self.state.cl_platform, self.state.cl_device,
                                      cl_src_path         = self.state.cl_src_path,

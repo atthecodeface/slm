@@ -96,14 +96,24 @@ class Mapping(Core):
 #         self._switch_to_quiet_mode()
         # Only deploy border padding, uv-error, and basin+?height-threshold masks
         self.state.reset_active_masks()
+        
+        mask_array = self.state.merge_active_masks()
+        bbox, bnx, bny = get_bbox(~mask_array)
+        pdebug('raw bbox',bbox)
+        pad = self.geodata.pad_width
+        nxp = self.geodata.roi_nx+pad*2
+        nyp = self.geodata.roi_ny+pad*2
+        mapping_array = np.zeros((nxp,nyp),dtype=np.uint32)
+        
         # Create an info object for passing parameters to CL wrappers etc
         info = Info(self.state, self.trace, self.geodata.roi_pixel_size, mapping=self)
-        info.set_xy(self.geodata.roi_nx,self.geodata.roi_ny,self.geodata.pad_width)
+        info.set_xy(bnx,bny, pad)
         info.set_thresholds(channel_threshold=self.coarse_channel_threshold,
                             segmentation_threshold=self.coarse_segmentation_threshold)
         # Ensure a fresh start with data, mapping sub-objects
-        data = Data( info=info, bbox=None, mapping_array=None,
-                     mask_array = self.state.merge_active_masks(),
+        data = Data( info=info, bbox=bbox, pad=pad,
+                     mapping_array = mapping_array,
+                     mask_array    = mask_array,
                      uv_array   = self.preprocess.uv_array,
                      sla_array  = self.trace.sla_array,
                      slc_array  = self.trace.slc_array,
@@ -111,9 +121,14 @@ class Mapping(Core):
         # Do the forced coarse channel mapping & subsegmentation
         self.do_map_channels_segments(info, data)
         # Save the coarse subsegmentation labels
-        self.coarse_label_array = data.label_array
-        self.label_array = self.coarse_label_array
-        self.mapping_array = data.mapping_array.copy()
+        self.coarse_label_array = np.zeros((nxp,nyp), dtype=np.uint32)
+        self.label_array = np.zeros((nxp,nyp), dtype=np.uint32)
+        self.mapping_array = np.zeros((nxp,nyp), dtype=np.uint32)
+        bounds = data.bounds_grid
+        pdebug('data.label_array.shape, bounds',data.label_array.shape, bounds)
+        self.coarse_label_array[bounds] = data.label_array
+        self.label_array                = self.coarse_label_array
+        self.mapping_array[bounds]      = data.mapping_array
         # Make a list of all the subsegments with enough ridge/midslope pixels for HSL
         self.select_subsegments(info, data, do_without_ridges_midslopes=True)
         self.coarse_labels = np.sort(self.hillslope_labels)
