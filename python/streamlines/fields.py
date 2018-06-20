@@ -187,7 +187,10 @@ class Fields():
         mapping_array       = self.data.mapping_array
         
         # Prepare memory, buffers 
-        roi_nxy = mask_array.shape
+        roi_nxy = mapping_array.shape
+#         pdebug('mask_array',mask_array.shape)
+#         pdebug('uv_array',uv_array.shape)
+#         pdebug('mapping_array',mapping_array.shape)
         slc_array     = np.zeros((roi_nxy[0],roi_nxy[1]), dtype=np.uint32)
         slt_array     = np.zeros((roi_nxy[0],roi_nxy[1]), dtype=np.uint32)
         self.data.slc_array = np.zeros((roi_nxy[0],roi_nxy[1],2), dtype=np.uint32)

@@ -19,7 +19,7 @@ __all__ = ['Data', 'Info','check_sizes', 'prepare_data',
 pdebug = print
 
 class Data():    
-    def __init__(self, info=None, bbox=None, 
+    def __init__(self, info=None, bbox=None, pad=0,
                  mask_array      = None,
                  uv_array        = None,
                  mapping_array   = None,
@@ -30,29 +30,26 @@ class Data():
 #     self.print('Preparing data...',end='')  
 #     self.verbose  = verbose
         if bbox is not None:
+            bbox = [bbox[0]-pad,bbox[1]+pad,bbox[2]-pad,bbox[3]+pad]
             bounds_grid = np.index_exp[bbox[0]:(bbox[1]+1), bbox[2]:(bbox[3]+1)]
             bounds_slx  = np.index_exp[bbox[0]:(bbox[1]+1), bbox[2]:(bbox[3]+1),:]
-            pdebug(bounds_grid,bounds_slx)
         else:
             bounds_grid = np.index_exp[:,:]
             bounds_slx  = np.index_exp[:,:,:]
 
-        if mapping_array is None:
-            nxp = info.nx_padded
-            nyp = info.ny_padded
-            mapping_array = np.zeros((nxp,nyp), dtype=np.uint32)
-
-        self.mask_array          = mask_array[bounds_grid]
+        self.mask_array    = mask_array[bounds_grid].copy()
         if uv_array is not None:
-            self.uv_array        = uv_array[bounds_grid]
-        self.mapping_array       = mapping_array[bounds_grid]
+            self.uv_array  = uv_array[bounds_slx].copy()
+        self.mapping_array = mapping_array[bounds_grid].copy()
         if sla_array is not None:
-            self.sla_array       = sla_array[bounds_slx]
+            self.sla_array = sla_array[bounds_slx].copy()
         if slc_array is not None:
-            self.slc_array       = slc_array[bounds_slx]
+            self.slc_array = slc_array[bounds_slx].copy()
         if slt_array is not None:
-            self.slt_array       = slt_array[bounds_slx]
-        self.traj_stats_df       = traj_stats_df
+            self.slt_array = slt_array[bounds_slx].copy()
+        self.traj_stats_df = traj_stats_df
+        self.bounds_grid = bounds_grid
+        self.bounds_slx  = bounds_slx
 #     self.print('done')
 
 class Info():    
@@ -136,8 +133,8 @@ class Info():
         # essentials.cl...
         self.pad_width = pad
         #
-        self.nx   = nx
-        self.ny   = ny
+        self.nx = nx
+        self.ny = ny
         # essentials.cl, jittertrajectory.cl, segment.cl, writearray.cl...
         # useful.py...
         self.nx_padded = self.nx+self.pad_width*2
@@ -158,7 +155,7 @@ def get_bbox(array):
     x_min, x_max = np.where(rows)[0][[0,-1]]
     y_min, y_max = np.where(cols)[0][[0,-1]]
     # Return as bbox tuple
-    return x_min,x_max, y_min,y_max
+    return (x_min,x_max, y_min,y_max), (x_max+1-x_min), (y_max+1-y_min)
 
 def check_sizes(nx,ny,array_dict):
     for ad_item in array_dict.items():

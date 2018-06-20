@@ -14,7 +14,7 @@ environ['PYTHONUNBUFFERED']='True'
 from streamlines.core         import Core
 from streamlines.trajectories import Trajectories
 from streamlines.fields       import Fields
-from streamlines.useful       import Data, Info
+from streamlines.useful       import Data, Info, get_bbox
 
 __all__ = ['Trace']
 
@@ -85,12 +85,16 @@ class Trace(Core):
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
         """
+        pad = self.geodata.pad_width
+        nxp = self.geodata.roi_nx+pad*2
+        nyp = self.geodata.roi_ny+pad*2
+        mapping_array = np.zeros((nxp,nyp),dtype=np.uint32)
         info = Info(self.state, self, self.geodata.roi_pixel_size)
         info.set_xy(self.geodata.roi_nx,self.geodata.roi_ny,self.geodata.pad_width)
         data = Data( info=info,
                      mask_array    = self.state.merge_active_masks(),
                      uv_array      = self.preprocess.uv_array,
-                     mapping_array = self.mapping_array  # Likely = None
+                     mapping_array = mapping_array
                      )
         trajectories = Trajectories( self.state.cl_platform, self.state.cl_device,
                                      cl_src_path         = self.state.cl_src_path,
@@ -112,24 +116,35 @@ class Trace(Core):
         Trace up or downstreamlines across region of interest (ROI) of DTM grid.
     
         """
+        mask_array = self.state.merge_active_masks()
+        bbox, bnx, bny = get_bbox(~mask_array)
+        pad = self.geodata.pad_width
+        nxp = self.geodata.roi_nx+pad*2
+        nyp = self.geodata.roi_ny+pad*2
+        mapping_array = np.zeros((nxp,nyp),dtype=np.uint32)
         info = Info(self.state, self, self.geodata.roi_pixel_size)
-        info.set_xy(self.geodata.roi_nx,self.geodata.roi_ny,self.geodata.pad_width)
-        data = Data( info=info,
-                     mask_array    = self.state.merge_active_masks(),
+        info.set_xy(bnx,bny, pad)
+        data = Data( info=info, bbox=bbox, pad=pad,
+                     mask_array    = mask_array,
                      uv_array      = self.preprocess.uv_array,
-                     mapping_array = self.mapping_array, # Currently unused
+                     mapping_array = mapping_array,
                      traj_stats_df = self.traj_stats_df 
                      )
         fields = Fields( self.state.cl_platform, self.state.cl_device,
-                         cl_src_path         = self.state.cl_src_path,
-                         info                = info,
-                         data                = data,
-                         verbose             = self.state.verbose,
-                         gpu_verbose         = self.state.gpu_verbose 
+                         cl_src_path = self.state.cl_src_path,
+                         info        = info,
+                         data        = data,
+                         verbose     = self.state.verbose,
+                         gpu_verbose = self.state.gpu_verbose 
                          )
         fields.integrate()
         # Only preserve what we need from the trajectories class instance
-        self.slc_array = fields.data.slc_array
-        self.slt_array = fields.data.slt_array
-        self.sla_array = fields.data.sla_array
+        self.slc_array = np.zeros((nxp,nyp,2), dtype=np.uint32)
+        self.slt_array = np.zeros((nxp,nyp,2), dtype=np.float32)
+        self.sla_array = np.zeros((nxp,nyp,2), dtype=np.float32)
+        # Insert results back into full (padded) DTM ROI grid arrays
+        bounds = data.bounds_slx
+        self.slc_array[bounds] = fields.data.slc_array
+        self.slt_array[bounds] = fields.data.slt_array
+        self.sla_array[bounds] = fields.data.sla_array
         
