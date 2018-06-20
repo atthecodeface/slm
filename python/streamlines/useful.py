@@ -44,7 +44,7 @@ class Data():
 
         self.mask_array          = mask_array[bounds_grid]
         if uv_array is not None:
-            self.uv_array            = uv_array[bounds_grid]
+            self.uv_array        = uv_array[bounds_grid]
         self.mapping_array       = mapping_array[bounds_grid]
         if sla_array is not None:
             self.sla_array       = sla_array[bounds_slx]
@@ -56,9 +56,8 @@ class Data():
 #     self.print('done')
 
 class Info():    
-    def __init__(self, state, geodata, trace, mapping=None, n_seed_points=None):
+    def __init__(self, state, trace, pixel_size, mapping=None, n_seed_points=None):
         self.state   = state
-        self.geodata = geodata
         self.trace   = trace
         self.mapping = mapping
 
@@ -100,8 +99,8 @@ class Info():
         self.max_integration_step_error  = np.float32(trace.max_integration_step_error)
         self.adjusted_max_error          = 0.85*np.sqrt(trace.max_integration_step_error)
         self.integration_halt_threshold  = np.float32(trace.integration_halt_threshold)
-        self.max_length                  = np.float32(max_length/geodata.roi_pixel_size)
-        self.pixel_size                  = np.float32(geodata.roi_pixel_size)
+        self.max_length                  = np.float32(max_length/pixel_size)
+        self.pixel_size                  = np.float32(pixel_size)
         self.trajectory_resolution       = np.uint32(trace.trajectory_resolution)
         self.seeds_chunk_offset          = np.uint32(0)
         self.subpixel_seed_point_density = np.uint32(trace.subpixel_seed_point_density)
@@ -132,22 +131,17 @@ class Info():
             ]
         [setattr(self,flag,np.uint(2**idx)) for idx,flag in enumerate(flags)]
 
-    def set_xy(self, bbox=None):
-        geodata            = self.geodata
-        trace              = self.trace
-        self.bbox          = bbox
-        self.pad_width     = np.uint32(geodata.pad_width)
-        self.pad_width_pp5 = np.float32(geodata.pad_width)+0.5
-        self.nx_padded     = np.uint32(geodata.roi_padded_nx)
-        self.ny_padded     = np.uint32(geodata.roi_padded_ny)
-        self.nxy_padded    = np.uint32( geodata.roi_padded_nx*geodata.roi_padded_ny )
-        nxf                = np.float32(geodata.roi_nx)
-        nyf                = np.float32(geodata.roi_ny)
-        self.nxf_mp5       = np.float32(nxf-0.5)
-        self.nyf_mp5       = np.float32(nyf-0.5)
-        self.grid_scale    = np.float32(np.sqrt(nxf*nyf))
-        self.combo_factor  = np.float32(self.grid_scale*trace.integrator_step_factor)
-        self.dt_max        = np.float32(min(min(1.0/nxf,1.0/nyf),0.1))
+    def set_xy(self, nx,ny, pad, bbox=None):
+        self.bbox = bbox        
+        # essentials.cl...
+        self.pad_width = pad
+        #
+        self.nx   = nx
+        self.ny   = ny
+        # essentials.cl, jittertrajectory.cl, segment.cl, writearray.cl...
+        # useful.py...
+        self.nx_padded = self.nx+self.pad_width*2
+        self.ny_padded = self.ny+self.pad_width*2
 
     def set_thresholds(self,segmentation_threshold=None, channel_threshold=None):
         if segmentation_threshold is not None:        
@@ -155,6 +149,16 @@ class Info():
         if channel_threshold is not None:
             self.channel_threshold = channel_threshold
                     
+def get_bbox(array):
+    # True for each column that has an element>0, false for columns with all zeros
+    cols = np.any(array, axis=0)
+    # True for each row that has an element>0, false for rows with all zeros
+    rows = np.any(array, axis=1)
+    # Get index spans where elements>0
+    x_min, x_max = np.where(rows)[0][[0,-1]]
+    y_min, y_max = np.where(cols)[0][[0,-1]]
+    # Return as bbox tuple
+    return x_min,x_max, y_min,y_max
 
 def check_sizes(nx,ny,array_dict):
     for ad_item in array_dict.items():

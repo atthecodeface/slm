@@ -17,7 +17,7 @@ from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
 from streamlines.core   import Core
-from streamlines.useful import Data, Info, vprint, dilate
+from streamlines.useful import Data, Info, vprint, dilate, get_bbox
 from streamlines        import connect, channelheads, countlink, label, \
                                segment, linkhillslopes, lengths
 from streamlines.pocl   import Initialize_cl
@@ -69,17 +69,6 @@ class Mapping(Core):
         progress = ((idx)/n_segments)*100.0
         vprint(self.vbackup, '{:2.1f}% '.format(progress),end='')
 
-    def get_bbox(self, array):
-        # True for each column that has an element>0, false for columns with all zeros
-        cols = np.any(array, axis=0)
-        # True for each row that has an element>0, false for rows with all zeros
-        rows = np.any(array, axis=1)
-        # Get index spans where elements>0
-        x_min, x_max = np.where(rows)[0][[0,-1]]
-        y_min, y_max = np.where(cols)[0][[0,-1]]
-        # Return as bbox tuple
-        return x_min,x_max, y_min,y_max
-
     def create_coarse_subsegment_mask(self, coarse_label, is_left_or_right):
         # BBOX
         segment_mask_array = np.zeros_like(self.coarse_label_array, dtype=np.bool)
@@ -98,7 +87,7 @@ class Mapping(Core):
         padded_mask_array = np.pad(dilated_segment_mask_array, (pad,pad),
                                    'constant', constant_values=(True,True))
         # Define bbox
-        bbox_dilated_segment = self.get_bbox(~dilated_segment_mask_array)
+        bbox_dilated_segment = get_bbox(~dilated_segment_mask_array)
         self.print('Dilated subsegment mask bbox = {}'.format(bbox_dilated_segment))
         return segment_mask_array, dilated_segment_mask_array, bbox_dilated_segment
 
@@ -108,8 +97,8 @@ class Mapping(Core):
         # Only deploy border padding, uv-error, and basin+?height-threshold masks
         self.state.reset_active_masks()
         # Create an info object for passing parameters to CL wrappers etc
-        info = Info(self.state, self.geodata, self.trace, mapping=self)
-        info.set_xy()
+        info = Info(self.state, self.trace, self.geodata.roi_pixel_size, mapping=self)
+        info.set_xy(self.geodata.roi_nx,self.geodata.roi_ny,self.geodata.pad_width)
         info.set_thresholds(channel_threshold=self.coarse_channel_threshold,
                             segmentation_threshold=self.coarse_segmentation_threshold)
         # Ensure a fresh start with data, mapping sub-objects
@@ -149,10 +138,13 @@ class Mapping(Core):
         self.hsl_array = None
         # Count how many coarse subsegments need to be iterated over
         n_segments = self.coarse_labels.shape[0]
+        nx  = self.geodata.roi_nx
+        ny  = self.geodata.roi_ny
+        pad = self.geodata.pad_width
 #         for idx,coarse_label in enumerate([71]):
         # Iterate over the coarse subsegments
         for idx,coarse_label in enumerate(self.coarse_labels):
-            info = Info(self.state, self.geodata, self.trace, mapping=self)
+            info = Info(self.state,self.trace,self.geodata.roi_pixel_size,mapping=self)
 
             # Report % progress
             self.report_progress(idx, n_segments)
@@ -172,7 +164,7 @@ class Mapping(Core):
             self.state.add_active_mask({'dilated_segment': dilated_segment_mask_array})
             self.print('Bounding box: {}'.format(bbox))
             
-            info.set_xy(bbox=bbox)
+            info.set_xy(nx,ny,pad,bbox=bbox)
 
             # BBOX
             data = Data( info=info, bbox=bbox, mapping_array=None, 
@@ -237,8 +229,8 @@ class Mapping(Core):
     def pass3(self):        
         self.print('\n**Pass#3 begin**') 
         self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask})
-        info = Info(self.state, self.geodata, self.trace, mapping=self)
-        info.set_xy()
+        info = Info(self.state, self.trace, self.geodata.roi_pixel_size, mapping=self)
+        info.set_xy(self.geodata.roi_nx,self.geodata.roi_ny,self.geodata.pad_width)
         self.map_hsl(info)
         self.map_aspect(info)
         self.compute_hsl_aspect(info)

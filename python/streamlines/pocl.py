@@ -182,6 +182,14 @@ def set_compile_options(info, kernel_def, downup_sign=1,
             rtn_list += list_item
 
     else:
+        pad = np.uint32(info.pad_width)
+        nxp = np.uint32(info.nx_padded)
+        nyp = np.uint32(info.ny_padded)
+        nxf = np.float32(info.nx)
+        nyf = np.float32(info.ny)
+        grid_scale   = np.float32(np.sqrt(nxf*nyf))
+        combo_factor = np.float32(grid_scale*info.integrator_step_factor)
+        dt_max       = np.float32(min(min(1.0/nxf,1.0/nyf),0.1))
         compile_options_dict = {
             'n_seed_points' :               ('u',''),
             'downup_sign' :                 ('u', np.int8(downup_sign)),
@@ -191,16 +199,16 @@ def set_compile_options(info, kernel_def, downup_sign=1,
             'integration_halt_threshold' :  ('f',''),
             'max_length' :                  ('f',''),
             'pixel_size' :                  ('f',''),
-            'pad_width' :                   ('u',''),
-            'pad_width_pp5' :               ('f',''),
-            'nx_padded' :                   ('u',''),
-            'ny_padded' :                   ('u',''),
-            'nxy_padded' :                  ('u',''),
-            'nxf_mp5' :                     ('f',''),
-            'nyf_mp5' :                     ('f',''),
-            'grid_scale' :                  ('f',''),
-            'combo_factor' :                ('f', info.combo_factor*downup_sign),
-            'dt_max' :                      ('f',''),
+            'pad_width' :                   ('u', pad),
+            'pad_width_pp5' :               ('f', np.float32(pad)+0.5),
+            'nx_padded' :                   ('u', nxp),
+            'ny_padded' :                   ('u', nyp),
+            'nxy_padded' :                  ('u', np.uint32(nxp*nyp)),
+            'nxf_mp5' :                     ('f', nxf-0.5),
+            'nyf_mp5' :                     ('f', nyf-0.5),
+            'grid_scale' :                  ('f', grid_scale),
+            'combo_factor' :                ('f', combo_factor*downup_sign),
+            'dt_max' :                      ('f', dt_max),
             'max_n_steps' :                 ('u',''),
             'trajectory_resolution' :       ('u',''),
             'seeds_chunk_offset' :          ('u',''),
