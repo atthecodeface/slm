@@ -87,7 +87,6 @@ class Trace(Core):
         """
         mask_array = self.state.merge_active_masks()
         bbox, bnx, bny = get_bbox(~mask_array)
-        pdebug('raw bbox',bbox)
         pad = self.geodata.pad_width
         nxp = self.geodata.roi_nx+pad*2
         nyp = self.geodata.roi_ny+pad*2
@@ -111,7 +110,6 @@ class Trace(Core):
         trajectories.integrate()
         # Only preserve what we need from the trajectories class instance
         offset_xy = np.array((bbox[0]-pad,bbox[2]-pad))
-        pdebug('offset bbox',bbox,offset_xy)
         self.seed_point_array       = trajectories.data.seed_point_array+offset_xy
         self.streamline_arrays_list = trajectories.data.streamline_arrays_list
         self.traj_stats_df          = trajectories.data.traj_stats_df
