@@ -7,7 +7,7 @@
         "roi_y_bounds" : [1400,1640],  
 		"basins_file" : "Guadalupe_DTM0_res2m_fill_sinks1deg_watershed3k.tif",
         "basins" : [701,702],
-		"do_basin_masking" : true
+		"do_basin_masking" : false
 	},
 	
 	"analysis": {

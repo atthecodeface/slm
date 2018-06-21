@@ -132,7 +132,7 @@ class Info():
         self.bbox = bbox        
         # essentials.cl...
         self.pad_width = pad
-        #
+        # not used in CL codes
         self.nx = nx
         self.ny = ny
         # essentials.cl, jittertrajectory.cl, segment.cl, writearray.cl...
