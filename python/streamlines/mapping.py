@@ -158,9 +158,13 @@ class Mapping(Core):
         self.hsl_array = None
         # Count how many coarse subsegments need to be iterated over
         n_segments = self.coarse_labels.shape[0]
-        nx  = self.geodata.roi_nx
-        ny  = self.geodata.roi_ny
         pad = self.geodata.pad_width
+        nxp = self.geodata.roi_nx+pad*2
+        nyp = self.geodata.roi_ny+pad*2
+        
+        self.hsl_array = np.zeros((nxp,nyp), dtype=np.float32)
+        tmp_hsl_array  = np.zeros((nxp,nyp), dtype=np.float32)  
+              
 #         for idx,coarse_label in enumerate([71]):
         # Iterate over the coarse subsegments
         for idx,coarse_label in enumerate(self.coarse_labels):
@@ -203,10 +207,10 @@ class Mapping(Core):
             data = Data( info=info, bbox=bbox, pad=pad,
                          mapping_array = mapping_array,
                          mask_array    = mask_array,
-                         uv_array   = self.preprocess.uv_array,
-                         sla_array  = self.trace.sla_array,
-                         slc_array  = self.trace.slc_array,
-                         slt_array  = self.trace.slt_array )
+                         uv_array      = self.preprocess.uv_array,
+                         sla_array     = self.trace.sla_array,
+                         slc_array     = self.trace.slc_array,
+                         slt_array     = self.trace.slt_array )
 
             # Compute slt pdf and estimate channel threshold from it
             # BBOX
@@ -246,11 +250,18 @@ class Mapping(Core):
             # Remove this iteration's dilated coarse-subsegment mask
             self.state.remove_active_mask('dilated_segment')
             
-            # Replace with this iteration's raw coarse-subsegment mask
-            self.state.add_active_mask({'raw_segment': segment_mask_array})
             # Deploy this coarse subsegment's HSL data to the 'global' HSL map
             # BBOX
-            self.merge_hsl(info, data)
+            self.print('Merging hillslope lengths...',end='')
+            # Deploy this iteration's raw coarse-subsegment mask
+            self.state.add_active_mask({'raw_segment': segment_mask_array})
+            bounds = data.bounds_grid
+            mask_array = self.state.merge_active_masks()
+            tmp_hsl_array.fill(0.0)
+            tmp_hsl_array[bounds] = data.hsl_array
+            tmp_hsl_array[np.isnan(tmp_hsl_array)] = 0.0
+            self.hsl_array[~mask_array] += tmp_hsl_array[~mask_array]
+            pdebug(mask_array[bounds].shape, data.hsl_array.shape)
             # Delete this iteration's raw coarse mask from the active list
             self.state.remove_active_mask('raw_segment')
             
@@ -485,22 +496,6 @@ class Mapping(Core):
         self.hsl_mean  = np.mean(hsl_nonan)
         self.print('...done')  
         return True
-
-    def merge_hsl(self, info, data):
-        self.print('Merging hillslope lengths...',end='')
-        mask_array = self.state.merge_active_masks()
-        nxp = info.nx_padded
-        nyp = info.ny_padded
-        if self.hsl_array is None:
-            self.hsl_array = np.zeros((nxp,nyp), dtype=np.float32)
-            self.print('created HSL array...',end='')
-        else:
-            self.print('merging with prior HSL...',end='')
-        self.hsl_array[(~mask_array) & (~np.isnan(self.hsl_array))] \
-            += data.hsl_array[(~mask_array) & (~np.isnan(self.hsl_array))]
-        self.print('done')  
-
-
 
     def map_hsl(self, info):
         self.print('Mapping hillslope lengths...',end='')
