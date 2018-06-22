@@ -37,7 +37,9 @@ class Data():
         else:
             bounds_grid = np.index_exp[:,:]
             bounds_slx  = np.index_exp[:,:,:]
-
+        # Copying is essential here, because slicing only creates views,
+        #   and we want to generate new arrays that can be monkeyed with
+        #   without having to worry about the source arrays being affected
         self.mask_array    = mask_array[bounds_grid].copy()
         if uv_array is not None:
             self.uv_array  = uv_array[bounds_slx].copy()
@@ -360,7 +362,7 @@ def compute_stats(traj_length_array, traj_nsteps_array, pixel_size, verbose):
     vprint(verbose,lnds_stats_df.T)
     return lnds_stats_df
 
-def dilate(array, n_iterations=1, into=None):
+def dilate(array, n_iterations=1, out=None):
     dilation_structure = generate_binary_structure(2, 2)
     return binary_dilation(array, structure=dilation_structure, 
-                           iterations=n_iterations, output=into)
+                           iterations=n_iterations, output=out)

@@ -133,10 +133,10 @@ class Mapping(Core):
         # Dilate mask by 2 if left or 1 if right flank coarse subsegment
         #   - left dilation needs to encompass bordering right-flank channel pixels
         n = (2 if is_left_or_right=='left' else 1)
-#         np.copyto(raw_mask, self.dilated_mask_array)
-        dilate(raw_mask,n_iterations=n,into=dilated_mask)
+        # Convert to normal raw mask where True => masked off - do in-situ
+        dilate(raw_mask,n_iterations=n, out=dilated_mask)
         np.invert(dilated_mask, out=dilated_mask)
-        # Now invert the raw mask as well
+        # Now invert the raw mask as well - do in-situ
         np.invert(raw_mask, out=raw_mask)
         pad = self.geodata.pad_width
 #         padded_mask_array = np.pad(dilated_mask, (pad,pad),
@@ -479,7 +479,7 @@ class Mapping(Core):
     def map_hsl(self, info):
         self.print('Mapping hillslope lengths...',end='')
         
-        hsl         = self.hsl_array.copy()
+        hsl         = self.hsl_array
         mask        = self.state.merge_active_masks()
         pad         = self.geodata.pad_width
         hsl_min     = np.min(hsl)
