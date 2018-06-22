@@ -17,7 +17,7 @@ from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
 from streamlines.core   import Core
-from streamlines.useful import Data, Info, vprint, dilate, get_bbox
+from streamlines.useful import Data, Info, vprint, dilate, get_bbox, npamem
 from streamlines        import connect, channelheads, countlink, label, \
                                segment, linkhillslopes, lengths
 from streamlines.pocl   import Initialize_cl
@@ -70,31 +70,6 @@ class Mapping(Core):
     def report_progress(self ,idx, n_segments):
         progress = ((idx)/n_segments)*100.0
         vprint(self.vprogress, '{:2.1f}% '.format(progress),end='')
-
-    def create_coarse_subsegment_mask(self, coarse_subsegment, is_left_or_right):
-        # BBOX
-        segment_mask_array = np.zeros_like(self.coarse_subsegment_array, dtype=np.bool)
-        # Start with inverted raw mask
-        # BBOX
-#         pdebug(self.coarse_subsegment_array[self.coarse_subsegment_array!=0])
-        segment_mask_array[self.coarse_subsegment_array==coarse_subsegment] = True
-        # Dilate mask by 2 if left or 1 if right flank coarse subsegment
-        #   - left dilation needs to encompass bordering right-flank channel pixels
-        n_iterations = (2 if is_left_or_right=='left' else 1)
-        # BBOX
-        dilated_segment_mask_array=np.invert(dilate(segment_mask_array.copy(),
-                                                    n_iterations=n_iterations))
-#         pdebug('segment_mask_array.shape',segment_mask_array.shape, 
-#                dilated_segment_mask_array.shape)
-        # Now invert the raw mask as well
-        segment_mask_array = np.invert(segment_mask_array)
-        pad = self.geodata.pad_width
-        padded_mask_array = np.pad(dilated_segment_mask_array, (pad,pad),
-                                   'constant', constant_values=(True,True))
-        # Define bbox
-        bbox_dilated_segment, nx,ny = get_bbox(~dilated_segment_mask_array)
-        self.print('Dilated subsegment mask bbox = {}'.format(bbox_dilated_segment))
-        return segment_mask_array, dilated_segment_mask_array, bbox_dilated_segment
 
     def pass1(self):
         vprint(self.vprogress,'\n**Pass#1 begin**')
@@ -150,68 +125,90 @@ class Mapping(Core):
         self._switch_back_to_verbose_mode()
         vprint(self.vprogress,'**Pass#1 end**') 
 
+    def make_coarse_subsegment_masks(self, coarse_subsegment, is_left_or_right,
+                                     raw_mask=None, dilated_mask=None):
+        # Start with inverted raw mask
+        raw_mask.fill(False)
+        raw_mask[self.coarse_subsegment_array==coarse_subsegment] = True
+        # Dilate mask by 2 if left or 1 if right flank coarse subsegment
+        #   - left dilation needs to encompass bordering right-flank channel pixels
+        n = (2 if is_left_or_right=='left' else 1)
+#         np.copyto(raw_mask, self.dilated_mask_array)
+        dilate(raw_mask,n_iterations=n,into=dilated_mask)
+        np.invert(dilated_mask, out=dilated_mask)
+        # Now invert the raw mask as well
+        np.invert(raw_mask, out=raw_mask)
+        pad = self.geodata.pad_width
+#         padded_mask_array = np.pad(dilated_mask, (pad,pad),
+#                                    'constant', constant_values=(True,True))
+        # Define bbox
+        bbox_dilated_segment, nx,ny = get_bbox(~dilated_mask)
+        self.print('Dilated subsegment mask bbox = {}'.format(bbox_dilated_segment))
+        return bbox_dilated_segment
+
     def pass2(self):
         vprint(self.vprogress,'\n**Pass#2 begin**') 
         self._switch_to_quiet_mode()
-        self.print('Subsegment labels: {}'.format(self.coarse_subsegments))
-        # Mask off all but these coarse subsegments
-        self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask})
-        # Count how many coarse subsegments need to be iterated over
-        n_segments = self.n_coarse_subsegments
         # Shorthand
         pad = self.geodata.pad_width
         nxp = self.geodata.roi_nx+pad*2
         nyp = self.geodata.roi_ny+pad*2
         pixel_size = self.geodata.roi_pixel_size
-        # Initialize the full ROI-scale HSL grid - delete first in case the np array
-        #   already exists and to ensure memory is freed
-        try:
-            del self.hsl_array
-        except:
-            pass
-        self.hsl_array = np.zeros((nxp,nyp), dtype=np.float32)
-        tmp_hsl_array  = np.zeros((nxp,nyp), dtype=np.float32)  
-        # Mapping array for channels etc
-        self.mapping_array = np.zeros((nxp,nyp), dtype=np.uint32)        
-#         for idx,coarse_subsegment in enumerate([71]):
+        # Count how many coarse subsegments need to be iterated over
+        n_segments = self.n_coarse_subsegments
+        self.print('Subsegment labels: {}'.format(n_segments))
+        # Mask off all but these coarse subsegments
+        self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask})
+        # Initialize the full ROI-scale HSL grid and a buffer
+        # Also a mapping array for channels etc
+        raw_mask_array          = np.zeros((nxp,nyp), dtype=np.bool)
+        dilated_mask_array      = np.zeros((nxp,nyp), dtype=np.bool)
+        merged_mask_array       = np.zeros((nxp,nyp), dtype=np.bool)
+        self.mapping_array      = np.zeros((nxp,nyp), dtype=np.uint32)
+        self.hsl_array          = np.zeros((nxp,nyp), dtype=np.float32)
+        tmp_hsl_array           = self.hsl_array.copy()  
+#         mask_array              = self.mask_array
         # Iterate over the coarse subsegments
         for idx,coarse_subsegment in enumerate(self.coarse_subsegments):
+#             self.mask_array = np.zeros((nxp,nyp), dtype=np.bool)
+            if idx>0:
+                merged_mask_array.fill(False)
+#         for idx,coarse_subsegment in enumerate([71]):
             # Report % progress
             self.report_progress(idx, n_segments)
             # Create metadata container for this coarse subsegment
             info = Info(self.state,self.trace, pixel_size, mapping=self)
+            # Revert to 'dtm', 'basin' (if set), and 'uv' masks only
+            self.state.reset_active_masks()
             # Flag if this coarse subsegment is left or right flank
             #   - important because a left flank subseg omits the channel pixels
             is_left_or_right = ('left' if coarse_subsegment<0 else 'right')
-            self.print('--- Mapping HSL on subsegment §{0} = {1}/{2} ({3})'
-                       .format(coarse_subsegment,idx+1,n_segments,is_left_or_right))
-            # Revert to 'dtm', 'basin' (if set), and 'uv' masks only
-            self.state.reset_active_masks()
-            # Convert this coarse subsegment labeled pixels into a mask
+            # Convert this coarse subsegment-labeled pixels into a mask
             #    - also dilate this pixel set and generate a wider mask 
             #      to ensure flank-adjacent channel pixels are incorporated 
             #    - dilate by 1 for R flank and by 2 for L flank to ensure this
-            segment_mask_array, dilated_segment_mask_array, bbox \
-                = self.create_coarse_subsegment_mask(coarse_subsegment, is_left_or_right)
+            bbox= self.make_coarse_subsegment_masks(coarse_subsegment, is_left_or_right,
+                                                    raw_mask=raw_mask_array,
+                                                    dilated_mask=dilated_mask_array)
+            self.print('--- Mapping HSL on subsegment §{0} = {1}/{2} ({3})'
+                       .format(coarse_subsegment,idx+1,n_segments,is_left_or_right))
             # Deploy the dilated coarse-subsegment mask
-            self.state.add_active_mask({'dilated_segment': dilated_segment_mask_array})
+            self.state.add_active_mask({'dilated_segment': dilated_mask_array})
+            self.state.merge_active_masks(mask=merged_mask_array)
             self.print('Dilated coarse subsegment mask bounding box: {}'.format(bbox))
             
-            mask_array = self.state.merge_active_masks()
-            bbox, bnx, bny = get_bbox(~mask_array)
+            bbox, bnx, bny = get_bbox(~merged_mask_array)
             info.set_xy(bnx,bny, pad)
 
-            # BBOX
             data = Data( info=info, bbox=bbox, pad=pad,
                          mapping_array = self.mapping_array,
-                         mask_array    = mask_array,
+                         mask_array    = merged_mask_array,
                          uv_array      = self.preprocess.uv_array,
                          sla_array     = self.trace.sla_array,
                          slc_array     = self.trace.slc_array,
                          slt_array     = self.trace.slt_array )
 
             # Compute slt pdf and estimate channel threshold from it
-            # BBOX
             channel_threshold \
                 = self.analysis.estimate_channel_threshold(data, verbose=self.vbackup)
             # HACK - make adjustable
@@ -239,20 +236,19 @@ class Mapping(Core):
             self.state.remove_active_mask('dilated_segment')
             
             # Deploy this coarse subsegment's HSL data to the 'global' HSL map
-            # BBOX
             self.print('Merging hillslope lengths...',end='')
             # Deploy this iteration's raw coarse-subsegment mask
-            self.state.add_active_mask({'raw_segment': segment_mask_array})
+            self.state.add_active_mask({'raw_segment': raw_mask_array})
             bounds = data.bounds_grid
-            mask_array = self.state.merge_active_masks()
+            self.state.merge_active_masks(mask=merged_mask_array)
             tmp_hsl_array.fill(0.0)
             tmp_hsl_array[bounds] = data.hsl_array
             tmp_hsl_array[np.isnan(tmp_hsl_array)] = 0.0
-            self.hsl_array[~mask_array] += tmp_hsl_array[~mask_array]
+            self.hsl_array[~merged_mask_array] += tmp_hsl_array[~merged_mask_array]
             # Delete this iteration's raw coarse mask from the active list
             self.state.remove_active_mask('raw_segment')
             
-            del segment_mask_array, dilated_segment_mask_array, data
+            del data
                     
         self._switch_back_to_verbose_mode()
         self.report_progress(idx+1, n_segments)

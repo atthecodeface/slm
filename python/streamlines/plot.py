@@ -859,7 +859,7 @@ class Plot(Core):
         grid_array = grid_array[pad:-pad,pad:-pad]
         extra_mask_array = grid_array.astype(np.bool)
         mask_array = mask_array | (~extra_mask_array)
-
+#         mask_array &= 0
         masked_grid_array = np.ma.masked_array(grid_array, mask=mask_array)
         if do_flip_cmap:
             masked_grid_array = -masked_grid_array

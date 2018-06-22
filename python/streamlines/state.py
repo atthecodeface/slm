@@ -12,7 +12,6 @@ import os
 import sys
 import numpy as np
 import json
-from pympler.asizeof import asizeof
 from collections     import ChainMap
 
 from streamlines.core import Core
@@ -325,14 +324,20 @@ class State(Core):
             = {k: self.active_masks_dict[k] for k in self.active_masks_dict 
                                             if  k in masks_keep_list}
         
-    def merge_active_masks(self):
+    def merge_active_masks(self, mask=None):
         """
         TBD
         """ 
+        if self.active_masks_dict=={}:
+            return None
         # Create a mask from a blend of all those active
         for idx, mask_array in enumerate(self.active_masks_dict.values()):
             if idx==0:
-                active_mask_array = mask_array.copy()
+                if mask is None:
+                    active_mask_array = mask_array.copy()
+                else:
+                    active_mask_array = mask
+                    np.copyto(mask_array,mask)
             else:
                 active_mask_array |= mask_array
         return active_mask_array

@@ -8,6 +8,7 @@ import numpy as np
 from osgeo import gdal
 import pandas as pd
 from scipy.ndimage.morphology import binary_dilation, generate_binary_structure
+from pympler.asizeof import asizeof
 import os
 os.environ['PYTHONUNBUFFERED']='True'
 import sys
@@ -218,6 +219,17 @@ def write_geotiff(path, filename, array):
     # TBD
     pass
         
+def npamem(obj, name=None):
+    if name is None:
+        array = obj
+        return '{0:x} = {1}'.format(array.__array_interface__['data'][0],
+                                    neatly(asizeof(array))  )
+    else:
+        array = getattr(obj,name)
+        return '{0} @ {1:x} = {2}'.format(name,
+                                    array.__array_interface__['data'][0],
+                                    neatly(asizeof(array))  )
+
 def true_size(subobject):
     """
     TBD
@@ -348,7 +360,7 @@ def compute_stats(traj_length_array, traj_nsteps_array, pixel_size, verbose):
     vprint(verbose,lnds_stats_df.T)
     return lnds_stats_df
 
-def dilate(undilated_array, n_iterations=1):
+def dilate(array, n_iterations=1, into=None):
     dilation_structure = generate_binary_structure(2, 2)
-    return binary_dilation(undilated_array, structure=dilation_structure, 
-                           iterations=n_iterations)
+    return binary_dilation(array, structure=dilation_structure, 
+                           iterations=n_iterations, output=into)
