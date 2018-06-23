@@ -35,11 +35,10 @@ def label_confluences( cl_state, info, data, verbose ):
                                                      'label.cl'])
             
     # Check all thin channel pixels
-    pad            = info.pad_width
-    is_thinchannel = info.is_thinchannel
-    seed_point_array \
-        = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
-                     flag=is_thinchannel, pad=pad)
+    pad              = info.pad_width
+    is_thinchannel   = info.is_thinchannel
+    seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
+                                  flag=is_thinchannel, pad=pad)
         
     # Prepare memory, buffers 
     array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},

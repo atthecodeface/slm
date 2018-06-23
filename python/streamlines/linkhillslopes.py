@@ -36,8 +36,8 @@ def link_hillslopes( cl_state, info, data, verbose):
                                                      'linkhillslopes.cl'])
             
     # Generate a list (array) of seed points from all non-thin-channel pixels
-    pad            = info.pad_width
-    is_thinchannel = info.is_thinchannel
+    pad              = info.pad_width
+    is_thinchannel   = info.is_thinchannel
     seed_point_array = pick_seeds(mask=data.mask_array, map=~data.mapping_array, 
                                   flag=is_thinchannel, pad=pad)    
         

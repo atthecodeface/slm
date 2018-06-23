@@ -37,7 +37,6 @@ def connect_channel_pixels(cl_state, info, data, verbose):
     # Generate a list (array) of seed points from the set of channel pixels
     pad        = info.pad_width
     is_channel = info.is_channel
-    
     # Trace downstream from all channel pixels
     seed_point_array = pick_seeds(map=data.mapping_array, flag=is_channel, pad=pad)
     if ( seed_point_array.shape[0]==0 ):
