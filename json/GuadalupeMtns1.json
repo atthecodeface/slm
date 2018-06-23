@@ -7,9 +7,13 @@
         "roi_y_bounds" : [1400,1640],  
 		"basins_file" : "Guadalupe_DTM0_res2m_fill_sinks1deg_watershed3k.tif",
         "basins" : [701,702],
-		"do_basin_masking" : true
+		"do_basin_masking" : false
 	},
-	
+
+	"trace": {
+		"n_trajectory_seed_points" : 100
+	},
+		
 	"analysis": {
 		"marginal_distbn_kde_bandwidth" : 12.0,
 		"search_cdf_max" : 0.999

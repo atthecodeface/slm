@@ -190,7 +190,7 @@ def subsegment_flanks( cl_state, info, data, verbose ):
     cl_state.kernel_fn = 'fix_left_flanks'
     pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
-    n_left_right_subsegments = np.unique(data.label_array).shape[0]
+    n_left_right_subsegments = np.unique(data.label_array[data.label_array!=0]).shape[0]
     vprint(verbose, ' -- number of left & right subsegments={}'
            .format(n_left_right_subsegments))
     

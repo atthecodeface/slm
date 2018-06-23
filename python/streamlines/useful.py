@@ -53,6 +53,7 @@ class Data():
         self.traj_stats_df = traj_stats_df
         self.bounds_grid = bounds_grid
         self.bounds_slx  = bounds_slx
+        self.hillslope_labels = None
 #     self.print('done')
 
 class Info():    
@@ -270,7 +271,7 @@ def vprint(verbose, *args, **kwargs):
         # Try to really force this line to print before the GPU prints anything
         sys.stdout.flush()
 
-def create_seeds(mask, pad_width, n_work_items, n_seed_points=None,
+def create_seeds(mask, pad, n_work_items, n_seed_points=None,
                  do_shuffle=True, rng_seed=1, verbose=False):
     """
     Generate seed points for tracing of streamline trajectories.   
@@ -281,9 +282,7 @@ def create_seeds(mask, pad_width, n_work_items, n_seed_points=None,
         int: n_padded_seed_points  
     """    
     vprint(verbose,'Generating seed points...', end='')
-    seed_point_array \
-        = ((np.argwhere(~mask).astype(np.float32) - pad_width)
-           ).copy()
+    seed_point_array = ((np.argwhere(~mask).astype(np.float32)-pad))
     # Randomize seed point sequence to help space out memory accesses by kernel instances
     if do_shuffle:
         vprint(verbose,'shuffling...', end='')
@@ -291,7 +290,7 @@ def create_seeds(mask, pad_width, n_work_items, n_seed_points=None,
         np.random.shuffle(seed_point_array)
     # Truncate if we only want to visualize a subset of streamlines across the DTM
     if n_seed_points is not None and n_seed_points>0:
-        seed_point_array = seed_point_array[:n_seed_points].copy().astype(np.float32)
+        seed_point_array = seed_point_array[:n_seed_points].astype(np.float32)
     else:
         n_seed_points = seed_point_array.shape[0]
 
@@ -304,7 +303,7 @@ def create_seeds(mask, pad_width, n_work_items, n_seed_points=None,
     else:
         vprint(verbose,'no padding needed...', end='')
     vprint(verbose,'done')
-    return seed_point_array, n_seed_points, n_padded_seed_points
+    return seed_point_array.copy(), n_seed_points, n_padded_seed_points
 
 def pick_seeds(mask=None, map=None, flag=None, pad=None):
     """
@@ -320,14 +319,12 @@ def pick_seeds(mask=None, map=None, flag=None, pad=None):
         numpy.ndarray: seed point array
     """
     if mask is None and map is not None:
-        seed_point_array \
-            = (np.argwhere((map & flag)>0).astype(np.float32)-pad).copy()
+        seed_point_array = (np.argwhere((map & flag)>0).astype(np.float32)-pad)
     elif mask is not None and map is None:
-        seed_point_array = (np.argwhere(~mask).astype(np.float32)-pad).copy()
+        seed_point_array = (np.argwhere(~mask).astype(np.float32)-pad)
     else:
-        seed_point_array \
-            = (np.argwhere(~mask & ((map & flag)>0)).astype(np.float32)-pad).copy()
-    return seed_point_array
+        seed_point_array = (np.argwhere(~mask & ((map & flag)>0)).astype(np.float32)-pad)
+    return seed_point_array.copy()
     
 def compute_stats(traj_length_array, traj_nsteps_array, pixel_size, verbose):
     """

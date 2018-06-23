@@ -459,9 +459,14 @@ class Plot(Core):
         fig_name='label'
         window_title='label'     
         tmp_array = (self.mapping.label_array.copy().astype(np.int32))
+#         pdebug('label', tmp_array.shape,np.unique(tmp_array))
+#         tmp_array[tmp_array!=1]=0
+        mask_array = self.state.merge_active_masks()
+#         pdebug('list_active_masks',self.state.list_active_masks())
         self.plot_gridded_data(tmp_array,
                                'randomized', 
                                fig_name=fig_name, window_size_factor=window_size_factor,
+                               mask_array=mask_array,
                                window_title=window_title,
                                do_shaded_relief=False, 
                                do_flip_cmap=False, do_balance_cmap=False)
@@ -495,9 +500,10 @@ class Plot(Core):
             else:
                 z_max = self.hsl_z_max
         grid_array = np.clip(self.mapping.hsl_array.copy(),z_min,z_max)
-        mask_array = np.zeros_like(grid_array).astype(np.bool)
-        # Hack - need to rebuild label_array during multipass         
+#         mask_array = np.zeros_like(grid_array).astype(np.bool)
 #         mask_array[self.mapping.label_array==0] = True
+        mask_array = self.state.merge_active_masks()
+#         pdebug('list_active_masks',self.state.list_active_masks())
         self.plot_gridded_data(grid_array,
                                cmap,  # rainbow
                                mask_array=mask_array,
@@ -557,6 +563,8 @@ class Plot(Core):
             linewidth = self.contour_hsl_linewidth
                 
         mask_array = self.state.merge_active_masks()[pad:-pad,pad:-pad]
+#         pdebug('list_active_masks',self.state.list_active_masks())
+#         mask_array &= False
         if do_shaded_relief:
             hillshade_alpha = self.grid_shaded_relief_hillshade_alpha
             hsl_alpha = 0.3
@@ -830,8 +838,7 @@ class Plot(Core):
         if mask_array is None:
             mask_array = np.zeros_like(grid_array).astype(np.bool)
         pad = self.geodata.pad_width     
-        mask_array = mask_array[pad:-pad,
-                                pad:-pad]
+        mask_array = mask_array[pad:-pad,pad:-pad]
         if self.geodata.do_basin_masking:
             mask_array |= self.state.merge_active_masks()[pad:-pad,pad:-pad]
             
@@ -857,9 +864,9 @@ class Plot(Core):
             grid_alpha = 1.0
 
         grid_array = grid_array[pad:-pad,pad:-pad]
-        extra_mask_array = grid_array.astype(np.bool)
-        mask_array = mask_array | (~extra_mask_array)
-#         mask_array &= 0
+#         extra_mask_array = grid_array.astype(np.bool)
+#         mask_array = mask_array | (~extra_mask_array)
+#         mask_array &= False
         masked_grid_array = np.ma.masked_array(grid_array, mask=mask_array)
         if do_flip_cmap:
             masked_grid_array = -masked_grid_array

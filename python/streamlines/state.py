@@ -313,6 +313,12 @@ class State(Core):
         if mask_name in self.active_masks_dict.keys():
             self.active_masks_dict.pop(mask_name)
         
+    def list_active_masks(self):
+        """
+        TBD
+        """ 
+        return self.active_masks_dict.keys()
+        
     def reset_active_masks(self):
         """
         TBD
@@ -324,7 +330,7 @@ class State(Core):
             = {k: self.active_masks_dict[k] for k in self.active_masks_dict 
                                             if  k in masks_keep_list}
         
-    def merge_active_masks(self, mask=None):
+    def merge_active_masks(self, out=None):
         """
         TBD
         """ 
@@ -333,13 +339,13 @@ class State(Core):
         # Create a mask from a blend of all those active
         for idx, mask_array in enumerate(self.active_masks_dict.values()):
             if idx==0:
-                if mask is None:
-                    active_mask_array = mask_array.copy()
+                if out is None:
+                    out = mask_array.copy()
                 else:
-                    active_mask_array = mask
-                    np.copyto(mask_array,mask)
+                    #  numpy.copyto(dst, src, casting='same_kind', where=True)
+                    np.copyto(out,mask_array)
             else:
-                active_mask_array |= mask_array
-        return active_mask_array
+                out |= mask_array
+        return out
         
                 
