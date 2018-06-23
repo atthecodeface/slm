@@ -115,6 +115,7 @@
 		"fine_segmentation_threshold" : 20,
 		"coarse_channel_threshold"      : 3000,
 		"coarse_segmentation_threshold" : 300,
+		"min_channel_threshold" : 20,
 		"n_hsl_averaging_threshold" : 1,
 		"hsl_dilation_width" : 51,
 		"hsl_mean_radius"  : 30,

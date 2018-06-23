@@ -151,13 +151,8 @@ class Mapping(Core):
         dilated_mask[-pad:,:] = True
         dilated_mask[:,-pad:] = True
         # Define bbox
-        bbox_raw_mask, nx,ny = get_bbox(~raw_mask)
         bbox_dilated_mask, nxd,nyd = get_bbox(~dilated_mask)
-#         pdebug('bbox_raw_mask',bbox_raw_mask,'bbox_dilated_mask',bbox_dilated_mask)
-#         pdebug('raw_mask',raw_mask.shape,'dilated_mask',dilated_mask.shape)
-        pad = self.geodata.pad_width
-#         self.print('Dilated subsegment mask bbox = {}'.format(bbox_dilated_mask))
-        return bbox_dilated_mask
+        return bbox_dilated_mask, nxd,nyd
 
     def pass2(self):
         vprint(self.vprogress,'\n**Pass#2 begin**') 
@@ -182,8 +177,6 @@ class Mapping(Core):
         merged_mask_array  = np.zeros((nxp,nyp), dtype=np.bool)
         self.mapping_array = np.zeros((nxp,nyp), dtype=np.uint32)
         self.hsl_array     = np.zeros((nxp,nyp), dtype=np.float32)
-        tmp_hsl_array      = self.hsl_array.copy()  
-#         mask_array         = self.mask_array
         # Iterate over the coarse subsegments
         for idx,coarse_subsegment in enumerate(self.coarse_subsegments):
 #         for idx,coarse_subsegment in enumerate([71]):
@@ -202,18 +195,16 @@ class Mapping(Core):
             #    - also dilate this pixel set and generate a wider mask 
             #      to ensure flank-adjacent channel pixels are incorporated 
             #    - dilate by 1 for R flank and by 2 for L flank to ensure this
-            bbox= self.make_coarse_subsegment_masks(coarse_subsegment, is_left_or_right,
-                                                    raw_mask=raw_mask_array,
-                                                    dilated_mask=dilated_mask_array)
+            bbox, bnx,bny \
+                = self.make_coarse_subsegment_masks(coarse_subsegment, is_left_or_right,
+                             raw_mask=raw_mask_array, dilated_mask=dilated_mask_array)
+            info.set_xy(bnx,bny, pad)
             self.print('--- Mapping HSL on subsegment §{0} = {1}/{2} ({3})'
                        .format(coarse_subsegment,idx+1,n_segments,is_left_or_right))
             # Deploy the dilated coarse-subsegment mask
             self.state.add_active_mask({'dilated_segment': dilated_mask_array})
             self.state.merge_active_masks(out=merged_mask_array)
             self.print('Dilated coarse subsegment mask bounding box: {}'.format(bbox))
-            
-            bbox, bnx, bny = get_bbox(~merged_mask_array)
-            info.set_xy(bnx,bny, pad)
 
             data = Data( info=info, bbox=bbox, pad=pad,
                          mapping_array = self.mapping_array,
@@ -223,12 +214,11 @@ class Mapping(Core):
                          slc_array     = self.trace.slc_array,
                          slt_array     = self.trace.slt_array )
 
-#             pdebug(merged_mask_array.shape, info.nx_padded,info.ny_padded)
             # Compute slt pdf and estimate channel threshold from it
             channel_threshold \
                 = self.analysis.estimate_channel_threshold(data, verbose=self.vbackup)
-            # HACK - make adjustable
-            if channel_threshold is None or channel_threshold<20.0: 
+            # Don't HSL map if there's a problem with channel threshold estimation here
+            if channel_threshold is None or channel_threshold<self.min_channel_threshold: 
                 continue
             info.set_thresholds(channel_threshold=channel_threshold,
                                 segmentation_threshold=self.fine_segmentation_threshold)
@@ -257,10 +247,9 @@ class Mapping(Core):
             self.state.add_active_mask({'raw_segment': raw_mask_array})
             bounds = data.bounds_grid
             self.state.merge_active_masks(out=merged_mask_array)
-            tmp_hsl_array.fill(0.0)
             data.hsl_array[np.isnan(data.hsl_array)] = 0.0
-            tmp_hsl_array[bounds] = data.hsl_array
-            self.hsl_array[~merged_mask_array] += tmp_hsl_array[~merged_mask_array]
+            self.hsl_array[bounds][~merged_mask_array[bounds]] \
+                += data.hsl_array[~merged_mask_array[bounds]]
             # Delete this iteration's raw coarse mask from the active list
             self.state.remove_active_mask('raw_segment')
             # Erase the working instance of data to ensure 
