@@ -50,6 +50,9 @@ def label_confluences( cl_state, info, data, verbose ):
                    'count':      {'array': data.count_array,      'rwf': 'RW'}, 
                    'link':       {'array': data.link_array,       'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    if ( info.n_seed_points==0 ):
+        # Flag an error - empty seeds list
+        return False
     check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
@@ -58,4 +61,6 @@ def label_confluences( cl_state, info, data, verbose ):
     
     # Done
     vprint(verbose,'...done')  
+    # Flag all went well
+    return True
     

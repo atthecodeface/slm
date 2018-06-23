@@ -461,6 +461,8 @@ class Plot(Core):
         tmp_array = (self.mapping.label_array.copy().astype(np.int32))
 #         pdebug('label', tmp_array.shape,np.unique(tmp_array))
 #         tmp_array[tmp_array!=1]=0
+        self.state.add_active_mask(
+            {'merged_coarse_mask':self.mapping.merged_coarse_mask})
         mask_array = self.state.merge_active_masks()
 #         pdebug('list_active_masks',self.state.list_active_masks())
         self.plot_gridded_data(tmp_array,

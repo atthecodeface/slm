@@ -61,6 +61,9 @@ def hsl( cl_state, info, data, verbose, do_use_ridges=False ):
                    'label':      {'array': data.label_array,      'rwf': 'RO'}, 
                    'traj_length':{'array': data.traj_length_array,'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    if ( info.n_seed_points==0 ):
+        # Flag an error - empty seeds list
+        return False
     check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
@@ -72,3 +75,5 @@ def hsl( cl_state, info, data, verbose, do_use_ridges=False ):
         data.traj_length_array *= 2.0
     # Done
     vprint(verbose,'...done')  
+    # Flag all went well
+    return True

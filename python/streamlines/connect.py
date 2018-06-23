@@ -50,6 +50,9 @@ def connect_channel_pixels(cl_state, info, data, verbose):
                    'uv':          {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':     {'array': data.mapping_array,    'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    if ( info.n_seed_points==0 ):
+        # Flag an error - empty seeds list
+        return False
     check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
@@ -58,3 +61,5 @@ def connect_channel_pixels(cl_state, info, data, verbose):
     
     # Done
     vprint(verbose,'...done')  
+    # Flag all went well
+    return True

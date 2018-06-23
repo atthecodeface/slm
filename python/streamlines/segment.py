@@ -51,6 +51,9 @@ def segment_channels( cl_state, info, data, verbose ):
                    'link':       {'array': data.link_array,       'rwf': 'RO'}, 
                    'label':      {'array': data.label_array,      'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    if ( info.n_seed_points==0 ):
+        # Flag an error - empty seeds list
+        return 0
     check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
@@ -107,6 +110,9 @@ def segment_hillslopes( cl_state, info, data, verbose ):
                    'link':       {'array': data.link_array,       'rwf': 'RO'}, 
                    'label':      {'array': data.label_array,      'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
+    if ( info.n_seed_points==0 ):
+        # Flag an error - empty seeds list
+        return False
     check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
@@ -115,6 +121,8 @@ def segment_hillslopes( cl_state, info, data, verbose ):
 
     # Done
     vprint(verbose,'...done')  
+    # Flag all went well
+    return True
 
 def subsegment_flanks( cl_state, info, data, verbose ):
     """
@@ -156,9 +164,11 @@ def subsegment_flanks( cl_state, info, data, verbose ):
     check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
-    if ( info.n_seed_points>0 ):
-        cl_state.kernel_fn = 'subsegment_channel_edges'
-        pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
+    if ( info.n_seed_points==0 ):
+        # Flag an error - empty seeds list
+        return False
+    cl_state.kernel_fn = 'subsegment_channel_edges'
+    pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
             
     # Trace downstream from all non-left-flank hillslope pixels
     flag = is_leftflank | is_thinchannel
@@ -166,6 +176,9 @@ def subsegment_flanks( cl_state, info, data, verbose ):
                                   flag=flag,pad=pad)
     array_dict['seed_point']['array'] = seed_point_array
     info.n_seed_points = seed_point_array.shape[0]
+    if ( info.n_seed_points==0 ):
+        # Flag an error - empty seeds list
+        return False
     # Do integrations on the GPU
     cl_state.kernel_fn = 'subsegment_flanks'
     pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
@@ -176,6 +189,9 @@ def subsegment_flanks( cl_state, info, data, verbose ):
                                   flag=flag,pad=pad)
     array_dict['seed_point']['array'] = seed_point_array
     info.n_seed_points = seed_point_array.shape[0]
+    if ( info.n_seed_points==0 ):
+        # Flag an error - empty seeds list
+        return False
     # Do integrations on the GPU
     cl_state.kernel_fn = 'fix_right_flanks'
     pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
@@ -186,6 +202,9 @@ def subsegment_flanks( cl_state, info, data, verbose ):
                                   flag=flag,pad=pad)
     array_dict['seed_point']['array'] = seed_point_array
     info.n_seed_points = seed_point_array.shape[0]
+    if ( info.n_seed_points==0 ):
+        # Flag an error - empty seeds list
+        return False
     # Do integrations on the GPU
     cl_state.kernel_fn = 'fix_left_flanks'
     pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
@@ -196,4 +215,6 @@ def subsegment_flanks( cl_state, info, data, verbose ):
     
     # Done
     vprint(verbose,'...done')  
-  
+    # Flag all went well
+    return True
+      
