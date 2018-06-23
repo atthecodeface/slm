@@ -330,10 +330,19 @@ def report_build_log(program, device, verbose):
     build_log = program.get_build_info(device,cl.program_build_info.LOG)
     if len(build_log.replace(' ',''))>0:
         vprint(verbose,'\nOpenCL build log: {}'.format(build_log))
-        
+
+def report_progress(vprogress, x, n, downup_step=None, end=''):
+    if downup_step[1]==1:
+        progress = (x/n)*100.0
+    else:
+        progress = (downup_step[0]/downup_step[1])*100.0+(x/n)*(100.0/downup_step[1])
+    if downup_step[1]==1 or progress!=50.0:
+        vprint(vprogress, '{0:2.1f}% '.format(progress),end=end)
+
 def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size, 
                                      n_work_items, chunk_size_factor=10, 
-                                     max_time_per_kernel=4.0, verbose=True):
+                                     max_time_per_kernel=4.0, downup_step=(1,1),
+                                     verbose=True, vprogress=False):
     work_size  = n_work_items*int(np.ceil(global_size[0]/n_work_items))
     work_left  = work_size
     chunk_size = min(n_work_items*chunk_size_factor,work_left)
@@ -345,6 +354,7 @@ def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size,
         event = cl.enqueue_nd_range_kernel(queue, kernel, [chunk_size,1], 
                                            local_size,global_work_offset=[offset,0])
         progress = 100.0*(min(work_size,(offset+chunk_size))/work_size)
+        report_progress(vprogress,work_size-work_left,work_size,downup_step=downup_step)
         vprint(verbose,
                '{0:.2f}%: enqueued {1}/{2} workitems'
                     .format(progress,chunk_size,work_size),
@@ -366,6 +376,8 @@ def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size,
                             int(max_time_per_kernel/(time_per_item*n_work_items)),
                             int(np.ceil(work_left/n_work_items)) ))
         queue.finish()   
+    report_progress(vprogress, work_size-work_left, work_size,
+                    downup_step=downup_step, end='\n')
     return cumulative_time
 
 def read_kernel_source(cl_src_path, cl_files):

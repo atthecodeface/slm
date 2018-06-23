@@ -58,6 +58,7 @@ class Trajectories():
         self.do_trace_upstream   = do_trace_upstream
         self.verbose             = verbose
         self.gpu_verbose         = gpu_verbose
+        self.vprogress           = verbose
         
     def integrate(self):
         """
@@ -284,7 +285,8 @@ class Trajectories():
                                                local_size, n_work_items,
                                                chunk_size_factor=chunk_size_factor,
                                                max_time_per_kernel=max_time_per_kernel,
-                                               verbose=self.gpu_verbose )
+                                               verbose=self.gpu_verbose,
+                                                vprogress=self.vprogress )
             vprint(self.gpu_verbose,
                    '#### ...elapsed time for {1} work items: {0:.3f}s ####'
                    .format(elapsed_time,global_size[0]))

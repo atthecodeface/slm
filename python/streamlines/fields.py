@@ -51,6 +51,7 @@ class Fields():
         self.data                = data
         self.verbose             = verbose
         self.gpu_verbose         = gpu_verbose
+        self.vprogress           = verbose
         
     def integrate(self):
         """
@@ -216,7 +217,8 @@ class Fields():
                'Seed point buffer size = {}*8 bytes'.
                format(buffer_dict['seed_point'].size/8))
         # Downstream then upstream loop
-        for downup_idx, downup_sign in [[0,+1.0],[1,-1.0]]:
+        downup_list = [[0,+1.0],[1,-1.0]]
+        for downup_idx, downup_sign in downup_list:
             info.downup_sign = downup_sign
             
             ##################################
@@ -243,13 +245,16 @@ class Fields():
                    '#### GPU/OpenCL computation: {0} work items... ####'
                    .format(global_size[0]))
             pocl.report_kernel_info(device,kernel,self.gpu_verbose)
+            downup_step = (downup_idx,len(downup_list))
             elapsed_time \
                 = pocl.adaptive_enqueue_nd_range_kernel(
                                                 queue, kernel, global_size, 
                                                 local_size, n_work_items,
                                                 chunk_size_factor=chunk_size_factor,
                                                 max_time_per_kernel=max_time_per_kernel,
-                                                verbose=self.gpu_verbose )
+                                                downup_step=downup_step,
+                                                verbose=self.gpu_verbose,
+                                                vprogress=self.vprogress)
             vprint(self.gpu_verbose,
                    '#### ...elapsed time for {1} work items: {0:.3f}s ####'
                    .format(elapsed_time,global_size[0]))
