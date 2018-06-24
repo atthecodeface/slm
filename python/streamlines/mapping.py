@@ -497,19 +497,19 @@ class Mapping(Core):
     def map_hsl(self, info):
         self.print('Mapping hillslope lengths...',end='')
         # Make a working copy of HSL and find limits
-        hsl         = self.hsl_array
-        hsl_min     = np.min(hsl)
-        hsl_max     = np.max(hsl)
+        hsl      = self.hsl_array
+        hsl_min  = np.min(hsl)
+        hsl_max  = np.max(hsl)
         # Convert to unsigned 16bit so HSL can be filtered using skimage tools
         hsl_clipped = (65535*(hsl-hsl_min)/(hsl_max-hsl_min)).astype(np.uint16)
         # Get the current mask
-        mask        = self.state.merge_active_masks()
-        # BUG ? perhaps we should slice off padding in hsl_smoothed?
-        pad         = self.geodata.pad_width
-        pslice      = np.index_exp[pad:-pad,pad:-pad]
+        mask = self.state.merge_active_masks()
+        # BUG ? perhaps we shouldn't slice off padding in hsl_smoothed?
+        pad    = self.geodata.pad_width
+        pslice = np.index_exp[pad:-pad,pad:-pad]
         # Sizes of dilation and mean filters
-        dfw       = int(self.hsl_dilation_width/self.geodata.roi_pixel_size)
-        mdr       = int(self.hsl_mean_radius/self.geodata.roi_pixel_size)
+        dfw = int(self.hsl_dilation_width/self.geodata.roi_pixel_size)
+        mdr = int(self.hsl_mean_radius/self.geodata.roi_pixel_size)
         # Make a mean disk filter 
         mean_disk = disk(mdr)
         # Spread HSL values into masked pixels by dilation
