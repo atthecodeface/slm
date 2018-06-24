@@ -223,14 +223,13 @@ class Mapping(Core):
             info.set_thresholds(channel_threshold=channel_threshold,
                                 segmentation_threshold=self.fine_segmentation_threshold)
             
+            # Big step - map subsegments using above channel threshold
             if not self.do_map_channels_segments(info, data):
                 del data
                 continue
-
             # Map ridges and midslopes
             self.map_midslopes(info, data)
             self.map_ridges(info, data)
-            
             # Find the HSL-mappable subsegments
             self.select_subsegments(info, data)
             # Measure HSL from ridges or midslopes to thin channels per subsegment
@@ -238,13 +237,14 @@ class Mapping(Core):
                 del data
                 continue
             vprint(self.vprogress,'Mean HSL = {0:0.1f}m'.format(self.hsl_mean))
+            
             # Remove this iteration's dilated coarse-subsegment mask
             self.state.remove_active_mask('dilated_segment')
-            
             # Deploy this coarse subsegment's HSL data to the 'global' HSL map
             self.print('Merging hillslope lengths...',end='')
-            # Deploy this iteration's raw coarse-subsegment mask
+            # Use raw coarse mask to only keep HSL values actually on coarse subsegment
             self.state.add_active_mask({'raw_segment': raw_mask_array})
+            # Merge this coarse subsegment's HSL values into the 'global' HSL map
             bounds = data.bounds_grid
             self.state.merge_active_masks(out=merged_mask_array)
             data.hsl_array[np.isnan(data.hsl_array)] = 0.0
@@ -340,7 +340,7 @@ class Mapping(Core):
 
     def map_channel_heads(self, info, data):
         return channelheads.map_channel_heads(self.cl_state, info, data, self.verbose)
-        # HACK - this step used to be necessary
+        # HACK - this step used to be necessary - can it really be dropped?
 #         channelheads.prune_channel_heads(self.cl_state, info, data, 
 #                                          self.verbose)
         
@@ -369,11 +369,11 @@ class Mapping(Core):
     def segment_downchannels(self, info, data):
         nxp = info.nx_padded
         nyp = info.ny_padded
-        data.label_array = np.zeros((nxp,nyp), dtype=np.uint32)
+        data.label_array = np.zeros((nxp,nyp), dtype=np.int32)
         n = segment.segment_channels(self.cl_state, info, data, self.verbose)
         if n==0:
             return False
-        # Save the channel-only segment labeling for now
+        # Save the channel-only segment labeling for now - also convert to unsigned
         data.channel_label_array = data.label_array.copy().astype(np.uint32)
         is_majorconfluence = info.is_majorconfluence
         return True
@@ -389,8 +389,7 @@ class Mapping(Core):
         if not segment.subsegment_flanks(self.cl_state, info, data, self.verbose):
             # Failure
             return False
-        #?????
-        data.label_array = data.label_array.astype(dtype=np.int32)
+#         data.label_array = data.label_array.astype(dtype=np.int32)
         data.label_array[data.label_array<0] \
             = -(  data.label_array[data.label_array<0] + info.left_flank_addition )
         # Flag all went well
@@ -401,14 +400,13 @@ class Mapping(Core):
         dsla = data.sla_array[:,:,0]
         usla = data.sla_array[:,:,1]
         mask = data.mask_array
-        nxp = info.nx_padded
-        nyp = info.ny_padded
+        nxp  = info.nx_padded
+        nyp  = info.ny_padded
         midslope_array = np.zeros((nxp,nyp), dtype=np.bool)
         midslope_array[ (~mask) & (np.fabs(
             gaussian_filter((np.arctan2(dsla,usla)-np.pi/4), self.midslope_filter_sigma))
                              <=self.midslope_threshold)] = True
-        skeleton_midslope_array = skeletonize(midslope_array)
-        data.mapping_array[skeleton_midslope_array] |= info.is_midslope
+        data.mapping_array[skeletonize(midslope_array)] |= info.is_midslope
         self.print('done')  
 
     def map_ridges(self, info, data):
@@ -416,8 +414,8 @@ class Mapping(Core):
         dsla = data.sla_array[:,:,0]
         usla = data.sla_array[:,:,1]
         mask = data.mask_array
-        nxp = info.nx_padded
-        nyp = info.ny_padded
+        nxp  = info.nx_padded
+        nyp  = info.ny_padded
         ridge_array = np.zeros((nxp,nyp), dtype=np.bool)
         ridge_array[ (~mask) & ((
             gaussian_filter((np.arctan2(dsla,usla)-np.pi/4), self.ridge_filter_sigma))
@@ -425,9 +423,8 @@ class Mapping(Core):
         dilation_structure = generate_binary_structure(2, 2)
         fat_ridge_array    = binary_dilation(ridge_array, structure=dilation_structure, 
                                              iterations=1)
-        filled_ridge_array   = binary_fill_holes(fat_ridge_array)
-        skeleton_ridge_array = skeletonize(filled_ridge_array)
-        data.mapping_array[skeleton_ridge_array] |= info.is_ridge
+        filled_ridge_array = binary_fill_holes(fat_ridge_array)
+        data.mapping_array[skeletonize(filled_ridge_array)] |= info.is_ridge
         self.print('done')  
 
     def select_subsegments(self, info, data):
@@ -499,18 +496,29 @@ class Mapping(Core):
 
     def map_hsl(self, info):
         self.print('Mapping hillslope lengths...',end='')
-        
+        # Make a working copy of HSL and find limits
         hsl         = self.hsl_array
-        mask        = self.state.merge_active_masks()
-        pad         = self.geodata.pad_width
         hsl_min     = np.min(hsl)
         hsl_max     = np.max(hsl)
+        # Convert to unsigned 16bit so HSL can be filtered using skimage tools
         hsl_clipped = (65535*(hsl-hsl_min)/(hsl_max-hsl_min)).astype(np.uint16)
-
-        mdr       = int(self.hsl_mean_radius/self.geodata.roi_pixel_size)
-        mean_disk = disk(mdr)
+        # Get the current mask
+        mask        = self.state.merge_active_masks()
+        # BUG ? perhaps we should slice off padding in hsl_smoothed?
+        pad         = self.geodata.pad_width
+        pslice      = np.index_exp[pad:-pad,pad:-pad]
+        # Sizes of dilation and mean filters
         dfw       = int(self.hsl_dilation_width/self.geodata.roi_pixel_size)
-        
+        mdr       = int(self.hsl_mean_radius/self.geodata.roi_pixel_size)
+        # Make a mean disk filter 
+        mean_disk = disk(mdr)
+        # Spread HSL values into masked pixels by dilation
+        #   - when contouring, this spreading has the effect of avoiding
+        #     nasty mask-boundary edge effects, i.e., masked areas are treated
+        #     as zeros and force dense erroneous contours to arise at boundaries
+        # Also mean filter to make for reasonably smooth contouring. 
+        #    - plus helps to skip over skinny isolated HSL strips with
+        #      somewhat bogus extreme values.
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             if dfw==0:
@@ -524,35 +532,33 @@ class Mapping(Core):
             self.print('mean filtering with {0}m ({1}-pixel) diameter disk...'
                        .format(self.hsl_mean_radius*2,mdr*2), end='') 
             hsl_mean = mean(hsl_dilated,mean_disk)
-            
+        # Rescale filtered HSL back into floats and slice off padding
         self.hsl_smoothed_array \
-            = (((hsl_mean[pad:-pad,pad:-pad].astype(np.float32))/65535)
-                                *(hsl_max-hsl_min)+hsl_min)
+            = ((hsl_mean[pslice].astype(np.float32))/65535)*(hsl_max-hsl_min)+hsl_min
         self.print('done')  
         
     def map_aspect(self, info):
         self.print('Computing hillslope aspect...',end='')
-
+        
         nxp = info.nx_padded
         nyp = info.ny_padded
         slope_threshold = self.aspect_slope_threshold
         median_radius   = self.aspect_median_filter_radius/self.geodata.pixel_size
+        # Copy the slope grid because we're going to monkey with it
         slope_array     = self.preprocess.slope_array.copy()
         uv_array        = self.preprocess.uv_array
-        mapping_array   = self.mapping_array
         mask_array      = np.zeros((nxp,nyp), dtype=np.bool)
-        slope_array[((mapping_array & info.is_channel)==info.is_channel)] = 0.0
+        slope_array[((self.mapping_array & info.is_channel)==info.is_channel)] = 0.0
         if self.do_aspect_median_filtering:
             sf = np.max(slope_array)/255.0
-            median_slope_array = sf*median(np.uint8(slope_array/sf),disk(median_radius))
-            slope_array = median_slope_array
+            slope_array = sf*median(np.uint8(slope_array/sf),disk(median_radius))
 
-        median_radius   = self.uv_median_radius/self.geodata.pixel_size
+        median_disk = disk(self.uv_median_radius/self.geodata.pixel_size)
         sf = 2.0/255.0
-        uvx_array = sf*median(np.uint8((uv_array[:,:,0]+1.0)/sf),disk(median_radius))-1.0
-        uvy_array = sf*median(np.uint8((uv_array[:,:,1]+1.0)/sf),disk(median_radius))-1.0
+        uvx_array = sf*median(np.uint8((uv_array[:,:,0]+1.0)/sf),median_disk)-1.0
+        uvy_array = sf*median(np.uint8((uv_array[:,:,1]+1.0)/sf),median_disk)-1.0
         mask_array[  (slope_array<slope_threshold)
-                   | ((mapping_array & info.is_channel)==info.is_channel) ] = True
+                   | ((self.mapping_array & info.is_channel)==info.is_channel) ] = True
         self.aspect_array = np.ma.masked_array( np.arctan2(uvy_array,uvx_array), 
                                                 mask=mask_array )
         self.print('done')  
@@ -568,26 +574,27 @@ class Mapping(Core):
             hsl_averaging_threshold = self.hsl_averaging_threshold
         # Shorthand
         pad = self.geodata.pad_width
+        pslice = np.index_exp[pad:-pad,pad:-pad]
         # Use basic masks plus the merged coarse-subsegmentation mask
         self.state.reset_active_masks()
         self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask})
         # Also exclude any np.ma masked pixels in self.aspect_array
-        mask_array   =   self.state.merge_active_masks()[pad:-pad,pad:-pad] \
-                       | self.aspect_array[pad:-pad,pad:-pad].mask
+        mask_array = self.state.merge_active_masks()[pslice] \
+                   | self.aspect_array[pslice].mask
         # Fetch non-masked aspect and HSL values
-        aspect_array = self.aspect_array[pad:-pad,pad:-pad][~mask_array]
+        aspect_array = self.aspect_array[pslice][~mask_array]
         hsl_array    = self.hsl_smoothed_array[~mask_array]
         # Convert aspect to degrees
-        aspect_array = np.rad2deg(aspect_array[hsl_array>=hsl_averaging_threshold])
+        np.rad2deg(aspect_array[hsl_array>=hsl_averaging_threshold], out=aspect_array)
         # Exclude "negligibly" small HSL values aka near zero mismeasurements
-        hsl_array    = hsl_array[hsl_array>=hsl_averaging_threshold]
+        hsl_array = hsl_array[hsl_array>=hsl_averaging_threshold]
         # Combine into HSL(aspect) array
         hsl_aspect_array = np.stack( (hsl_array,aspect_array), axis=1)
         # Sort in-place using column 1 (aspect) as key
         self.hsl_aspect_array = hsl_aspect_array[hsl_aspect_array[:,1].argsort()]
         # Convert into a pandas dataframe for easier processing
-        self.hsl_aspect_df    = pd.DataFrame(data=self.hsl_aspect_array,
-                                             columns=['hsl','aspect'])
+        self.hsl_aspect_df = pd.DataFrame(data=self.hsl_aspect_array,
+                                         columns=['hsl','aspect'])
         # Likely 3° bin half-width and 6° bin width
         half_bin_width = 180/n_bins
         bin_width = half_bin_width*2
