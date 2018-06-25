@@ -246,12 +246,14 @@
         "contour_hsl_cmap" : "jet",
         "contour_hsl_do_shaded_relief" : true,
         "contour_hsl_n_contours" : "auto",
+        "do_plot_aspect_contours" : false,
         "contour_hsl_z_min" : "full",
         "contour_hsl_z_max" : "full",
         "contour_hsl_colorbar_aspect" : 0.07,
         "contour_hsl_linewidth" : 0.5,
-        "contour_hsl_label_fontsize" : 9,
-        "contour_hsl_label_suffix" : ""
+        "contour_label_fontsize" : 9,
+        "contour_hsl_label_suffix" : "",
+        "contour_aspect_label_suffix" : "°"
 	},
 
 	"export": {

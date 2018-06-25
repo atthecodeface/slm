@@ -6,7 +6,7 @@
 	},
 
 	"plot": {
-        "contour_hsl_label_fontsize" : 5
+        "contour_label_fontsize" : 5
 	},
 	
 	"export": {

@@ -27,7 +27,8 @@ class Data():
                  traj_stats_df   = None,
                  sla_array       = None,
                  slc_array       = None,
-                 slt_array       = None ):
+                 slt_array       = None,
+                 hsl_array       = None ):
 #     self.print('Preparing data...',end='')  
 #     self.verbose  = verbose
         if bbox is not None:
@@ -41,19 +42,37 @@ class Data():
         #   and we want to generate new arrays that can be monkeyed with
         #   without having to worry about the source arrays being affected
         self.mask_array    = mask_array[bounds_grid].copy()
+        self.mapping_array = mapping_array[bounds_grid].copy()
         if uv_array is not None:
             self.uv_array  = uv_array[bounds_slx].copy()
-        self.mapping_array = mapping_array[bounds_grid].copy()
+        else:
+            self.uv_array  = None
         if sla_array is not None:
             self.sla_array = sla_array[bounds_slx].copy()
+        else:
+            self.sla_array  = None
         if slc_array is not None:
             self.slc_array = slc_array[bounds_slx].copy()
+        else:
+            self.slc_array  = None
         if slt_array is not None:
             self.slt_array = slt_array[bounds_slx].copy()
+        else:
+            self.slt_array  = None
         self.traj_stats_df = traj_stats_df
         self.bounds_grid = bounds_grid
         self.bounds_slx  = bounds_slx
+        self.count_array = None
+        self.link_array = None
+        self.label_array = None
+        self.channel_label_array = None
         self.hillslope_labels = None
+        self.traj_label_array = None
+        self.traj_length_array = None
+        if hsl_array is not None:
+            self.hsl_array = hsl_array[bounds_slx].copy()
+        else:
+            self.hsl_array = None
 #     self.print('done')
 
 class Info():    

@@ -462,7 +462,7 @@ class Plot(Core):
 #         pdebug('label', tmp_array.shape,np.unique(tmp_array))
 #         tmp_array[tmp_array!=1]=0
         self.state.add_active_mask(
-            {'merged_coarse_mask':self.mapping.merged_coarse_mask})
+            {'merged_coarse_mask_array':self.mapping.merged_coarse_mask_array})
         mask_array = self.state.merge_active_masks()
 #         pdebug('list_active_masks',self.state.list_active_masks())
         self.plot_gridded_data(tmp_array,
@@ -540,7 +540,7 @@ class Plot(Core):
         if do_shaded_relief is None:
             do_shaded_relief = self.contour_hsl_do_shaded_relief
         if contour_label_fontsize is None:
-            contour_label_fontsize = self.contour_hsl_label_fontsize
+            contour_label_fontsize = self.contour_label_fontsize
         if contour_label_suffix is None:
             contour_label_suffix = self.contour_hsl_label_suffix
         if z_min is None:
@@ -596,7 +596,8 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig(fig_name,fig)
     
-    def plot_aspect(self, window_size_factor=None,cmap=None,do_plot_contours=False):
+    def plot_aspect(self, window_size_factor=None,cmap=None,do_plot_contours=None,
+                    contour_label_suffix=None, contour_label_fontsize=None):
         """
         TBD
         """
@@ -606,11 +607,17 @@ class Plot(Core):
             self.mapping.aspect_array
         except: 
             self.print('Aspect array not computed')
-
+        
         if cmap==None:
             cmap = 'RdYlBu' #'seismic'  #bwr
         do_flip_cmap=False
         do_balance_cmap=True
+        if do_plot_contours is None:
+            do_plot_contours = self.do_plot_aspect_contours
+        if contour_label_fontsize is None:
+            contour_label_fontsize = self.contour_label_fontsize
+        if contour_label_suffix is None:
+            contour_label_suffix = self.contour_aspect_label_suffix
                             
         fig,axes = self._new_figure(window_title=window_title,
                                     x_pixel_scale=self.geodata.roi_pixel_size,
@@ -632,8 +639,8 @@ class Plot(Core):
                                        mask=mask_array[pad:-pad,pad:-pad],
                                        contour_interval=10,
                                        linewidth=1,
-                                       contour_label_suffix='', 
-                                       contour_label_fontsize=10)
+                                       contour_label_suffix=contour_label_suffix, 
+                                       contour_label_fontsize=contour_label_fontsize)
         
         divider = make_axes_locatable(axes)
         cax = divider.append_axes("bottom", size="4%", 

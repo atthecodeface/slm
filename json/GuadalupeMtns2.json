@@ -11,7 +11,7 @@
 	
 	"plot": {
         "mhsl_pdf_x_stretch" : 1.2,
-        "contour_hsl_label_fontsize" : 5
+        "contour_label_fontsize" : 5
 	},
 	
 	"export": {
