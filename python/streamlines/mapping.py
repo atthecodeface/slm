@@ -634,11 +634,12 @@ class Mapping(Core):
         aspect_array = self.aspect_array[pslice][~mask_array]
         hsl_array    = self.hsl_smoothed_array[~mask_array]
         # Convert aspect to degrees
-        np.rad2deg(aspect_array[hsl_array>=hsl_averaging_threshold], out=aspect_array)
-        # Exclude "negligibly" small HSL values aka near zero mismeasurements
-        hsl_array = hsl_array[hsl_array>=hsl_averaging_threshold]
+        np.rad2deg(aspect_array, out=aspect_array)
         # Combine into HSL(aspect) array
-        hsl_aspect_array = np.stack( (hsl_array,aspect_array), axis=1)
+        # Exclude "negligibly" small HSL values aka near zero mismeasurements
+        hsl_aspect_array = np.stack( (hsl_array[hsl_array>=hsl_averaging_threshold],
+                                      aspect_array[hsl_array>=hsl_averaging_threshold]), 
+                                      axis=1)
         # Sort in-place using column 1 (aspect) as key
         self.hsl_aspect_array = hsl_aspect_array[hsl_aspect_array[:,1].argsort()]
         # Convert into a pandas dataframe for easier processing
