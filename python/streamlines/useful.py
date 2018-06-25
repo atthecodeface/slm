@@ -13,8 +13,8 @@ import os
 os.environ['PYTHONUNBUFFERED']='True'
 import sys
 
-__all__ = ['Data', 'Info','check_sizes', 'prepare_data',
-           'read_geotiff','write_geotiff','true_size','neatly','vprint',
+__all__ = ['Data', 'Info', 'get_bbox','check_sizes', 'prepare_data',
+           'read_geotiff','write_geotiff','npamem','true_size','neatly','vprint',
            'create_seeds','pick_seeds','compute_stats','dilate']
 
 pdebug = print

@@ -44,7 +44,6 @@ def run(**kwargs):
     #   => geodata  - read DTM
     #    => preprocess - compute uv vector field
     #     => trace - integrate streamlines
-    #      => analysis - estimate pdfs
     #       => mapping - map geomorphic structures & fields
     #        => plot - graphs & maps
     #         => save state (currently defunct)
@@ -55,8 +54,8 @@ def run(**kwargs):
         sl.preprocess.do()
     if sl.state.do_trace:
         sl.trace.do()
-    if sl.state.do_analysis:
-        sl.analysis.do()
+#     if sl.state.do_analysis:
+#         sl.analysis.do()
     if sl.state.do_mapping:
         sl.mapping.do()
     if sl.state.do_plot:

@@ -19,7 +19,7 @@ environ['PYTHONUNBUFFERED']='True'
 from streamlines.core   import Core
 from streamlines.useful import Data, Info, vprint, dilate, get_bbox, npamem
 from streamlines        import connect, channelheads, countlink, label, \
-                               segment, linkhillslopes, lengths
+                               segment, hillslopes, lengths
 from streamlines.pocl   import Initialize_cl
 
 __all__ = ['Mapping']
@@ -49,30 +49,28 @@ class Mapping(Core):
     def _augment(self, plot):
         self.plot = plot
      
+     
     def do(self):
         """
         TBD.
         """
         self.print('\n**Mapping begin**') 
+        # Estimate the DTM-wide channel threshold and use it 
+        #   to coarsely subsegment into "moderate"-size watersheds
+        #   - where "sub" means split into L and R flanks along channels
         self.pass1()
+        # Iterate over the coarse subsegments and in each:
+        #   - estimate the channel threshold
+        #   - map channels, ridges & midslopes
+        #   - measure HSL from either ridges or midslopes to channels
+        #   - merge the HSL and (TBD) channel mapping into "global" results grid(s)
         self.pass2()
-        self.pass3()
+        # Filter the HSL results into a smoothed, contourable grid
+        # Compute filtered terrain aspect and combine with this HSL grid
+        # Generate a mean HSL(aspect) function and related statistics
+        #    to determine whether or not there is a N-S bias
+        self.info = self.pass3()
         self.print('**Mapping end**\n')  
-
-    def _switch_to_quiet_mode(self):
-        self.state.verbose = False
-        self.verbose = False
-
-    def _switch_back_to_verbose_mode(self):
-        self.state.verbose = self.vbackup
-        self.verbose = self.vbackup
-
-    def report_progress(self, idx, n_segments, subsegment=None):
-        progress = ((idx)/n_segments)*100.0
-        if subsegment is not None:
-            vprint(self.vprogress, '{0:2.1f}% {1} '.format(progress,subsegment),end='')
-        else:
-            vprint(self.vprogress, '{0:2.1f}% '.format(progress),end='')
 
     def pass1(self):
         vprint(self.vprogress,'\n**Pass#1 begin**')
@@ -271,6 +269,7 @@ class Mapping(Core):
         self.compute_hsl_aspect(info)
 #         self.state.remove_active_mask('merged_coarse')
         vprint(self.vprogress,'**Pass#3 end**') 
+        return info
                 
     def do_map_channels_segments(self, info, data):
         """
@@ -310,8 +309,24 @@ class Mapping(Core):
             vprint(self.vbackup, 'Failed in "do_map_channels_segments":\n', error)
             raise
             return False
-      
-        
+
+
+    def _switch_to_quiet_mode(self):
+        self.state.verbose = False
+        self.verbose = False
+
+    def _switch_back_to_verbose_mode(self):
+        self.state.verbose = self.vbackup
+        self.verbose = self.vbackup
+
+    def report_progress(self, idx, n_segments, subsegment=None):
+        progress = ((idx)/n_segments)*100.0
+        if subsegment is not None:
+            vprint(self.vprogress, '{0:2.1f}% {1} '.format(progress,subsegment),end='')
+        else:
+            vprint(self.vprogress, '{0:2.1f}% '.format(progress),end='')
+
+
     def map_channels(self, info, data):
         self.print('Channels...',end='')
         # Designate channel pixels according to dslt pdf analysis
@@ -379,7 +394,7 @@ class Mapping(Core):
         return True
         
     def link_hillslopes(self, info, data):
-        return linkhillslopes.link_hillslopes(self.cl_state, info, data, self.verbose)
+        return hillslopes.link_hillslopes(self.cl_state, info, data, self.verbose)
 
     def segment_hillslopes(self, info, data):
         return segment.segment_hillslopes(self.cl_state, info, data, self.verbose )
@@ -507,7 +522,7 @@ class Mapping(Core):
         # BUG ? perhaps we shouldn't slice off padding in hsl_smoothed?
         pad    = self.geodata.pad_width
         pslice = np.index_exp[pad:-pad,pad:-pad]
-        # Sizes of dilation and mean filters
+        # Sizes of dilation and mean filters in pixels
         dfw = int(self.hsl_dilation_width/self.geodata.roi_pixel_size)
         mdr = int(self.hsl_mean_radius/self.geodata.roi_pixel_size)
         # Make a mean disk filter 

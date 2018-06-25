@@ -1,5 +1,5 @@
 ///
-/// @file linkhillslopes.cl
+/// @file hillslopes.cl
 ///
 /// Kernels to (re)map thin channels, branching structure, and single outflow directions.
 ///
@@ -7,11 +7,11 @@
 /// @bug No known bugs
 ///
 
-#ifdef KERNEL_LINK_HILLSLOPES
+#ifdef KERNEL_HILLSLOPES
 ///
 /// TBD
 ///
-/// Compiled if KERNEL_LINK_HILLSLOPES is defined.
+/// Compiled if KERNEL_HILLSLOPES is defined.
 ///
 /// @param[in]     seed_point_array: list of initial streamline point vectors,
 ///                                  one allotted to each kernel instance
@@ -28,7 +28,7 @@
 ///
 /// @ingroup structure
 ///
-__kernel void link_hillslopes(
+__kernel void hillslopes(
         __global const float2 *seed_point_array,
         __global const bool   *mask_array,
         __global const float2 *uv_array,

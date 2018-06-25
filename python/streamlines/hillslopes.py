@@ -33,7 +33,7 @@ def link_hillslopes( cl_state, info, data, verbose):
     cl_state.kernel_source \
         = pocl.read_kernel_source(cl_state.src_path,['essentials.cl','updatetraj.cl',
                                                      'computestep.cl','rungekutta.cl',
-                                                     'linkhillslopes.cl'])
+                                                     'hillslopes.cl'])
             
     # Generate a list (array) of seed points from all non-thin-channel pixels
     pad              = info.pad_width
@@ -55,7 +55,7 @@ def link_hillslopes( cl_state, info, data, verbose):
     check_sizes(info.nx_padded,info.ny_padded, array_dict)
     
     # Do integrations on the GPU
-    cl_state.kernel_fn = 'link_hillslopes'
+    cl_state.kernel_fn = 'hillslopes'
     pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
     # Done

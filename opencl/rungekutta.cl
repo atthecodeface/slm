@@ -354,7 +354,7 @@ static inline void channelheads_runge_kutta_step(float *dt, float *dl,
 }
 #endif
 
-#if defined(KERNEL_COUNT_DOWNCHANNELS) || defined(KERNEL_LINK_HILLSLOPES)
+#if defined(KERNEL_COUNT_DOWNCHANNELS) || defined(KERNEL_HILLSLOPES)
 ///
 /// Compute a single step of 2nd-order Runge-Kutta numerical integration of
 ///    a streamline given precomputed 1st and 2nd order step vectors.
@@ -363,7 +363,7 @@ static inline void channelheads_runge_kutta_step(float *dt, float *dl,
 /// In addition, flag the @p mapping_array pixel as @p IS_STUCK.
 /// Update the @p idx of the current (new) @p vec.
 ///
-/// Compiled if KERNEL_COUNT_DOWNCHANNELS or KERNEL_LINK_HILLSLOPES is defined.
+/// Compiled if KERNEL_COUNT_DOWNCHANNELS or KERNEL_HILLSLOPES is defined.
 ///
 /// @param[in,out]  dt: delta time step
 /// @param[in,out]  dl: step distance
