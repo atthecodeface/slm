@@ -945,8 +945,8 @@ class Plot(Core):
         except:
             return
         idx_list = list(range(n_streamlines))
-        if self.shuffle_random_seed is not None:
-            seed(self.shuffle_random_seed)
+        if self.shuffle_rng_seed is not None:
+            seed(self.shuffle_rng_seed)
         if self.n_streamlines_limit!='none':
             shuffle(idx_list)
             idx_list = idx_list[0:min(n_streamlines,self.n_streamlines_limit)]

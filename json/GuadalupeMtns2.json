@@ -8,6 +8,11 @@
         "roi_x_bounds" : [0,900],
         "roi_y_bounds" : [0,800]
 	},
+
+	"trace": {
+		"shuffle_rng_seed" : 2
+	},
+	
 	
 	"plot": {
         "mhsl_pdf_x_stretch" : 1.2,

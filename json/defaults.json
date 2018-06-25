@@ -211,7 +211,7 @@
 		"blockage_marker_size" : 20,
 		"loops_marker_size" : 20,
 		
-		"shuffle_random_seed" : 1,
+		"shuffle_rng_seed" : 1,
 		"random_cmap_seed" : 1,
 		
         "do_plot_marginal_pdf_dsla":   true,

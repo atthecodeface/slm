@@ -74,7 +74,7 @@ class Mapping(Core):
 
     def pass1(self):
         vprint(self.vprogress,'\n**Pass#1 begin**')
-        self._switch_to_quiet_mode()
+#         self._switch_to_quiet_mode()
         # Shorthand
         pad = self.geodata.pad_width
         nxp = self.geodata.roi_nx+pad*2
@@ -126,7 +126,7 @@ class Mapping(Core):
 #             pdebug(self.merged_coarse_mask_array[self.merged_coarse_mask_array==False].shape)
         # Copy the coarse subsegments so they can be readily visualized
         self.label_array = self.coarse_subsegment_array.copy()
-        self._switch_back_to_verbose_mode()
+#         self._switch_back_to_verbose_mode()
         vprint(self.vprogress,'**Pass#1 end**') 
 
     def make_coarse_subsegment_masks(self, coarse_subsegment, is_left_or_right,
