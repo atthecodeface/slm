@@ -327,11 +327,13 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig(fig_name,fig)
     
-    def plot_channels(self, window_size_factor=None):
+    def plot_channels(self, window_size_factor=None, do_reset_mask=True):
         try:
             self.mapping.mapping_array
         except: 
             self.print('Channels array not computed')
+        if do_reset_mask:
+            self.state.reset_active_masks()
 
         cmap = 'bwr'
         fig_name='channels'

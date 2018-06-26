@@ -16,7 +16,7 @@ __all__ = ['hillslope_lengths']
 
 pdebug = print
 
-def hsl( cl_state, info, data, verbose, do_use_ridges=False ): 
+def hsl( cl_state, info, data, do_use_ridges, verbose ): 
     """
     Measure mean (half) hillslope lengths.
     
@@ -49,7 +49,6 @@ def hsl( cl_state, info, data, verbose, do_use_ridges=False ):
         vprint(verbose,'from midslopes...',end='')
     seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
                                   flag=flag, pad=pad)
-#     pdebug(seed_point_array*2+np.array([2800,2800]))
     if ( seed_point_array.shape[0]!=data.traj_length_array.shape[0] ):
         raise ValueError(
             'Mismatched midslope/ridge point arrays: seed pts={0} traj len={1}'

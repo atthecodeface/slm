@@ -127,10 +127,33 @@ class Mapping(Core):
         # Copy the coarse subsegments so they can be readily visualized
         self.label_array = self.coarse_subsegment_array.copy()
 #         self._switch_back_to_verbose_mode()
+        del info, data
+        self.state.reset_active_masks()
+        
+        mask_array = self.state.merge_active_masks()
+        bbox, nxb,nyb = get_bbox(~mask_array)
+        info = Info(self.state, self.trace, self.geodata.roi_pixel_size, mapping=self)
+        info.set_xy(nxb,nyb, pad)
+        info.set_thresholds(segmentation_threshold=self.fine_segmentation_threshold)
+        data = Data( info=info, bbox=bbox, pad=pad,
+                     mapping_array = self.mapping_array,
+                     mask_array    = mask_array,
+                     uv_array      = self.preprocess.uv_array,
+                     slc_array     = self.trace.slc_array,
+                     slt_array     = self.trace.slt_array,
+                     sla_array     = self.trace.sla_array )
+        # Map ridges and midslopes
+        self.map_midslopes(info, data)
+        self.map_ridges(info, data)
+        self.info = info
+        bounds = data.bounds_grid
+        self.mapping_array[bounds][~mask_array[bounds]] \
+                |= data.mapping_array[~mask_array[bounds]]
+
         vprint(self.vprogress,'**Pass#1 end**') 
 
     def make_coarse_subsegment_masks(self, coarse_subsegment, is_left_or_right,
-                                     raw_mask=None, dilated_mask=None):
+                                     raw_mask, dilated_mask):
         # Initialize raw mask with masked everywhere
         raw_mask.fill(True)
         # Unmask this coarse segment
@@ -172,7 +195,6 @@ class Mapping(Core):
 #         pdebug('raw_mask_array',raw_mask_array.shape)
         dilated_mask_array = np.zeros((nxp,nyp), dtype=np.bool)
         merged_mask_array  = np.zeros((nxp,nyp), dtype=np.bool)
-        mapping_array      = np.zeros((nxp,nyp), dtype=np.uint32)
         self.hsl_array     = np.zeros((nxp,nyp), dtype=np.float32)
         # Iterate over the coarse subsegments
         for idx,coarse_subsegment in enumerate(self.coarse_subsegments):
@@ -192,7 +214,7 @@ class Mapping(Core):
             #    - dilate by 1 for R flank and by 2 for L flank to ensure this
             bbox, nxb,nyb \
                 = self.make_coarse_subsegment_masks(coarse_subsegment, is_left_or_right,
-                             raw_mask=raw_mask_array, dilated_mask=dilated_mask_array)
+                                                    raw_mask_array, dilated_mask_array)
             # Create metadata container for this coarse subsegment
             info = Info(self.state,self.trace, pixel_size, mapping=self)
             info.set_xy(nxb,nyb, pad)
@@ -204,7 +226,7 @@ class Mapping(Core):
             self.print('Dilated coarse subsegment mask bounding box: {}'.format(bbox))
 
             data = Data( info=info, bbox=bbox, pad=pad,
-                         mapping_array = mapping_array,
+                         mapping_array = self.mapping_array,
                          mask_array    = merged_mask_array,
                          uv_array      = self.preprocess.uv_array,
                          slc_array     = self.trace.slc_array,
@@ -226,9 +248,7 @@ class Mapping(Core):
                 del data
                 vprint(self.vprogress,'   ---')
                 continue
-            # Map ridges and midslopes
-            self.map_midslopes(info, data)
-            self.map_ridges(info, data)
+            
             # Find the HSL-mappable subsegments
             self.select_subsegments(info, data)
             # Measure HSL from ridges or midslopes to thin channels per subsegment
@@ -254,7 +274,7 @@ class Mapping(Core):
             #   - which will allow recomputation of the entire channel network
             #     during pass#3
             self.mapping_array[bounds][~merged_mask_array[bounds]] \
-                = data.mapping_array[~merged_mask_array[bounds]]
+                |= data.mapping_array[~merged_mask_array[bounds]]
             # Delete this iteration's raw coarse mask from the active list
             self.state.remove_active_mask('raw_segment')
             # Erase the working instance of data to ensure 
@@ -443,6 +463,8 @@ class Mapping(Core):
         # Flag all went well
         return True
         
+    # Shift to pass#1
+    
     def map_midslopes(self, info, data):
         self.print('Midslopes...',end='')  
         dsla = data.sla_array[:,:,0]
@@ -465,14 +487,21 @@ class Mapping(Core):
         nxp  = info.nx_padded
         nyp  = info.ny_padded
         ridge_array = np.zeros((nxp,nyp), dtype=np.bool)
+        fat_ridge_array = np.zeros((nxp,nyp), dtype=np.bool)
         ridge_array[ (~mask) & ((
             gaussian_filter((np.arctan2(dsla,usla)-np.pi/4), self.ridge_filter_sigma))
                              <= -(np.pi/4)*self.ridge_threshold)] = True
         dilation_structure = generate_binary_structure(2, 2)
-        fat_ridge_array    = binary_dilation(ridge_array, structure=dilation_structure, 
-                                             iterations=1)
-        filled_ridge_array = binary_fill_holes(fat_ridge_array)
-        data.mapping_array[skeletonize(filled_ridge_array)] |= info.is_ridge
+        binary_dilation(ridge_array, structure=dilation_structure, 
+                        iterations=1, output=fat_ridge_array)
+        binary_fill_holes(fat_ridge_array, output=fat_ridge_array)
+#         dilation_structure = generate_binary_structure(2, 2)
+#         binary_dilation(skeletonize(fat_ridge_array), 
+#                         structure=dilation_structure, 
+#                         iterations=5, output=ridge_array)
+#         data.mapping_array[ridge_array] |= info.is_ridge
+#         data.mapping_array[fat_ridge_array] |= info.is_ridge
+        data.mapping_array[skeletonize(fat_ridge_array)] |= info.is_ridge
         self.print('done')  
 
     def select_subsegments(self, info, data):
@@ -495,7 +524,8 @@ class Mapping(Core):
     def measure_hsl(self, info, data):
         self.print('Measuring hillslope lengths...')
         data.traj_length_array = np.zeros_like(data.traj_label_array,dtype=np.float32)
-        if not lengths.hsl(self.cl_state, info, data, self.verbose):
+        if not lengths.hsl(self.cl_state, info, data, self.do_measure_hsl_from_ridges,
+                           self.verbose):
             return False
         df = pd.DataFrame(np.zeros((data.traj_length_array.shape[0],), 
                                     dtype=[('label', np.int32), ('length', np.float32)]))
