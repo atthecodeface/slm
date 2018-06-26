@@ -76,7 +76,8 @@ class Data():
 #     self.print('done')
 
 class Info():    
-    def __init__(self, state, trace, pixel_size, mapping=None, n_seed_points=None):
+    def __init__(self, state, trace, pixel_size, 
+                 mapping=None, n_seed_points=None, coarse_label=None):
         self.state   = state
         self.trace   = trace
         self.mapping = mapping
@@ -87,6 +88,9 @@ class Info():
             self.do_measure_hsl_from_ridges = False
         self.segmentation_threshold = np.uint32(0)
         self.channel_threshold      = np.uint32(0)
+        
+        if coarse_label is not None:
+            self.coarse_label = coarse_label
 
         if trace.max_length==np.float32(0.0):
             max_length = np.finfo(numpy.float32).max
@@ -189,6 +193,11 @@ def check_sizes(nx,ny,array_dict):
                 # raise ValueError
                 pdebug('Array "{0}" size {1} vs mismatches info {2}'
                                  .format(array_name, array.shape, (nx,ny)) )
+                
+#                 array is None:
+#                 pdebug('No such array: {}'.format(array_name))
+#             elif 
+            
 
 def read_geotiff(path, filename):
     """

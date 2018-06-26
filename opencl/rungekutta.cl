@@ -395,7 +395,9 @@ static inline bool countlink_runge_kutta_step(float *dt, float *dl,
     *vec = *next_vec;
     *idx = get_array_idx(*next_vec);
     if (*dl<(INTEGRATION_HALT_THRESHOLD)) {
+#ifdef DEBUG
         printf("Count-link @ %g,%g: stuck\n",(*vec)[0],(*vec)[1]);
+#endif
 //        atomic_or(&mapping_array[*idx],IS_STUCK);
         return true;
     }
@@ -447,7 +449,9 @@ static inline bool segment_runge_kutta_step(float *dt, float *dl,
     *idx = get_array_idx(*next_vec);
     *n_steps += 1u;
     if (*dl<(INTEGRATION_HALT_THRESHOLD)) {
+#ifdef DEBUG
         printf("Segment @ %g,%g: stuck\n",(*vec)[0],(*vec)[1]);
+#endif
         return true;
     }
     *dt = select( fmin(DT_MAX,(ADJUSTED_MAX_ERROR*(*dt))/(step_error)), DT_MAX,

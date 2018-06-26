@@ -130,6 +130,8 @@ class Mapping(Core):
         del info, data
         self.state.reset_active_masks()
         
+        self.print('Prepare for mapping HSL from {}'.format(
+            ('ridges' if self.do_measure_hsl_from_ridges else 'midslopes')))
         mask_array = self.state.merge_active_masks()
         bbox, nxb,nyb = get_bbox(~mask_array)
         info = Info(self.state, self.trace, self.geodata.roi_pixel_size, mapping=self)
@@ -142,11 +144,15 @@ class Mapping(Core):
                      slc_array     = self.trace.slc_array,
                      slt_array     = self.trace.slt_array,
                      sla_array     = self.trace.sla_array )
-        # Map ridges and midslopes
+        # Map ridge lines and midslope lines 
+        #   - default (now) is to map HSL from midslope pixels to thin channel pixels
+        #   - can optionally map instead from ridge pixels
         self.map_midslopes(info, data)
         self.map_ridges(info, data)
         self.info = info
         bounds = data.bounds_grid
+        # Should we zero out all but ridge & midslope flags? 
+        # What about after pass#2 (keeping channel heads)?
         self.mapping_array[bounds][~mask_array[bounds]] \
                 |= data.mapping_array[~mask_array[bounds]]
 
@@ -193,9 +199,11 @@ class Mapping(Core):
 #         pdebug('self.geodata.roi_nx,ny = ',(self.geodata.roi_nx,self.geodata.roi_ny))
 #         pdebug('nxp,nyp = ',(nxp,nyp))
 #         pdebug('raw_mask_array',raw_mask_array.shape)
-        dilated_mask_array = np.zeros((nxp,nyp), dtype=np.bool)
-        merged_mask_array  = np.zeros((nxp,nyp), dtype=np.bool)
-        self.hsl_array     = np.zeros((nxp,nyp), dtype=np.float32)
+        dilated_mask_array  = np.zeros((nxp,nyp), dtype=np.bool)
+        merged_mask_array   = np.zeros((nxp,nyp), dtype=np.bool)
+        self.hsl_array      = np.zeros((nxp,nyp), dtype=np.float32)
+        self.hsl_mean_array = np.array([], dtype=np.float32)
+        self.hsl_stats_df   = None
         # Iterate over the coarse subsegments
         for idx,coarse_subsegment in enumerate(self.coarse_subsegments):
 #         for idx,coarse_subsegment in enumerate([71]):
@@ -216,7 +224,8 @@ class Mapping(Core):
                 = self.make_coarse_subsegment_masks(coarse_subsegment, is_left_or_right,
                                                     raw_mask_array, dilated_mask_array)
             # Create metadata container for this coarse subsegment
-            info = Info(self.state,self.trace, pixel_size, mapping=self)
+            info = Info(self.state,self.trace, pixel_size, mapping=self, 
+                        coarse_label=coarse_subsegment)
             info.set_xy(nxb,nyb, pad)
             self.print('--- Mapping HSL on subsegment §{0} = {1}/{2} ({3})'
                        .format(coarse_subsegment,idx+1,n_segments,is_left_or_right))
@@ -256,7 +265,13 @@ class Mapping(Core):
                 del data
                 vprint(self.vprogress,'   ---')
                 continue
-            vprint(self.vprogress,'Mean HSL = {0:0.1f}m'.format(self.hsl_mean))
+            vprint(self.vprogress,'Mean HSL = {0:0.1f}m'.format(data.hsl_mean))
+            # Inefficient but simple
+            self.hsl_mean_array = np.append(self.hsl_mean_array,data.hsl_mean)
+            if self.hsl_stats_df is None:
+                self.hsl_stats_df = data.hsl_stats_df.copy()
+            else:
+                self.hsl_stats_df = self.hsl_stats_df.append(data.hsl_stats_df)
             
             # Remove this iteration's dilated coarse-subsegment mask
             self.state.remove_active_mask('dilated_segment')
@@ -269,7 +284,7 @@ class Mapping(Core):
             bounds = data.bounds_grid
             data.hsl_array[np.isnan(data.hsl_array)] = 0.0
             self.hsl_array[bounds][~merged_mask_array[bounds]] \
-                += data.hsl_array[~merged_mask_array[bounds]]
+                = data.hsl_array[~merged_mask_array[bounds]]
             # Merge the channel mapping results for this coarse subsegment
             #   - which will allow recomputation of the entire channel network
             #     during pass#3
@@ -280,7 +295,8 @@ class Mapping(Core):
             # Erase the working instance of data to ensure 
             #   that the next iteration starts fresh
             del data
-                    
+               
+        self.hsl_array[np.isnan(self.hsl_array)] = 0.0   
         self._switch_back_to_verbose_mode()
         self.report_progress(idx+1, n_segments)
         vprint(self.vprogress,'\n**Pass#2 end**') 
@@ -328,39 +344,45 @@ class Mapping(Core):
         TBD.
         """
         try:
-            # Flag to report failure at any point
-            is_success = True
             # Use downstream slt,sla pdfs to designate pixels as channels
             if do_map_channels:
                 self.map_channels(info, data)
             # Join up disconnected channel pixels if they are not too widely spaced
-            is_success &= self.connect_channel_pixels(info, data)
+            if not self.connect_channel_pixels(info, data):
+                return False
             # Skeletonize channel pixels into thin network
             self.thin_channels(info, data)
             # Locate upstream ends of thinned channel network & designate as heads
-            is_success &= self.map_channel_heads(info, data)
+            if not self.map_channel_heads(info, data):
+                return False
             # Link downstream from channel heads
-            is_success &= self.count_downchannels(info, data)
+            if not self.count_downchannels(info, data):
+                return False
             # Count downstream from channel heads
-            is_success &= self.flag_downchannels(info, data)
-            if not is_success:
+            if not self.flag_downchannels(info, data):
                 return False
             # Map locations of channel confluences & designate types
-            is_success &= self.label_confluences(info, data)
+            if not self.label_confluences(info, data):
+                return False
             # Label channel segments with channel head idxs
-            is_success &= self.segment_downchannels(info, data)
+            if not self.segment_downchannels(info, data):
+                return False            
             # Designate downstream linkages for all hillslope pixels
-            is_success &= self.link_hillslopes(info, data)
+            if not self.link_hillslopes(info, data):
+                return False
             # Label correspondingly upstream hillslope pixels
-            is_success &= self.segment_hillslopes(info, data)
+            if not self.segment_hillslopes(info, data):
+                return False
             # Designate as L or R of channel to subsegment hillslope flanks
-            is_success &= self.subsegment_flanks(info, data)
+            if not self.subsegment_flanks(info, data):
+                return False
             # Success
-            return is_success
+            return True
         except Exception as error:
             # Failure
             vprint(self.vbackup, 'Failed in "do_map_channels_segments":\n', error)
             raise
+            # Redundant
             return False
 
 
@@ -527,38 +549,48 @@ class Mapping(Core):
         if not lengths.hsl(self.cl_state, info, data, self.do_measure_hsl_from_ridges,
                            self.verbose):
             return False
-        df = pd.DataFrame(np.zeros((data.traj_length_array.shape[0],), 
-                                    dtype=[('label', np.int32), ('length', np.float32)]))
-        df['label']  = data.traj_label_array
+        n = data.traj_length_array.shape[0]
+        df = pd.DataFrame(np.zeros((n,), dtype=[#('coarse', np.int32), 
+                                                ('fine', np.int32), 
+                                                ('length', np.float32)]))
+#         df['coarse'] = np.full((n,), info.coarse_label)
+        df['fine']  = data.traj_label_array
         df['length'] = data.traj_length_array
-        df = df[df.label!=0]
-        self.hsl_df = df
+        df = df[df.fine!=0]
+        # BUG - HSL
+#         self.hsl_df = df
         
         try:
-            stats_df = pd.DataFrame(data.hillslope_labels,columns=['label'])
+            stats_df = pd.DataFrame(data.hillslope_labels,columns=['fine'])
             stats_list = ( ('count','count'), ('mean','mean [m]'), ('std','stddev [m]') )
             for stat in stats_list:
-                stats_df = stats_df.join( getattr(df.groupby('label'),stat[0])() ,on='label')
+                stats_df = stats_df.join( getattr(df.groupby('fine'),stat[0])(),
+                                          on='fine')
                 stats_df.rename(index=str, columns={'length':stat[1]}, inplace=True)
-            stats_df.set_index('label',inplace=True)
-            self.hsl_stats_df = stats_df
+#             stats_df.set_index('fine',inplace=True)
+            # BUG - HSL
+#             self.hsl_stats_df = stats_df
         except:
             self.print('Problem constructing HSL stats dataframe')
             return False
+        stats_df['coarse']=info.coarse_label
+        stats_df.set_index(['fine','coarse'],inplace=True)
+
         nxp = info.nx_padded
         nyp = info.ny_padded
         try:   
             data.hsl_array = np.zeros((nxp,nyp), dtype=np.float32)
             for idx,row in stats_df.iterrows():
                 if row['count']>=self.n_hsl_averaging_threshold:
-                    data.hsl_array[data.label_array==idx] = row['mean [m]']
+                    data.hsl_array[data.label_array==idx[0]] = row['mean [m]']
                 else:
-                    data.hsl_array[data.label_array==idx] = 0
+                    data.hsl_array[data.label_array==idx[0]] = 0
         except:
             self.print('Problem parsing HSL stats dataframe')
             return False
 
-        if self.hsl_stats_df.empty:
+        # BUG - HSL
+        if stats_df.empty:
             self.print('Unable to map HSL here - skipping')
             return False
         
@@ -568,13 +600,16 @@ class Mapping(Core):
             self.print('No HSL values in dataframe - skipping')
             return False
         
-        self.hsl_mean  = np.mean(hsl_nonan)
+        # BUG - HSL
+        data.hsl_mean  = np.mean(hsl_nonan)
+        data.hsl_stats_df  = stats_df
         self.print('...done')  
         return True
 
 
     def map_hsl(self, info):
-        self.print('Mapping hillslope lengths...',end='')
+        self.print('Mapping hillslope lengths from {}...'.format(
+            ('ridges' if self.do_measure_hsl_from_ridges else 'midslopes')),end='')
         # Make a working copy of HSL and find limits
         hsl      = self.hsl_array
         hsl_min  = np.min(hsl)

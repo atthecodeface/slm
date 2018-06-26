@@ -105,6 +105,7 @@ __kernel void label_confluences(
                 }
             }
         }
+#ifdef DEBUG
         if (n_equal_dominant_inflows==0) {
             printf(
          "\nn_equal_dominant_inflows=0 @ %g,%g  idx=%d  mapping=%d & %d= is_thin=%d mask=%d \n",
@@ -120,6 +121,7 @@ __kernel void label_confluences(
                 printf("slt=%g : domslt=%g\n",slt_array[inflows_list[i]]+1, dominant_slt);
             }
         }
+#endif
         for (i=0;i<n_equal_dominant_inflows;i++) {
             if (equal_dominant_inflows_list[i]==dominant_slt_index) {
                 atomic_or(&mapping_array[equal_dominant_inflows_list[i]],IS_MAJORINFLOW);
