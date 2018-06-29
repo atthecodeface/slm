@@ -119,7 +119,7 @@
 		"n_hsl_averaging_threshold" : 1,
 		"hsl_dilation_width" : 51,
 		"hsl_mean_radius"  : 30,
-		"uv_median_radius" : 100,
+		"uv_median_radius" : 50,
 		"hsl_averaging_threshold" : 5.0,
 		"n_aspect_bins" : 60,
 		"n_hsl_split" : 4,

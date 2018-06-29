@@ -12,6 +12,8 @@ from skimage.filters.rank  import mean, median
 from scipy.ndimage            import gaussian_filter
 from scipy.ndimage.morphology import binary_fill_holes, grey_dilation, \
                                      binary_dilation, generate_binary_structure
+from scipy.stats import ks_2samp, mannwhitneyu, ranksums, ttest_ind
+from scipy.interpolate import interp1d 
 import warnings
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
@@ -45,6 +47,14 @@ class Mapping(Core):
         self.verbose = self.state.verbose
         self.vbackup = self.state.verbose
         self.vprogress = self.state.verbose
+        
+        self.hsl_ns_ks_nm       = None
+        self.hsl_ns_ks_nmfactor = None
+        self.hsl_ns_ks          = None
+        self.hsl_ns_ttest       = None
+        self.hsl_ns_mannwhitney = None
+        self.hsl_ns_ranksum     = None
+        self.hsl_ns_welch       = None
     
     def _augment(self, plot):
         self.plot = plot
@@ -268,10 +278,19 @@ class Mapping(Core):
             vprint(self.vprogress,'Mean HSL = {0:0.1f}m'.format(data.hsl_mean))
             # Inefficient but simple
             self.hsl_mean_array = np.append(self.hsl_mean_array,data.hsl_mean)
+            # Eliminate almost certainly spurious count=1 HSL mean values
+#             data.hsl_stats_df = data.hsl_stats_df[data.hsl_stats_df['count']>1]
             if self.hsl_stats_df is None:
-                self.hsl_stats_df = data.hsl_stats_df.copy()
+                self.hsl_stats_df = data.hsl_stats_df[
+                    (data.hsl_stats_df['count']>1) 
+                    & (data.hsl_stats_df['mean [m]']>5.0)
+                    ].copy()
             else:
-                self.hsl_stats_df = self.hsl_stats_df.append(data.hsl_stats_df)
+                self.hsl_stats_df = self.hsl_stats_df.append(
+                    data.hsl_stats_df[
+                    (data.hsl_stats_df['count']>1) 
+                    & (data.hsl_stats_df['mean [m]']>5.0)
+                    ])
             
             # Remove this iteration's dilated coarse-subsegment mask
             self.state.remove_active_mask('dilated_segment')
@@ -296,7 +315,7 @@ class Mapping(Core):
             #   that the next iteration starts fresh
             del data
                
-        self.hsl_array[np.isnan(self.hsl_array)] = 0.0   
+        self.hsl_array[np.isnan(self.hsl_array)] = 0.0
         self._switch_back_to_verbose_mode()
         self.report_progress(idx+1, n_segments)
         vprint(self.vprogress,'\n**Pass#2 end**') 
@@ -334,7 +353,8 @@ class Mapping(Core):
         # Map smoothed terrain aspect aka orientation relative to east from uv array
         self.map_aspect(info)
         # Calculate an empirical HSL(aspect) function and related statistics
-        self.compute_hsl_aspect(info)
+        self.combine_hsl_aspect()
+        self.hsl_aspect_stats()
 #         self.state.remove_active_mask('merged_coarse')
         self.info = info
         vprint(self.vprogress,'**Pass#3 end**') 
@@ -550,15 +570,11 @@ class Mapping(Core):
                            self.verbose):
             return False
         n = data.traj_length_array.shape[0]
-        df = pd.DataFrame(np.zeros((n,), dtype=[#('coarse', np.int32), 
-                                                ('fine', np.int32), 
+        df = pd.DataFrame(np.zeros((n,), dtype=[('fine', np.int32), 
                                                 ('length', np.float32)]))
-#         df['coarse'] = np.full((n,), info.coarse_label)
         df['fine']  = data.traj_label_array
         df['length'] = data.traj_length_array
         df = df[df.fine!=0]
-        # BUG - HSL
-#         self.hsl_df = df
         
         try:
             stats_df = pd.DataFrame(data.hillslope_labels,columns=['fine'])
@@ -567,9 +583,6 @@ class Mapping(Core):
                 stats_df = stats_df.join( getattr(df.groupby('fine'),stat[0])(),
                                           on='fine')
                 stats_df.rename(index=str, columns={'length':stat[1]}, inplace=True)
-#             stats_df.set_index('fine',inplace=True)
-            # BUG - HSL
-#             self.hsl_stats_df = stats_df
         except:
             self.print('Problem constructing HSL stats dataframe')
             return False
@@ -588,8 +601,6 @@ class Mapping(Core):
         except:
             self.print('Problem parsing HSL stats dataframe')
             return False
-
-        # BUG - HSL
         if stats_df.empty:
             self.print('Unable to map HSL here - skipping')
             return False
@@ -600,7 +611,6 @@ class Mapping(Core):
             self.print('No HSL values in dataframe - skipping')
             return False
         
-        # BUG - HSL
         data.hsl_mean  = np.mean(hsl_nonan)
         data.hsl_stats_df  = stats_df
         self.print('...done')  
@@ -652,17 +662,19 @@ class Mapping(Core):
         self.print('done')  
         
     def map_aspect(self, info):
-        self.print('Computing hillslope aspect...',end='')
-        
+        self.print('Computing hillslope aspect with median filter radii'
+                   +' {0}m (slope), {1}m (uv)...'
+                   .format(self.aspect_median_filter_radius,
+                           self.uv_median_radius),end='')
         nxp = info.nx_padded
         nyp = info.ny_padded
         slope_threshold = self.aspect_slope_threshold
-        median_radius   = self.aspect_median_filter_radius/self.geodata.pixel_size
         # Copy the slope grid because we're going to monkey with it
         slope_array     = self.preprocess.slope_array.copy()
         uv_array        = self.preprocess.uv_array
         mask_array      = np.zeros((nxp,nyp), dtype=np.bool)
         slope_array[((self.mapping_array & info.is_channel)==info.is_channel)] = 0.0
+        median_radius = self.aspect_median_filter_radius/self.geodata.pixel_size
         if self.do_aspect_median_filtering:
             sf = np.max(slope_array)/255.0
             slope_array = sf*median(np.uint8(slope_array/sf),disk(median_radius))
@@ -677,7 +689,7 @@ class Mapping(Core):
                                                 mask=mask_array )
         self.print('done')  
                                                          
-    def compute_hsl_aspect(self, info, n_bins=None, hsl_averaging_threshold=None):
+    def combine_hsl_aspect(self, n_bins=None, hsl_averaging_threshold=None):
         self.print('Computing hillslope length-aspect function...',end='')
         
         # Default to e.g. aspect bins 6° wide
@@ -705,11 +717,9 @@ class Mapping(Core):
         hsl_aspect_array = np.stack( (hsl_array[hsl_array>=hsl_averaging_threshold],
                                       aspect_array[hsl_array>=hsl_averaging_threshold]), 
                                       axis=1)
-        # Sort in-place using column 1 (aspect) as key
-        self.hsl_aspect_array = hsl_aspect_array[hsl_aspect_array[:,1].argsort()]
         # Convert into a pandas dataframe for easier processing
-        self.hsl_aspect_df = pd.DataFrame(data=self.hsl_aspect_array,
-                                         columns=['hsl','aspect'])
+        self.hsl_aspect_df = pd.DataFrame(columns=['hsl','aspect'],
+                                data=hsl_aspect_array[hsl_aspect_array[:,1].argsort()])
         # Likely 3° bin half-width and 6° bin width
         half_bin_width = 180/n_bins
         bin_width = half_bin_width*2
@@ -728,6 +738,12 @@ class Mapping(Core):
         bins = np.deg2rad(bins[:-1]+half_bin_width)
         # Combine into average-HSL(aspect) array
         self.hsl_aspect_averages_array = np.stack((hsl,bins),axis=1)
+        #
+        self.print('done')  
+        
+    def hsl_aspect_stats(self, n_bins=None, hsl_averaging_threshold=None):
+        self.print('Computing hillslope length-aspect statistics...',end='')
+        #
         # Shorthand
         haa = self.hsl_aspect_averages_array
         hsl = haa[~np.isnan(haa[:,0]),0]
@@ -776,9 +792,75 @@ class Mapping(Core):
         #     defined as reciprocal coefficient of variation
         #         =    (N HSL_mean - S HSL_mean)/(mean split HSL std devn)
         self.hsl_ns_disparity_confidence = self.hsl_ns_disparity/self.hsl_split_stddev
-
-        self.print('done')  
         
+        # N-facing v S-facing stats
+        df = self.hsl_aspect_df
+        hsl_n = df.hsl[(df.aspect>+45) & (df.aspect<+135)]
+        hsl_s = df.hsl[(df.aspect<-45) & (df.aspect>-135)]
+        uhsl_n = hsl_n.unique()
+        uhsl_s = hsl_s.unique()
+        nn = uhsl_n.shape[0]
+        ns = uhsl_s.shape[0]
+        if nn>0 and ns>0:
+            self.hsl_ns_ks_nm       = nn*ns
+            self.hsl_ns_ks_nmfactor = np.sqrt((nn+ns)/(nn*ns))
+            ks    = ks_2samp(uhsl_n,uhsl_s)
+            mw    = mannwhitneyu(uhsl_n,uhsl_s)
+            rs    = ranksums(uhsl_n,uhsl_s)
+            ttest = ttest_ind(uhsl_n,uhsl_s, equal_var=1)
+            welch = ttest_ind(uhsl_n,uhsl_s, equal_var=0)
+            self.hsl_ns_ks          = (ks.statistic, ks.pvalue)
+            self.hsl_ns_ttest       = (ttest.statistic, ttest.pvalue)
+            self.hsl_ns_mannwhitney = (mw.statistic/(nn*ns), mw.pvalue)
+            self.hsl_ns_ranksum     = (rs.statistic, rs.pvalue)
+            self.hsl_ns_welch       = (welch.statistic, welch.pvalue)
+            
+            # Compute q-q and p-p curves
+            # NEEDS SERIOUS ATTENTION TO NAMING & EFFICIENCY
+            
+            hsl_n_min  = min(hsl_n)
+            hsl_s_min  = min(hsl_s)
+            hsl_ns_min = (hsl_n_min+hsl_s_min)/2
+            hsl_n_max  = max(hsl_n)
+            hsl_s_max  = max(hsl_s)
+            hsl_ns_max = (hsl_n_max+hsl_s_max)/2
+            percentiles = np.linspace(0,100,num=50)
+            hsls = np.linspace(hsl_ns_min,hsl_ns_max,num=50)
+            
+            p_hsl_n   = np.percentile(hsl_n, percentiles)
+            p_hsl_s   = np.percentile(hsl_s, percentiles)
+            p_hsl_ns  = (p_hsl_n+p_hsl_s)/2
+            interp_p_ns_hsl_n = interp1d(p_hsl_ns,p_hsl_n)
+            interp_p_ns_hsl_s = interp1d(p_hsl_ns,p_hsl_s)
+            
+            interp_f_hsl_n = interp1d(p_hsl_n,percentiles)
+            interp_f_hsl_s = interp1d(p_hsl_s,percentiles)
+            f_hsl_s_from_n = interp_f_hsl_s(np.clip(p_hsl_n,hsl_s_min,hsl_s_max))
+            f_hsl_n_from_s = interp_f_hsl_n(np.clip(p_hsl_s,hsl_n_min,hsl_n_max))
+            
+            self.hsl_ns_qq = np.stack( (interp_p_ns_hsl_s(hsls),interp_p_ns_hsl_n(hsls)),
+                                       axis=1 ).T
+            
+            midline_sn = (percentiles+f_hsl_s_from_n)/2
+            midline_ns = (percentiles+f_hsl_n_from_s)/2
+            x = np.concatenate( (percentiles, f_hsl_n_from_s) )
+            y = np.concatenate( (f_hsl_s_from_n, percentiles) )
+            m = np.concatenate((f_hsl_s_from_n+percentiles,percentiles+f_hsl_n_from_s))/2
+            xym = np.stack( (x,y,m), axis=1)
+            xym = xym[xym[:,0].argsort()].T
+            interp_x_m = interp1d(xym[2],xym[0])
+            interp_y_m = interp1d(xym[2],xym[1])
+            fx_m = interp_x_m(percentiles)
+            fy_m = interp_y_m(percentiles)
+            
+            self.hsl_ns_pp = np.stack( (fx_m,fy_m), axis=1).T
+            self.hsl_ns_pp_diff = (50-(np.trapz(self.hsl_ns_pp[0],
+                                                self.hsl_ns_pp[1])/100))*2/100
+            
+#             pdebug(self.hsl_ns_qq)
+        #
+        self.print('done')  
+    
     def check_hsl_ns_disparity(self):
         is_n_or_s_disparity \
             = ('north' if self.hsl_mean_north>self.hsl_mean_south else 'south')
@@ -809,4 +891,23 @@ class Mapping(Core):
         elif self.hsl_ns_disparity_confidence<2.0:
             self.print(indent+'=> moderate {} disparity'.format(is_n_or_s_disparity))
         else:
-            self.print(indent+'=> strong {} disparity'.format(is_n_or_s_disparity))                                                         
+            self.print(indent+'=> strong {} disparity'.format(is_n_or_s_disparity))  
+        
+        # Report classical frequentist tests comparing N and S HSL distributions
+        try:
+            self.print('N-facing vs S-facing HSL distribution comparison tests')
+            self.print('  for f(HSL_N,S) with N,S bounds 45°<|±aspect|<135° from east')
+            self.print('D_alpha =  c(alpha)*{0:g}'.format( self.hsl_ns_ks_nmfactor ))
+            self.print('Kolmogorov-Smirnov: {0:0.2f} p={1:g}'.format( *self.hsl_ns_ks ))
+            self.print('Mann-Whitney:       {0:0.2f} p={1:g}'.format( 
+                                                               *self.hsl_ns_mannwhitney))
+            self.print('Rank-sum:           {0:0.1f} p={1:g}'.format( 
+                                                               *self.hsl_ns_ranksum))
+            self.print('Student\'s t:        {0:0.1f} p={1:g}'.format( 
+                                                               *self.hsl_ns_ttest ))
+            self.print('Welch:              {0:0.1f} p={1:g}'.format( 
+                                                               *self.hsl_ns_welch ))
+            self.print('P-P:                {0:0.2f}'.format( self.hsl_ns_pp_diff ))
+        except:
+            self.print('N-S distribution test statistics not computed')
+                                                       

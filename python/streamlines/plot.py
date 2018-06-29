@@ -24,8 +24,8 @@ from   matplotlib.colors  import LinearSegmentedColormap
 from   matplotlib.patches import ArrowStyle, FancyArrowPatch
 from   mpl_toolkits.axes_grid1 import make_axes_locatable
 import colorsys
-from   scipy.stats  import norm
-from   scipy.signal import decimate
+from   scipy.interpolate import interp1d 
+from   scipy.signal      import decimate
 from   os import environ
 environ['PYTHONUNBUFFERED']='True'
 import warnings
@@ -505,8 +505,8 @@ class Plot(Core):
                 z_max = self.hsl_z_max
         grid_array = np.clip(self.mapping.hsl_array.copy(),z_min,z_max)
 #         mask_array = np.zeros_like(grid_array).astype(np.bool)
-#         mask_array[self.mapping.label_array==0] = True
         mask_array = self.state.merge_active_masks()
+        mask_array[grid_array<=5] = True
 #         pdebug('list_active_masks',self.state.list_active_masks())
         self.plot_gridded_data(grid_array,
                                cmap,  # rainbow
@@ -567,6 +567,7 @@ class Plot(Core):
             linewidth = self.contour_hsl_linewidth
                 
         mask_array = self.state.merge_active_masks()[pad:-pad,pad:-pad]
+        mask_array[self.mapping.hsl_array[pad:-pad,pad:-pad]<=5] = True
 #         pdebug('list_active_masks',self.state.list_active_masks())
 #         mask_array &= False
         if do_shaded_relief:
@@ -785,56 +786,137 @@ class Plot(Core):
         TBD
         """
         self.print('Plotting hillslope length distributions...')
-        df = self.mapping.hsl_stats_df
-        kde_min_labels = 20
         if x_stretch is None:
             x_stretch = self.mhsl_pdf_x_stretch
-            
-        name = 'hsl_mean'
+
+        df = self.mapping.hsl_aspect_df    
+        hsl_n = df.hsl[(df.aspect>45) & (df.aspect<135)]
+        hsl_s = df.hsl[(df.aspect<-45) & (df.aspect>-135)]
+
+        name = 'hsl_nsall_distbn'
+        title = 'N-facing vs S-facing hillslope length distributions'
         fig,_ = self._new_figure(window_title=name)
-        title = 'Hillslope length averages'
+        df = self.mapping.hsl_aspect_df    
+        axes  = df['hsl'].plot.density(figsize=(8,8), title=title, color='k', style='-.',
+                                      label='360°', alpha=0.5, lw=1, secondary_y='360°')
+        x_max = df['hsl'].quantile(q=1)*x_stretch
+        axes2 = hsl_n.plot.density(figsize=(8,8),color='steelblue',  label='N-facing')
+        axes3 = hsl_s.plot.density(figsize=(8,8),color='darkorange', label='S-facing')
+        lines = axes.get_lines()
+        axes.legend(lines, [l.get_label() for l in lines], loc='upper right')
+        lines = axes2.get_lines()
+        axes2.legend(lines, [l.get_label() for l in lines], loc='upper left')
+        x_label = r'distance $L$  [m]'
+        y_label = r'probability density  $f(L)$  [m$^{-1}$]'
+        axes.set_xlabel(x_label)
+        axes.set_ylabel(y_label)
+        axes2.set_ylabel(y_label)
+        axes.set_ylim(0,None)
+        axes2.set_ylim(0,None)
+        axes.set_xlim(0,x_max)
+        axes2.set_xlim(0,x_max)
+        self._force_display(fig)
+        self._record_fig(name,fig)
+
+        name = 'hsl_ns_qq'
+        title = 'Hillslope length-aspect Q-Q plot'
+        fig,_ = self._new_figure(window_title=name)
+        x_label = r'South-facing HSL $L_S$  [m]'
+        y_label = r'North-facing HSL $L_N$  [m]'
+        hsl_ns_min = min(min(self.mapping.hsl_ns_qq[0]),min(self.mapping.hsl_ns_qq[1]))
+        hsl_ns_max = max(max(self.mapping.hsl_ns_qq[0]),max(self.mapping.hsl_ns_qq[1]))
+        hsls = np.linspace(hsl_ns_min, hsl_ns_max, num=50)
+        plt.plot(hsls,hsls, 'r--')
+        plt.plot(self.mapping.hsl_ns_qq[0], self.mapping.hsl_ns_qq[1], color='darkblue')
+#         plt.plot(interp_p_ns_hsl_s(hsls),interp_p_ns_hsl_n(hsls), 'k.')
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
+        plt.title(title)
+        self._force_display(fig)
+        self._record_fig(name,fig)
+
+        name = 'hsl_ns_pp'
+        title = 'Hillslope length-aspect P-P plot'
+        fig,_ = self._new_figure(window_title=name)
+        x_label = r'North-facing HSL cumulative prob $F(L_N)$  [%]'
+        y_label = r'South-facing HSL cumulative prob $F(L_S)$  [%]'
+        percentiles = np.linspace(0,100,num=50)
+        plt.plot(percentiles,percentiles, 'r--')
+        plt.plot(self.mapping.hsl_ns_pp[0],self.mapping.hsl_ns_pp[1], color='darkblue')
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
+        plt.title(title)
+#         plt.autoscale(tight=True)
+        plt.xlim(0,100.25)
+        plt.ylim(0,100.25)
+        axes = plt.gca()
+        dxy = 0.025
+        plt.text(0.5-dxy, 0.5+dxy, 'longer N-facing', horizontalalignment='center',
+                  verticalalignment='center', rotation=45, transform=axes.transAxes,
+                  color = 'r')
+        plt.text(0.5+dxy, 0.5-dxy, 'longer S-facing', horizontalalignment='center',
+                  verticalalignment='center', rotation=45, transform=axes.transAxes,
+                  color = 'r')
+        self._force_display(fig)
+        self._record_fig(name,fig)    
+    
+        name = 'hsl_means_distbn'
+        title = 'Distribution of means of hillslope length'
+        fig,_ = self._new_figure(window_title=name)
+        df = self.mapping.hsl_stats_df
+        # Cut
+        df = df[df['count']>1]
+        kde_min_labels = 20
+        x_label  = r'distance $L$  [m]'
+        y_label  = r'probability density  $f(L)$  [m$^{-1}$]'
+        y_label2 = r'number  $N(L)$  [$-$]'
         if df.shape[0]>kde_min_labels:
-            axes = df['mean [m]'].plot.density(figsize=(8,8), title=title)
+            axes = df['mean [m]'].plot.density(figsize=(8,8), title=title,
+                                               label='pdf',secondary_y='pdf')
+            axes2 = df['mean [m]'].plot.hist(figsize=(8,8), title=title,alpha=0.2,
+                                             color='b')
+            axes2.set_ylabel(y_label2)
         else:
             axes = df['mean [m]'].plot.hist(figsize=(8,8), title=title)
-        axes.set_xlabel(r'distance $L$  [m]')
-        axes.set_ylabel(r'probability density  $f(L)$  [m$^{-1}$]')
+        axes.set_xlabel(x_label)
+        axes.set_ylabel(y_label)
         axes.set_xlim(0,df['mean [m]'].quantile(q=1)*x_stretch)
         axes.set_ylim(0,None)
         self._force_display(fig)
         self._record_fig(name,fig)
 
-        name = 'hsl_stddev'
-        fig,_ = self._new_figure(window_title=name)
-        title = 'Hillslope length standard deviations'
-        if df.shape[0]>kde_min_labels:
-            axes = df['stddev [m]'].plot.density(figsize=(8,8), title=title)
-        else:
-            axes = df['stddev [m]'].plot.hist(figsize=(8,8), title=title)
-        axes.set_xlabel(r'distance std deviation $\sigma_L$  [m]')
-        axes.set_ylabel(r'probability density  $f(\sigma_L)$  [m$^{-1}$]')
-        axes.set_xlim(0,df['stddev [m]'].quantile(q=0.99))
-        axes.set_ylim(0,None)
-        # axes.legend(['hillslope length std dev'],frameon=False)
-        self._force_display(fig)
-        self._record_fig(name,fig)
+#         name = 'hsl_stddevs_distbn'
+#         fig,_ = self._new_figure(window_title=name)
+#         title = 'Hillslope length standard deviations'
+#         if df.shape[0]>kde_min_labels:
+#             axes = df['stddev [m]'].plot.density(figsize=(8,8), title=title)
+#         else:
+#             axes = df['stddev [m]'].plot.hist(figsize=(8,8), title=title)
+#         axes.set_xlabel(r'distance std deviation $\sigma_L$  [m]')
+#         axes.set_ylabel(r'probability density  $f(\sigma_L)$  [m$^{-1}$]')
+#         axes.set_xlim(0,df['stddev [m]'].quantile(q=0.99))
+#         axes.set_ylim(0,None)
+#         # axes.legend(['hillslope length std dev'],frameon=False)
+#         self._force_display(fig)
+#         self._record_fig(name,fig)
         
-        name = 'hsl_count'
-        try:
-            csum = np.int(df['count'].sum())
-            cmax = np.int(df['count'].quantile(q=0.99))
-            n_bins = min(50,max(10,csum//cmax))
-        except:
-            n_bins = 20
-        fig,_ = self._new_figure(window_title=name)
-        title = 'Hillslope length streamline counts'
-        axes = df['count'].plot.hist(bins=n_bins,figsize=(8,8), title=title)
-        axes.set_xlabel(r'number of streamlines per length average $N_{sl}$   [-]');
-        axes.set_ylabel(r'frequency  $n(N_{sl})$  [-]')
-        axes.set_xlim(0,df['count'].quantile(q=0.99))
-        axes.set_ylim(0,None)
-        self._force_display(fig)
-        self._record_fig(name,fig)
+#         name = 'hsl_counts_distbn'
+#         try:
+#             csum = np.int(df['count'].sum())
+#             cmax = np.int(df['count'].quantile(q=0.99))
+#             n_bins = min(50,max(10,csum//cmax))
+#         except:
+#             n_bins = 20
+#         fig,_ = self._new_figure(window_title=name)
+#         title = 'Hillslope length streamline counts'
+#         axes = df['count'].plot.hist(bins=n_bins,figsize=(8,8), title=title)
+#         axes.set_xlabel(r'number of streamlines per length average $N_{sl}$   [-]');
+#         axes.set_ylabel(r'frequency  $n(N_{sl})$  [-]')
+#         axes.set_xlim(0,df['count'].quantile(q=0.99))
+#         axes.set_ylim(0,None)
+#         self._force_display(fig)
+#         self._record_fig(name,fig)
+        
         self.print('...done')
 
     def plot_gridded_data(self, grid_array, gridded_cmap, 

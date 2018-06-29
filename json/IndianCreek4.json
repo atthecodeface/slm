@@ -9,7 +9,7 @@
 	},
 
 	"trace": {
-		"shuffle_rng_seed" : 2
+		"shuffle_rng_seed" : 3
 	},
 	
 	"analysis": {
@@ -17,7 +17,7 @@
 	},
 
 	"plot": {
-        "mhsl_pdf_x_stretch" : 0.8,
+        "mhsl_pdf_x_stretch" : 1.0,
         "plot_hsl_colorbar_aspect" : 0.04,
         "contour_hsl_colorbar_aspect" : 0.05,
         "contour_label_fontsize" : 5
