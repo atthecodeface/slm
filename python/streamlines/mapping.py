@@ -816,48 +816,50 @@ class Mapping(Core):
             self.hsl_ns_welch       = (welch.statistic, welch.pvalue)
             
             # Compute q-q and p-p curves
-            # NEEDS SERIOUS ATTENTION TO NAMING & EFFICIENCY
-            
+            # Ranges
             hsl_n_min  = min(hsl_n)
             hsl_s_min  = min(hsl_s)
             hsl_ns_min = (hsl_n_min+hsl_s_min)/2
             hsl_n_max  = max(hsl_n)
             hsl_s_max  = max(hsl_s)
             hsl_ns_max = (hsl_n_max+hsl_s_max)/2
-            percentiles = np.linspace(0,100,num=50)
+            # Simple vector along cdf axis in %
+            percents = np.linspace(0,100,num=50)
+            # HSL percentiles for each such cdf %: north
+            ptile_hsl_n   = np.percentile(hsl_n, percents)
+            # HSL percentiles for each such cdf %: south
+            ptile_hsl_s   = np.percentile(hsl_s, percents)
+            # HSL percentiles for each such cdf %: north+south, ie, diagonal axis            
+            ptile_hsl_ns  = (ptile_hsl_n+ptile_hsl_s)/2
+            # Interpolating functions for HSL percentiles as fn of diagonal distance
+            ptile_hsl_n_interp = interp1d(ptile_hsl_ns,ptile_hsl_n)
+            ptile_hsl_s_interp = interp1d(ptile_hsl_ns,ptile_hsl_s)
+            # Interpolating functions for HSL N & S cdfs
+            f_hsl_n_interp = interp1d(ptile_hsl_n,percents)
+            f_hsl_s_interp = interp1d(ptile_hsl_s,percents)
+            # Resample the cdfs at more regular intervals
+            f_hsl_s_from_n = f_hsl_s_interp(np.clip(ptile_hsl_n,hsl_s_min,hsl_s_max))
+            f_hsl_n_from_s = f_hsl_n_interp(np.clip(ptile_hsl_s,hsl_n_min,hsl_n_max))
+            # Reampling vector for percentiles
             hsls = np.linspace(hsl_ns_min,hsl_ns_max,num=50)
+            # Compute the Q-Q curve for HSL N vs S         
+            self.hsl_ns_qq =np.stack((ptile_hsl_s_interp(hsls),ptile_hsl_n_interp(hsls)),
+                                     axis=1 ).T
+            #
+            fx = np.concatenate( (percents, f_hsl_n_from_s) )
+            fy = np.concatenate( (f_hsl_s_from_n, percents) )
+            # 
+            fm = np.concatenate((f_hsl_s_from_n+percents,percents+f_hsl_n_from_s))/2
+            fxym = np.stack( (fx,fy,fm), axis=1)
+            fxym = fxym[fxym[:,0].argsort()].T
+            fxm_interp = interp1d(fxym[2],fxym[0])
+            fym_interp = interp1d(fxym[2],fxym[1])
+            fxm = fxm_interp(percents)
+            fym = fym_interp(percents)
             
-            p_hsl_n   = np.percentile(hsl_n, percentiles)
-            p_hsl_s   = np.percentile(hsl_s, percentiles)
-            p_hsl_ns  = (p_hsl_n+p_hsl_s)/2
-            interp_p_ns_hsl_n = interp1d(p_hsl_ns,p_hsl_n)
-            interp_p_ns_hsl_s = interp1d(p_hsl_ns,p_hsl_s)
-            
-            interp_f_hsl_n = interp1d(p_hsl_n,percentiles)
-            interp_f_hsl_s = interp1d(p_hsl_s,percentiles)
-            f_hsl_s_from_n = interp_f_hsl_s(np.clip(p_hsl_n,hsl_s_min,hsl_s_max))
-            f_hsl_n_from_s = interp_f_hsl_n(np.clip(p_hsl_s,hsl_n_min,hsl_n_max))
-            
-            self.hsl_ns_qq = np.stack( (interp_p_ns_hsl_s(hsls),interp_p_ns_hsl_n(hsls)),
-                                       axis=1 ).T
-            
-            midline_sn = (percentiles+f_hsl_s_from_n)/2
-            midline_ns = (percentiles+f_hsl_n_from_s)/2
-            x = np.concatenate( (percentiles, f_hsl_n_from_s) )
-            y = np.concatenate( (f_hsl_s_from_n, percentiles) )
-            m = np.concatenate((f_hsl_s_from_n+percentiles,percentiles+f_hsl_n_from_s))/2
-            xym = np.stack( (x,y,m), axis=1)
-            xym = xym[xym[:,0].argsort()].T
-            interp_x_m = interp1d(xym[2],xym[0])
-            interp_y_m = interp1d(xym[2],xym[1])
-            fx_m = interp_x_m(percentiles)
-            fy_m = interp_y_m(percentiles)
-            
-            self.hsl_ns_pp = np.stack( (fx_m,fy_m), axis=1).T
+            self.hsl_ns_pp = np.stack( (fxm,fym), axis=1).T
             self.hsl_ns_pp_diff = (50-(np.trapz(self.hsl_ns_pp[0],
                                                 self.hsl_ns_pp[1])/100))*2/100
-            
-#             pdebug(self.hsl_ns_qq)
         #
         self.print('done')  
     
