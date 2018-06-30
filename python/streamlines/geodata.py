@@ -186,7 +186,11 @@ class Geodata(Core):
             self.roi_array = np.fliplr(self.roi_array)
             self.dtm_array = np.fliplr(self.dtm_array)
             
-
+        # GeoTIFF metadata needed for writing
+        self.roi_geotransform     = list(geotransform)
+        self.roi_geotransform[0] += self.roi_x_bounds[0]*self.pixel_size
+        self.roi_geotransform[3] -= self.dtm_array.shape[0]*self.pixel_size
+        self.roi_geotransform[3] += self.roi_y_bounds[1]*self.pixel_size
         
     def read_basins_file(self):
         """

@@ -62,6 +62,7 @@ class Export(Core):
         self.print('**Export results to files end**\n')  
         
     def save_maps(self, fig_name=None, file_stem=None): 
+        self.print('Writing maps...') 
         if file_stem is None:
             file_stem = os.path.realpath(os.path.join(*self.export_path,
                                                        self.state.parameters_file))
@@ -72,13 +73,14 @@ class Export(Core):
         nxp = nx+pad*2
         nyp = ny+pad*2
         pslice = np.index_exp[pad:-pad,pad:-pad]
+        format = 'tif'
         for obj in obj_list:
             for item in obj.__dict__:
                 ref = getattr(obj,item)
                 if type(ref) is np.ndarray: # or type(ref) is np.ma.core.MaskedArray:
                     array_shape = ref.shape
                     if array_shape[0]==nxp and array_shape[1]==nyp:
-                        file_name = item.strip('_array')
+                        file_name = file_stem+'_'+item.strip('_array')+'.'+format
                         print(file_name, array_shape)
                         if len(array_shape)==3:
                             npd = array_shape[2]
@@ -87,8 +89,10 @@ class Export(Core):
                         if npd==1:
                             write_geotiff(file_stem, file_name, ref, nx,ny,npd, pslice,
                                           self.geodata)
+        self.print('...done') 
         
     def save_figs(self, fig_name=None, file_stem=None):
+        self.print('Writing figs...') 
         fig_items = self.plot.figs.items()
         if file_stem is None:
             file_stem = os.path.realpath(os.path.join(*self.export_path,
@@ -100,6 +104,6 @@ class Export(Core):
             fig_obj = fig_item[1]
             for format in self.format:
                 file_name = file_stem+'_'+fig_item[0]+'.'+format
-                self.print('Exporting <{0}> to "{1}"'.format( fig_item[0],file_name ) )
+                self.print('Writing <{0}> to "{1}"'.format( fig_item[0],file_name ) )
                 fig_obj.savefig(file_name,format=format,**self.options)
-        
+        self.print('...done') 
