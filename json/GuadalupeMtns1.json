@@ -27,6 +27,8 @@
 	
 	"plot": {
         "mhsl_pdf_x_stretch" : 1.4,
+        "contour_hsl_colorbar_size" : 7,
+        "contour_hsl_colorbar_aspect" : 10,
         "do_plot_aspect_contours" : true
 	},
 	

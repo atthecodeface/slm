@@ -13,10 +13,14 @@
 		"shuffle_rng_seed" : 2
 	},
 	
-	
 	"plot": {
         "mhsl_pdf_x_stretch" : 1.2,
-        "contour_label_fontsize" : 5
+        "hsl_colorbar_size" : 4,
+        "hsl_colorbar_aspect" : 0.07,
+        "contour_label_fontsize" : 5,
+        "contour_hsl_colorbar_size" : 4,
+        "contour_hsl_colorbar_aspect" : 10,
+        "do_plot_aspect_contours" : true
 	},
 	
 	"export": {

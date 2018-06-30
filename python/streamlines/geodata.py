@@ -47,6 +47,7 @@ class Geodata(Core):
         if self.do_basin_masking:
             self.read_basins_file()
             self.make_basins_mask()
+        
         self.print('**Geodata end**\n')  
 
     def read_dtm_file(self):
@@ -180,6 +181,11 @@ class Geodata(Core):
                     (self.roi_y_origin+roi_height+roi_dy/2)*self.pixel_size))
         if self.h_min!='none':
             self.roi_array[np.isnan(self.roi_array)] = self.h_min
+        if self.flip_ns:
+            self.roi_array = np.fliplr(self.roi_array)
+            self.dtm_array = np.fliplr(self.dtm_array)
+            
+
         
     def read_basins_file(self):
         """
@@ -201,6 +207,8 @@ class Geodata(Core):
         self.basins_array = (np.flipud(basins_array)[
               self.roi_y_bounds[0]:self.roi_y_bounds[1],
               self.roi_x_bounds[0]:self.roi_x_bounds[1]]).T.copy()
+        if self.flip_ns:
+            self.basins_array = np.fliplr(self.basins_array)
 
     def make_dtm_mask(self):
         """

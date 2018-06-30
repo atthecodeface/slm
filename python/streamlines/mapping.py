@@ -47,7 +47,7 @@ class Mapping(Core):
         self.verbose = self.state.verbose
         self.vbackup = self.state.verbose
         self.vprogress = self.state.verbose
-        
+        # Just in case of a problem, flag incomplete processing with empty objects
         self.hsl_ns_ks_nm       = None
         self.hsl_ns_ks_nmfactor = None
         self.hsl_ns_ks          = None
@@ -55,6 +55,8 @@ class Mapping(Core):
         self.hsl_ns_mannwhitney = None
         self.hsl_ns_ranksum     = None
         self.hsl_ns_welch       = None
+        self.hsl_ns_min         = None
+        self.hsl_ns_max         = None
     
     def _augment(self, plot):
         self.plot = plot
@@ -838,28 +840,47 @@ class Mapping(Core):
             f_hsl_n_interp = interp1d(ptile_hsl_n,percents)
             f_hsl_s_interp = interp1d(ptile_hsl_s,percents)
             # Resample the cdfs at more regular intervals
+            #   - from both directions, ie, N from S = y(x) and S from N = x(y)
             f_hsl_s_from_n = f_hsl_s_interp(np.clip(ptile_hsl_n,hsl_s_min,hsl_s_max))
             f_hsl_n_from_s = f_hsl_n_interp(np.clip(ptile_hsl_s,hsl_n_min,hsl_n_max))
             # Reampling vector for percentiles
             hsls = np.linspace(hsl_ns_min,hsl_ns_max,num=50)
             # Compute the Q-Q curve for HSL N vs S         
-            self.hsl_ns_qq =np.stack((ptile_hsl_s_interp(hsls),ptile_hsl_n_interp(hsls)),
-                                     axis=1 ).T
-            #
+            self.hsl_ns_qq_array = np.stack( (ptile_hsl_s_interp(hsls),
+                                              ptile_hsl_n_interp(hsls)), axis=1 ).T
+            # Combine N,S cdf curves, 
+            #  - with fx = x plus x(y)
+            #  - and  fy = y(x) plus y
+            # This step is needed because the cdfs only (likely) partially overlap
+            #   such that the values of the y=N cdf beyond the range of the x=S cdf
+            #   must be included, at constant x=min/max(S cdf), and vice versa
+            # The resulting sequence of points must be sorted later on       
             fx = np.concatenate( (percents, f_hsl_n_from_s) )
             fy = np.concatenate( (f_hsl_s_from_n, percents) )
-            # 
+            # Make a corresponding sequence of points along the diagonal x=y axis
             fm = np.concatenate((f_hsl_s_from_n+percents,percents+f_hsl_n_from_s))/2
+            # Blend into a single array
             fxym = np.stack( (fx,fy,fm), axis=1)
+            # Finally sort so that the points are all in incremental order
             fxym = fxym[fxym[:,0].argsort()].T
+            # Interpolating functions for N,S cdfs along diagonal axis
             fxm_interp = interp1d(fxym[2],fxym[0])
             fym_interp = interp1d(fxym[2],fxym[1])
+            fmm_interp = interp1d(fxym[2],fxym[2])
+            # Resample N,S cdfs along the diagonal axis
             fxm = fxm_interp(percents)
             fym = fym_interp(percents)
-            
-            self.hsl_ns_pp = np.stack( (fxm,fym), axis=1).T
-            self.hsl_ns_pp_diff = (50-(np.trapz(self.hsl_ns_pp[0],
-                                                self.hsl_ns_pp[1])/100))*2/100
+            fmm = fmm_interp(percents)
+            # Build the P-P curve
+            self.hsl_ns_pp_array = np.stack( (percents,fxm,fym,fmm), axis=1).T
+            # Compute a K-S-like statistic that measures the disparity between
+            #   the two distributions: 
+            #   - where 0=>N-S equal, +1=>100% N longer HSL,  -1=>100% S longer HSL
+            self.hsl_ns_pp_diff = (50-(np.trapz(self.hsl_ns_pp_array[1],
+                                                self.hsl_ns_pp_array[2])/100))*2
+            # Save ranges
+            self.hsl_ns_min = hsl_ns_min
+            self.hsl_ns_max = hsl_ns_max
         #
         self.print('done')  
     
@@ -909,7 +930,7 @@ class Mapping(Core):
                                                                *self.hsl_ns_ttest ))
             self.print('Welch:              {0:0.1f} p={1:g}'.format( 
                                                                *self.hsl_ns_welch ))
-            self.print('P-P:                {0:0.2f}'.format( self.hsl_ns_pp_diff ))
+            self.print('P-P:                {0:+0.0f}%'.format( self.hsl_ns_pp_diff ))
         except:
             self.print('N-S distribution test statistics not computed')
                                                        

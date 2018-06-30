@@ -38,7 +38,8 @@
 
 		"basins_file" : "",
 		"basins" : [],
-		"do_basin_masking" : false
+		"do_basin_masking" : false,
+		"flip_ns" : false
 	},
 
 	"preprocess": {	
@@ -242,6 +243,7 @@
         "hsl_alpha" : 0.7,
         "hsl_z_min" : 0.0,
         "hsl_z_max" : "auto",
+        "hsl_colorbar_size" : 4,
         "hsl_colorbar_aspect" : 0.07,
         "contour_hsl_cmap" : "jet",
         "contour_hsl_do_shaded_relief" : true,
@@ -249,7 +251,8 @@
         "do_plot_aspect_contours" : false,
         "contour_hsl_z_min" : "full",
         "contour_hsl_z_max" : "full",
-        "contour_hsl_colorbar_aspect" : 0.07,
+        "contour_hsl_colorbar_size" : 4,
+        "contour_hsl_colorbar_aspect" : 10,
         "contour_hsl_linewidth" : 0.5,
         "contour_label_fontsize" : 9,
         "contour_hsl_label_suffix" : "",

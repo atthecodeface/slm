@@ -6,7 +6,9 @@
 	},
 	
 	"plot": {
-        "mhsl_pdf_x_stretch" : 1.1
+        "mhsl_pdf_x_stretch" : 1.1,
+        "contour_label_fontsize" : 7,
+        "do_plot_aspect_contours" : true
 	},
 		
 	"export": {

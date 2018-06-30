@@ -5,8 +5,15 @@
 		"data_path" : ["$SLMDATA","GabilanMesa"]
 	},
 
+	"trace": {
+		"shuffle_rng_seed" : 2
+	},
+
 	"plot": {
-        "contour_label_fontsize" : 5
+        "contour_label_fontsize" : 5,
+        "contour_hsl_colorbar_size" : 3,
+        "contour_hsl_colorbar_aspect" : 10,
+        "do_plot_aspect_contours" : true
 	},
 	
 	"export": {

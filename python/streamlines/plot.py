@@ -477,7 +477,7 @@ class Plot(Core):
 
     def plot_hsl(self, cmap=None, window_size_factor=None,
                  z_min=None,z_max=None, do_shaded_relief=None, 
-                 colorbar_aspect=None, grid_alpha=None):
+                 colorbar_size=None, colorbar_aspect=None, grid_alpha=None):
         """
         TBD
         """
@@ -485,6 +485,8 @@ class Plot(Core):
         window_title='hsl'     
         if cmap is None:
             cmap = self.hsl_cmap
+        if colorbar_size is None:
+            colorbar_size = self.hsl_colorbar_size
         if colorbar_aspect is None:
             colorbar_aspect = self.hsl_colorbar_aspect
         if do_shaded_relief is None:
@@ -517,6 +519,7 @@ class Plot(Core):
                                do_shaded_relief=do_shaded_relief, 
                                do_colorbar=True, 
                                colorbar_title='hillslope length [m]',
+                               colorbar_size=colorbar_size,
                                colorbar_aspect=colorbar_aspect,
                                grid_alpha=self.hsl_alpha)
     
@@ -627,6 +630,8 @@ class Plot(Core):
                                     y_pixel_scale=self.geodata.roi_pixel_size,
                                     window_size_factor=window_size_factor)
 
+        self.state.add_active_mask({'merged_coarse': 
+                                    self.mapping.merged_coarse_mask_array})
         mask_array = self.state.merge_active_masks()
         grid_array = np.rad2deg(self.mapping.aspect_array.copy())
         
@@ -646,12 +651,21 @@ class Plot(Core):
                                        contour_label_fontsize=contour_label_fontsize)
         
         divider = make_axes_locatable(axes)
-        cax = divider.append_axes("bottom", size="4%", 
-                                  pad=0.5, aspect=0.04)
-        cbar = plt.colorbar(im, cax=cax, ticks=np.arange(-180,270,90), 
-                            orientation="horizontal")
-        cbar.set_label(r'aspect (degrees from east)')
+        cax = divider.append_axes("right",  pad=0.3,
+                                  size="{}%".format(self.contour_hsl_colorbar_size), 
+                                  aspect=self.contour_hsl_colorbar_aspect)
+        ticks       = [-180,-90,0,90,180]
+        tick_labels = ['W','S','E','N','W']
+        # Omit top W tick/label
+        cbar = plt.colorbar(im, cax=cax, ticks=ticks[0:-1], 
+                            orientation='vertical')
+#         cbar.set_label('aspect', rotation=0,y=-0.1,labelpad=-20)
+#         cbar.ax.set_yticklabels([r'-180$\degree$',r'-90$\degree$',
+#                                  r'0$\degree$ E',
+#                                  r'+90$\degree$',r'+180$\degree$'])
+        cbar.ax.set_yticklabels(tick_labels[0:-1]) 
 
+        self.state.reset_active_masks()
         self._force_display(fig)
         self._record_fig(fig_name,fig)
 
@@ -786,79 +800,105 @@ class Plot(Core):
         TBD
         """
         self.print('Plotting hillslope length distributions...')
+        df = self.mapping.hsl_aspect_df    
+        
         if x_stretch is None:
             x_stretch = self.mhsl_pdf_x_stretch
-
-        df = self.mapping.hsl_aspect_df    
         hsl_n = df.hsl[(df.aspect>45) & (df.aspect<135)]
         hsl_s = df.hsl[(df.aspect<-45) & (df.aspect>-135)]
-
+        
         name = 'hsl_nsall_distbn'
         title = 'N-facing vs S-facing hillslope length distributions'
         fig,_ = self._new_figure(window_title=name)
-        df = self.mapping.hsl_aspect_df    
         axes  = df['hsl'].plot.density(figsize=(8,8), title=title, color='k', style='-.',
                                       label='360°', alpha=0.5, lw=1, secondary_y='360°')
         x_max = df['hsl'].quantile(q=1)*x_stretch
-        axes2 = hsl_n.plot.density(figsize=(8,8),color='steelblue',  label='N-facing')
-        axes3 = hsl_s.plot.density(figsize=(8,8),color='darkorange', label='S-facing')
+        try:
+            axes2 = hsl_n.plot.density(figsize=(8,8),color='steelblue', label='N-facing')
+        except:
+            axes2 = None
+        try:
+            axes3 = hsl_s.plot.density(figsize=(8,8),color='darkorange',label='S-facing')
+        except:
+            axes3 = None
+        if axes2 is None:
+            axes_ns = axes3
+        else:
+            axes_ns = axes2
         lines = axes.get_lines()
         axes.legend(lines, [l.get_label() for l in lines], loc='upper right')
-        lines = axes2.get_lines()
-        axes2.legend(lines, [l.get_label() for l in lines], loc='upper left')
+        lines = axes_ns.get_lines()
+        axes_ns.legend(lines, [l.get_label() for l in lines], loc='upper left')
         x_label = r'distance $L$  [m]'
         y_label = r'probability density  $f(L)$  [m$^{-1}$]'
         axes.set_xlabel(x_label)
         axes.set_ylabel(y_label)
-        axes2.set_ylabel(y_label)
+        axes_ns.set_ylabel(y_label)
         axes.set_ylim(0,None)
-        axes2.set_ylim(0,None)
+        axes_ns.set_ylim(0,None)
         axes.set_xlim(0,x_max)
-        axes2.set_xlim(0,x_max)
+        axes_ns.set_xlim(0,x_max)
         self._force_display(fig)
         self._record_fig(name,fig)
+        
+        if self.mapping.hsl_ns_min is not None and self.mapping.hsl_ns_max is not None:
+            name = 'hsl_ns_qq'
+            title = 'Hillslope length-aspect Q-Q plot'
+            fig,_ = self._new_figure(window_title=name)
+            x_label = r'South-facing HSL $L_S$ percentiles  [m]'
+            y_label = r'North-facing HSL $L_N$ percentiles  [m]'
+            hsl_ns_min = self.mapping.hsl_ns_min
+            hsl_ns_max = self.mapping.hsl_ns_max
+            hsls = np.linspace(hsl_ns_min, hsl_ns_max, num=50)
+            [plt.plot(self.mapping.hsl_ns_qq_array[0], self.mapping.hsl_ns_qq_array[1], 
+                     marker, ms='8', color='darkblue' ) for marker in ('-','.')]
+            axes = plt.gca()
+            axes.set_xlabel(x_label)
+            axes.set_ylabel(y_label)
+            # Find plot limits (not tight)
+            xy_min = min(axes.get_xlim()[0],axes.get_ylim()[0])
+            xy_max = max(axes.get_xlim()[1],axes.get_ylim()[1])
+            # Force equal x,y limits
+            axes.set_xlim(xy_min,xy_max)
+            axes.set_ylim(xy_min,xy_max)
+            # Plot a diagonal x=y red dashed line for guidance
+            hsls = np.linspace(xy_min, xy_max, num=50)
+            plt.plot(hsls,hsls, 'r--', lw=1)
+            # Replot to ensure q-q line is on top
+            [plt.plot(self.mapping.hsl_ns_qq_array[0], self.mapping.hsl_ns_qq_array[1], 
+                     marker, ms='8', color='darkblue' ) for marker in ('-','.')]
+            axes.set_title(title)
+            self._force_display(fig)
+            self._record_fig(name,fig)
 
-        name = 'hsl_ns_qq'
-        title = 'Hillslope length-aspect Q-Q plot'
-        fig,_ = self._new_figure(window_title=name)
-        x_label = r'South-facing HSL $L_S$  [m]'
-        y_label = r'North-facing HSL $L_N$  [m]'
-        hsl_ns_min = min(min(self.mapping.hsl_ns_qq[0]),min(self.mapping.hsl_ns_qq[1]))
-        hsl_ns_max = max(max(self.mapping.hsl_ns_qq[0]),max(self.mapping.hsl_ns_qq[1]))
-        hsls = np.linspace(hsl_ns_min, hsl_ns_max, num=50)
-        plt.plot(hsls,hsls, 'r--')
-        plt.plot(self.mapping.hsl_ns_qq[0], self.mapping.hsl_ns_qq[1], color='darkblue')
-#         plt.plot(interp_p_ns_hsl_s(hsls),interp_p_ns_hsl_n(hsls), 'k.')
-        plt.xlabel(x_label)
-        plt.ylabel(y_label)
-        plt.title(title)
-        self._force_display(fig)
-        self._record_fig(name,fig)
-
-        name = 'hsl_ns_pp'
-        title = 'Hillslope length-aspect P-P plot'
-        fig,_ = self._new_figure(window_title=name)
-        x_label = r'North-facing HSL cumulative prob $F(L_N)$  [%]'
-        y_label = r'South-facing HSL cumulative prob $F(L_S)$  [%]'
-        percentiles = np.linspace(0,100,num=50)
-        plt.plot(percentiles,percentiles, 'r--')
-        plt.plot(self.mapping.hsl_ns_pp[0],self.mapping.hsl_ns_pp[1], color='darkblue')
-        plt.xlabel(x_label)
-        plt.ylabel(y_label)
-        plt.title(title)
-#         plt.autoscale(tight=True)
-        plt.xlim(0,100.25)
-        plt.ylim(0,100.25)
-        axes = plt.gca()
-        dxy = 0.025
-        plt.text(0.5-dxy, 0.5+dxy, 'longer N-facing', horizontalalignment='center',
-                  verticalalignment='center', rotation=45, transform=axes.transAxes,
-                  color = 'r')
-        plt.text(0.5+dxy, 0.5-dxy, 'longer S-facing', horizontalalignment='center',
-                  verticalalignment='center', rotation=45, transform=axes.transAxes,
-                  color = 'r')
-        self._force_display(fig)
-        self._record_fig(name,fig)    
+        if self.mapping.hsl_ns_min is not None and self.mapping.hsl_ns_max is not None:
+            name = 'hsl_ns_pp'
+            title = 'Hillslope length-aspect P-P plot'
+            fig,_ = self._new_figure(window_title=name)
+            x_label = r'North-facing HSL cumulative prob $F(L_N)$  [%]'
+            y_label = r'South-facing HSL cumulative prob $F(L_S)$  [%]'
+            percents = self.mapping.hsl_ns_pp_array[0]
+            plt.plot(percents,percents, 'r--', lw=1)
+            axes = plt.gca()
+            axes.fill_between(self.mapping.hsl_ns_pp_array[1],
+                              self.mapping.hsl_ns_pp_array[2], 
+                              self.mapping.hsl_ns_pp_array[1],
+                              facecolor='darkblue', alpha=0.1)
+            plt.plot(self.mapping.hsl_ns_pp_array[1],self.mapping.hsl_ns_pp_array[2], 
+                     color='darkblue')
+            axes.set_xlabel(x_label)
+            axes.set_ylabel(y_label)
+            axes.set_title(title)
+    #         plt.autoscale(tight=True)
+            axes.set_xlim(0,100.25)
+            axes.set_ylim(0,100.25)
+            dxy = 0.025
+            [plt.text(0.5-ns[1], 0.5+ns[1], 'longer {}-facing'.format(ns[0]), 
+                      horizontalalignment='center', verticalalignment='center', 
+                      rotation=45, transform=axes.transAxes, color='r') 
+                      for ns in (('N',dxy),('S',-dxy))]
+            self._force_display(fig)
+            self._record_fig(name,fig)    
     
         name = 'hsl_means_distbn'
         title = 'Distribution of means of hillslope length'
@@ -885,37 +925,37 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig(name,fig)
 
-#         name = 'hsl_stddevs_distbn'
-#         fig,_ = self._new_figure(window_title=name)
-#         title = 'Hillslope length standard deviations'
-#         if df.shape[0]>kde_min_labels:
-#             axes = df['stddev [m]'].plot.density(figsize=(8,8), title=title)
-#         else:
-#             axes = df['stddev [m]'].plot.hist(figsize=(8,8), title=title)
-#         axes.set_xlabel(r'distance std deviation $\sigma_L$  [m]')
-#         axes.set_ylabel(r'probability density  $f(\sigma_L)$  [m$^{-1}$]')
-#         axes.set_xlim(0,df['stddev [m]'].quantile(q=0.99))
-#         axes.set_ylim(0,None)
-#         # axes.legend(['hillslope length std dev'],frameon=False)
-#         self._force_display(fig)
-#         self._record_fig(name,fig)
-        
-#         name = 'hsl_counts_distbn'
-#         try:
-#             csum = np.int(df['count'].sum())
-#             cmax = np.int(df['count'].quantile(q=0.99))
-#             n_bins = min(50,max(10,csum//cmax))
-#         except:
-#             n_bins = 20
-#         fig,_ = self._new_figure(window_title=name)
-#         title = 'Hillslope length streamline counts'
-#         axes = df['count'].plot.hist(bins=n_bins,figsize=(8,8), title=title)
-#         axes.set_xlabel(r'number of streamlines per length average $N_{sl}$   [-]');
-#         axes.set_ylabel(r'frequency  $n(N_{sl})$  [-]')
-#         axes.set_xlim(0,df['count'].quantile(q=0.99))
-#         axes.set_ylim(0,None)
-#         self._force_display(fig)
-#         self._record_fig(name,fig)
+        name = 'hsl_stddevs_distbn'
+        fig,_ = self._new_figure(window_title=name)
+        title = 'Hillslope length standard deviations'
+        if df.shape[0]>kde_min_labels:
+            axes = df['stddev [m]'].plot.density(figsize=(8,8), title=title)
+        else:
+            axes = df['stddev [m]'].plot.hist(figsize=(8,8), title=title)
+        axes.set_xlabel(r'distance std deviation $\sigma_L$  [m]')
+        axes.set_ylabel(r'probability density  $f(\sigma_L)$  [m$^{-1}$]')
+        axes.set_xlim(0,df['stddev [m]'].quantile(q=0.99))
+        axes.set_ylim(0,None)
+        # axes.legend(['hillslope length std dev'],frameon=False)
+        self._force_display(fig)
+        self._record_fig(name,fig)
+  
+        name = 'hsl_counts_distbn'
+        try:
+            csum = np.int(df['count'].sum())
+            cmax = np.int(df['count'].quantile(q=0.99))
+            n_bins = min(50,max(10,csum//cmax))
+        except:
+            n_bins = 20
+        fig,_ = self._new_figure(window_title=name)
+        title = 'Hillslope length streamline counts'
+        axes = df['count'].plot.hist(bins=n_bins,figsize=(8,8), title=title)
+        axes.set_xlabel(r'number of streamlines per length average $N_{sl}$   [-]');
+        axes.set_ylabel(r'frequency  $n(N_{sl})$  [-]')
+        axes.set_xlim(0,df['count'].quantile(q=0.99))
+        axes.set_ylim(0,None)
+        self._force_display(fig)
+        self._record_fig(name,fig)
         
         self.print('...done')
 
@@ -924,7 +964,7 @@ class Plot(Core):
                           window_title='', do_flip_cmap=False, do_balance_cmap=True,
                           do_shaded_relief=True, do_colorbar=False, 
                           colorbar_title=None, colorbar_aspect=0.07,
-                          grid_alpha=None):
+                          colorbar_size=4, grid_alpha=None):
         """
         TBD
         """
@@ -986,8 +1026,8 @@ class Plot(Core):
         clim=im.properties()['clim']
         if do_colorbar:
             divider = make_axes_locatable(axes)
-            cax = divider.append_axes("bottom", size="4%", pad=0.5,
-                                      aspect=colorbar_aspect)
+            cax = divider.append_axes("bottom", size="{}%".format(colorbar_size), 
+                                      pad=0.5, aspect=colorbar_aspect)
             cbar = plt.colorbar(im, cax=cax, orientation="horizontal")
             cbar.set_label(colorbar_title)
 
@@ -1286,40 +1326,29 @@ class Plot(Core):
         self.print('Plotting distributions...')
 
         # Marginal univariate pdfs
-        if self.do_plot_marginal_pdf_dsla:
-            self.plot_marginal_pdf_dsla()
-        if self.do_plot_marginal_pdf_usla:
-            self.plot_marginal_pdf_usla()
-        if self.do_plot_marginal_pdf_dslt:
-            self.plot_marginal_pdf_dslt()
-        if self.do_plot_marginal_pdf_uslt:
-            self.plot_marginal_pdf_uslt()
-        if self.do_plot_marginal_pdf_dslc:
-            self.plot_marginal_pdf_dslc()
-        if self.do_plot_marginal_pdf_uslc:
-            self.plot_marginal_pdf_uslc()
+        marginals_list = ['dsla','usla','dslt','uslt','dslc','uslc']
+        for marginal in marginals_list:
+            marginal_fn = 'plot_marginal_pdf_'+marginal
+            do_plot = getattr(self,'do_'+marginal_fn)
+            if do_plot:
+                try:
+                    plot_fn = getattr(self,marginal_fn)
+                    plot_fn()
+                except Exception as error:
+                    self.print('Failed in "plot_distributions":\n', error)
 
         # Joint bivariate pdfs
-        if self.do_plot_joint_pdf_dsla_usla:
-            self.plot_joint_pdf_dsla_usla()
-        if self.do_plot_joint_pdf_usla_uslt:
-            self.plot_joint_pdf_usla_uslt()
-        if self.do_plot_joint_pdf_dsla_dslt:
-            self.plot_joint_pdf_dsla_dslt()
-        if self.do_plot_joint_pdf_dslt_dslc:
-            self.plot_joint_pdf_dslt_dslc()
-        if self.do_plot_joint_pdf_dslt_dsla:
-            self.plot_joint_pdf_dslt_dsla()
-        if self.do_plot_joint_pdf_uslt_dslt:
-            self.plot_joint_pdf_uslt_dslt()
-        if self.do_plot_joint_pdf_usla_uslc:
-            self.plot_joint_pdf_usla_uslc()
-        if self.do_plot_joint_pdf_dsla_dslc:
-            self.plot_joint_pdf_dsla_dslc()
-        if self.do_plot_joint_pdf_uslc_dslc:
-            self.plot_joint_pdf_uslc_dslc()
-
-        # Their marginal 1d pdfs
+        joint_list = ['dsla_usla','usla_uslt','dsla_dslt','dslt_dslc','dslt_dsla',
+                      'uslt_dslt','usla_uslc','dsla_dslc','uslc_dslc']
+        for joint in joint_list:
+            joint_fn = 'plot_joint_pdf_'+joint
+            do_plot = getattr(self,'do_'+joint_fn)
+            if do_plot:
+                try:
+                    plot_fn = getattr(self,joint_fn)
+                    plot_fn()
+                except Exception as error:
+                    self.print('Failed in "plot_distributions":\n', error)
 
         self.print('...done')
 
