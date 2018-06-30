@@ -198,7 +198,6 @@ def check_sizes(nx,ny,array_dict):
 #                 pdebug('No such array: {}'.format(array_name))
 #             elif 
             
-
 def read_geotiff(path, filename):
     """
     Read GeoTIFF file.
@@ -230,10 +229,9 @@ def read_geotiff(path, filename):
             'Pixel x={0} and y={1} dimensions not equal in "{2}":'
             .format(pixel_size, (-1)*geotransform[5], fullpath_filename)
             +' cannot handle non-square pixels' )
-    return (tiff.GetRasterBand(1).ReadAsArray().astype(np.float32), 
-            pixel_size, geotransform)
+    return (tiff.GetRasterBand(1).ReadAsArray().astype(np.float32), tiff, pixel_size)
         
-def write_geotiff(path, filename, array):
+def write_geotiff(path, file_name, array, nx,ny,npd, pslice, geodata):
     """
     Write GeoTIFF file.
     Assumes file contains a single-band 2d grid of equal x-y dimension pixels.
@@ -247,8 +245,59 @@ def write_geotiff(path, filename, array):
     Raises:
         ValueError if file cannot be opened for writing
     """          
-    # TBD
-    pass
+    driver = gdal.GetDriverByName('GTiff')
+    if array.dtype==np.float32:
+        gdal_type = gdal.GDT_Float32
+    elif array.dtype==np.float64:
+        gdal_type = gdal.GDT_Float64
+    elif array.dtype==np.int32:
+        gdal_type = gdal.GDT_Int32
+    elif array.dtype==np.uint32:
+        gdal_type = gdal.GDT_UInt32
+    elif array.dtype==np.bool:
+        gdal_type = gdal.GDT_Byte
+    pdebug(array.dtype,gdal_type, nx,ny,npd)
+    
+    dataset = driver.Create(file_name,nx,ny,npd,gdal_type)
+    geotransform = geodata.tiff.GetGeoTransform()
+    roi_geotransform = list(geotransform)
+    roi_geotransform[0] += geodata.roi_x_bounds[0]*geodata.pixel_size
+    roi_geotransform[3] -= geodata.dtm_array.shape[0]*geodata.pixel_size
+    roi_geotransform[3] += geodata.roi_y_bounds[1]*geodata.pixel_size
+#     pdebug(roi_geotransform[3],geodata.dtm_array.shape[0],
+#            geodata.roi_y_bounds[1])
+#     pdebug(geodata.dtm_array.shape, geotransform, geodata.roi_x_bounds, geodata.roi_y_bounds, type(geotransform))
+    dataset.SetGeoTransform(roi_geotransform)
+    dataset.SetProjection(geodata.tiff.GetProjection())
+    geotransform = geodata.tiff.GetGeoTransform()
+#     pdebug(geotransform)
+#     pdebug(array[pslice].shape,nx,ny,npd)
+    rotated_array = np.flipud((array[pslice].T))
+    if array.dtype==np.bool:
+        dataset.GetRasterBand(1).WriteArray(rotated_array.astype(np.uint8))
+    else:
+        dataset.GetRasterBand(1).WriteArray(rotated_array)
+#     pdebug(dataset)
+    
+#     
+#     fullpath_filename = os.path.join(path,filename)
+#     tiff=gdal.Open(fullpath_filename)
+#     if tiff is None:
+#         raise ValueError('Cannot open GeoTIFF file "{}" for reading'
+#                          .format(fullpath_filename))
+#     geotransform = tiff.GetGeoTransform()
+#     x_easting_bottomleft  = geotransform[0]
+#     y_northing_bottomleft = geotransform[3]+geotransform[5]
+#     pixel_size = geotransform[1]
+#     vprint('DTM GeoTIFF coordinate "geotransform":',geotransform)
+#     if not np.isclose(pixel_size,geotransform[5]*(-1),rtol=1e-3):
+#         raise ValueError(
+#             'Pixel x={0} and y={1} dimensions not equal in "{2}":'
+#             .format(pixel_size, (-1)*geotransform[5], fullpath_filename)
+#             +' cannot handle non-square pixels' )
+#     return (tiff.GetRasterBand(1).ReadAsArray().astype(np.float32), 
+#             pixel_size, geotransform)
+
         
 def npamem(obj, name=None):
     if name is None:

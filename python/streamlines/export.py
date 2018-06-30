@@ -2,10 +2,12 @@
 Map and graph plotting
 """
 
+import numpy  as np
 from matplotlib.pyplot import savefig, figure
 import os
 
-from streamlines.core import Core
+from streamlines.core   import Core
+from streamlines.useful import write_geotiff
 
 __all__ = ['Export']
 
@@ -15,17 +17,19 @@ class Export(Core):
     """
     Export plots to files
     """
-    def __init__(self,state,imported_parameters,geodata,trace,analysis,mapping,plot):
+    def __init__(self, state, imported_parameters, 
+                 geodata, preprocess, trace, analysis, mapping, plot):
         """
         TBD
         """
         super().__init__(state,imported_parameters)  
-        self.state    = state
-        self.geodata  = geodata
-        self.trace    = trace
-        self.analysis = analysis
-        self.mapping  = mapping
-        self.plot     = plot
+        self.state      = state
+        self.geodata    = geodata
+        self.preprocess = preprocess
+        self.trace      = trace
+        self.analysis   = analysis
+        self.mapping    = mapping
+        self.plot       = plot
         
     def do(self):
         """
@@ -58,7 +62,31 @@ class Export(Core):
         self.print('**Export results to files end**\n')  
         
     def save_maps(self, fig_name=None, file_stem=None): 
-        pass
+        if file_stem is None:
+            file_stem = os.path.realpath(os.path.join(*self.export_path,
+                                                       self.state.parameters_file))
+        obj_list = [self.geodata,self.preprocess,self.trace,self.mapping]
+        pad = self.geodata.pad_width
+        nx  = self.geodata.roi_nx
+        ny  = self.geodata.roi_ny
+        nxp = nx+pad*2
+        nyp = ny+pad*2
+        pslice = np.index_exp[pad:-pad,pad:-pad]
+        for obj in obj_list:
+            for item in obj.__dict__:
+                ref = getattr(obj,item)
+                if type(ref) is np.ndarray: # or type(ref) is np.ma.core.MaskedArray:
+                    array_shape = ref.shape
+                    if array_shape[0]==nxp and array_shape[1]==nyp:
+                        file_name = item.strip('_array')
+                        print(file_name, array_shape)
+                        if len(array_shape)==3:
+                            npd = array_shape[2]
+                        else:
+                            npd = 1
+                        if npd==1:
+                            write_geotiff(file_stem, file_name, ref, nx,ny,npd, pslice,
+                                          self.geodata)
         
     def save_figs(self, fig_name=None, file_stem=None):
         fig_items = self.plot.figs.items()

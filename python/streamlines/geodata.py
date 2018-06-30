@@ -87,11 +87,12 @@ class Geodata(Core):
                 ))
         self.print('Reading DTM from GeoTIFF file "%s/%s"'
               % (self.dtm_path,self.dtm_file))
-        self.dtm_array, self.pixel_size, self.geotransform\
+        self.dtm_array, self.tiff, self.pixel_size \
              = read_geotiff(self.dtm_path, self.dtm_file)
-        self.x_easting_bottomleft  = self.geotransform[0]
-        self.y_northing_bottomleft = self.geotransform[3] \
-                                      +self.geotransform[5]*self.dtm_array.shape[0]
+        geotransform = self.tiff.GetGeoTransform()
+        self.x_easting_bottomleft  = geotransform[0]
+        self.y_northing_bottomleft = geotransform[3] \
+                                     +geotransform[5]*self.dtm_array.shape[0]
         self.print('DTM size: {0} x {1} = {2:,} pixels'.format(
               self.dtm_array.shape[1],self.dtm_array.shape[0],
               self.dtm_array.shape[1]*self.dtm_array.shape[0]) )
@@ -196,7 +197,8 @@ class Geodata(Core):
         """ 
         self.print('Reading basins from GeoTIFF file "%s/%s"'
               % (self.dtm_path,self.basins_file))
-        basins_array, _, _ = read_geotiff(self.dtm_path,self.basins_file)
+        basins_array, pixel_size, self.geotransform \
+             = read_geotiff(self.dtm_path,self.basins_file)
         # Check size
         if (self.dtm_array.shape[1]!=basins_array.shape[1] 
             or self.dtm_array.shape[0]!=basins_array.shape[0]):
