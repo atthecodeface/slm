@@ -127,17 +127,18 @@ class Mapping(Core):
         self.coarse_subsegment_array[data.bounds_grid] = data.label_array
         # Make a list of all the subsegments with enough ridge/midslope pixels for HSL
         coarse_subsegments        = np.unique(data.label_array[~data.mask_array])
-        self.coarse_subsegments   = np.sort(coarse_subsegments[coarse_subsegments!=0])
-        self.n_coarse_subsegments = self.coarse_subsegments.shape[0]
+        self.coarse_subsegments_list_array \
+            = np.sort(coarse_subsegments[coarse_subsegments!=0])
+        self.n_coarse_subsegments = self.coarse_subsegments_list_array.shape[0]
         # Make a mask to select all coarse subsegments
 #         pdebug('merged_coarse_mask_array',self.merged_coarse_mask_array[self.merged_coarse_mask_array==False].shape)
 #         pdebug('coarse_subsegment_array',self.coarse_subsegment_array[self.coarse_subsegment_array!=0].shape)
-        for label in self.coarse_subsegments:
+        for label in self.coarse_subsegments_list_array:
 #             pdebug('merging',label)
             self.merged_coarse_mask_array[self.coarse_subsegment_array==label] = False
 #             pdebug(self.merged_coarse_mask_array[self.merged_coarse_mask_array==False].shape)
         # Copy the coarse subsegments so they can be readily visualized
-        self.label_array = self.coarse_subsegment_array.copy()
+#         self.label_array = self.coarse_subsegment_array.copy()
 #         self._switch_back_to_verbose_mode()
         del info, data
         self.state.reset_active_masks()
@@ -217,7 +218,7 @@ class Mapping(Core):
         self.hsl_mean_array = np.array([], dtype=np.float32)
         self.hsl_stats_df   = None
         # Iterate over the coarse subsegments
-        for idx,coarse_subsegment in enumerate(self.coarse_subsegments):
+        for idx,coarse_subsegment in enumerate(self.coarse_subsegments_list_array):
 #         for idx,coarse_subsegment in enumerate([71]):
             if idx>0:
                 merged_mask_array.fill(False)
@@ -658,9 +659,9 @@ class Mapping(Core):
             self.print('mean filtering with {0}m ({1}-pixel) diameter disk...'
                        .format(self.hsl_mean_radius*2,mdr*2), end='') 
             hsl_mean = mean(hsl_dilated,mean_disk)
-        # Rescale filtered HSL back into floats and slice off padding
+        # Rescale filtered HSL back into floats
         self.hsl_smoothed_array \
-            = ((hsl_mean[pslice].astype(np.float32))/65535)*(hsl_max-hsl_min)+hsl_min
+            = ((hsl_mean.astype(np.float32))/65535)*(hsl_max-hsl_min)+hsl_min
         self.print('done')  
         
     def map_aspect(self, info):
@@ -711,7 +712,7 @@ class Mapping(Core):
                    | self.aspect_array[pslice].mask
         # Fetch non-masked aspect and HSL values
         aspect_array = self.aspect_array[pslice][~mask_array]
-        hsl_array    = self.hsl_smoothed_array[~mask_array]
+        hsl_array    = self.hsl_smoothed_array[pslice][~mask_array]
         # Convert aspect to degrees
         np.rad2deg(aspect_array, out=aspect_array)
         # Combine into HSL(aspect) array

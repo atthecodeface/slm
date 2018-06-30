@@ -460,7 +460,7 @@ class Plot(Core):
     def plot_segments(self,do_shaded_relief=True, window_size_factor=None):
         fig_name='label'
         window_title='label'     
-        tmp_array = (self.mapping.label_array.copy().astype(np.int32))
+        tmp_array = (self.mapping.coarse_subsegment_array.copy().astype(np.int32))
 #         pdebug('label', tmp_array.shape,np.unique(tmp_array))
 #         tmp_array[tmp_array!=1]=0
         self.state.add_active_mask(
@@ -538,6 +538,8 @@ class Plot(Core):
                                     x_pixel_scale=self.geodata.roi_pixel_size,
                                     y_pixel_scale=self.geodata.roi_pixel_size,
                                     window_size_factor=window_size_factor)
+        pad = self.geodata.pad_width
+        pslice = np.index_exp[pad:-pad,pad:-pad]
         if cmap is None:
             cmap = self.contour_hsl_cmap
         if colorbar_aspect is None:
@@ -550,7 +552,7 @@ class Plot(Core):
             contour_label_suffix = self.contour_hsl_label_suffix
         if z_min is None:
             if self.contour_hsl_z_min=='full':
-                z_min = np.percentile(self.mapping.hsl_smoothed_array, 0.0)
+                z_min = np.percentile(self.mapping.hsl_smoothed_array[pslice], 0.0)
             elif self.contour_hsl_z_min=='auto':
                 z_min = np.percentile(self.mapping.hsl_smoothed_array, 1.0)
             else:
@@ -562,15 +564,14 @@ class Plot(Core):
                 z_max = np.percentile(self.mapping.hsl_smoothed_array,99.0)  
             else:
                 z_max = self.contour_hsl_z_max     
-        pad = self.geodata.pad_width
-        grid_array = np.clip(self.mapping.hsl_smoothed_array.copy(),z_min,z_max)
+        grid_array = np.clip(self.mapping.hsl_smoothed_array[pslice].copy(),z_min,z_max)
 #         if n_contours is None and self.contour_hsl_n_contours!='auto':
 #                 n_contours = self.contour_hsl_n_contours
         if linewidth is None:
             linewidth = self.contour_hsl_linewidth
                 
-        mask_array = self.state.merge_active_masks()[pad:-pad,pad:-pad]
-        mask_array[self.mapping.hsl_array[pad:-pad,pad:-pad]<=5] = True
+        mask_array = self.state.merge_active_masks()[pslice]
+        mask_array[self.mapping.hsl_array[pslice]<=5] = True
 #         pdebug('list_active_masks',self.state.list_active_masks())
 #         mask_array &= False
         if do_shaded_relief:
@@ -642,9 +643,10 @@ class Plot(Core):
                                    alpha=0.5, do_vlimit=False, v_min=-180, v_max=+180)
         if do_plot_contours:
             pad = self.geodata.pad_width
+            pslice = np.index_exp[pad:-pad,pad:-pad]
             self.plot_contours_overlay(axes,
-                                       grid_array[pad:-pad,pad:-pad].T,
-                                       mask=mask_array[pad:-pad,pad:-pad],
+                                       grid_array[pslice].T,
+                                       mask=mask_array[pslice],
                                        contour_interval=10,
                                        linewidth=1,
                                        contour_label_suffix=contour_label_suffix, 
@@ -970,10 +972,11 @@ class Plot(Core):
         """
         if mask_array is None:
             mask_array = np.zeros_like(grid_array).astype(np.bool)
-        pad = self.geodata.pad_width     
-        mask_array = mask_array[pad:-pad,pad:-pad]
+        pad = self.geodata.pad_width
+        pslice = np.index_exp[pad:-pad,pad:-pad]
+        mask_array = mask_array[pslice]
         if self.geodata.do_basin_masking:
-            mask_array |= self.state.merge_active_masks()[pad:-pad,pad:-pad]
+            mask_array |= self.state.merge_active_masks()[pslice]
             
         if self.seed_point_marker_size==0:
             seed_point_marker = 'g,'
@@ -996,7 +999,7 @@ class Plot(Core):
         else:
             grid_alpha = 1.0
 
-        grid_array = grid_array[pad:-pad,pad:-pad]
+        grid_array = grid_array[pslice]
 #         extra_mask_array = grid_array.astype(np.bool)
 #         mask_array = mask_array | (~extra_mask_array)
 #         mask_array &= False
@@ -1033,7 +1036,7 @@ class Plot(Core):
 
 #         try:
 #             is_thinchannel = self.mapping.info.is_thinchannel
-#             grid_array = ( self.mapping.mapping_array[pad:-pad,pad:-pad] 
+#             grid_array = ( self.mapping.mapping_array[pslice] 
 #                            & is_thinchannel ).astype(np.bool)
 #             im = axes.imshow(np.flipud(grid_array.T), 
 #                       cmap='Blues', 
@@ -1439,7 +1442,6 @@ class Plot(Core):
 
         axes.set_xlim(xmin=0.99, xmax=x_max*1.001)
         axes.set_ylim(ymin=0,ymax=y_max*1.1)
-
 
         # Display & record
         self._force_display(fig)

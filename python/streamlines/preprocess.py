@@ -389,16 +389,16 @@ class Preprocess(Core):
                                 .astype(dtype=np.float32)
         self.slope_array = np.rad2deg(np.arctan(pad_array(raw_speed_array,pad))) \
                                       .astype(dtype=np.float32)
-        self.aspect_array = np.rad2deg(np.arctan2(self.uv_array[:,:,1],
-                                                  self.uv_array[:,:,0]))
+#         self.aspect_array = np.rad2deg(np.arctan2(self.uv_array[:,:,1],
+#                                                   self.uv_array[:,:,0]))
     
     def mask_nan_uv(self):
         self.print('Mask out bad uv pixels...', end='')
-        self.uv_mask_array = np.zeros_like(self.geodata.dtm_mask_array)
-        self.uv_mask_array[  np.isnan(self.uv_array[:,:,0]) 
+        uv_mask_array = np.zeros_like(self.geodata.dtm_mask_array)
+        uv_mask_array[  np.isnan(self.uv_array[:,:,0]) 
                            | np.isnan(self.uv_array[:,:,1]) ] = True
-        self.state.add_active_mask({'uv': self.uv_mask_array})
-        self.uv_array[self.uv_mask_array] = [0.0,0.0]
+        self.state.add_active_mask({'uv': uv_mask_array})
+        self.uv_array[uv_mask_array] = [0.0,0.0]
         self.print('done')
         
     def raw_gradient_vector_field(self):
