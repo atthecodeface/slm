@@ -688,8 +688,10 @@ class Mapping(Core):
         uvy_array = sf*median(np.uint8((uv_array[:,:,1]+1.0)/sf),median_disk)-1.0
         mask_array[  (slope_array<slope_threshold)
                    | ((self.mapping_array & info.is_channel)==info.is_channel) ] = True
-        self.aspect_array = np.ma.masked_array( np.arctan2(uvy_array,uvx_array), 
-                                                mask=mask_array )
+#         self.aspect_array = np.ma.masked_array( np.arctan2(uvy_array,uvx_array), 
+#                                                 mask=mask_array )
+        self.aspect_array = np.arctan2(uvy_array,uvx_array)
+        self.aspect_mask_array = mask_array
         self.print('done')  
                                                          
     def combine_hsl_aspect(self, n_bins=None, hsl_averaging_threshold=None):
@@ -708,8 +710,10 @@ class Mapping(Core):
         self.state.reset_active_masks()
         self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask_array})
         # Also exclude any np.ma masked pixels in self.aspect_array
+#         mask_array = self.state.merge_active_masks()[pslice] \
+#                    | self.aspect_array[pslice].mask
         mask_array = self.state.merge_active_masks()[pslice] \
-                   | self.aspect_array[pslice].mask
+                   | self.aspect_mask_array[pslice]
         # Fetch non-masked aspect and HSL values
         aspect_array = self.aspect_array[pslice][~mask_array]
         hsl_array    = self.hsl_smoothed_array[pslice][~mask_array]

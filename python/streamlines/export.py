@@ -54,10 +54,10 @@ class Export(Core):
         file_stem = os.path.realpath(os.path.join(*self.export_path,
                                                  self.state.parameters_file))
         
-        # Export graphics
-        self.save_figs(file_stem=file_stem)
         # Export mapping grids
         self.save_maps(file_stem=file_stem)
+        # Export graphics
+        self.save_figs(file_stem=file_stem)
         
         self.print('**Export results to files end**\n')  
         
@@ -80,7 +80,7 @@ class Export(Core):
                 if type(ref) is np.ndarray: # or type(ref) is np.ma.core.MaskedArray:
                     array_shape = ref.shape
                     if array_shape[0]==nxp and array_shape[1]==nyp:
-                        file_name = file_stem+'_'+item.strip('_array')+'.'+format
+                        file_name = file_stem+'_'+item.replace('_array','')+'.'+format
                         print(file_name, array_shape)
                         if len(array_shape)==3:
                             npd = array_shape[2]
@@ -102,8 +102,8 @@ class Export(Core):
                 continue
             pdebug(fig_item)
             fig_obj = fig_item[1]
-            for format in self.format:
+            for format in self.figs_format:
                 file_name = file_stem+'_'+fig_item[0]+'.'+format
                 self.print('Writing <{0}> to "{1}"'.format( fig_item[0],file_name ) )
-                fig_obj.savefig(file_name,format=format,**self.options)
+                fig_obj.savefig(file_name,format=format,**self.figs_options)
         self.print('...done') 
