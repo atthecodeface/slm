@@ -340,16 +340,24 @@ class Mapping(Core):
                      slc_array     = self.trace.slc_array,
                      slt_array     = self.trace.slt_array,
                      sla_array     = self.trace.sla_array )
-        if not self.do_map_channels_segments(info, data, do_map_channels=False):
+        if not self.do_map_channels_segments(info, data, 
+                                             do_map_channels_from_scratch=False,
+                                             do_map_segments=False):
             self.print('Error occurred during channel mapping')
-        del data.mapping_array, data.slc_array, data.slt_array
-
+        del data.mapping_array, data.slc_array, data.slt_array, data.sla_array
+        # Erase left flank flagging for easier viz of channels
+#         self.mapping_array[(self.mapping_array & info.is_leftflank)>0] \
+#             = self.mapping_array[(self.mapping_array & info.is_leftflank)>0]  \
+#                         ^ info.is_leftflank
+        
         # Revert to working on the whole DTM (ROI), mainly because 
         #   extrapolation (dilation) into masked pixels needs to spread 
         #   as far as needed, which is user-defined and may be quite large
         #   - thus not worth the trouble to add bboxing complexity here
         nx = self.geodata.roi_nx
         ny = self.geodata.roi_ny
+        nxp = nx+pad*2
+        nyp = ny+pad*2
         info.set_xy(nx,ny, pad)
         # Filter HSL into a contourable, somewhat smooth grid
         self.map_hsl(info)
@@ -360,15 +368,26 @@ class Mapping(Core):
         self.hsl_aspect_stats()
 #         self.state.remove_active_mask('merged_coarse')
         self.info = info
+        # Make 1-byte boolean arrays of selected mapping flags
+        self.thinchannel_array = np.zeros((nxp,nyp), dtype=np.bool)
+        self.channelhead_array = np.zeros((nxp,nyp), dtype=np.bool)
+        self.midslope_array    = np.zeros((nxp,nyp), dtype=np.bool)
+        self.ridge_array       = np.zeros((nxp,nyp), dtype=np.bool)
+        self.thinchannel_array[(self.mapping_array & info.is_thinchannel)>0] = True
+        self.channelhead_array[(self.mapping_array & info.is_channelhead)>0] = True
+        self.midslope_array[   (self.mapping_array & info.is_midslope)>0]    = True
+        self.ridge_array[      (self.mapping_array & info.is_ridge)>0]       = True
         vprint(self.vprogress,'**Pass#3 end**') 
                 
-    def do_map_channels_segments(self, info, data, do_map_channels=True):
+    def do_map_channels_segments(self, info, data, 
+                                 do_map_channels_from_scratch=True,
+                                 do_map_segments=True):
         """
         TBD.
         """
         try:
             # Use downstream slt,sla pdfs to designate pixels as channels
-            if do_map_channels:
+            if do_map_channels_from_scratch:
                 self.map_channels(info, data)
             # Join up disconnected channel pixels if they are not too widely spaced
             if not self.connect_channel_pixels(info, data):
@@ -384,6 +403,8 @@ class Mapping(Core):
             # Count downstream from channel heads
             if not self.flag_downchannels(info, data):
                 return False
+            if not do_map_segments:
+                return True
             # Map locations of channel confluences & designate types
             if not self.label_confluences(info, data):
                 return False
@@ -538,7 +559,7 @@ class Mapping(Core):
                              <= -(np.pi/4)*self.ridge_threshold)] = True
         dilation_structure = generate_binary_structure(2, 2)
         binary_dilation(ridge_array, structure=dilation_structure, 
-                        iterations=1, output=fat_ridge_array)
+                        iterations=2, output=fat_ridge_array)
         binary_fill_holes(fat_ridge_array, output=fat_ridge_array)
 #         dilation_structure = generate_binary_structure(2, 2)
 #         binary_dilation(skeletonize(fat_ridge_array), 

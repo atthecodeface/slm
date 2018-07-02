@@ -126,8 +126,8 @@
 		"n_hsl_split" : 4,
 		"midslope_filter_sigma" : 5.0,
 		"midslope_threshold" : 0.03,
-		"ridge_filter_sigma" : 4.0,
-		"ridge_threshold" : 0.65,
+		"ridge_filter_sigma" : 2.0,
+		"ridge_threshold" : 0.8,
 		"aspect_slope_threshold" : 15.0,
 		"do_aspect_median_filtering" : true,
 		"aspect_median_filter_radius" : 4
