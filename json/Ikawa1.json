@@ -1,16 +1,12 @@
 {
 	"geodata": {
-		"title" : "Ikawa ROI1, JP, UTM Zone 54N",
-		"dtm_file" : "Ikawa1_res1m_fillsinks0p01deg.tif",
-		"data_path": ["$SLMDATA","Ikawa"],
-		"basins_file" : "Ikawa1_res1m_fillsinks0p01deg_basins25k.tif",
-        "Abasins" : [20,24],
-        "basins" : [12,16],
-        "Zbasins" : [2,4,6,8,10,18],
-        "Xbasins" : [22],
-        "Ybasins" : [14],
-        "Xroi_x_bounds" : [0,550],
-        "Xroi_y_bounds" : [0,550],
+		"title" :         "Ikawa ROI1, JP, UTM Zone 54N",
+		"dtm_file" :      "Ikawa1_res1m_fillsinks0p01deg.tif",
+		"basins_file" :   "Ikawa1_res1m_fillsinks0p01deg_basins25k.tif",
+		"data_path":      [ "$SLMDATA", "Ikawa" ],
+		"export_path" :   [ "$SLMXPT",  "Ikawa1" ],
+		"do_clip_roi" :    false,
+        "basins" :        [12,16],
 		"do_basin_masking" : false
 	},
 
@@ -20,9 +16,5 @@
         "contour_hsl_colorbar_size" : 3,
         "contour_hsl_colorbar_aspect" : 10,
         "do_plot_aspect_contours" : true
-	},	
-	
-	"export": {
-		"export_path" : ["$SLMXPT","Ikawa1"]
 	}
 }

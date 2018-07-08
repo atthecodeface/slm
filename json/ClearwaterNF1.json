@@ -1,0 +1,22 @@
+{	
+	"geodata": {
+		"title" :         "Clearwater NF region#1",
+		"dtm_file" :      "ClearwaterNF1_res2m_fillsinks0p01deg.tif",
+		"basins_file" :   "ClearwaterNF1_res2m_fill0p01deg_basins.tif",
+		"data_path" :     [ "$SLMDATA", "ClearwaterNF" ],
+		"export_path" :   [ "$SLMXPT",  "ClearwaterNF1" ],
+		"do_clip_roi" :   false,
+        "roi_x_bounds" :  [1500,1850],
+        "roi_y_bounds" :  [400,1000],
+		"basins" :          [106],
+		"do_basin_masking": true
+	},
+	
+	"plot": {
+        "mhsl_pdf_x_stretch" : 1.2,
+        "contour_label_fontsize" : 3,
+        "contour_hsl_colorbar_size" : 3,
+        "contour_hsl_colorbar_aspect" : 10,
+        "do_plot_aspect_contours" : false
+	}
+}

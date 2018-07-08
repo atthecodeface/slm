@@ -1,9 +1,13 @@
 {	
 	"geodata": {
-		"title" : "Gabilan Mesa ROI2",
-		"dtm_file" : "Gabilan_DTM2_resampled1m_fillsinks0p01deg.tif",
-		"data_path" : ["$SLMDATA","GabilanMesa"]
+		"title" :         "Gabilan Mesa ROI2",
+		"dtm_file" :      "Gabilan_DTM2_resampled1m_fillsinks0p01deg.tif",
+		"data_path" :     [ "$SLMDATA", "GabilanMesa" ],
+		"export_path" :   [ "$SLMXPT",  "GabilanMesa2" ]
 	},
+	
+	
+	
 	
 	
 	"plot": {
@@ -12,9 +16,5 @@
         "contour_hsl_colorbar_size" : 3,
         "contour_hsl_colorbar_aspect" : 10,
         "do_plot_aspect_contours" : true
-	},
-	
-	"export": {
-		"export_path" : ["$SLMXPT","GabilanMesa2"]
 	}
 }

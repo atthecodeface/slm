@@ -1,14 +1,14 @@
 {
 	"geodata": {
-		"title" : "Indian Creek ROI3, Ohio, USA, UTM Zone 17N",
-		"dtm_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg.tif",
-		"data_path" :["$SLMDATA","IndianCreek"],		
-		"roi_x_bounds" : [550,1300],
-		"roi_y_bounds" : [400,850],
-		"h_min" : 500.0,
-		"basins_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed3k.tif",
-		"do_basin_masking" : false
+		"title" :         "Indian Creek ROI3, Ohio, USA, UTM Zone 17N",
+		"dtm_file" :      "IndianCreek_res1m_fillsinks0p01.tif",
+		"data_path" :     [ "$SLMDATA", "IndianCreek" ],
+		"export_path" :   [ "$SLMXPT",  "IndianCreek3" ],		
+		"roi_x_bounds" :  [550,1300],
+		"roi_y_bounds" :  [400,850],
+		"do_clip_roi" :   true
 	},
+	
 
 	"plot": {
         "mhsl_pdf_x_stretch" : 1.2,
@@ -18,10 +18,5 @@
         "contour_hsl_colorbar_size" : 3,
         "contour_hsl_colorbar_aspect" : 10,
         "do_plot_aspect_contours" : true
-        
-	},
-	
-	"export": {
-		"export_path" : ["$SLMXPT","IndianCreek3"]
 	}
 }

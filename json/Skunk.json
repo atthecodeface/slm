@@ -1,12 +1,14 @@
 {
 	"geodata": {
-		"title" : "Skunk Creek, CA, USA, UTM Zone 10N",
-		"dtm_file" : "Skunk_DTM_res1m_fill_sinks0p01deg.tif",
-		"data_path" :["$SLMDATA","Skunk"]
+		"title" :         "Skunk Creek, CA, USA, UTM Zone 10N",
+		"dtm_file" :      "Skunk_DTM_res1m_fill_sinks0p01deg.tif",
+		"data_path" :     [ "$SLMDATA", "Skunk" ],
+		"export_path" :   [ "$SLMXPT",  "Skunk" ]
 	},
 
-	"mapping": {
-	},
+
+
+
 
 	"plot": {
         "hsl_colorbar_aspect" : 0.05,
@@ -14,9 +16,5 @@
         "contour_hsl_colorbar_aspect" : 10,
         "contour_label_fontsize" : 7,
         "do_plot_aspect_contours" : true
-	},
-	
-	"export": {
-		"export_path" : ["$SLMXPT","Skunk"]
 	}
 }

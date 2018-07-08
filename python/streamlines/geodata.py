@@ -108,15 +108,10 @@ class Geodata(Core):
             self.dtm_array[self.dtm_array==self.no_data_value] = np.nan
             
         # Handle empty ROI bounds which imply full DTM
-        try:
-            if self.roi_x_bounds==[]:
-                raise
-        except:
+        if not self.do_clip_roi or self.roi_x_bounds==[]:
+            pdebug('clip',self.do_clip_roi)
             self.roi_x_bounds = [0,self.dtm_array.shape[1]]
-        try:
-            if self.roi_y_bounds==[]:
-                raise
-        except:
+        if not self.do_clip_roi or self.roi_y_bounds==[]:
             self.roi_y_bounds = [0,self.dtm_array.shape[0]]
         # Trap ROI bounds error
         if np.any(np.array(self.roi_x_bounds)

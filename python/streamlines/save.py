@@ -9,13 +9,13 @@ import os
 from streamlines.core   import Core
 from streamlines.useful import write_geotiff
 
-__all__ = ['Export']
+__all__ = ['Save']
 
 pdebug = print
 
-class Export(Core):       
+class Save(Core):       
     """
-    Export plots to files
+    Save plots to files
     """
     def __init__(self, state, imported_parameters, 
                  geodata, preprocess, trace, analysis, mapping, plot):
@@ -33,38 +33,40 @@ class Export(Core):
         
     def do(self):
         """
-        Export all Matplotlib plots, mapping grids
+        Save all Matplotlib plots, mapping grids
         """
-        self.print('\n**Export results to files begin**') 
+        self.print('\n**Write results to files begin**') 
             
-        if not os.path.exists(os.path.join(*self.export_path)):
+        if not os.path.exists(os.path.join(*self.geodata.export_path)):
             self.print('Creating export directory "{}"'
-                       .format(os.path.join(*self.export_path)))  
+                       .format(os.path.join(*self.geodata.export_path)))  
             try:
-                os.mkdir(os.path.join(*self.export_path))
+                os.mkdir(os.path.join(*self.geodata.export_path))
             except:
                 raise OSError('Cannot create export directory "'
-                              + str(os.path.join(*self.export_path)) + '"')
+                              + str(os.path.join(*self.geodata.export_path)) + '"')
         else:
-            if not os.path.isdir(os.path.join(*self.export_path)):
-                err = '"'+os.path.join(*self.export_path) +'" is not a directory'
+            if not os.path.isdir(os.path.join(*self.geodata.export_path)):
+                err = '"'+os.path.join(*self.geodata.export_path) +'" is not a directory'
                 print("OS error: {0}".format(err))
                 raise OSError
             
-        file_stem = os.path.realpath(os.path.join(*self.export_path,
+        file_stem = os.path.realpath(os.path.join(*self.geodata.export_path,
                                                  self.state.parameters_file))
         
-        # Export mapping grids
-        self.save_maps(file_stem=file_stem)
-        # Export graphics
-        self.save_figs(file_stem=file_stem)
+        # Save mapping grids
+        if self.do_save_maps:
+            self.save_maps(file_stem=file_stem)
+        # Save graphics
+        if self.do_save_figs:
+            self.save_figs(file_stem=file_stem)
         
-        self.print('**Export results to files end**\n')  
+        self.print('**Write results to files end**\n')  
         
     def save_maps(self, fig_name=None, file_stem=None): 
-        self.print('Writing maps...') 
+        self.print('Saving maps...') 
         if file_stem is None:
-            file_stem = os.path.realpath(os.path.join(*self.export_path,
+            file_stem = os.path.realpath(os.path.join(*self.geodata.export_path,
                                                        self.state.parameters_file))
         obj_list = [self.geodata,self.preprocess,self.trace,self.mapping]
         pad = self.geodata.pad_width
@@ -92,10 +94,10 @@ class Export(Core):
         self.print('...done') 
         
     def save_figs(self, fig_name=None, file_stem=None):
-        self.print('Writing figs...') 
+        self.print('Saving figs...') 
         fig_items = self.plot.figs.items()
         if file_stem is None:
-            file_stem = os.path.realpath(os.path.join(*self.export_path,
+            file_stem = os.path.realpath(os.path.join(*self.geodata.export_path,
                                                        self.state.parameters_file))
         for fig_item in fig_items:
             if fig_name is not None and fig_item[0]!=fig_name:   

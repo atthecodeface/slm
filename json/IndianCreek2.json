@@ -1,24 +1,21 @@
 {
 	"geodata": {
-		"title" : "Indian Creek ROI2, Ohio, USA, UTM Zone 17N",
-		"dtm_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg.tif",
-		"data_path" :["$SLMDATA","IndianCreek"],	
-		"roi_x_bounds" : [300,500],
-		"roi_y_bounds" : [30,230],	
-		"basins_file" : "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed3k.tif",
-		"basins" : [1131,1132],		
+		"title" :         "Indian Creek ROI2, Ohio, USA, UTM Zone 17N",
+		"dtm_file" :      "IndianCreek_res1m_fillsinks0p01.tif",
+		"basins_file" :   "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed3k.tif",
+		"data_path" :     [ "$SLMDATA", "IndianCreek" ],
+		"export_path" :   [ "$SLMXPT",  "IndianCreek2" ],
+		"do_clip_roi" :   true,
+		"roi_x_bounds" :  [300,500],
+		"roi_y_bounds" :  [30,230],	
+		"basins" :        [1131,1132],		
 		"do_basin_masking" : true
-	},
-	
-	"analysis": {
-		"marginal_distbn_kde_bandwidth" : 12.0,
-		"search_cdf_max" : 0.999
 	},
 
 	"mapping": {
-		"coarse_segmentation_threshold" : 20000,
-		"coarse_channel_threshold" : 200,
-		"n_hsl_averaging_threshold" : 5
+		"fine_segmentation_threshold" : 10,
+		"coarse_segmentation_threshold" : 3000,
+		"coarse_channel_threshold" :     100
 	},
 
 	"plot": {
@@ -26,7 +23,6 @@
         "do_plot_aspect_contours" : true
 	},
 	
-	"export": {
-		"export_path" : ["$SLMXPT","IndianCreek2"]
+	"save": {
 	}
 }

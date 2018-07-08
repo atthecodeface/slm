@@ -19,26 +19,26 @@
 		"do_analysis" : false,
 		"do_mapping" : true,
 		"do_plot" : true,
-		"do_save_state" : false,	
-		"do_export" : true,
+		"do_save" : true,
 
 		"do_git_info" : true,
         "do_display" : false
 	},
 
 	"geodata": {
-		"title" : "Title",
-		"dtm_file" : "GeoTIFF",
-		"data_path" :["$SLMDATA"],		
+		"title" :          "Untitled",
+		"dtm_file" :       "Unspecified GeoTIFF",
+		"basins_file" :    "",
+		"data_path" :      ["$SLMDATA"],	
+		"export_path" :    ["$SLMXPT"],	
 		"no_data_values" : [-99999,0],
-        "roi_x_bounds" : [],
-        "roi_y_bounds" : [],
-		"h_min" : "none",
-		"pad_width" : 2,
-
-		"basins_file" : "",
-		"basins" : [],
+		"do_clip_roi" :    false,
+        "roi_x_bounds" :   [],
+        "roi_y_bounds" :   [],
+		"basins" :         [],
 		"do_basin_masking" : false,
+		"h_min" :          "none",
+		"pad_width" :      2,
 		"flip_ns" : false
 	},
 
@@ -113,9 +113,9 @@
 
 	"mapping": {
 		"do_measure_hsl_from_ridges" : false,
-		"fine_segmentation_threshold" : 20,
-		"coarse_channel_threshold"      : 3000,
-		"coarse_segmentation_threshold" : 300,
+		"fine_segmentation_threshold" : 300,
+		"coarse_segmentation_threshold" : 3000,
+		"coarse_channel_threshold" : 1000,
 		"min_channel_threshold" : 20,
 		"n_hsl_averaging_threshold" : 1,
 		"hsl_dilation_width" : 51,
@@ -259,8 +259,9 @@
         "contour_aspect_label_suffix" : "°"
 	},
 
-	"export": {
-		"export_path" : ["$SLMXPT"],	
+	"save": {
+		"do_save_figs" : true,	
+		"do_save_maps" : true,		
 		"figs_format" : ["pdf"],
 		"figs_options" : {
 			"dpi":300, 

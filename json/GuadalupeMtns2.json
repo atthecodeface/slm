@@ -1,16 +1,14 @@
 {
 	"geodata": {
-		"title" : "Guadalupe Mtns ROI2, NM, USA, UTM Zone 13N",
-		"dtm_file" : "Guadalupe_DTM0_res2m_fill_sinks1deg.tif",
-		"data_path" : ["$SLMDATA","GuadalupeMtns"],		
+		"title" :         "Guadalupe Mtns ROI2, NM, USA, UTM Zone 13N",
+		"dtm_file" :      "Guadalupe_DTM0_res2m_fill_sinks1deg.tif",
+		"data_path" :     [ "$SLMDATA", "GuadalupeMtns" ],	
+		"export_path" :   [ "$SLMXPT",  "GuadalupeMtns2" ],	
+		"do_clip_roi" :   true,
         "Xroi_x_bounds" : [0,250],
         "Xroi_y_bounds" : [50,200], 
-        "roi_x_bounds" : [0,900],
-        "roi_y_bounds" : [0,800]
-	},
-
-	"trace": {
-		"shuffle_rng_seed" : 2
+        "roi_x_bounds" :  [0,900],
+        "roi_y_bounds" :  [0,800]
 	},
 	
 	"plot": {
@@ -21,9 +19,5 @@
         "contour_hsl_colorbar_size" : 4,
         "contour_hsl_colorbar_aspect" : 10,
         "do_plot_aspect_contours" : true
-	},
-	
-	"export": {
-		"export_path" : ["$SLMXPT","GuadalupeMtns2"]
 	}
 }
