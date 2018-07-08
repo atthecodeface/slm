@@ -1,0 +1,24 @@
+{	
+	"geodata": {
+		"title" :         "Gabilan Mesa, full DTM, ROI#6",
+		"dtm_file" :      "GabilanMesa_res2m_fillsinks0p01.tif",
+		"basins_file" :   "GabilanMesa_res2m_fillsinks0p01_basins.tif",
+		"data_path" :     [ "$SLMDATA", "GabilanMesa" ],
+		"export_path" :   [ "$SLMXPT",  "GabilanMesa6" ],
+		"do_clip_roi" :   false,
+        "roi_x_bounds" :  [],
+        "roi_y_bounds" :  [],
+		"basins" :          [133],
+		"do_basin_masking": true
+	},
+	
+	
+	
+
+	"plot": {
+        "contour_label_fontsize" : 5,
+        "contour_hsl_colorbar_size" : 3,
+        "contour_hsl_colorbar_aspect" : 10,
+        "do_plot_aspect_contours" : true
+	}
+}

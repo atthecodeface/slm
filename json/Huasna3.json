@@ -1,0 +1,22 @@
+{	
+	"geodata": {
+		"title" :         "Huasna region#3",
+		"dtm_file" :      "Huasna_res2m_fillsinks0p01.tif",
+		"basins_file" :   "Huasna_res2m_fillsinks0p01_basins.tif",
+		"data_path" :     [ "$SLMDATA", "Huasna" ],
+		"export_path" :   [ "$SLMXPT",  "Huasna3" ],
+		"do_clip_roi" :   false,
+        "roi_x_bounds" :  [],
+        "roi_y_bounds" :  [],
+		"basins" :          [36,58],
+		"do_basin_masking": true
+	},
+	
+	"plot": {
+        "mhsl_pdf_x_stretch" : 1.2,
+        "contour_label_fontsize" : 3,
+        "contour_hsl_colorbar_size" : 3,
+        "contour_hsl_colorbar_aspect" : 10,
+        "do_plot_aspect_contours" : false
+	}
+}
