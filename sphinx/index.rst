@@ -146,13 +146,13 @@ postprocessing and plotting are carried out:
    :maxdepth: 1
 
    modules/defaults_json
-   Tests/IndianCreekDemo1_json
-   Tests/IndianCreekDemo1_nb
+   Tests/IndianCreek2_json
+   Tests/IndianCreek2_nb
    
    
-More substantial demo analyses can be found in `IndianCreekDemo2.ipynb`_ and 
-`GuadalupeDemo1.ipynb`_. Rather bigger DTM analyses are illustrated in 
-`GuadalupeDemo2.ipynb`_, `GuadalupeDemo3.ipynb`_ and `IndianCreekDemo3.ipynb`_.
+More substantial demo analyses can be found in `IndianCreek2.ipynb`_ and 
+`GuadalupeMtns1.ipynb`_. Rather bigger DTM analyses are illustrated in 
+`GuadalupeMtns2.ipynb`_, `GuadalupeMtns3.ipynb`_ and `IndianCreek3.ipynb`_.
  
    
 
@@ -172,9 +172,10 @@ In a typical workflow, the key modules are employed in a sequence like this:
    :maxdepth: 1
 
    modules/initialize   
-   modules/run
+   modules/slm
    modules/streamlining
    modules/parameters
+   modules/state
    modules/core
    modules/geodata
    modules/preprocess
@@ -182,8 +183,7 @@ In a typical workflow, the key modules are employed in a sequence like this:
    modules/analysis
    modules/mapping
    modules/plot
-   modules/export
-   modules/state
+   modules/save
 
 PyOpenCL and OpenCL code is used by :doc:`modules/trace`  and :doc:`modules/mapping` and 
 consists of the following:
@@ -193,25 +193,34 @@ consists of the following:
 
    modules/pocl
    modules/useful
-   modules/integration
+   modules/channelheads
    modules/connect
    modules/countlink
+   modules/fields
+   modules/hillslopes
+   modules/kde
    modules/label
-   modules/segment
    modules/lengths
-   modules/integration.cl
-   modules/connect.cl
+   modules/segment
+   modules/trajectories
    modules/channelheads.cl
+   modules/computestep.cl
+   modules/connect.cl
    modules/countlink.cl
-   modules/segment.cl
+   modules/essentials.cl
+   modules/hillslopes.cl
+   modules/integratefields.cl
+   modules/integratetraj.cl
+   modules/jittertrajectory.cl
+   modules/kde.cl
    modules/label.cl
    modules/lengths.cl
    modules/rng.cl
-   modules/essentials.cl
+   modules/rungekutta.cl
+   modules/segment.cl
+   modules/trajectory.cl
+   modules/updatetraj.cl
    modules/writearray.cl
-   modules/trajectoryfns.cl
-   modules/computestep.cl
-   modules/integrationfns.cl
 
   
 .. only:: html 
@@ -230,12 +239,11 @@ Indexes and search
 .. _Streamlines: https://github.com/cstarknyc/slm
 .. _streamlines package directory: https://github.com/cstarknyc/slm/python/streamlines
 .. _fluid dynamics sense: https://en.wikipedia.org/wiki/Streamlines,_streaklines,_and_pathlines
-.. _IndianCreekDemo1.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/IndianCreekDemo1.ipynb
-.. _IndianCreekDemo2.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/IndianCreekDemo2.ipynb
-.. _IndianCreekDemo3.ipynb: https://github.com/cstarknyc/slmnb/BigTests/IndianCreekDemo3.ipynb
-.. _GuadalupeDemo1.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeDemo1.ipynb
-.. _GuadalupeDemo2.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeDemo2.ipynb
-.. _GuadalupeDemo3.ipynb: https://github.com/cstarknyc/slmnb/BigTests/GuadalupeDemo3.ipynb
+.. _IndianCreek2.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/IndianCreek2.ipynb
+.. _IndianCreek3.ipynb: https://github.com/cstarknyc/slmnb/BigTests/IndianCreek3.ipynb
+.. _GuadalupeMtns1.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeMtns1.ipynb
+.. _GuadalupeMtns2.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeMtns2.ipynb
+.. _GuadalupeMtns3.ipynb: https://github.com/cstarknyc/slmnb/BigTests/GuadalupeMtns3.ipynb
 .. _Numba: http://numba.pydata.org/numba-doc/dev/index.html
 .. _PyOpenCL: https://documen.tician.de/pyopencl/index.html
 .. _OpenCL: https://www.khronos.org/opencl

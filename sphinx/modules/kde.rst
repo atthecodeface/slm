@@ -1,10 +1,10 @@
-``export.py`` 
+``kde.py`` 
 =======================================
 
 
 Usage
 -------
-.. automodule:: streamlines.export
+.. automodule:: streamlines.kde
    :members: 
    :private-members:
 
@@ -12,4 +12,4 @@ Usage
 
 Code
 -------
-.. literalinclude:: ../../python/streamlines/export.py
+.. literalinclude:: ../../python/streamlines/kde.py

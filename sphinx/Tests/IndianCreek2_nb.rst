@@ -1,4 +1,4 @@
-``IndianCreekDemo1.ipynb``
+``IndianCreek2.ipynb``
 ============================
 
 Demo IPython/Jupyter notebook #1
@@ -10,7 +10,7 @@ Usage
 
 The `Streamlines`_ workflow is invoked in an IPython/Jupyter notebook as follows::
 
-	JSON_parameters_file = './IndianCreekDemo1'
+	JSON_parameters_file = './IndianCreek2'
 	import streamlines
 	sl = streamlines.run( parameters_file=JSON_parameters_file, \
 	                     do_geodata = False, \
@@ -24,7 +24,7 @@ The `Streamlines`_ workflow is invoked in an IPython/Jupyter notebook as follows
 The default workflow options (set by :doc:`defaults.json <../modules/defaults_json>`) are ``do_geodata``, ``do_preprocess`` along with ``do_condition``, and ``do_trace``; 
 the subsequent options ``do_postprocess``, ``do_analysis``, ``do_plot``, ``do_save_state`` and  ``do_export`` are all turned off by default,
 as is the ``do_reload_state`` option.
-The job JSON file, in this case :doc:`IndianCreekDemo1.json <IndianCreekDemo1_json>`, can override these defaults.
+The job JSON file, in this case :doc:`IndianCreek2.json <IndianCreek2_json>`, can override these defaults.
 Finally, the options set as above in the invocation ``streamlines.run()`` will override those set in the the JSON files.
 
 Here the run options mirror the defaults and those set in the job JSON file, such that the main streamline computational steps :mod:`geodata <streamlines.geodata>`, 
@@ -46,7 +46,7 @@ Plotting of results can be fine-tuned::
 
 which yields:
 
-.. image:: ../images/IndianCreekDemo1_streamlines.png
+.. image:: ../images/IndianCreek2_streamlines.png
 	
 Currently the set of class instances and public methods provided by :obj:`sl <streamlines.streamlining.Streamlining>` are::
 
@@ -59,7 +59,7 @@ Currently the set of class instances and public methods provided by :obj:`sl <st
 GitHub render
 -------------
 
-See: `IndianCreekDemo1.ipynb`_
+See: `IndianCreek2.ipynb`_
 
-.. _IndianCreekDemo1.ipynb: https://github.com/cstarknyc/slmnb/blob/master/SmallTests/IndianCreekDemo1.ipynb
+.. _IndianCreek2.ipynb: https://github.com/cstarknyc/slmnb/blob/master/SmallTests/IndianCreek2.ipynb
 .. _Streamlines: https://github.com/cstarknyc/slm
