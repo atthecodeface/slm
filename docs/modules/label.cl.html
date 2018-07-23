@@ -94,6 +94,22 @@ __kernel void label_confluences(
     // For every (redesignated) thin channel pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    if (global_id&gt;=N_SEED_POINTS) {
+        // This is a &quot;padding&quot; seed, so let&#39;s bail
+        return;
+    }
+#ifdef VERBOSE
+    // Report how kernel instances are distributed
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf(&quot;\n  &gt;&gt;&gt; on GPU/OpenCL device: id=%d offset=%d &quot;,
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf(&quot;#workitems=%d x #workgroups=%d = %d=%d\n&quot;,
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_size(0u));
+    }
+#endif
     __private uchar n_inflows=0u, n_equal_dominant_inflows=0u;
     __private uint i, idx, nbr_idx, inflows_list[8], equal_dominant_inflows_list[8],
                    dominant_slt_index=0u;
@@ -114,17 +130,17 @@ __kernel void label_confluences(
     if (n_inflows&gt;1) {
         atomic_or(&amp;mapping_array[idx],IS_MAJORCONFLUENCE);
         for (i=0;i&lt;n_inflows;i++) {
-            if ( (count_array[inflows_list[i]]+1)!=count_array[idx] ) {
+            if ( count_array[idx]!=(count_array[inflows_list[i]]+1) ) {
                 atomic_or(&amp;mapping_array[inflows_list[i]],IS_MINORINFLOW);
             } else {
                 equal_dominant_inflows_list[n_equal_dominant_inflows++]= inflows_list[i];
                 if (slt_array[inflows_list[i]]&gt;dominant_slt) {
                     dominant_slt_index = inflows_list[i];
                     dominant_slt = slt_array[dominant_slt_index];
-//                    printf(&quot;di=%d\n&quot;,dominant_slt_index);
                 }
             }
         }
+#ifdef DEBUG
         if (n_equal_dominant_inflows==0) {
             printf(
          &quot;\nn_equal_dominant_inflows=0 @ %g,%g  idx=%d  mapping=%d &amp; %d= is_thin=%d mask=%d \n&quot;,
@@ -140,6 +156,7 @@ __kernel void label_confluences(
                 printf(&quot;slt=%g : domslt=%g\n&quot;,slt_array[inflows_list[i]]+1, dominant_slt);
             }
         }
+#endif
         for (i=0;i&lt;n_equal_dominant_inflows;i++) {
             if (equal_dominant_inflows_list[i]==dominant_slt_index) {
                 atomic_or(&amp;mapping_array[equal_dominant_inflows_list[i]],IS_MAJORINFLOW);

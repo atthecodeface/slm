@@ -1,0 +1,197 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>hillslopes.cl &#8212; Streamlines  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="integratefields.cl" href="integratefields.cl.html" />
+    <link rel="prev" title="essentials.cl" href="essentials.cl.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="hillslopes-cl">
+<h1><code class="docutils literal notranslate"><span class="pre">hillslopes.cl</span></code><a class="headerlink" href="#hillslopes-cl" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>///
+/// @file hillslopes.cl
+///
+/// Kernels to (re)map thin channels, branching structure, and single outflow directions.
+///
+/// @author CPS
+/// @bug No known bugs
+///
+
+#ifdef KERNEL_HILLSLOPES
+///
+/// TBD
+///
+/// Compiled if KERNEL_HILLSLOPES is defined.
+///
+/// @param[in]     seed_point_array: list of initial streamline point vectors,
+///                                  one allotted to each kernel instance
+/// @param[in]     mask_array: grid pixel mask (padded),
+///                            with @p true = masked, @p false = good
+/// @param[in]     uv_array: flow unit velocity vector grid (padded)
+/// @param[in,out] mapping_array: flag grid recording status of each pixel (padded)
+/// @param[in,out] count_array: counter grid recording number of pixel steps
+///                             downstream from dominant channel head (padded)
+/// @param[in,out] link_array: link grid providing the grid array index of the next
+///                             downstream pixel (padded)
+///
+/// @returns void
+///
+/// @ingroup structure
+///
+__kernel void hillslopes(
+        __global const float2 *seed_point_array,
+        __global const bool   *mask_array,
+        __global const float2 *uv_array,
+        __global       uint   *mapping_array,
+        __global const uint   *count_array,
+        __global       uint   *link_array
+   )
+{
+    const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+    // For every hillslope aka non-thin-channel pixel...
+    if (global_id&gt;=N_SEED_POINTS) {
+        // This is a &quot;padding&quot; seed, so let&#39;s bail
+#ifdef DEBUG
+        printf(&quot;Bailing @ %d !in [%d-%d]\n&quot;,
+                global_id,get_global_offset(0u),N_SEED_POINTS-1);
+#endif
+        return;
+    }
+
+#ifdef VERBOSE
+    // Report how kernel instances are distributed
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf(&quot;\n  &gt;&gt;&gt; on GPU/OpenCL device: id=%d offset=%d &quot;,
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf(&quot;#workitems=%d x #workgroups=%d = %d=%d\n&quot;,
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_size(0u));
+    }
+#endif
+    __private uint idx, prev_idx, n_steps=0u;
+    __private float dl=0.0f, dt=DT_MAX;
+    __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
+                     vec = seed_point_array[global_id], next_vec;
+
+    // Remember here
+    idx = get_array_idx(vec);
+    prev_idx = idx;
+    // Integrate downstream one pixel
+    // HACK: factor 100x
+    while (prev_idx==idx &amp;&amp; !mask_array[idx] &amp;&amp; n_steps&lt;100*(MAX_N_STEPS)) {
+        prev_idx = idx;
+        compute_step_vec(dt, uv_array, &amp;dxy1_vec, &amp;dxy2_vec, &amp;uv1_vec, &amp;uv2_vec,
+                         vec, &amp;next_vec, &amp;idx);
+        if (countlink_runge_kutta_step(&amp;dt, &amp;dl, &amp;dxy1_vec, &amp;dxy2_vec,
+                                       &amp;vec, &amp;next_vec, &amp;idx, mapping_array)) {
+#ifdef DEBUG
+            printf(&quot;Link hillslopes (%d): stuck @ %d ...bailing\n&quot;,global_id,idx);
+#endif
+            break;
+        }
+        n_steps++;
+    }
+    // If we&#39;re on a new pixel, link previous pixel to here
+    if (prev_idx!=idx &amp;&amp; !mask_array[idx]) {
+        atomic_xchg(&amp;link_array[prev_idx],idx);
+    }
+    return;
+}
+#endif
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">Streamlines</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Topographic streamline mapping of landscape structure</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
+<h3>Related</h3>
+<ul>
+  <li><a href="../index.html"></a><ul>
+      <li><a href="essentials.cl.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">essentials.cl</span></code></a></li>
+      <li><a href="integratefields.cl.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">integratefields.cl</span></code></a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, CPS.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/modules/hillslopes.cl.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

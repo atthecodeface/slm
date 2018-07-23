@@ -42,10 +42,10 @@
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
- | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
@@ -65,11 +65,13 @@
       <ul>
         <li><a href="modules/core.html#streamlines.core.Core.__init__">(streamlines.core.Core method)</a>
 </li>
-        <li><a href="modules/export.html#streamlines.export.Export.__init__">(streamlines.export.Export method)</a>
+        <li><a href="modules/geodata.html#streamlines.geodata.Geodata.__init__">(streamlines.geodata.Geodata method)</a>
 </li>
         <li><a href="modules/mapping.html#streamlines.mapping.Mapping.__init__">(streamlines.mapping.Mapping method)</a>
 </li>
         <li><a href="modules/plot.html#streamlines.plot.Plot.__init__">(streamlines.plot.Plot method)</a>
+</li>
+        <li><a href="modules/save.html#streamlines.save.Save.__init__">(streamlines.save.Save method)</a>
 </li>
         <li><a href="modules/streamlining.html#streamlines.streamlining.Streamlining.__init__">(streamlines.streamlining.Streamlining method)</a>
 </li>
@@ -78,11 +80,15 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/plot.html#streamlines.plot.Plot._force_display">_force_display() (streamlines.plot.Plot method)</a>
+</li>
       <li><a href="modules/plot.html#streamlines.plot.Plot._new_figure">_new_figure() (streamlines.plot.Plot method)</a>
 </li>
-      <li><a href="modules/run.html#streamlines.run._parse_cmd_line_args">_parse_cmd_line_args() (in module streamlines.run)</a>
+      <li><a href="modules/slm.html#streamlines.slm._parse_cmd_line_args">_parse_cmd_line_args() (in module streamlines.slm)</a>
 </li>
-      <li><a href="modules/run.html#streamlines.run._str2bool">_str2bool() (in module streamlines.run)</a>
+      <li><a href="modules/plot.html#streamlines.plot.Plot._record_fig">_record_fig() (streamlines.plot.Plot method)</a>
+</li>
+      <li><a href="modules/slm.html#streamlines.slm._str2bool">_str2bool() (in module streamlines.slm)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -90,6 +96,12 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/geodata.html#streamlines.geodata.Geodata.self.active_masks">active_masks (streamlines.geodata.Geodata.self attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/state.html#streamlines.state.State.add_active_mask">add_active_mask() (streamlines.state.State method)</a>
+</li>
       <li><a href="modules/analysis.html#streamlines.analysis.Analysis">Analysis (class in streamlines.analysis)</a>
 </li>
   </ul></td>
@@ -98,8 +110,6 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/geodata.html#streamlines.geodata.Geodata.self.basin_fatmask_array">basin_fatmask_array (streamlines.geodata.Geodata.self attribute)</a>
-</li>
       <li><a href="modules/geodata.html#streamlines.geodata.Geodata.self.basin_mask_array">basin_mask_array (streamlines.geodata.Geodata.self attribute)</a>
 </li>
   </ul></td>
@@ -107,8 +117,6 @@
       <li><a href="modules/geodata.html#streamlines.geodata.Geodata.self.basins_array">basins_array (streamlines.geodata.Geodata.self attribute)</a>
 </li>
       <li><a href="modules/analysis.html#streamlines.analysis.Bivariate_distribution">Bivariate_distribution (class in streamlines.analysis)</a>
-</li>
-      <li><a href="modules/trace.html#streamlines.trace.Trace.build_info_struct">build_info_struct() (streamlines.trace.Trace method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -118,6 +126,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/pocl.html#streamlines.pocl.choose_platform_and_device">choose_platform_and_device() (in module streamlines.pocl)</a>
 </li>
+      <li><a href="modules/trace.html#streamlines.trace.Trace.compute_fields">compute_fields() (streamlines.trace.Trace method)</a>
+</li>
       <li><a href="modules/analysis.html#streamlines.analysis.Analysis.compute_joint_distribn">compute_joint_distribn() (streamlines.analysis.Analysis method)</a>
 </li>
       <li><a href="modules/analysis.html#streamlines.analysis.Analysis.compute_joint_distribn_dsla_dslc">compute_joint_distribn_dsla_dslc() (streamlines.analysis.Analysis method)</a>
@@ -125,6 +135,8 @@
       <li><a href="modules/analysis.html#streamlines.analysis.Analysis.compute_joint_distribn_dsla_dslt">compute_joint_distribn_dsla_dslt() (streamlines.analysis.Analysis method)</a>
 </li>
       <li><a href="modules/analysis.html#streamlines.analysis.Analysis.compute_joint_distribn_dsla_usla">compute_joint_distribn_dsla_usla() (streamlines.analysis.Analysis method)</a>
+</li>
+      <li><a href="modules/analysis.html#streamlines.analysis.Analysis.compute_joint_distribn_dslt_dslc">compute_joint_distribn_dslt_dslc() (streamlines.analysis.Analysis method)</a>
 </li>
       <li><a href="modules/analysis.html#streamlines.analysis.Analysis.compute_joint_distribn_usla_uslc">compute_joint_distribn_usla_uslc() (streamlines.analysis.Analysis method)</a>
 </li>
@@ -136,10 +148,10 @@
 </li>
       <li><a href="modules/analysis.html#streamlines.analysis.Analysis.compute_marginal_distribn">compute_marginal_distribn() (streamlines.analysis.Analysis method)</a>
 </li>
-      <li><a href="modules/analysis.html#streamlines.analysis.Analysis.compute_marginal_distribn_dsla">compute_marginal_distribn_dsla() (streamlines.analysis.Analysis method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/analysis.html#streamlines.analysis.Analysis.compute_marginal_distribn_dsla">compute_marginal_distribn_dsla() (streamlines.analysis.Analysis method)</a>
+</li>
       <li><a href="modules/analysis.html#streamlines.analysis.Analysis.compute_marginal_distribn_dslc">compute_marginal_distribn_dslc() (streamlines.analysis.Analysis method)</a>
 </li>
       <li><a href="modules/analysis.html#streamlines.analysis.Analysis.compute_marginal_distribn_dslt">compute_marginal_distribn_dslt() (streamlines.analysis.Analysis method)</a>
@@ -150,7 +162,9 @@
 </li>
       <li><a href="modules/analysis.html#streamlines.analysis.Analysis.compute_marginal_distribn_uslt">compute_marginal_distribn_uslt() (streamlines.analysis.Analysis method)</a>
 </li>
-      <li><a href="modules/integration.html#streamlines.integration.compute_stats">compute_stats() (in module streamlines.integration)</a>
+      <li><a href="modules/useful.html#streamlines.useful.compute_stats">compute_stats() (in module streamlines.useful)</a>
+</li>
+      <li><a href="modules/trace.html#streamlines.trace.Trace.compute_trajectories">compute_trajectories() (streamlines.trace.Trace method)</a>
 </li>
       <li><a href="modules/preprocess.html#streamlines.preprocess.Preprocess.conditioned_gradient_vector_field">conditioned_gradient_vector_field() (streamlines.preprocess.Preprocess method)</a>
 </li>
@@ -160,7 +174,7 @@
 </li>
       <li><a href="modules/countlink.html#streamlines.countlink.count_downchannels">count_downchannels() (in module streamlines.countlink)</a>
 </li>
-      <li><a href="modules/trace.html#streamlines.trace.Trace.create_seeds">create_seeds() (streamlines.trace.Trace method)</a>
+      <li><a href="modules/useful.html#streamlines.useful.create_seeds">create_seeds() (in module streamlines.useful)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -171,8 +185,6 @@
       <li><a href="modules/analysis.html#streamlines.analysis.Analysis.do">do() (streamlines.analysis.Analysis method)</a>
 
       <ul>
-        <li><a href="modules/export.html#streamlines.export.Export.do">(streamlines.export.Export method)</a>
-</li>
         <li><a href="modules/geodata.html#streamlines.geodata.Geodata.do">(streamlines.geodata.Geodata method)</a>
 </li>
         <li><a href="modules/mapping.html#streamlines.mapping.Mapping.do">(streamlines.mapping.Mapping method)</a>
@@ -181,12 +193,18 @@
 </li>
         <li><a href="modules/preprocess.html#streamlines.preprocess.Preprocess.do">(streamlines.preprocess.Preprocess method)</a>
 </li>
+        <li><a href="modules/save.html#streamlines.save.Save.do">(streamlines.save.Save method)</a>
+</li>
         <li><a href="modules/trace.html#streamlines.trace.Trace.do">(streamlines.trace.Trace method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/mapping.html#streamlines.mapping.Mapping.do_map_channels_segments">do_map_channels_segments() (streamlines.mapping.Mapping method)</a>
+</li>
       <li><a href="modules/geodata.html#streamlines.geodata.Geodata.self.dtm_array">dtm_array (streamlines.geodata.Geodata.self attribute)</a>
+</li>
+      <li><a href="modules/geodata.html#streamlines.geodata.Geodata.self.dtm_mask_array">dtm_mask_array (streamlines.geodata.Geodata.self attribute)</a>
 </li>
       <li><a href="modules/geodata.html#streamlines.geodata.Geodata.self.dtm_path">dtm_path (streamlines.geodata.Geodata.self attribute)</a>
 </li>
@@ -196,7 +214,13 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/export.html#streamlines.export.Export">Export (class in streamlines.export)</a>
+      <li><a href="modules/kde.html#streamlines.kde.estimate_bivariate_pdf">estimate_bivariate_pdf() (in module streamlines.kde)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/analysis.html#streamlines.analysis.Analysis.estimate_channel_threshold">estimate_channel_threshold() (streamlines.analysis.Analysis method)</a>
+</li>
+      <li><a href="modules/kde.html#streamlines.kde.estimate_univariate_pdf">estimate_univariate_pdf() (in module streamlines.kde)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -216,8 +240,6 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/geodata.html#streamlines.geodata.Geodata.generate_basins_mask">generate_basins_mask() (streamlines.geodata.Geodata method)</a>
-</li>
       <li><a href="modules/plot.html#streamlines.plot.Plot.generate_hillshade">generate_hillshade() (streamlines.plot.Plot static method)</a>
 </li>
       <li><a href="modules/geodata.html#streamlines.geodata.Geodata">Geodata (class in streamlines.geodata)</a>
@@ -226,35 +248,15 @@
 </li>
       <li><a href="modules/state.html#streamlines.state.State.get_dict_of_jsonables">get_dict_of_jsonables() (streamlines.state.State method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/state.html#streamlines.state.State.get_sizes_of_nparrays">get_sizes_of_nparrays() (streamlines.state.State method)</a>
 </li>
       <li><a href="modules/state.html#streamlines.state.State.get_streamlines_dict">get_streamlines_dict() (streamlines.state.State method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/state.html#streamlines.state.State.get_streamlines_sizes">get_streamlines_sizes() (streamlines.state.State method)</a>
 </li>
-      <li><a href="modules/connect.html#streamlines.connect.gpu_compute">gpu_compute() (in module streamlines.connect)</a>
-
-      <ul>
-        <li><a href="modules/countlink.html#streamlines.countlink.gpu_compute">(in module streamlines.countlink)</a>
-</li>
-        <li><a href="modules/label.html#streamlines.label.gpu_compute">(in module streamlines.label)</a>
-</li>
-        <li><a href="modules/lengths.html#streamlines.lengths.gpu_compute">(in module streamlines.lengths)</a>
-</li>
-        <li><a href="modules/segment.html#streamlines.segment.gpu_compute">(in module streamlines.segment)</a>
-</li>
-      </ul></li>
-      <li><a href="modules/integration.html#streamlines.integration.gpu_integrate_trajectories">gpu_integrate_trajectories() (in module streamlines.integration)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="H">H</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/lengths.html#streamlines.lengths.hillslope_lengths">hillslope_lengths() (in module streamlines.lengths)</a>
+      <li><a href="modules/pocl.html#streamlines.pocl.gpu_compute">gpu_compute() (in module streamlines.pocl)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -263,8 +265,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/parameters.html#streamlines.parameters.import_parameters">import_parameters() (in module streamlines.parameters)</a>
-</li>
-      <li><a href="modules/integration.html#streamlines.integration.integrate_trajectories">integrate_trajectories() (in module streamlines.integration)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -282,7 +282,9 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/countlink.html#streamlines.countlink.link_hillslopes">link_hillslopes() (in module streamlines.countlink)</a>
+      <li><a href="modules/hillslopes.html#streamlines.hillslopes.link_hillslopes">link_hillslopes() (in module streamlines.hillslopes)</a>
+</li>
+      <li><a href="modules/state.html#streamlines.state.State.list_active_masks">list_active_masks() (streamlines.state.State method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -290,13 +292,27 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/geodata.html#streamlines.geodata.Geodata.make_basins_mask">make_basins_mask() (streamlines.geodata.Geodata method)</a>
+</li>
       <li><a href="modules/pocl.html#streamlines.pocl.make_cl_dtype">make_cl_dtype() (in module streamlines.pocl)</a>
+</li>
+      <li><a href="modules/geodata.html#streamlines.geodata.Geodata.make_dtm_mask">make_dtm_mask() (streamlines.geodata.Geodata method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/connect.html#streamlines.connect.map_channel_heads">map_channel_heads() (in module streamlines.connect)</a>
+      <li><a href="modules/channelheads.html#streamlines.channelheads.map_channel_heads">map_channel_heads() (in module streamlines.channelheads)</a>
 </li>
       <li><a href="modules/mapping.html#streamlines.mapping.Mapping">Mapping (class in streamlines.mapping)</a>
+</li>
+      <li><a href="modules/state.html#streamlines.state.State.merge_active_masks">merge_active_masks() (streamlines.state.State method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/useful.html#streamlines.useful.neatly">neatly() (in module streamlines.useful)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -315,6 +331,8 @@
       <li><a href="modules/geodata.html#streamlines.geodata.Geodata.self.pixel_size">pixel_size (streamlines.geodata.Geodata.self attribute)</a>
 </li>
       <li><a href="modules/plot.html#streamlines.plot.Plot">Plot (class in streamlines.plot)</a>
+</li>
+      <li><a href="modules/plot.html#streamlines.plot.Plot.plot_aspect">plot_aspect() (streamlines.plot.Plot method)</a>
 </li>
       <li><a href="modules/plot.html#streamlines.plot.Plot.plot_blockages_overlay">plot_blockages_overlay() (streamlines.plot.Plot method)</a>
 </li>
@@ -336,7 +354,11 @@
 </li>
       <li><a href="modules/plot.html#streamlines.plot.Plot.plot_gridded_data">plot_gridded_data() (streamlines.plot.Plot method)</a>
 </li>
-      <li><a href="modules/plot.html#streamlines.plot.Plot.plot_hillslope_lengths_contoured">plot_hillslope_lengths_contoured() (streamlines.plot.Plot method)</a>
+      <li><a href="modules/plot.html#streamlines.plot.Plot.plot_hsl">plot_hsl() (streamlines.plot.Plot method)</a>
+</li>
+      <li><a href="modules/plot.html#streamlines.plot.Plot.plot_hsl_contoured">plot_hsl_contoured() (streamlines.plot.Plot method)</a>
+</li>
+      <li><a href="modules/plot.html#streamlines.plot.Plot.plot_hsl_distributions">plot_hsl_distributions() (streamlines.plot.Plot method)</a>
 </li>
       <li><a href="modules/plot.html#streamlines.plot.Plot.plot_joint_pdf">plot_joint_pdf() (streamlines.plot.Plot method)</a>
 </li>
@@ -346,6 +368,12 @@
 </li>
       <li><a href="modules/plot.html#streamlines.plot.Plot.plot_joint_pdf_dsla_usla">plot_joint_pdf_dsla_usla() (streamlines.plot.Plot method)</a>
 </li>
+      <li><a href="modules/plot.html#streamlines.plot.Plot.plot_joint_pdf_dslt_dsla">plot_joint_pdf_dslt_dsla() (streamlines.plot.Plot method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/plot.html#streamlines.plot.Plot.plot_joint_pdf_dslt_dslc">plot_joint_pdf_dslt_dslc() (streamlines.plot.Plot method)</a>
+</li>
       <li><a href="modules/plot.html#streamlines.plot.Plot.plot_joint_pdf_usla_uslc">plot_joint_pdf_usla_uslc() (streamlines.plot.Plot method)</a>
 </li>
       <li><a href="modules/plot.html#streamlines.plot.Plot.plot_joint_pdf_usla_uslt">plot_joint_pdf_usla_uslt() (streamlines.plot.Plot method)</a>
@@ -354,8 +382,6 @@
 </li>
       <li><a href="modules/plot.html#streamlines.plot.Plot.plot_joint_pdf_uslt_dslt">plot_joint_pdf_uslt_dslt() (streamlines.plot.Plot method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/plot.html#streamlines.plot.Plot.plot_loops_overlay">plot_loops_overlay() (streamlines.plot.Plot method)</a>
 </li>
       <li><a href="modules/plot.html#streamlines.plot.Plot.plot_maps">plot_maps() (streamlines.plot.Plot method)</a>
@@ -384,29 +410,19 @@
 </li>
       <li><a href="modules/plot.html#streamlines.plot.Plot.plot_updownstreamlines_overlay">plot_updownstreamlines_overlay() (streamlines.plot.Plot method)</a>
 </li>
+      <li><a href="modules/pocl.html#streamlines.pocl.prepare_buffers">prepare_buffers() (in module streamlines.pocl)</a>
+</li>
       <li><a href="modules/pocl.html#streamlines.pocl.prepare_cl">prepare_cl() (in module streamlines.pocl)</a>
 </li>
       <li><a href="modules/pocl.html#streamlines.pocl.prepare_cl_context">prepare_cl_context() (in module streamlines.pocl)</a>
 </li>
       <li><a href="modules/pocl.html#streamlines.pocl.prepare_cl_queue">prepare_cl_queue() (in module streamlines.pocl)</a>
 </li>
-      <li><a href="modules/connect.html#streamlines.connect.prepare_memory">prepare_memory() (in module streamlines.connect)</a>
-
-      <ul>
-        <li><a href="modules/countlink.html#streamlines.countlink.prepare_memory">(in module streamlines.countlink)</a>
-</li>
-        <li><a href="modules/integration.html#streamlines.integration.prepare_memory">(in module streamlines.integration)</a>
-</li>
-        <li><a href="modules/label.html#streamlines.label.prepare_memory">(in module streamlines.label)</a>
-</li>
-        <li><a href="modules/lengths.html#streamlines.lengths.prepare_memory">(in module streamlines.lengths)</a>
-</li>
-        <li><a href="modules/segment.html#streamlines.segment.prepare_memory">(in module streamlines.segment)</a>
-</li>
-      </ul></li>
       <li><a href="modules/preprocess.html#streamlines.preprocess.Preprocess">Preprocess (class in streamlines.preprocess)</a>
 </li>
       <li><a href="modules/trace.html#streamlines.trace.Trace.self.preprocess">preprocess (streamlines.trace.Trace.self attribute)</a>
+</li>
+      <li><a href="modules/channelheads.html#streamlines.channelheads.prune_channel_heads">prune_channel_heads() (in module streamlines.channelheads)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -420,11 +436,13 @@
 </li>
       <li><a href="modules/geodata.html#streamlines.geodata.Geodata.read_dtm_file">read_dtm_file() (streamlines.geodata.Geodata method)</a>
 </li>
-      <li><a href="modules/geodata.html#streamlines.geodata.Geodata.read_geotiff_file">read_geotiff_file() (streamlines.geodata.Geodata method)</a>
+      <li><a href="modules/useful.html#streamlines.useful.read_geotiff">read_geotiff() (in module streamlines.useful)</a>
 </li>
       <li><a href="modules/state.html#streamlines.state.State.read_hdf5">read_hdf5() (streamlines.state.State method)</a>
 </li>
       <li><a href="modules/parameters.html#streamlines.parameters.read_json_file">read_json_file() (in module streamlines.parameters)</a>
+</li>
+      <li><a href="modules/state.html#streamlines.state.State.remove_active_mask">remove_active_mask() (streamlines.state.State method)</a>
 </li>
       <li><a href="modules/pocl.html#streamlines.pocl.report_build_log">report_build_log() (in module streamlines.pocl)</a>
 </li>
@@ -434,6 +452,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/state.html#streamlines.state.State.reset_active_masks">reset_active_masks() (streamlines.state.State method)</a>
+</li>
       <li><a href="modules/geodata.html#streamlines.geodata.Geodata.self.roi_array">roi_array (streamlines.geodata.Geodata.self attribute)</a>
 </li>
       <li><a href="modules/geodata.html#streamlines.geodata.Geodata.self.roi_nx">roi_nx (streamlines.geodata.Geodata.self attribute)</a>
@@ -450,7 +470,7 @@
 </li>
       <li><a href="modules/geodata.html#streamlines.geodata.Geodata.self.roi_y_origin">roi_y_origin (streamlines.geodata.Geodata.self attribute)</a>
 </li>
-      <li><a href="modules/run.html#streamlines.run.run">run() (in module streamlines.run)</a>
+      <li><a href="modules/slm.html#streamlines.slm.run">run() (in module streamlines.slm)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -458,6 +478,8 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/save.html#streamlines.save.Save">Save (class in streamlines.save)</a>
+</li>
       <li><a href="modules/state.html#streamlines.state.State.save_state">save_state() (streamlines.state.State method)</a>
 </li>
       <li><a href="modules/state.html#streamlines.state.State.savez_dicts_of_nparrays">savez_dicts_of_nparrays() (streamlines.state.State method)</a>
@@ -465,7 +487,7 @@
       <li><a href="modules/trace.html#streamlines.trace.Trace.seed_point_array">seed_point_array (streamlines.trace.Trace attribute)</a>
 
       <ul>
-        <li><a href="modules/trace.html#streamlines.trace.Trace.self.seed_point_array">(streamlines.trace.Trace.self attribute)</a>, <a href="modules/trace.html#streamlines.trace.Trace.self.seed_point_array">[1]</a>
+        <li><a href="modules/trace.html#streamlines.trace.Trace.self.seed_point_array">(streamlines.trace.Trace.self attribute)</a>
 </li>
       </ul></li>
       <li><a href="modules/segment.html#streamlines.segment.segment_channels">segment_channels() (in module streamlines.segment)</a>
@@ -475,6 +497,8 @@
       <li><a href="modules/pocl.html#streamlines.pocl.set_compile_options">set_compile_options() (in module streamlines.pocl)</a>
 </li>
       <li><a href="modules/state.html#streamlines.state.State.set_savestate_filename">set_savestate_filename() (streamlines.state.State method)</a>
+</li>
+      <li><a href="modules/plot.html#streamlines.plot.Plot.show">show() (streamlines.plot.Plot static method)</a>
 </li>
       <li><a href="modules/trace.html#streamlines.trace.Trace.sla_array">sla_array (streamlines.trace.Trace attribute)</a>
 </li>
@@ -490,6 +514,8 @@
 </li>
       <li><a href="modules/analysis.html#module-streamlines.analysis">streamlines.analysis (module)</a>
 </li>
+      <li><a href="modules/channelheads.html#module-streamlines.channelheads">streamlines.channelheads (module)</a>
+</li>
       <li><a href="modules/connect.html#module-streamlines.connect">streamlines.connect (module)</a>
 </li>
       <li><a href="modules/core.html#module-streamlines.core">streamlines.core (module)</a>
@@ -498,13 +524,15 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/export.html#module-streamlines.export">streamlines.export (module)</a>
+      <li><a href="modules/fields.html#module-streamlines.fields">streamlines.fields (module)</a>
 </li>
       <li><a href="modules/geodata.html#module-streamlines.geodata">streamlines.geodata (module)</a>
 </li>
+      <li><a href="modules/hillslopes.html#module-streamlines.hillslopes">streamlines.hillslopes (module)</a>
+</li>
       <li><a href="modules/initialize.html#module-streamlines.initialize">streamlines.initialize (module)</a>
 </li>
-      <li><a href="modules/integration.html#module-streamlines.integration">streamlines.integration (module)</a>
+      <li><a href="modules/kde.html#module-streamlines.kde">streamlines.kde (module)</a>
 </li>
       <li><a href="modules/label.html#module-streamlines.label">streamlines.label (module)</a>
 </li>
@@ -520,15 +548,19 @@
 </li>
       <li><a href="modules/preprocess.html#module-streamlines.preprocess">streamlines.preprocess (module)</a>
 </li>
-      <li><a href="modules/run.html#module-streamlines.run">streamlines.run (module)</a>
+      <li><a href="modules/save.html#module-streamlines.save">streamlines.save (module)</a>
 </li>
       <li><a href="modules/segment.html#module-streamlines.segment">streamlines.segment (module)</a>
+</li>
+      <li><a href="modules/slm.html#module-streamlines.slm">streamlines.slm (module)</a>
 </li>
       <li><a href="modules/state.html#module-streamlines.state">streamlines.state (module)</a>
 </li>
       <li><a href="modules/streamlining.html#module-streamlines.streamlining">streamlines.streamlining (module)</a>
 </li>
       <li><a href="modules/trace.html#module-streamlines.trace">streamlines.trace (module)</a>
+</li>
+      <li><a href="modules/trajectories.html#module-streamlines.trajectories">streamlines.trajectories (module)</a>
 </li>
       <li><a href="modules/useful.html#module-streamlines.useful">streamlines.useful (module)</a>
 </li>
@@ -544,15 +576,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/trace.html#streamlines.trace.Trace">Trace (class in streamlines.trace)</a>
 </li>
-      <li><a href="modules/trace.html#streamlines.trace.Trace.trace_streamlines">trace_streamlines() (streamlines.trace.Trace method)</a>
+      <li><a href="modules/trace.html#streamlines.trace.Trace.traj_length_array">traj_length_array (streamlines.trace.Trace attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/trace.html#streamlines.trace.Trace.traj_length_array">traj_length_array (streamlines.trace.Trace attribute)</a>
-</li>
       <li><a href="modules/trace.html#streamlines.trace.Trace.traj_nsteps_array">traj_nsteps_array (streamlines.trace.Trace attribute)</a>
 </li>
       <li><a href="modules/trace.html#streamlines.trace.Trace.traj_stats_df">traj_stats_df (streamlines.trace.Trace attribute)</a>
+</li>
+      <li><a href="modules/useful.html#streamlines.useful.true_size">true_size() (in module streamlines.useful)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -575,6 +607,10 @@
 
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/useful.html#streamlines.useful.write_geotiff">write_geotiff() (in module streamlines.useful)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/state.html#streamlines.state.State.write_hdf5">write_hdf5() (streamlines.state.State method)</a>
 </li>

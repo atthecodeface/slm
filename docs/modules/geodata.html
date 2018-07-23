@@ -54,6 +54,12 @@ Might be useful to get GeoTIFF write working.</p>
 drainage basins layer, and a tool to parse basin indices into a
 streamline mask layer.</p>
 <dl class="method">
+<dt id="streamlines.geodata.Geodata.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.geodata.Geodata.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="streamlines.geodata.Geodata.do">
 <code class="descname">do</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.geodata.Geodata.do" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper method to read DTM file and drainage basins file and
@@ -67,8 +73,8 @@ then to parse basin indices into a mask layer.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="streamlines.geodata.Geodata.generate_basins_mask">
-<code class="descname">generate_basins_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.geodata.Geodata.generate_basins_mask" title="Permalink to this definition">¶</a></dt>
+<dt id="streamlines.geodata.Geodata.make_basins_mask">
+<code class="descname">make_basins_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.geodata.Geodata.make_basins_mask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a boolean mask array from the drainage basin index layer
 and a list of non-mask indexes.</p>
 <dl class="attribute">
@@ -77,10 +83,23 @@ and a list of non-mask indexes.</p>
 <dd><p><em>numpy.ndarray bool</em></p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.geodata.Geodata.make_dtm_mask">
+<code class="descname">make_dtm_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.geodata.Geodata.make_dtm_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a raw ‘DTM’ mask array that masks off NaNs, sub-threshold elevations,
+and the fringing pad pixels. Add it to the list of active masks.</p>
 <dl class="attribute">
-<dt id="streamlines.geodata.Geodata.self.basin_fatmask_array">
-<code class="descclassname">self.</code><code class="descname">basin_fatmask_array</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.basin_fatmask_array" title="Permalink to this definition">¶</a></dt>
+<dt id="streamlines.geodata.Geodata.self.dtm_mask_array">
+<code class="descclassname">self.</code><code class="descname">dtm_mask_array</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.dtm_mask_array" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>numpy.ndarray bool</em></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.geodata.Geodata.self.active_masks">
+<code class="descclassname">self.</code><code class="descname">active_masks</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.active_masks" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list</em></p>
 </dd></dl>
 
 </dd></dl>
@@ -184,39 +203,6 @@ y coordinates of ROI pixel centers</p>
 
 </dd></dl>
 
-<dl class="method">
-<dt id="streamlines.geodata.Geodata.read_geotiff_file">
-<code class="descname">read_geotiff_file</code><span class="sig-paren">(</span><em>path</em>, <em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.geodata.Geodata.read_geotiff_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read GeoTIFF file.
-Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to folder containing GeoTIFF file to be read</li>
-<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – GeoTIFF filename</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first">ValueError if file cannot be opened for reading</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
-<dt>Numpy array of GeoTIFF grid, size (in meters)</dt>
-<dd><p class="first last">of a grid pixel</p>
-</dd>
-</dl>
-</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)">numpy.ndarray</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)">float</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -232,15 +218,13 @@ Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.ndimage.morphology</span> <span class="k">import</span> <span class="n">binary_dilation</span><span class="p">,</span><span class="n">generate_binary_structure</span>
-<span class="kn">from</span> <span class="nn">osgeo</span> <span class="k">import</span> <span class="n">gdal</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage.morphology</span> <span class="k">import</span> <span class="n">binary_dilation</span><span class="p">,</span> <span class="n">generate_binary_structure</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="c1"># Needs GDAL. Had issues with 2.2.0 and had to do:</span>
-<span class="c1">#    pip install gdal==2.1.3</span>
 
 <span class="n">pdebug</span><span class="o">=</span><span class="nb">print</span>
 
-<span class="kn">from</span> <span class="nn">streamlines.core</span> <span class="k">import</span> <span class="n">Core</span>
+<span class="kn">from</span> <span class="nn">streamlines.core</span>   <span class="k">import</span> <span class="n">Core</span>
+<span class="kn">from</span> <span class="nn">streamlines.useful</span> <span class="k">import</span> <span class="n">read_geotiff</span><span class="p">,</span> <span class="n">dilate</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Geodata&#39;</span><span class="p">]</span>
 
@@ -251,6 +235,14 @@ Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
 <span class="sd">    streamline mask layer.</span>
 <span class="sd">        </span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TBD</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_masks_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
     <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Wrapper method to read DTM file and drainage basins file and </span>
@@ -259,19 +251,15 @@ Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
 <span class="sd">        Attributes:</span>
 <span class="sd">            self.dtm_path (str): absolute path to DTM file (should really be a list)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">**Geodata begin**&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dtm_path</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dtm_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">parameters_path</span><span class="p">),</span>
-                             <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_file</span><span class="p">)</span> 
-                <span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">**Geodata begin**&#39;</span><span class="p">)</span>  
         <span class="bp">self</span><span class="o">.</span><span class="n">read_dtm_file</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">read_basins_file</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">generate_basins_mask</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;**Geodata end**</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
-    
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_dtm_mask</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_basin_masking</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">read_basins_file</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">make_basins_mask</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;**Geodata end**</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>  
+
     <span class="k">def</span> <span class="nf">read_dtm_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read GeoTIFF-format DTM file into numpy array and parse out important metadata, </span>
@@ -300,13 +288,21 @@ Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
 <span class="sd">                                                    y coordinates of ROI pixel centers</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dtm_path</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dtm_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">parameters_path</span><span class="p">),</span>
+                             <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_file</span><span class="p">)</span> 
+                <span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Reading DTM from GeoTIFF file &quot;</span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">&quot;&#39;</span>
               <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_path</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_file</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geotransform</span>\
-             <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_geotiff_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_path</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_file</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">x_easting_bottomleft</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">y_northing_bottomleft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> \
-                                      <span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_size</span> \
+             <span class="o">=</span> <span class="n">read_geotiff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtm_file</span><span class="p">)</span>
+        <span class="n">geotransform</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiff</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_easting_bottomleft</span>  <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_northing_bottomleft</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> \
+                                     <span class="o">+</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;DTM size: </span><span class="si">{0}</span><span class="s1"> x </span><span class="si">{1}</span><span class="s1"> = </span><span class="si">{2:,}</span><span class="s1"> pixels&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
               <span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
               <span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">)</span>
@@ -322,13 +318,9 @@ Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="o">==</span><span class="bp">self</span><span class="o">.</span><span class="n">no_data_value</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
             
         <span class="c1"># Handle empty ROI bounds which imply full DTM</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_clip_roi</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="o">==</span><span class="p">[]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_clip_roi</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="o">==</span><span class="p">[]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
         <span class="c1"># Trap ROI bounds error</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">)</span>
@@ -345,11 +337,11 @@ Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
         <span class="c1"># Generate roi array and x,y index vectors now because we&#39;ll need them later</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                                    <span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-                                   <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
+                                   <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="p">)[</span>
                                         <span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
                                         <span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-                                        <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
+                                        <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="c1"># Remember that np.array range extractions exclude last cell </span>
         <span class="c1">#   such that self.roi_x_bounds[1]-1 is last x cell index</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x_roi_n_pixel_centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mf">0.5</span><span class="p">,</span>
@@ -359,12 +351,11 @@ Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
                                                  <span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> 
                                           <span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">roi_nx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_roi_n_pixel_centers</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">roi_ny</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_roi_n_pixel_centers</span><span class="p">)</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;ROI pixel bounds: &#39;</span><span class="p">,</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> 
-                                     <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_ny</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_roi_n_pixel_centers</span><span class="p">)</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;ROI pixel bounds: &#39;</span><span class="p">,[[</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> 
+                                         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;ROI pixel grid: &#39;</span><span class="p">,</span>  <span class="bp">self</span><span class="o">.</span><span class="n">roi_nx</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">roi_ny</span><span class="p">,</span> 
-              <span class="s1">&#39;= </span><span class="si">{:,}</span><span class="s1"> pixels&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_nx</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_ny</span><span class="p">))</span>
+                                    <span class="s1">&#39;= </span><span class="si">{:,}</span><span class="s1"> pixels&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_nx</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_ny</span><span class="p">))</span>
 
         <span class="c1">######################################################</span>
         <span class="c1">## Extremely important: </span>
@@ -393,6 +384,17 @@ Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
                     <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_x_origin</span><span class="o">+</span><span class="n">roi_width</span><span class="o">+</span><span class="n">roi_dx</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_size</span><span class="p">,</span>
                     <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_y_origin</span><span class="o">-</span><span class="n">roi_dy</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_size</span><span class="p">,</span>
                     <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_y_origin</span><span class="o">+</span><span class="n">roi_height</span><span class="o">+</span><span class="n">roi_dy</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_size</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_min</span><span class="o">!=</span><span class="s1">&#39;none&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_min</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flip_ns</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="p">)</span>
+            
+        <span class="c1"># GeoTIFF metadata needed for writing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_geotransform</span>     <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">geotransform</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_geotransform</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_geotransform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_geotransform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_size</span>
         
     <span class="k">def</span> <span class="nf">read_basins_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -401,11 +403,10 @@ Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
 <span class="sd">        Attributes:</span>
 <span class="sd">            self.basins_array (numpy.ndarray float32):</span>
 <span class="sd">        &quot;&quot;&quot;</span> 
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_basin_masking</span><span class="p">:</span>
-            <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Reading basins from GeoTIFF file &quot;</span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">&quot;&#39;</span>
               <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_path</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">basins_file</span><span class="p">))</span>
-        <span class="n">basins_array</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_geotiff_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_path</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">basins_file</span><span class="p">)</span>
+        <span class="n">basins_array</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geotransform</span> \
+             <span class="o">=</span> <span class="n">read_geotiff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_path</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">basins_file</span><span class="p">)</span>
         <span class="c1"># Check size</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">!=</span><span class="n">basins_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> 
             <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtm_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="n">basins_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
@@ -416,89 +417,53 @@ Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">basins_array</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">basins_array</span><span class="p">)[</span>
               <span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
               <span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flip_ns</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">basins_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basins_array</span><span class="p">)</span>
 
-    
-    <span class="k">def</span> <span class="nf">generate_basins_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">make_dtm_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a raw &#39;DTM&#39; mask array that masks off NaNs, sub-threshold elevations,</span>
+<span class="sd">        and the fringing pad pixels. Add it to the list of active masks.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            self.dtm_mask_array (numpy.ndarray bool):</span>
+<span class="sd">            self.active_masks (list):</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="c1"># Raw &quot;DTM&quot; mask grid is the same size as the DTM ROI</span>
+        <span class="n">mask_unpadded_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool8</span><span class="p">)</span>
+        <span class="c1"># Mask off NaNs</span>
+        <span class="n">mask_unpadded_array</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># Also mask off elevations below the h_min threshold if required</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_min</span><span class="o">!=</span><span class="s1">&#39;none&#39;</span><span class="p">:</span>
+            <span class="n">mask_unpadded_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">h_min</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># Pad this &quot;DTM&quot; mask grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtm_mask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">mask_unpadded_array</span><span class="p">,</span>
+                                     <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_width</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_width</span><span class="p">)),</span> 
+                                     <span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">))</span>
+        <span class="c1"># Add this &quot;DTM&quot; mask to the list of active masks (actually, it&#39;ll be the first)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">add_active_mask</span><span class="p">({</span><span class="s1">&#39;dtm&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtm_mask_array</span><span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">make_basins_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a boolean mask array from the drainage basin index layer </span>
 <span class="sd">        and a list of non-mask indexes.</span>
 
 <span class="sd">        Attributes:</span>
 <span class="sd">            self.basin_mask_array (numpy.ndarray bool):</span>
-<span class="sd">            self.basin_fatmask_array (numpy.ndarray bool):</span>
 <span class="sd">        &quot;&quot;&quot;</span> 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_basin_masking</span><span class="p">:</span>        
-            <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Mask out all but basin numbers </span><span class="si">%s</span><span class="s1">&#39;</span>
-                  <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basins</span><span class="p">)))</span>
-            <span class="c1"># Generate boolean grid with True at unmasked basin pixels</span>
-            <span class="n">basin_mask_unpadded_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basins_array</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool8</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">basin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">basins</span><span class="p">:</span>
-                <span class="n">basin_mask_unpadded_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">basins_array</span><span class="o">==</span><span class="n">basin</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">dilation_structure</span> <span class="o">=</span> <span class="n">generate_binary_structure</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-            <span class="n">basin_fatmask_unpadded_array</span> <span class="o">=</span> <span class="n">binary_dilation</span><span class="p">(</span><span class="n">basin_mask_unpadded_array</span><span class="p">,</span> 
-                                                       <span class="n">structure</span><span class="o">=</span><span class="n">dilation_structure</span><span class="p">,</span> 
-                                                       <span class="n">iterations</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="c1"># True = masked out; False = data we want to see</span>
-            <span class="n">basin_mask_unpadded_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">basin_mask_unpadded_array</span><span class="p">)</span>    
-            <span class="n">basin_fatmask_unpadded_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">basin_fatmask_unpadded_array</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">basin_mask_unpadded_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool8</span><span class="p">)</span>
-            <span class="n">basin_fatmask_unpadded_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool8</span><span class="p">)</span>
-        <span class="c1"># Mask out NaN pixels</span>
-        <span class="n">basin_mask_unpadded_array</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">basin_fatmask_unpadded_array</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
-                
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_min</span><span class="o">!=</span><span class="s1">&#39;none&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_min</span>
-            <span class="n">basin_mask_unpadded_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">h_min</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">basin_fatmask_unpadded_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">h_min</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">basin_mask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">basin_mask_unpadded_array</span><span class="p">,</span>
-                                         <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_width</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_width</span><span class="p">)),</span> 
-                                         <span class="s1">&#39;constant&#39;</span><span class="p">,</span><span class="n">constant_values</span><span class="o">=</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">))</span>
-        <span class="n">basin_fatmask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">basin_fatmask_unpadded_array</span><span class="p">,</span> 
-                                            <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_width</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_width</span><span class="p">)),</span> 
-                                            <span class="s1">&#39;constant&#39;</span><span class="p">,</span><span class="n">constant_values</span><span class="o">=</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">basin_mask_array</span> \
-            <span class="o">=</span> <span class="n">basin_mask_array</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool8</span><span class="p">,</span>
-                                             <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">basin_fatmask_array</span> \
-            <span class="o">=</span> <span class="n">basin_fatmask_array</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool8</span><span class="p">,</span> 
-                                                <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">)</span>
-                 
-    <span class="k">def</span> <span class="nf">read_geotiff_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Read GeoTIFF file.</span>
-<span class="sd">        Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Mask out all but basin numbers </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basins</span><span class="p">)))</span>
+        <span class="c1"># Generate boolean grid with True at unmasked basin pixels</span>
+        <span class="n">basin_mask_unpadded_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basins_array</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool8</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">basin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">basins</span><span class="p">:</span>
+            <span class="n">basin_mask_unpadded_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">basins_array</span><span class="o">==</span><span class="n">basin</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># True = masked out; False = data we want to see</span>
+        <span class="n">basin_mask_unpadded_array</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">basin_mask_unpadded_array</span><span class="p">)</span>    
+            
+        <span class="n">pad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basin_mask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">basin_mask_unpadded_array</span><span class="p">,</span> <span class="p">(</span><span class="n">pad</span><span class="p">,</span><span class="n">pad</span><span class="p">),</span> 
+                                       <span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">add_active_mask</span><span class="p">({</span><span class="s1">&#39;basin&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">})</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            path (str): Path to folder containing GeoTIFF file to be read</span>
-<span class="sd">            filename (str): GeoTIFF filename</span>
-<span class="sd">        </span>
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError if file cannot be opened for reading</span>
-<span class="sd">            </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            numpy.ndarray, float: Numpy array of GeoTIFF grid, size (in meters) </span>
-<span class="sd">                                    of a grid pixel</span>
-<span class="sd">        &quot;&quot;&quot;</span>          
-        <span class="n">fullpath_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">filename</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">noisy</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">fullpath_filename</span><span class="p">)</span>
-        <span class="n">tiff</span><span class="o">=</span><span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">fullpath_filename</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">tiff</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot open GeoTIFF file &quot;</span><span class="si">%s</span><span class="s1">&quot; for reading&#39;</span> <span class="o">%</span> <span class="n">fullpath_filename</span><span class="p">)</span>
-        <span class="n">geotransform</span> <span class="o">=</span> <span class="n">tiff</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
-        <span class="n">x_easting_bottomleft</span>  <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">y_northing_bottomleft</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">+</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
-        <span class="n">pixel_size</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;DTM GeoTIFF coordinate &quot;geotransform&quot;:&#39;</span><span class="p">,</span><span class="n">geotransform</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">pixel_size</span><span class="o">!=</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s1">&#39;Pixel x=</span><span class="si">%g</span><span class="s1"> and y=</span><span class="si">%g</span><span class="s1"> dimensions not equal in &quot;</span><span class="si">%s</span><span class="s1">&quot;: cannot handle non-square pixels&#39;</span>
-                             <span class="o">%</span> <span class="p">(</span><span class="n">pixel_size</span><span class="p">,(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span><span class="n">fullpath_filename</span><span class="p">)</span> <span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">tiff</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> 
-                <span class="n">pixel_size</span><span class="p">,</span> <span class="n">geotransform</span><span class="p">)</span>
-        
 </pre></div>
 </div>
 </div>

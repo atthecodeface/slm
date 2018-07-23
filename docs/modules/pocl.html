@@ -37,23 +37,23 @@
 <span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.pocl" title="Permalink to this headline">¶</a></h2>
 <p>Prep PyOpenCL kernel</p>
 <dl class="function">
-<dt id="streamlines.pocl.prepare_cl">
-<code class="descclassname">streamlines.pocl.</code><code class="descname">prepare_cl</code><span class="sig-paren">(</span><em>cl_platform=0</em>, <em>cl_device=2</em>, <em>cl_kernel_source=None</em>, <em>compile_options=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.prepare_cl" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prepare PyOpenCL stuff.</p>
+<dt id="streamlines.pocl.prepare_cl_context">
+<code class="descclassname">streamlines.pocl.</code><code class="descname">prepare_cl_context</code><span class="sig-paren">(</span><em>cl_platform=0</em>, <em>cl_device=2</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.prepare_cl_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare PyOpenCL platform, device and context.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
-<li><strong>cl_kernel_source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – OpenCL kernel code string</li>
+<li><strong>cl_platform</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – </li>
+<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – </li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">PyOpenCL platform, PyOpenCL device, PyOpenCL context, PyOpenCL program,             PyOpenCL command queue</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">PyOpenCL platform, PyOpenCL device, PyOpenCL context</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Platform" title="(in PyOpenCL v2018.1.1)">pyopencl.Platform</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)">pyopencl.Device</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)">pyopencl.Context</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Program" title="(in PyOpenCL v2018.1.1)">pyopencl.Program</a>,         <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_queue.html#pyopencl.CommandQueue" title="(in PyOpenCL v2018.1.1)">pyopencl.CommandQueue</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Platform" title="(in PyOpenCL v2018.1.1)">pyopencl.Platform</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)">pyopencl.Device</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)">pyopencl.Context</a></p>
 </td>
 </tr>
 </tbody>
@@ -69,39 +69,15 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cl_platform</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
-<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
+<li><strong>cl_platform</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – </li>
+<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – </li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">CL platform, CL device</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)">int</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="streamlines.pocl.prepare_cl_context">
-<code class="descclassname">streamlines.pocl.</code><code class="descname">prepare_cl_context</code><span class="sig-paren">(</span><em>cl_platform=0</em>, <em>cl_device=2</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.prepare_cl_context" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prepare PyOpenCL platform, device and context.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cl_platform</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
-<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">PyOpenCL platform, PyOpenCL device, PyOpenCL context</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Platform" title="(in PyOpenCL v2018.1.1)">pyopencl.Platform</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)">pyopencl.Device</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)">pyopencl.Context</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
 </td>
 </tr>
 </tbody>
@@ -110,7 +86,7 @@
 
 <dl class="function">
 <dt id="streamlines.pocl.prepare_cl_queue">
-<code class="descclassname">streamlines.pocl.</code><code class="descname">prepare_cl_queue</code><span class="sig-paren">(</span><em>context=None</em>, <em>cl_kernel_source=None</em>, <em>compile_options=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.prepare_cl_queue" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">streamlines.pocl.</code><code class="descname">prepare_cl_queue</code><span class="sig-paren">(</span><em>context=None</em>, <em>kernel_source=None</em>, <em>compile_options=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.prepare_cl_queue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build PyOpenCL program and prepare command queue.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -118,7 +94,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>context</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Context</em></a>) – GPU/OpenCL device context</li>
-<li><strong>cl_kernel_source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – OpenCL kernel code string</li>
+<li><strong>kernel_source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – OpenCL kernel code string</li>
 </ul>
 </td>
 </tr>
@@ -126,6 +102,30 @@
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Program" title="(in PyOpenCL v2018.1.1)">pyopencl.Program</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_queue.html#pyopencl.CommandQueue" title="(in PyOpenCL v2018.1.1)">pyopencl.CommandQueue</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.pocl.prepare_cl">
+<code class="descclassname">streamlines.pocl.</code><code class="descname">prepare_cl</code><span class="sig-paren">(</span><em>cl_platform=0</em>, <em>cl_device=2</em>, <em>kernel_source=None</em>, <em>compile_options=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.prepare_cl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare PyOpenCL stuff.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – </li>
+<li><strong>kernel_source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – OpenCL kernel code string</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">PyOpenCL platform, PyOpenCL device, PyOpenCL context, PyOpenCL program,             PyOpenCL command queue</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Platform" title="(in PyOpenCL v2018.1.1)">pyopencl.Platform</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)">pyopencl.Device</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)">pyopencl.Context</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Program" title="(in PyOpenCL v2018.1.1)">pyopencl.Program</a>,         <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_queue.html#pyopencl.CommandQueue" title="(in PyOpenCL v2018.1.1)">pyopencl.CommandQueue</a></p>
 </td>
 </tr>
 </tbody>
@@ -143,8 +143,8 @@ array dtype.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – </li>
+<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – </li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </li>
 <li><strong>dtype</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.14)"><em>numpy.dtype</em></a>) – </li>
 </ul>
 </td>
@@ -152,7 +152,7 @@ array dtype.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">processed dtype, cl dtype, CL typedef codelet</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.14)">numpy.dtype</a>, pyopencl.dtype, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.14)">numpy.dtype</a>, pyopencl.dtype, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
 </td>
 </tr>
 </tbody>
@@ -161,26 +161,27 @@ array dtype.</p>
 
 <dl class="function">
 <dt id="streamlines.pocl.set_compile_options">
-<code class="descclassname">streamlines.pocl.</code><code class="descname">set_compile_options</code><span class="sig-paren">(</span><em>info_struct</em>, <em>kernel_def</em>, <em>downup_sign=1</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.set_compile_options" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert the info struct into a list of ‘-D’ compiler macros.</p>
+<code class="descclassname">streamlines.pocl.</code><code class="descname">set_compile_options</code><span class="sig-paren">(</span><em>info</em>, <em>kernel_def</em>, <em>downup_sign=1</em>, <em>job_type='integration'</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.set_compile_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert info obj data into a list of ‘-D’ compiler macros.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>info_struct</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – container for myriad parameters controlling
+<li><strong>info</strong> (<em>obj</em>) – container for myriad parameters controlling
 trace() and mapping() workflow and corresponding GPU/OpenCL device operation</li>
-<li><strong>kernel_def</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – name of the kernel in the program source string;
+<li><strong>kernel_def</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – name of the kernel in the program source string;
 is used by #ifdef kernel-wrapper commands in the OpenCL codes</li>
-<li><strong>downup_sign</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – flag used to indicate desired sense of streamline integration,
-with +1 for downstream and -1 for upstream</li>
+<li><strong>downup_sign</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – flag used to indicate desired sense of streamline integration,
+with +1 for downstream and -1 for upstream [‘integration’ mode]</li>
+<li><strong>job_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – switch between ‘integration’ (default) and ‘kde’</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">compile options</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)">list</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
 </td>
 </tr>
 </tbody>
@@ -198,7 +199,7 @@ with +1 for downstream and -1 for upstream</li>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>device</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Device</em></a>) – </li>
 <li><strong>kernel</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Kernel" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Kernel</em></a>) – </li>
-<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – </li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
 </ul>
 </td>
 </tr>
@@ -215,11 +216,11 @@ with +1 for downstream and -1 for upstream</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cl_platform</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
-<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – </li>
+<li><strong>cl_platform</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – </li>
+<li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – </li>
 <li><strong>platform</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Platform" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Platform</em></a>) – </li>
 <li><strong>device</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Device</em></a>) – </li>
-<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – </li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
 </ul>
 </td>
 </tr>
@@ -238,7 +239,52 @@ with +1 for downstream and -1 for upstream</li>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>program</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Program" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Program</em></a>) – </li>
 <li><strong>device</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Device</em></a>) – </li>
-<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – </li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.pocl.prepare_buffers">
+<code class="descclassname">streamlines.pocl.</code><code class="descname">prepare_buffers</code><span class="sig-paren">(</span><em>context</em>, <em>array_dict</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.prepare_buffers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>context</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Context</em></a>) – </li>
+<li><strong>array_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – </li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">buffer_dict</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.pocl.gpu_compute">
+<code class="descclassname">streamlines.pocl.</code><code class="descname">gpu_compute</code><span class="sig-paren">(</span><em>cl_state</em>, <em>info</em>, <em>array_dict</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.pocl.gpu_compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Carry out GPU computation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cl_state</strong> (<em>obj</em>) – </li>
+<li><strong>info</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – </li>
+<li><strong>array_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – </li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
 </ul>
 </td>
 </tr>
@@ -253,19 +299,36 @@ with +1 for downstream and -1 for upstream</li>
 <span class="sd">Prep PyOpenCL kernel</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">pyopencl</span> <span class="k">as</span> <span class="nn">cl</span>
+<span class="kn">import</span> <span class="nn">pyopencl</span>       <span class="k">as</span> <span class="nn">cl</span>
 <span class="kn">import</span> <span class="nn">pyopencl.tools</span> <span class="k">as</span> <span class="nn">cltools</span>
-<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">environ</span>
-<span class="kn">from</span> <span class="nn">streamlines</span> <span class="k">import</span> <span class="n">state</span>
-<span class="kn">from</span> <span class="nn">streamlines.useful</span> <span class="k">import</span> <span class="n">vprint</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">streamlines.useful</span> <span class="k">import</span> <span class="n">neatly</span><span class="p">,</span> <span class="n">vprint</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
-<span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYOPENCL_COMPILER_OUTPUT&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;0&#39;</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYOPENCL_COMPILER_OUTPUT&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;0&#39;</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;prepare_cl&#39;</span><span class="p">,</span><span class="s1">&#39;choose_platform_and_device&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;prepare_cl_context&#39;</span><span class="p">,</span><span class="s1">&#39;prepare_cl_queue&#39;</span><span class="p">,</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Initialize_cl&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;prepare_cl_context&#39;</span><span class="p">,</span><span class="s1">&#39;choose_platform_and_device&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;prepare_cl_queue&#39;</span><span class="p">,</span> <span class="s1">&#39;prepare_cl&#39;</span><span class="p">,</span>
            <span class="s1">&#39;make_cl_dtype&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;set_compile_options&#39;</span><span class="p">,</span> <span class="s1">&#39;report_kernel_info&#39;</span><span class="p">,</span> <span class="s1">&#39;report_device_info&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;report_build_log&#39;</span><span class="p">]</span>
+           <span class="s1">&#39;set_compile_options&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;report_kernel_info&#39;</span><span class="p">,</span> <span class="s1">&#39;report_device_info&#39;</span><span class="p">,</span> <span class="s1">&#39;report_build_log&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;adaptive_enqueue_nd_range_kernel&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;prepare_buffers&#39;</span><span class="p">,</span> <span class="s1">&#39;gpu_compute&#39;</span><span class="p">]</span>
+
+<span class="n">pdebug</span> <span class="o">=</span> <span class="nb">print</span>
+
+<span class="k">class</span> <span class="nc">Initialize_cl</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cl_src_path</span><span class="p">,</span> <span class="n">which_cl_platform</span><span class="p">,</span> <span class="n">which_cl_device</span> <span class="p">):</span>
+        <span class="c1"># Prepare CL essentials</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">platform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span> \
+            <span class="o">=</span> <span class="n">prepare_cl_context</span><span class="p">(</span><span class="n">which_cl_platform</span><span class="p">,</span><span class="n">which_cl_device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">CommandQueue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">,</span>
+                                <span class="n">properties</span><span class="o">=</span><span class="n">cl</span><span class="o">.</span><span class="n">command_queue_properties</span><span class="o">.</span><span class="n">PROFILING_ENABLE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">src_path</span>      <span class="o">=</span> <span class="n">cl_src_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_source</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_fn</span>     <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
 <span class="k">def</span> <span class="nf">prepare_cl_context</span><span class="p">(</span><span class="n">cl_platform</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cl_device</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -310,13 +373,13 @@ with +1 for downstream and -1 for upstream</li>
             <span class="n">cl_device</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="k">return</span> <span class="n">cl_platform</span><span class="p">,</span> <span class="n">cl_device</span>
 
-<span class="k">def</span> <span class="nf">prepare_cl_queue</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compile_options</span><span class="o">=</span><span class="p">[]):</span>
+<span class="k">def</span> <span class="nf">prepare_cl_queue</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kernel_source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compile_options</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Build PyOpenCL program and prepare command queue.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        context (pyopencl.Context): GPU/OpenCL device context</span>
-<span class="sd">        cl_kernel_source (str): OpenCL kernel code string</span>
+<span class="sd">        kernel_source (str): OpenCL kernel code string</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        pyopencl.Program, pyopencl.CommandQueue: </span>
@@ -327,18 +390,18 @@ with +1 for downstream and -1 for upstream</li>
 <span class="c1">#                        &#39;-cl-unsafe-math-optimizations&#39;,</span>
 <span class="c1">#                        &#39;-cl-no-signed-zeros&#39;,</span>
 <span class="c1">#                        &#39;-cl-finite-math-only&#39;]</span>
-    <span class="n">program</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">cache_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">program</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">kernel_source</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">cache_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                                           <span class="n">options</span><span class="o">=</span><span class="n">compile_options</span><span class="p">)</span>
     <span class="n">queue</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">CommandQueue</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">program</span><span class="p">,</span> <span class="n">queue</span>
 
-<span class="k">def</span> <span class="nf">prepare_cl</span><span class="p">(</span><span class="n">cl_platform</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cl_device</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compile_options</span><span class="o">=</span><span class="p">[]):</span>
+<span class="k">def</span> <span class="nf">prepare_cl</span><span class="p">(</span><span class="n">cl_platform</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cl_device</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">kernel_source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compile_options</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Prepare PyOpenCL stuff.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        cl_device (int):</span>
-<span class="sd">        cl_kernel_source (str): OpenCL kernel code string</span>
+<span class="sd">        kernel_source (str): OpenCL kernel code string</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        pyopencl.Platform, pyopencl.Device, pyopencl.Context, pyopencl.Program, \</span>
@@ -347,7 +410,7 @@ with +1 for downstream and -1 for upstream</li>
 <span class="sd">            PyOpenCL command queue</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">platform</span><span class="p">,</span><span class="n">device</span><span class="p">,</span><span class="n">context</span> <span class="o">=</span> <span class="n">prepare_cl_context</span><span class="p">(</span><span class="n">cl_platform</span><span class="p">,</span><span class="n">cl_device</span><span class="p">)</span>
-    <span class="n">program</span><span class="p">,</span><span class="n">queue</span> <span class="o">=</span> <span class="n">prepare_cl_queue</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="n">cl_kernel_source</span><span class="p">,</span><span class="n">compile_options</span><span class="p">)</span>
+    <span class="n">program</span><span class="p">,</span><span class="n">queue</span> <span class="o">=</span> <span class="n">prepare_cl_queue</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="n">kernel_source</span><span class="p">,</span><span class="n">compile_options</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">platform</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">program</span><span class="p">,</span> <span class="n">queue</span>
 
 <span class="k">def</span> <span class="nf">make_cl_dtype</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">dtype</span><span class="p">):</span>
@@ -369,76 +432,128 @@ with +1 for downstream and -1 for upstream</li>
     <span class="n">processed_dtype</span><span class="p">,</span> <span class="n">c_decl</span> <span class="o">=</span> <span class="n">cltools</span><span class="o">.</span><span class="n">match_dtype_to_c_struct</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">processed_dtype</span><span class="p">,</span> <span class="n">cltools</span><span class="o">.</span><span class="n">get_or_register_dtype</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">processed_dtype</span><span class="p">),</span> <span class="n">c_decl</span>
 
-<span class="k">def</span> <span class="nf">set_compile_options</span><span class="p">(</span><span class="n">info_struct</span><span class="p">,</span> <span class="n">kernel_def</span><span class="p">,</span> <span class="n">downup_sign</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">set_compile_options</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">kernel_def</span><span class="p">,</span> <span class="n">downup_sign</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">job_type</span><span class="o">=</span><span class="s1">&#39;integration&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert the info struct into a list of &#39;-D&#39; compiler macros.</span>
+<span class="sd">    Convert info obj data into a list of &#39;-D&#39; compiler macros.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
-<span class="sd">        info_struct (numpy.ndarray): container for myriad parameters controlling</span>
+<span class="sd">        info (obj): container for myriad parameters controlling</span>
 <span class="sd">            trace() and mapping() workflow and corresponding GPU/OpenCL device operation</span>
 <span class="sd">        kernel_def (str): name of the kernel in the program source string; </span>
 <span class="sd">            is used by #ifdef kernel-wrapper commands in the OpenCL codes</span>
 <span class="sd">        downup_sign (bool): flag used to indicate desired sense of streamline integration,</span>
-<span class="sd">               with +1 for downstream and -1 for upstream</span>
+<span class="sd">               with +1 for downstream and -1 for upstream [&#39;integration&#39; mode]</span>
+<span class="sd">        job_type (str): switch between &#39;integration&#39; (default) and &#39;kde&#39;</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        list:</span>
 <span class="sd">            compile options</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;KERNEL_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kernel_def</span><span class="o">.</span><span class="n">upper</span><span class="p">()),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_ORDER&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;array_order&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;DOWNUP_SIGN=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">downup_sign</span><span class="p">),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;INTEGRATOR_STEP_FACTOR=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;integrator_step_factor&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;MAX_INTEGRATION_STEP_ERROR=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;max_integration_step_error&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;ADJUSTED_MAX_ERROR=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;adjusted_max_error&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;MAX_LENGTH=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;max_length&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;PIXEL_SIZE=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;INTEGRATION_HALT_THRESHOLD=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;integration_halt_threshold&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;PAD_WIDTH=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;pad_width&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;PAD_WIDTH_PP5=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;pad_width_pp5&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;NX=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;nx&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;NY=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;ny&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;NXF=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;nxf&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;NYF=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;nyf&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;NX_PADDED=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;nx_padded&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;NY_PADDED=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;ny_padded&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;X_MAX=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;x_max&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;Y_MAX=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;y_max&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;GRID_SCALE=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;grid_scale&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;COMBO_FACTOR=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;combo_factor&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">downup_sign</span><span class="p">),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;DT_MAX=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;dt_max&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;MAX_N_STEPS=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;max_n_steps&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;TRAJECTORY_RESOLUTION=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;trajectory_resolution&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;SEEDS_CHUNK_OFFSET=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;seeds_chunk_offset&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;SUBPIXEL_SEED_POINT_DENSITY=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                                        <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;subpixel_seed_point_density&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;SUBPIXEL_SEED_HALFSPAN=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;subpixel_seed_halfspan&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;SUBPIXEL_SEED_STEP=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;subpixel_seed_step&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;JITTER_MAGNITUDE=</span><span class="si">{}</span><span class="s1">f&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;jitter_magnitude&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;INTERCHANNEL_MAX_N_STEPS=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                                            <span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;interchannel_max_n_steps&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;SEGMENTATION_THRESHOLD=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;segmentation_threshold&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;LEFT_FLANK_ADDITION=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;left_flank_addition&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_CHANNEL=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_channel&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_THINCHANNEL=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_thinchannel&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_INTERCHANNEL=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_interchannel&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_CHANNELHEAD=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_channelhead&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_CHANNELTAIL=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_channeltail&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_MAJORCONFLUENCE=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_majorconfluence&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_MINORCONFLUENCE=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_minorconfluence&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_MAJORINFLOW=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_majorinflow&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_MINORINFLOW=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_minorinflow&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_LEFTFLANK=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_leftflank&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_RIGHTFLANK=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_rightflank&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_MIDSLOPE=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_midslope&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_RIDGE=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_ridge&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_STUCK=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_stuck&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_LOOP=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_loop&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;IS_BLOCKAGE=</span><span class="si">{}</span><span class="s1">u&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_struct</span><span class="p">[</span><span class="s1">&#39;is_blockage&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">job_type</span><span class="o">==</span><span class="s1">&#39;kde&#39;</span><span class="p">:</span>
+        <span class="n">compile_options_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;bandwidth&#39;</span> <span class="p">:</span>            <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;n_data&#39;</span> <span class="p">:</span>               <span class="s1">&#39;u&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;n_hist_bins&#39;</span> <span class="p">:</span>          <span class="s1">&#39;u&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;n_pdf_points&#39;</span> <span class="p">:</span>         <span class="s1">&#39;u&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;logx_min&#39;</span> <span class="p">:</span>             <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;logx_max&#39;</span> <span class="p">:</span>             <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;logx_range&#39;</span> <span class="p">:</span>           <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;bin_dx&#39;</span> <span class="p">:</span>               <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pdf_dx&#39;</span> <span class="p">:</span>               <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;kdf_width_x&#39;</span> <span class="p">:</span>          <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;n_kdf_part_points_x&#39;</span> <span class="p">:</span>  <span class="s1">&#39;u&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;logy_min&#39;</span> <span class="p">:</span>             <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;logy_max&#39;</span> <span class="p">:</span>             <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;logy_range&#39;</span> <span class="p">:</span>           <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;bin_dy&#39;</span> <span class="p">:</span>               <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pdf_dy&#39;</span> <span class="p">:</span>               <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;kdf_width_y&#39;</span> <span class="p">:</span>          <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;n_kdf_part_points_y&#39;</span> <span class="p">:</span>  <span class="s1">&#39;u&#39;</span>
+        <span class="p">}</span>
+        <span class="n">rtn_list</span> <span class="o">=</span>  <span class="p">[</span><span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;KERNEL_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kernel_def</span><span class="o">.</span><span class="n">upper</span><span class="p">())]</span>
+        <span class="n">rtn_list</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;KDF_IS_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">upper</span><span class="p">())]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">compile_options_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">info</span><span class="p">,</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">list_item</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">=</span><span class="si">{1}{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span><span class="n">value</span><span class="p">,</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+            <span class="n">rtn_list</span> <span class="o">+=</span> <span class="n">list_item</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">pad_width</span><span class="p">)</span>
+        <span class="n">nxp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">nx_padded</span><span class="p">)</span>
+        <span class="n">nyp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">ny_padded</span><span class="p">)</span>
+        <span class="n">nxf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">nx</span><span class="p">)</span>
+        <span class="n">nyf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">ny</span><span class="p">)</span>
+        <span class="n">grid_scale</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">nxf</span><span class="o">*</span><span class="n">nyf</span><span class="p">))</span>
+        <span class="n">combo_factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">grid_scale</span><span class="o">*</span><span class="n">info</span><span class="o">.</span><span class="n">integrator_step_factor</span><span class="p">)</span>
+        <span class="n">dt_max</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">nxf</span><span class="p">,</span><span class="mf">1.0</span><span class="o">/</span><span class="n">nyf</span><span class="p">),</span><span class="mf">0.1</span><span class="p">))</span>
+        <span class="n">compile_options_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;n_seed_points&#39;</span> <span class="p">:</span>               <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;downup_sign&#39;</span> <span class="p">:</span>                 <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="n">downup_sign</span><span class="p">)),</span>
+            <span class="s1">&#39;integrator_step_factor&#39;</span> <span class="p">:</span>      <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;max_integration_step_error&#39;</span> <span class="p">:</span>  <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;adjusted_max_error&#39;</span> <span class="p">:</span>          <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;integration_halt_threshold&#39;</span> <span class="p">:</span>  <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;max_length&#39;</span> <span class="p">:</span>                  <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;pixel_size&#39;</span> <span class="p">:</span>                  <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;pad_width&#39;</span> <span class="p">:</span>                   <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="p">),</span>
+            <span class="s1">&#39;pad_width_pp5&#39;</span> <span class="p">:</span>               <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">pad</span><span class="p">)</span><span class="o">+</span><span class="mf">0.5</span><span class="p">),</span>
+            <span class="s1">&#39;nx_padded&#39;</span> <span class="p">:</span>                   <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="n">nxp</span><span class="p">),</span>
+            <span class="s1">&#39;ny_padded&#39;</span> <span class="p">:</span>                   <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="n">nyp</span><span class="p">),</span>
+            <span class="s1">&#39;nxy_padded&#39;</span> <span class="p">:</span>                  <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">nxp</span><span class="o">*</span><span class="n">nyp</span><span class="p">)),</span>
+            <span class="s1">&#39;nxf_mp5&#39;</span> <span class="p">:</span>                     <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="n">nxf</span><span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
+            <span class="s1">&#39;nyf_mp5&#39;</span> <span class="p">:</span>                     <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="n">nyf</span><span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
+            <span class="s1">&#39;grid_scale&#39;</span> <span class="p">:</span>                  <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="n">grid_scale</span><span class="p">),</span>
+            <span class="s1">&#39;combo_factor&#39;</span> <span class="p">:</span>                <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="n">combo_factor</span><span class="o">*</span><span class="n">downup_sign</span><span class="p">),</span>
+            <span class="s1">&#39;dt_max&#39;</span> <span class="p">:</span>                      <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="n">dt_max</span><span class="p">),</span>
+            <span class="s1">&#39;max_n_steps&#39;</span> <span class="p">:</span>                 <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;trajectory_resolution&#39;</span> <span class="p">:</span>       <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;seeds_chunk_offset&#39;</span> <span class="p">:</span>          <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;subpixel_seed_point_density&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;subpixel_seed_halfspan&#39;</span> <span class="p">:</span>      <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;subpixel_seed_step&#39;</span> <span class="p">:</span>          <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;jitter_magnitude&#39;</span> <span class="p">:</span>            <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;interchannel_max_n_steps&#39;</span> <span class="p">:</span>    <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;left_flank_addition&#39;</span> <span class="p">:</span>         <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_channel&#39;</span> <span class="p">:</span>                  <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_thinchannel&#39;</span> <span class="p">:</span>              <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_interchannel&#39;</span> <span class="p">:</span>             <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_channelhead&#39;</span> <span class="p">:</span>              <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_channeltail&#39;</span> <span class="p">:</span>              <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_majorconfluence&#39;</span> <span class="p">:</span>          <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_minorconfluence&#39;</span> <span class="p">:</span>          <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_majorinflow&#39;</span> <span class="p">:</span>              <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_minorinflow&#39;</span> <span class="p">:</span>              <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_leftflank&#39;</span> <span class="p">:</span>                <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_rightflank&#39;</span> <span class="p">:</span>               <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_midslope&#39;</span> <span class="p">:</span>                 <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_ridge&#39;</span> <span class="p">:</span>                    <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;was_channelhead&#39;</span> <span class="p">:</span>             <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_subsegmenthead&#39;</span> <span class="p">:</span>           <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_loop&#39;</span> <span class="p">:</span>                     <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;is_blockage&#39;</span> <span class="p">:</span>                 <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;do_measure_hsl_from_ridges&#39;</span> <span class="p">:</span>  <span class="p">(</span><span class="s1">&#39;flag&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;debug&#39;</span> <span class="p">:</span>                       <span class="p">(</span><span class="s1">&#39;flag&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;verbose&#39;</span> <span class="p">:</span>                     <span class="p">(</span><span class="s1">&#39;flag&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">segmentation_threshold</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">compile_options_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;segmentation_threshold&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)})</span>            
+
+        <span class="n">rtn_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-D&#39;</span><span class="p">,</span><span class="s1">&#39;KERNEL_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kernel_def</span><span class="o">.</span><span class="n">upper</span><span class="p">())]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">compile_options_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;flag&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">info</span><span class="p">,</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">list_item</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-D&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">())]</span>
+            <span class="k">elif</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">list_item</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-D&#39;</span><span class="p">,</span> 
+                             <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">=</span><span class="si">{1}{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">info</span><span class="p">,</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">list_item</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-D&#39;</span><span class="p">,</span> 
+                             <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">=</span><span class="si">{1}{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span><span class="n">value</span><span class="p">,</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])]</span>
+            <span class="n">rtn_list</span> <span class="o">+=</span> <span class="n">list_item</span>
+
+    <span class="k">return</span> <span class="n">rtn_list</span>
 
 <span class="k">def</span> <span class="nf">report_kernel_info</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="n">kernel</span><span class="p">,</span><span class="n">verbose</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -488,10 +603,10 @@ with +1 for downstream and -1 for upstream</li>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;OpenCL platform #</span><span class="si">{0}</span><span class="s1"> = </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cl_platform</span><span class="p">,</span><span class="n">platform</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;OpenCL device #</span><span class="si">{0}</span><span class="s1"> = </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cl_device</span><span class="p">,</span><span class="n">device</span><span class="p">))</span>
         <span class="n">n_bytes</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">get_info</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">device_info</span><span class="o">.</span><span class="n">GLOBAL_MEM_SIZE</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Global memory size: </span><span class="si">{}</span><span class="s1"> bytes = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">,</span><span class="n">state</span><span class="o">.</span><span class="n">neatly</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">)))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Global memory size: </span><span class="si">{}</span><span class="s1"> bytes = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">,</span><span class="n">neatly</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">)))</span>
         <span class="n">n_bytes</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">get_info</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">device_info</span><span class="o">.</span><span class="n">MAX_MEM_ALLOC_SIZE</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Max memory alloc size: </span><span class="si">{}</span><span class="s1"> bytes = </span><span class="si">{}</span><span class="s1">&#39;</span>
-                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">,</span><span class="n">state</span><span class="o">.</span><span class="n">neatly</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">)))</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">,</span><span class="n">neatly</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">)))</span>
         
         <span class="n">device_info_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">device_info</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)]</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">device_info_list</span><span class="p">:</span>
@@ -512,6 +627,158 @@ with +1 for downstream and -1 for upstream</li>
     <span class="n">build_log</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">get_build_info</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="n">cl</span><span class="o">.</span><span class="n">program_build_info</span><span class="o">.</span><span class="n">LOG</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">build_log</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">))</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
         <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">OpenCL build log: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">build_log</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">report_progress</span><span class="p">(</span><span class="n">vprogress</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">downup_step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">downup_step</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">progress</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="mf">100.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">progress</span> <span class="o">=</span> <span class="p">(</span><span class="n">downup_step</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">downup_step</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="mf">100.0</span><span class="o">+</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">100.0</span><span class="o">/</span><span class="n">downup_step</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">downup_step</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">progress</span><span class="o">!=</span><span class="mf">50.0</span><span class="p">:</span>
+        <span class="n">vprint</span><span class="p">(</span><span class="n">vprogress</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{0:2.1f}</span><span class="s1">% &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">progress</span><span class="p">),</span><span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">adaptive_enqueue_nd_range_kernel</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">global_size</span><span class="p">,</span> <span class="n">local_size</span><span class="p">,</span> 
+                                     <span class="n">n_work_items</span><span class="p">,</span> <span class="n">chunk_size_factor</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> 
+                                     <span class="n">max_time_per_kernel</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">downup_step</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+                                     <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vprogress</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">work_size</span>  <span class="o">=</span> <span class="n">n_work_items</span><span class="o">*</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">global_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">n_work_items</span><span class="p">))</span>
+    <span class="n">work_left</span>  <span class="o">=</span> <span class="n">work_size</span>
+    <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_work_items</span><span class="o">*</span><span class="n">chunk_size_factor</span><span class="p">,</span><span class="n">work_left</span><span class="p">)</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">cumulative_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">time_per_item</span>   <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">while</span> <span class="n">work_left</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+<span class="c1">#         event = cl.enqueue_nd_range_kernel(queue, kernel, [chunk_size+offset,1], </span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">enqueue_nd_range_kernel</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="p">[</span><span class="n">chunk_size</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> 
+                                           <span class="n">local_size</span><span class="p">,</span><span class="n">global_work_offset</span><span class="o">=</span><span class="p">[</span><span class="n">offset</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">progress</span> <span class="o">=</span> <span class="mf">100.0</span><span class="o">*</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">work_size</span><span class="p">,(</span><span class="n">offset</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">))</span><span class="o">/</span><span class="n">work_size</span><span class="p">)</span>
+        <span class="n">report_progress</span><span class="p">(</span><span class="n">vprogress</span><span class="p">,</span><span class="n">work_size</span><span class="o">-</span><span class="n">work_left</span><span class="p">,</span><span class="n">work_size</span><span class="p">,</span><span class="n">downup_step</span><span class="o">=</span><span class="n">downup_step</span><span class="p">)</span>
+        <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span>
+               <span class="s1">&#39;</span><span class="si">{0:.2f}</span><span class="s1">%: enqueued </span><span class="si">{1}</span><span class="s1">/</span><span class="si">{2}</span><span class="s1"> workitems&#39;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">progress</span><span class="p">,</span><span class="n">chunk_size</span><span class="p">,</span><span class="n">work_size</span><span class="p">),</span>
+                <span class="s1">&#39;in [</span><span class="si">{0}</span><span class="s1">-</span><span class="si">{1}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span><span class="n">offset</span><span class="o">+</span><span class="n">chunk_size</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+                <span class="s1">&#39;estimated t=</span><span class="si">{0:.3f}</span><span class="s1">s...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time_per_item</span><span class="o">*</span><span class="n">chunk_size</span><span class="p">),</span>
+                <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">offset</span>    <span class="o">+=</span> <span class="n">chunk_size</span>
+        <span class="n">work_left</span> <span class="o">-=</span> <span class="n">chunk_size</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">elapsed_time</span> <span class="o">=</span> <span class="mf">1e-9</span><span class="o">*</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">end</span><span class="o">-</span><span class="n">event</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+            <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span> <span class="s1">&#39;...actual t=</span><span class="si">{0:.3f}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">elapsed_time</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span> <span class="s1">&#39;...profiling failed&#39;</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">cumulative_time</span> <span class="o">+=</span> <span class="n">elapsed_time</span>
+        <span class="n">time_per_item</span>    <span class="o">=</span> <span class="n">elapsed_time</span><span class="o">/</span><span class="n">chunk_size</span>
+        <span class="n">chunk_size</span> <span class="o">=</span> <span class="n">n_work_items</span><span class="o">*</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span>
+                            <span class="nb">int</span><span class="p">(</span><span class="n">max_time_per_kernel</span><span class="o">/</span><span class="p">(</span><span class="n">time_per_item</span><span class="o">*</span><span class="n">n_work_items</span><span class="p">)),</span>
+                            <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">work_left</span><span class="o">/</span><span class="n">n_work_items</span><span class="p">))</span> <span class="p">))</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>   
+    <span class="n">report_progress</span><span class="p">(</span><span class="n">vprogress</span><span class="p">,</span> <span class="n">work_size</span><span class="o">-</span><span class="n">work_left</span><span class="p">,</span> <span class="n">work_size</span><span class="p">,</span>
+                    <span class="n">downup_step</span><span class="o">=</span><span class="n">downup_step</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cumulative_time</span>
+
+<span class="k">def</span> <span class="nf">read_kernel_source</span><span class="p">(</span><span class="n">cl_src_path</span><span class="p">,</span> <span class="n">cl_files</span><span class="p">):</span>
+    <span class="n">kernel_source</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">cl_file</span> <span class="ow">in</span> <span class="n">cl_files</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cl_src_path</span><span class="p">,</span><span class="n">cl_file</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">kernel_source</span> <span class="o">+=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">kernel_source</span>
+
+<span class="k">def</span> <span class="nf">prepare_buffers</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">array_dict</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        context (pyopencl.Context):</span>
+<span class="sd">        array_dict (dict):</span>
+<span class="sd">        verbose (bool):</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: buffer_dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Buffers to GPU memory</span>
+    <span class="n">COPY_READ_ONLY</span>  <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">mem_flags</span><span class="o">.</span><span class="n">READ_ONLY</span>  <span class="o">|</span> <span class="n">cl</span><span class="o">.</span><span class="n">mem_flags</span><span class="o">.</span><span class="n">COPY_HOST_PTR</span>
+    <span class="n">COPY_READ_WRITE</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">mem_flags</span><span class="o">.</span><span class="n">READ_WRITE</span> <span class="o">|</span> <span class="n">cl</span><span class="o">.</span><span class="n">mem_flags</span><span class="o">.</span><span class="n">COPY_HOST_PTR</span>
+    <span class="n">WRITE_ONLY</span>      <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">mem_flags</span><span class="o">.</span><span class="n">WRITE_ONLY</span>
+    <span class="c1"># The following could be packed into a list comprehension but would be</span>
+    <span class="c1">#   rather harder to read in that form</span>
+    <span class="n">buffer_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">array_info</span> <span class="ow">in</span> <span class="n">array_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;R&#39;</span> <span class="ow">in</span> <span class="n">array_info</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;rwf&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">array_info</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;rwf&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;RO&#39;</span><span class="p">:</span>
+                <span class="n">flags</span> <span class="o">=</span> <span class="n">COPY_READ_ONLY</span>
+            <span class="k">elif</span> <span class="n">array_info</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;rwf&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;RW&#39;</span><span class="p">:</span>
+                <span class="n">flags</span> <span class="o">=</span> <span class="n">COPY_READ_WRITE</span> 
+            <span class="n">buffer_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+                <span class="n">array_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">hostbuf</span><span class="o">=</span><span class="n">array_info</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;array&#39;</span><span class="p">])</span>
+            <span class="p">})</span>
+        <span class="k">elif</span> <span class="n">array_info</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;rwf&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;WO&#39;</span><span class="p">:</span>
+            <span class="n">flags</span> <span class="o">=</span> <span class="n">WRITE_ONLY</span>
+            <span class="n">buffer_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+                <span class="n">array_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">array_info</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;array&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nbytes</span><span class="p">)</span>
+            <span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">buffer_dict</span>
+
+<span class="k">def</span> <span class="nf">gpu_compute</span><span class="p">(</span><span class="n">cl_state</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">array_dict</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Carry out GPU computation.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        cl_state (obj):</span>
+<span class="sd">        info (dict):</span>
+<span class="sd">        array_dict (dict):</span>
+<span class="sd">        verbose (bool):  </span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Shorthand</span>
+    <span class="n">device</span>        <span class="o">=</span> <span class="n">cl_state</span><span class="o">.</span><span class="n">device</span>
+    <span class="n">context</span>       <span class="o">=</span> <span class="n">cl_state</span><span class="o">.</span><span class="n">context</span>
+    <span class="n">queue</span>         <span class="o">=</span> <span class="n">cl_state</span><span class="o">.</span><span class="n">queue</span>
+    <span class="n">kernel_source</span> <span class="o">=</span> <span class="n">cl_state</span><span class="o">.</span><span class="n">kernel_source</span>
+    <span class="n">kernel_fn</span>     <span class="o">=</span> <span class="n">cl_state</span><span class="o">.</span><span class="n">kernel_fn</span>
+    
+    <span class="c1"># Prepare memory, buffers </span>
+    <span class="n">buffer_dict</span> <span class="o">=</span> <span class="n">prepare_buffers</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">array_dict</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>    
+
+    <span class="c1"># Specify size (# of workitems) and number of workgroups</span>
+    <span class="n">global_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">info</span><span class="o">.</span><span class="n">n_seed_points</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">local_size</span>  <span class="o">=</span> <span class="p">[</span><span class="n">info</span><span class="o">.</span><span class="n">n_work_items</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Compile the CL code</span>
+    <span class="n">compile_options</span> <span class="o">=</span> <span class="n">set_compile_options</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">kernel_fn</span><span class="p">,</span> <span class="n">downup_sign</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1">#     vprint(verbose,&#39;Compile options:\n&#39;, compile_options)</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="n">program</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">kernel_source</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">compile_options</span><span class="p">)</span>
+    <span class="n">report_build_log</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="c1"># Set the GPU kernel</span>
+    <span class="n">kernel</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">kernel_fn</span><span class="p">)</span>
+    <span class="c1"># Designate buffered arrays</span>
+    <span class="n">kernel</span><span class="o">.</span><span class="n">set_args</span><span class="p">(</span><span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="n">buffer_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="n">kernel</span><span class="o">.</span><span class="n">set_scalar_arg_dtypes</span><span class="p">(</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">buffer_dict</span><span class="p">)</span> <span class="p">)</span>
+    
+    <span class="c1"># Do the GPU compute</span>
+    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span>
+           <span class="s1">&#39;#### GPU/OpenCL computation: </span><span class="si">{0}</span><span class="s1"> work items... ####&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">global_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">report_kernel_info</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="n">elapsed_time</span> \
+        <span class="o">=</span> <span class="n">adaptive_enqueue_nd_range_kernel</span><span class="p">(</span> <span class="n">queue</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">global_size</span><span class="p">,</span> 
+                                            <span class="n">local_size</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">n_work_items</span><span class="p">,</span>
+                                            <span class="n">chunk_size_factor</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">chunk_size_factor</span><span class="p">,</span>
+                                            <span class="n">max_time_per_kernel</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">max_time_per_kernel</span><span class="p">,</span>
+                                            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span> <span class="p">)</span>
+    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span>
+           <span class="s1">&#39;#### ...elapsed time for </span><span class="si">{1}</span><span class="s1"> work items: </span><span class="si">{0:.3f}</span><span class="s1">s ####&#39;</span>
+           <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">elapsed_time</span><span class="p">,</span><span class="n">global_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">queue</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>   
+    
+    <span class="c1"># Fetch the data back from the GPU and finish</span>
+    <span class="k">for</span> <span class="n">array_info</span> <span class="ow">in</span> <span class="n">array_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;W&#39;</span> <span class="ow">in</span> <span class="n">array_info</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;rwf&#39;</span><span class="p">]:</span>
+            <span class="n">cl</span><span class="o">.</span><span class="n">enqueue_copy</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">array_info</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;array&#39;</span><span class="p">],</span> <span class="n">buffer_dict</span><span class="p">[</span><span class="n">array_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+            <span class="n">queue</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>   
 </pre></div>
 </div>
 </div>

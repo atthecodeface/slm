@@ -39,8 +39,9 @@ digital terrain models (DTMs). It takes the form of a Python 3 package, some dem
 and a custom set of open-source lidar DTM data files for the notebooks to work on.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">This documentation is a work in progress. Recent deployments of OpenCL acceleration
-and splitting of the git repo have not yet been incorporated.</p>
+<p class="last">This documentation is a work in progress.
+Recent deployments of OpenCL acceleration
+and splitting of the git repo are being incorporated now.</p>
 </div>
 <p>The novelty of the <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> method lies in how it computes the convergence and divergence of terrain driven flow.
 Instead of taking the usual, flow-routing approach at the pixel-scale, it traces topographic streamlines at a sub-pixel resolution
@@ -140,13 +141,13 @@ postprocessing and plotting are carried out:</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules/defaults_json.html"><code class="docutils literal notranslate"><span class="pre">defaults.json</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="Tests/IndianCreekDemo1_json.html"><code class="docutils literal notranslate"><span class="pre">IndianCreekDemo1.json</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="Tests/IndianCreekDemo1_nb.html"><code class="docutils literal notranslate"><span class="pre">IndianCreekDemo1.ipynb</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tests/IndianCreek2_json.html"><code class="docutils literal notranslate"><span class="pre">IndianCreek2.json</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tests/IndianCreek2_nb.html"><code class="docutils literal notranslate"><span class="pre">IndianCreek2.ipynb</span></code></a></li>
 </ul>
 </div>
-<p>More substantial demo analyses can be found in <a class="reference external" href="https://github.com/cstarknyc/slmnb/SmallTests/IndianCreekDemo2.ipynb">IndianCreekDemo2.ipynb</a> and
-<a class="reference external" href="https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeDemo1.ipynb">GuadalupeDemo1.ipynb</a>. Rather bigger DTM analyses are illustrated in
-<a class="reference external" href="https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeDemo2.ipynb">GuadalupeDemo2.ipynb</a>, <a class="reference external" href="https://github.com/cstarknyc/slmnb/BigTests/GuadalupeDemo3.ipynb">GuadalupeDemo3.ipynb</a> and <a class="reference external" href="https://github.com/cstarknyc/slmnb/BigTests/IndianCreekDemo3.ipynb">IndianCreekDemo3.ipynb</a>.</p>
+<p>More substantial demo analyses can be found in <a class="reference external" href="https://github.com/cstarknyc/slmnb/SmallTests/IndianCreek2.ipynb">IndianCreek2.ipynb</a> and
+<a class="reference external" href="https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeMtns1.ipynb">GuadalupeMtns1.ipynb</a>. Rather bigger DTM analyses are illustrated in
+<a class="reference external" href="https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeMtns2.ipynb">GuadalupeMtns2.ipynb</a>, <a class="reference external" href="https://github.com/cstarknyc/slmnb/BigTests/GuadalupeMtns3.ipynb">GuadalupeMtns3.ipynb</a> and <a class="reference external" href="https://github.com/cstarknyc/slmnb/BigTests/IndianCreek3.ipynb">IndianCreek3.ipynb</a>.</p>
 </div>
 <div class="section" id="explanation-of-python-modules-and-opencl-programs">
 <h3>Explanation of Python modules and OpenCL programs<a class="headerlink" href="#explanation-of-python-modules-and-opencl-programs" title="Permalink to this headline">¶</a></h3>
@@ -158,9 +159,10 @@ postprocessing and plotting are carried out:</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules/initialize.html"><code class="docutils literal notranslate"><span class="pre">initialize.py</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/run.html"><code class="docutils literal notranslate"><span class="pre">run.py</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/slm.html"><code class="docutils literal notranslate"><span class="pre">slm.py</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/streamlining.html"><code class="docutils literal notranslate"><span class="pre">streamlining.py</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/parameters.html"><code class="docutils literal notranslate"><span class="pre">parameters.py</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/state.html"><code class="docutils literal notranslate"><span class="pre">state.py</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/core.html"><code class="docutils literal notranslate"><span class="pre">core.py</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/geodata.html"><code class="docutils literal notranslate"><span class="pre">geodata.py</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/preprocess.html"><code class="docutils literal notranslate"><span class="pre">preprocess.py</span></code></a></li>
@@ -168,8 +170,7 @@ postprocessing and plotting are carried out:</p>
 <li class="toctree-l1"><a class="reference internal" href="modules/analysis.html"><code class="docutils literal notranslate"><span class="pre">analysis.py</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/mapping.html"><code class="docutils literal notranslate"><span class="pre">mapping.py</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/plot.html"><code class="docutils literal notranslate"><span class="pre">plot.py</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/export.html"><code class="docutils literal notranslate"><span class="pre">export.py</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/state.html"><code class="docutils literal notranslate"><span class="pre">state.py</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/save.html"><code class="docutils literal notranslate"><span class="pre">save.py</span></code></a></li>
 </ul>
 </div>
 <p>PyOpenCL and OpenCL code is used by <a class="reference internal" href="modules/trace.html"><span class="doc">trace.py</span></a>  and <a class="reference internal" href="modules/mapping.html"><span class="doc">mapping.py</span></a> and
@@ -178,25 +179,34 @@ consists of the following:</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules/pocl.html"><code class="docutils literal notranslate"><span class="pre">pocl.py</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/useful.html"><code class="docutils literal notranslate"><span class="pre">useful.py</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/integration.html"><code class="docutils literal notranslate"><span class="pre">integration.py</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/channelheads.html"><code class="docutils literal notranslate"><span class="pre">channelheads.py</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/connect.html"><code class="docutils literal notranslate"><span class="pre">connect.py</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/countlink.html"><code class="docutils literal notranslate"><span class="pre">countlink.py</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/fields.html"><code class="docutils literal notranslate"><span class="pre">fields.py</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/hillslopes.html"><code class="docutils literal notranslate"><span class="pre">hillslopes.py</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/kde.html"><code class="docutils literal notranslate"><span class="pre">kde.py</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/label.html"><code class="docutils literal notranslate"><span class="pre">label.py</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/segment.html"><code class="docutils literal notranslate"><span class="pre">segment.py</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/lengths.html"><code class="docutils literal notranslate"><span class="pre">lengths.py</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/integration.cl.html"><code class="docutils literal notranslate"><span class="pre">integration.cl</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/connect.cl.html"><code class="docutils literal notranslate"><span class="pre">connect.cl</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/segment.html"><code class="docutils literal notranslate"><span class="pre">segment.py</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/trajectories.html"><code class="docutils literal notranslate"><span class="pre">trajectories.py</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/channelheads.cl.html"><code class="docutils literal notranslate"><span class="pre">channelheads.cl</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/computestep.cl.html"><code class="docutils literal notranslate"><span class="pre">computestep.cl</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/connect.cl.html"><code class="docutils literal notranslate"><span class="pre">connect.cl</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/countlink.cl.html"><code class="docutils literal notranslate"><span class="pre">countlink.cl</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/segment.cl.html"><code class="docutils literal notranslate"><span class="pre">segment.cl</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/essentials.cl.html"><code class="docutils literal notranslate"><span class="pre">essentials.cl</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/hillslopes.cl.html"><code class="docutils literal notranslate"><span class="pre">hillslopes.cl</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/integratefields.cl.html"><code class="docutils literal notranslate"><span class="pre">integratefields.cl</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/integratetraj.cl.html"><code class="docutils literal notranslate"><span class="pre">integratetraj.cl</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/jittertrajectory.cl.html"><code class="docutils literal notranslate"><span class="pre">jittertrajectory.cl</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/kde.cl.html"><code class="docutils literal notranslate"><span class="pre">kde.cl</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/label.cl.html"><code class="docutils literal notranslate"><span class="pre">label.cl</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/lengths.cl.html"><code class="docutils literal notranslate"><span class="pre">lengths.cl</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/rng.cl.html"><code class="docutils literal notranslate"><span class="pre">rng.cl</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/essentials.cl.html"><code class="docutils literal notranslate"><span class="pre">essentials.cl</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/rungekutta.cl.html"><code class="docutils literal notranslate"><span class="pre">rungekutta.cl</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/segment.cl.html"><code class="docutils literal notranslate"><span class="pre">segment.cl</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/trajectory.cl.html"><code class="docutils literal notranslate"><span class="pre">trajectory.cl</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/updatetraj.cl.html"><code class="docutils literal notranslate"><span class="pre">updatetraj.cl</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/writearray.cl.html"><code class="docutils literal notranslate"><span class="pre">writearray.cl</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/trajectoryfns.cl.html"><code class="docutils literal notranslate"><span class="pre">trajectoryfns.cl</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/computestep.cl.html"><code class="docutils literal notranslate"><span class="pre">computestep.cl</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/integrationfns.cl.html"><code class="docutils literal notranslate"><span class="pre">integrationfns.cl</span></code></a></li>
 </ul>
 </div>
 <p>The OpenCL code is best explored in the <a class="reference external" href="https://cstarknyc.github.io/slm/opencl/">Doxygen documentation</a>.</p>

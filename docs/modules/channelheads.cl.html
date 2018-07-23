@@ -39,7 +39,6 @@
 /// Kernels to map provisional channel heads and the prune those not on thin channels.
 ///
 /// @author CPS
-/// @bug No known bugs
 ///
 
 ///
@@ -72,9 +71,26 @@ __kernel void map_channel_heads(
         __global       uint   *mapping_array
    )
 {
-    // For every non-masked pixel...
+    // For every non-masked pixel, all of which are temporarily flagged as
+    //   channel heads, and most of which will be unflagged here
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+#ifdef VERBOSE
+    // Report how kernel instances are distributed
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf(&quot;\n  &gt;&gt;&gt; on GPU/OpenCL device: id=%d offset=%d &quot;,
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf(&quot;#workitems=%d x #workgroups=%d = %d=%d\n&quot;,
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_size(0u));
+    }
+#endif
+    if (global_id&gt;=N_SEED_POINTS) {
+        // This is a &quot;padding&quot; seed, so let&#39;s bail
+        return;
+    }
     __private uint idx, prev_idx, n_steps = 0u;
     __private float dl = 0.0f, dt = DT_MAX;
     __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
@@ -82,41 +98,30 @@ __kernel void map_channel_heads(
 
     // Remember here
     idx = get_array_idx(vec);
+//#ifdef DEBUG
+//    printf(&quot;Map channel heads (%d) @ %d %g,%g\n&quot;,
+//            global_id, idx,vec[0],vec[1]);
+//#endif
     prev_idx = idx;
     // Integrate downstream one pixel
-    while (prev_idx==idx &amp;&amp; !mask_array[idx] &amp;&amp; n_steps&lt;(MAX_N_STEPS-1)) {
+    while (prev_idx==idx &amp;&amp; !mask_array[idx] &amp;&amp; n_steps&lt;MAX_N_STEPS) {
         compute_step_vec(dt, uv_array, &amp;dxy1_vec, &amp;dxy2_vec, &amp;uv1_vec, &amp;uv2_vec,
                          vec, &amp;next_vec, &amp;idx);
         channelheads_runge_kutta_step(&amp;dt, &amp;dl, &amp;dxy1_vec, &amp;dxy2_vec,
                                       &amp;vec, &amp;next_vec, &amp;n_steps, &amp;idx);
     }
-    // If need be, integrate further downstream until a IS_THINCHANNEL pixel is reached
-    n_steps = 0u;
-    while (!mask_array[idx] &amp;&amp; !(mapping_array[idx] &amp; IS_THINCHANNEL)
-           &amp;&amp; n_steps&lt;(MAX_N_STEPS-1)) {
-        compute_step_vec(dt, uv_array, &amp;dxy1_vec, &amp;dxy2_vec, &amp;uv1_vec, &amp;uv2_vec,
-                         vec, &amp;next_vec, &amp;idx);
-        channelheads_runge_kutta_step(&amp;dt, &amp;dl, &amp;dxy1_vec, &amp;dxy2_vec,
-                                      &amp;vec, &amp;next_vec, &amp;n_steps, &amp;idx);
-    }
-    if (n_steps&gt;=(MAX_N_STEPS-1)) {
-//        printf(&quot;stuck...&quot;);
+    if (n_steps&gt;=MAX_N_STEPS) {
         return;
     }
-    // Unset the channel head flag unless we&#39;re really at a channel head maybe
+    // Unset the channel head flag unless we&#39;re at a provisional channel head
     if (!mask_array[idx]) {
         idx = get_array_idx(vec);
-        // If here is not channel...
-        if ((~mapping_array[idx]) &amp; IS_THINCHANNEL){
-            // ...flag here as not channel head
+        if (   ((~mapping_array[idx]) &amp; IS_THINCHANNEL)
+            // If here is not channel...
+            || (mapping_array[prev_idx] &amp; IS_THINCHANNEL) ) {
+            // However, if here is a channel, and if previous pixel was a channel...
             atomic_and(&amp;mapping_array[idx],~IS_CHANNELHEAD);
-        } else {
-            // Here is a channel
-            // If previous pixel was channel...
-            if (mapping_array[prev_idx] &amp; IS_THINCHANNEL) {
-                // ...flag here as not channel head
-                atomic_and(&amp;mapping_array[idx],~IS_CHANNELHEAD);
-            }
+            // ... flag here as not channel head
         }
     }
     return;
@@ -128,21 +133,29 @@ __kernel void map_channel_heads(
 // Check if this nbr is a thin channel pixel and not masked
 // If so, add one to the &#39;flag&#39;.
 // Add 16 if it&#39;s masked, thus recording if *any* nbr is masked.
-#define CHECK_IS_THINCHANNEL(idx) ((mapping_array[idx] &amp; IS_THINCHANNEL)&gt;0)
+#define CHECK_IS_THINCHANNEL(idx) ((mapping_array[idx] &amp; IS_THINCHANNEL)!=0)
+//#define CHECK_ISNOT_CHANNELHEAD(idx) ((mapping_array[idx] &amp; WAS_CHANNELHEAD)==0)
 #define CHECK_IS_MASKED(idx) (mask_array[idx])
-#define CHECK_THINCHANNEL(nbr_vec) { \
-           idx = get_array_idx(nbr_vec); \
-           flag += (CHECK_IS_THINCHANNEL(idx) | CHECK_IS_MASKED(idx)*16); \
+#define CHECK_THINCHANNEL(nbr_vec_x,nbr_vec_y) { \
+           idx = get_array_idx((float2)(nbr_vec_x,nbr_vec_y)); \
+           flag += ( (CHECK_IS_THINCHANNEL(idx) ) \
+                     ); \
         }
+
+// check for masked nbr - turned off
+//| CHECK_IS_MASKED(idx)*16);
+
+//*CHECK_ISNOT_CHANNELHEAD(idx)
+
 // Check all eight pixel-nbr directions
-#define CHECK_E(vec)  CHECK_THINCHANNEL((float2)( vec[0]+1.0f, vec[1]      ))
-#define CHECK_NE(vec) CHECK_THINCHANNEL((float2)( vec[0]+1.0f, vec[1]+1.0f ))
-#define CHECK_N(vec)  CHECK_THINCHANNEL((float2)( vec[0]     , vec[1]+1.0f ))
-#define CHECK_NW(vec) CHECK_THINCHANNEL((float2)( vec[0]-1.0f, vec[1]+1.0f ))
-#define CHECK_W(vec)  CHECK_THINCHANNEL((float2)( vec[0]-1.0f, vec[1]      ))
-#define CHECK_SW(vec) CHECK_THINCHANNEL((float2)( vec[0]-1.0f, vec[1]-1.0f ))
-#define CHECK_S(vec)  CHECK_THINCHANNEL((float2)( vec[0]     , vec[1]-1.0f ))
-#define CHECK_SE(vec) CHECK_THINCHANNEL((float2)( vec[0]+1.0f, vec[1]-1.0f ))
+#define CHECK_E(vec)  CHECK_THINCHANNEL( vec[0]+1.0f, vec[1]      )
+#define CHECK_NE(vec) CHECK_THINCHANNEL( vec[0]+1.0f, vec[1]+1.0f )
+#define CHECK_N(vec)  CHECK_THINCHANNEL( vec[0]     , vec[1]+1.0f )
+#define CHECK_NW(vec) CHECK_THINCHANNEL( vec[0]-1.0f, vec[1]+1.0f )
+#define CHECK_W(vec)  CHECK_THINCHANNEL( vec[0]-1.0f, vec[1]      )
+#define CHECK_SW(vec) CHECK_THINCHANNEL( vec[0]-1.0f, vec[1]-1.0f )
+#define CHECK_S(vec)  CHECK_THINCHANNEL( vec[0]     , vec[1]-1.0f )
+#define CHECK_SE(vec) CHECK_THINCHANNEL( vec[0]+1.0f, vec[1]-1.0f )
 
 ///
 /// Keep only those provisional channel heads that lie on the &#39;thin channel&#39;
@@ -172,10 +185,32 @@ __kernel void prune_channel_heads(
     // For every provisional channel head pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
-    // Use an unsigned integer for the &#39;flag&#39; var, because it needs it to be big
-    __private uint idx, flag = 0;
-    __private float2 vec = seed_point_array[global_id];
-
+    if (global_id&gt;=N_SEED_POINTS) {
+        // This is a &quot;padding&quot; seed, so let&#39;s bail
+#ifdef DEBUG
+        printf(&quot;Bailing @ %d !in [%d-%d]\n&quot;,
+                global_id,get_global_offset(0u),N_SEED_POINTS-1);
+#endif
+        return;
+    }
+#ifdef VERBOSE
+    // Report how kernel instances are distributed
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf(&quot;\n  &gt;&gt;&gt; on GPU/OpenCL device: id=%d offset=%d &quot;,
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf(&quot;#workitems=%d x #workgroups=%d = %d=%d\n&quot;,
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_size(0u));
+    }
+#endif
+    __private uint idx;
+    __private uint flag=0u;
+    const float2 vec = seed_point_array[global_id];
+    // Scan all 8 next/nearest neighbors:
+    //   - add 1 to flag if the nbr is a thin channel pixel
+    //   - add 16 if the nbr is masked (pathological case: 8*16=128)
     CHECK_N(vec);
     CHECK_S(vec);
     CHECK_E(vec);
@@ -186,15 +221,13 @@ __kernel void prune_channel_heads(
     CHECK_SW(vec);
     // If flag==1, one and only one nbr is a thin channel pixel
     // Otherwise, remove this provisional channel head.
-    if (flag!=1) {
+    if (flag!=1u) {
         idx = get_array_idx(vec);
         atomic_and(&amp;mapping_array[idx],~IS_CHANNELHEAD);
-        // If there are no thin channel neighbors AT ALL,
-        //   we must be at an isolated pixel.
+        // If there are no thin channel neighbors AT ALL we must be at an isolated pixel.
         // Thus redesignate this pixel as &#39;not channelized at all&#39;.
-        if (flag==0 || flag&gt;=16) {
-            atomic_and(&amp;mapping_array[idx],IS_THINCHANNEL);
-            atomic_and(&amp;mapping_array[idx],IS_CHANNEL);
+        if (flag==0) { // || flag&gt;=16) {
+            atomic_and(&amp;mapping_array[idx], ~(IS_THINCHANNEL | IS_CHANNEL));
         }
     }
     return;

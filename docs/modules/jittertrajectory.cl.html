@@ -1,0 +1,194 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>jittertrajectory.cl &#8212; Streamlines  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="kde.cl" href="kde.cl.html" />
+    <link rel="prev" title="integratetraj.cl" href="integratetraj.cl.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="jittertrajectory-cl">
+<h1><code class="docutils literal notranslate"><span class="pre">jittertrajectory.cl</span></code><a class="headerlink" href="#jittertrajectory-cl" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>///
+/// @file jittertrajectory.cl
+///
+/// Streamline integration functions.
+///
+/// @author CPS
+///
+
+///
+/// @defgroup integrate Streamline integration
+/// Kernels and functions used to integrate streamlines.
+///
+
+#ifdef KERNEL_INTEGRATE_FIELDS
+///
+/// Integrate a jittered flow path downstream or upstream.
+/// Write the streamline count and lengths to slc, slt arrays.
+/// Don&#39;t record the trajectory itself.
+///
+/// Compiled if KERNEL_INTEGRATE_FIELDS is defined.
+///
+/// @param[in]  uv_array: flow unit velocity vector grid (padded)
+/// @param[in]  mask_array: grid pixel mask (padded),
+///                         with @p true = masked, @p false = good
+/// @param[out]  mapping_array: multi-flag array
+/// @param[out] slc_array: grid recording accumulated count of streamline integration
+///                        steps across each pixel (padded)
+/// @param[out] slt_array: grid recording accumulated count of streamline segment lengths
+///                        crossing each pixel (padded)
+/// @param[in]  global_id: ID of the kernel instance
+/// @param[in]  seed_idx: index of the seed vector in the list seed_point_array;
+///                       if chunkified, the sequence of indexes is offset from
+///                       @p global_id by @p SEEDS_CHUNK_OFFSET
+/// @param[in]  current_seed_point_vec: vector (real, float2) for the current point
+///                                     along the streamline trajectory
+/// @param[in]  initial_rng_state: RNG state and integer variate
+///
+/// @returns void
+///
+/// @ingroup integrate
+///
+static inline void jittered_trajectory( __global const float2 *uv_array,
+                                        __global const bool   *mask_array,
+                                        __global       uint   *mapping_array,
+                                        __global       uint   *slc_array,
+                                        __global       uint   *slt_array,
+                                                 const uint    global_id,
+                                                 const uint    seed_idx,
+                                                 const float2  current_seed_point_vec,
+                                                 const uint    initial_rng_state )
+{
+    // Private variables - non-constant within this kernel instance
+    __private uint idx, n_steps=0u, rng_state=initial_rng_state;
+    __private float l_trajectory=0.0f, dl=0.0f, dt=DT_MAX;
+    __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
+                     vec=current_seed_point_vec, prev_vec, next_vec;
+    prev_vec = vec;
+
+    // Start by recording the seed point
+    idx = get_array_idx(vec);
+    if (!mask_array[idx])
+        atomic_write_sl_data(&amp;slt_array[idx], &amp;slc_array[idx], l_trajectory);
+
+    // Loop downstream until the pixel is masked, i.e., we&#39;ve exited the basin or grid,
+    //   or if the streamline is too long (in l_trajectory or n_steps)
+    while (idx&lt;NXY_PADDED &amp;&amp; !mask_array[idx]
+                        &amp;&amp; (l_trajectory&lt;MAX_LENGTH &amp;&amp; n_steps&lt;MAX_N_STEPS)) {
+        compute_step_vec_jittered(dt, uv_array, &amp;rng_state, &amp;dxy1_vec, &amp;dxy2_vec,
+                                  &amp;uv1_vec, &amp;uv2_vec, vec, &amp;next_vec, &amp;idx);
+        if (idx&lt;NXY_PADDED) {
+            if (!mask_array[idx])
+                if (runge_kutta_step_write_sl_data(&amp;dt, &amp;dl, &amp;l_trajectory,
+                                                   &amp;dxy1_vec, &amp;dxy2_vec,
+                                                   &amp;vec, &amp;prev_vec, next_vec,
+                                                   &amp;n_steps, &amp;idx,
+                                                   mask_array, mapping_array,
+                                                   slt_array, slc_array)) {
+                    break;
+                }
+            } else {
+                euler_step_write_sl_data(&amp;dt, &amp;dl, &amp;l_trajectory, uv1_vec,
+                                         &amp;vec, prev_vec, &amp;n_steps, &amp;idx,
+                                         mask_array, slt_array, slc_array);
+                break;
+            }
+    }
+    return;
+}
+#endif
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">Streamlines</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Topographic streamline mapping of landscape structure</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
+<h3>Related</h3>
+<ul>
+  <li><a href="../index.html"></a><ul>
+      <li><a href="integratetraj.cl.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">integratetraj.cl</span></code></a></li>
+      <li><a href="kde.cl.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">kde.cl</span></code></a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, CPS.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/modules/jittertrajectory.cl.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

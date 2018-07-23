@@ -66,10 +66,10 @@ from raw DTM data.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><em>object</em></a>) – </li>
-<li><strong>imported_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – </li>
-<li><strong>geodata</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><em>object</em></a>) – </li>
-<li><strong>preprocess</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><em>object</em></a>) – </li>
+<li><strong>state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – </li>
+<li><strong>imported_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – </li>
+<li><strong>geodata</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – </li>
+<li><strong>preprocess</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – </li>
 </ul>
 </td>
 </tr>
@@ -102,31 +102,15 @@ from raw DTM data.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="streamlines.trace.Trace.build_info_struct">
-<code class="descname">build_info_struct</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.trace.Trace.build_info_struct" title="Permalink to this definition">¶</a></dt>
-<dd><p>TBD.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">info_struct</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)">numpy.ndarray</a></td>
-</tr>
-</tbody>
-</table>
+<dt id="streamlines.trace.Trace.compute_fields">
+<code class="descname">compute_fields</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.trace.Trace.compute_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trace up or downstreamlines across region of interest (ROI) of DTM grid.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="streamlines.trace.Trace.create_seeds">
-<code class="descname">create_seeds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.trace.Trace.create_seeds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parent method to generate streamline seed points.</p>
-<dl class="attribute">
-<dt>
-<code class="descclassname">self.</code><code class="descname">seed_point_array</code></dt>
-<dd><p><em>numpy.ndarray</em></p>
-</dd></dl>
-
+<dt id="streamlines.trace.Trace.compute_trajectories">
+<code class="descname">compute_trajectories</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.trace.Trace.compute_trajectories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trace up or downstreamlines across region of interest (ROI) of DTM grid.</p>
 </dd></dl>
 
 <dl class="method">
@@ -184,23 +168,6 @@ and derive mean streamline point spacing.</p>
 
 </dd></dl>
 
-<dl class="method">
-<dt id="streamlines.trace.Trace.trace_streamlines">
-<code class="descname">trace_streamlines</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.trace.Trace.trace_streamlines" title="Permalink to this definition">¶</a></dt>
-<dd><p>Trace up or downstreamlines across region of interest (ROI) of DTM grid.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list, numpy.ndarray, numpy.ndarray, pandas.DataFrame,
-numpy.ndarray, numpy.ndarray, numpy.ndarray:
-streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df,
-slc_array, slt_array, sla_array</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -214,13 +181,15 @@ slc_array, slt_array, sla_array</td>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span>  <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">timeit</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">environ</span>
 <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYTHONUNBUFFERED&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;True&#39;</span>
-<span class="kn">from</span> <span class="nn">streamlines.core</span> <span class="k">import</span> <span class="n">Core</span>
-<span class="kn">from</span> <span class="nn">streamlines.integration</span> <span class="k">import</span> <span class="n">integrate_trajectories</span>
+
+<span class="kn">from</span> <span class="nn">streamlines.core</span>         <span class="k">import</span> <span class="n">Core</span>
+<span class="kn">from</span> <span class="nn">streamlines.trajectories</span> <span class="k">import</span> <span class="n">Trajectories</span>
+<span class="kn">from</span> <span class="nn">streamlines.fields</span>       <span class="k">import</span> <span class="n">Fields</span>
+<span class="kn">from</span> <span class="nn">streamlines.useful</span>       <span class="k">import</span> <span class="n">Data</span><span class="p">,</span> <span class="n">Info</span><span class="p">,</span> <span class="n">get_bbox</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Trace&#39;</span><span class="p">]</span>
 
@@ -260,26 +229,8 @@ slc_array, slt_array, sla_array</td>
         <span class="nb">super</span><span class="p">(</span><span class="n">Trace</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">)</span>  
         <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span> <span class="o">=</span> <span class="n">geodata</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span> <span class="o">=</span> <span class="n">preprocess</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seed_point_array</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">flags</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s1">&#39;is_channel&#39;</span><span class="p">,</span>         <span class="c1"># 1</span>
-            <span class="s1">&#39;is_thinchannel&#39;</span><span class="p">,</span>     <span class="c1"># 2</span>
-            <span class="s1">&#39;is_interchannel&#39;</span><span class="p">,</span>    <span class="c1"># 4</span>
-            <span class="s1">&#39;is_channelhead&#39;</span><span class="p">,</span>     <span class="c1"># 8</span>
-            <span class="s1">&#39;is_channeltail&#39;</span><span class="p">,</span>     <span class="c1"># 16</span>
-            <span class="s1">&#39;is_majorconfluence&#39;</span><span class="p">,</span> <span class="c1"># 32</span>
-            <span class="s1">&#39;is_minorconfluence&#39;</span><span class="p">,</span> <span class="c1"># 64</span>
-            <span class="s1">&#39;is_majorinflow&#39;</span><span class="p">,</span>     <span class="c1"># 128</span>
-            <span class="s1">&#39;is_minorinflow&#39;</span><span class="p">,</span>     <span class="c1"># 256</span>
-            <span class="s1">&#39;is_leftflank&#39;</span><span class="p">,</span>       <span class="c1"># 512</span>
-            <span class="s1">&#39;is_rightflank&#39;</span><span class="p">,</span>      <span class="c1"># 1024</span>
-            <span class="s1">&#39;is_midslope&#39;</span><span class="p">,</span>        <span class="c1"># 2048</span>
-            <span class="s1">&#39;is_ridge&#39;</span><span class="p">,</span>           <span class="c1"># 4028</span>
-            <span class="s1">&#39;is_stuck&#39;</span><span class="p">,</span>           <span class="c1"># 8196</span>
-            <span class="s1">&#39;is_loop&#39;</span><span class="p">,</span>            <span class="c1"># 16384</span>
-            <span class="s1">&#39;is_blockage&#39;</span>         <span class="c1"># 32768</span>
-            <span class="p">]</span>
-        <span class="p">[</span><span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">flag</span><span class="p">,</span><span class="mi">2</span><span class="o">**</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">flag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">flags</span><span class="p">)]</span>
         
     <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -296,184 +247,85 @@ slc_array, slt_array, sla_array</td>
 <span class="sd">            slt_array (numpy.ndarray):</span>
 <span class="sd">            sla_array (numpy.ndarray):</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">**Trace begin**&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
-        <span class="c1"># Assign a possibly irregular (near bdries) grid of initial streamline points</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">create_seeds</span><span class="p">()</span>
-        <span class="c1"># Do the streamline integrations up and then downstream</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">trace_streamlines</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">**Trace begin**&#39;</span><span class="p">)</span>  
+        <span class="c1"># Integrate streamlines downstream and upstream</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_trajectories</span><span class="p">()</span>
+        <span class="c1"># Map mean streamline integrations downstream and upstream</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_fields</span><span class="p">()</span>
         <span class="c1"># Done</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;**Trace end**</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
-        
-    <span class="k">def</span> <span class="nf">create_seeds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parent method to generate streamline seed points.   </span>
-<span class="sd">            </span>
-<span class="sd">        Attributes:</span>
-<span class="sd">            self.seed_point_array (numpy.ndarray):</span>
-<span class="sd">        </span>
-<span class="sd">        &quot;&quot;&quot;</span>    
-        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Generating seed points&#39;</span><span class="p">)</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span>
-        <span class="n">pad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">pad_width</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="o">==</span><span class="s1">&#39;F&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">seed_point_array</span> \
-                <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">-</span> <span class="n">pad</span><span class="p">)</span>
-                   <span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">seed_point_array</span> \
-                <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">-</span> <span class="n">pad</span><span class="p">)</span>
-                   <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">,</span><span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;**Trace end**</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>  
 
-    <span class="k">def</span> <span class="nf">build_info_struct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        TBD.</span>
-<span class="sd">    </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            numpy.ndarray: info_struct</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mf">0.0</span><span class="p">):</span>
-            <span class="n">max_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">max_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span>
-        <span class="n">max_n_steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">integrator_step_factor</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interchannel_max_n_steps</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-            <span class="n">interchannel_max_n_steps</span> <span class="o">=</span> <span class="n">max_n_steps</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">interchannel_max_n_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interchannel_max_n_steps</span>
-
-        <span class="n">info_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([</span>
-                <span class="p">(</span><span class="s1">&#39;array_order&#39;</span><span class="p">,</span> <span class="s1">&#39;U1&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;downup_sign&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;gpu_memory_limit_pc&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;integrator_step_factor&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;max_integration_step_error&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;adjusted_max_error&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;pixel_size&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;integration_halt_threshold&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;pad_width&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;pad_width_pp5&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;nx&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;ny&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;nxf&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;nyf&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;nx_padded&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;ny_padded&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;x_max&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;y_max&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;grid_scale&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;combo_factor&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;dt_max&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;max_n_steps&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;trajectory_resolution&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;seeds_chunk_offset&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;subpixel_seed_point_density&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;subpixel_seed_halfspan&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;subpixel_seed_step&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;jitter_magnitude&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;interchannel_max_n_steps&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;segmentation_threshold&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;left_flank_addition&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_channel&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_thinchannel&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_interchannel&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_channelhead&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_channeltail&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_majorconfluence&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_minorconfluence&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_majorinflow&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_minorinflow&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_leftflank&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_rightflank&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_midslope&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_ridge&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_stuck&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_loop&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;is_blockage&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
-            <span class="p">])</span>          
-        <span class="n">grid_scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_nx</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_ny</span><span class="p">))</span>
-        <span class="n">nxf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_nx</span><span class="p">)</span>
-        <span class="n">nyf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_ny</span><span class="p">)</span>
-        <span class="n">dt_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">nxf</span><span class="p">,</span><span class="mf">1.0</span><span class="o">/</span><span class="n">nyf</span><span class="p">),</span><span class="mf">0.1</span><span class="p">)</span>
-        <span class="n">subpixel_seed_span</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">-</span><span class="mf">1.0</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subpixel_seed_point_density</span><span class="p">)</span>
-        <span class="n">subpixel_seed_step</span> <span class="o">=</span> <span class="n">subpixel_seed_span</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subpixel_seed_point_density</span><span class="p">)</span><span class="o">-</span><span class="mf">1.0</span> 
-                               <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subpixel_seed_point_density</span><span class="o">&gt;</span><span class="mi">1</span> <span class="k">else</span> <span class="mf">1.0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">string_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">array_order</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">gpu_memory_limit_pc</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">integrator_step_factor</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_integration_step_error</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mf">0.85</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">max_integration_step_error</span><span class="p">))),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">max_length</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_pixel_size</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_pixel_size</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">integration_halt_threshold</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">pad_width</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">pad_width</span><span class="p">)</span><span class="o">+</span><span class="mf">0.5</span><span class="p">,</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_nx</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_ny</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">nxf</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">nyf</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_nx</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">pad_width</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_ny</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">pad_width</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">nxf</span><span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">nyf</span><span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">grid_scale</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">grid_scale</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">integrator_step_factor</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">dt_max</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">max_n_steps</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectory_resolution</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subpixel_seed_point_density</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">subpixel_seed_span</span><span class="o">/</span><span class="mf">2.0</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">subpixel_seed_step</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jitter_magnitude</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">interchannel_max_n_steps</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segmentation_threshold</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left_flank_addition</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_channel</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_thinchannel</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_interchannel</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_channelhead</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_channeltail</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_majorconfluence</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_minorconfluence</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_majorinflow</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_minorinflow</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_leftflank</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_rightflank</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_midslope</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_ridge</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_stuck</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_loop</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_blockage</span><span class="p">)</span>
-        <span class="p">)],</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">info_dtype</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">trace_streamlines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">compute_trajectories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Trace up or downstreamlines across region of interest (ROI) of DTM grid.</span>
 <span class="sd">    </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            list, numpy.ndarray, numpy.ndarray, pandas.DataFrame,</span>
-<span class="sd">            numpy.ndarray, numpy.ndarray, numpy.ndarray: </span>
-<span class="sd">            streamline_arrays_list, traj_nsteps_array, traj_length_array, traj_stats_df,</span>
-<span class="sd">            slc_array, slt_array, sla_array</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">streamline_arrays_list</span><span class="p">,</span>
-         <span class="bp">self</span><span class="o">.</span><span class="n">traj_nsteps_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj_length_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj_stats_df</span><span class="p">,</span>
-         <span class="bp">self</span><span class="o">.</span><span class="n">slc_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slt_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sla_array</span><span class="p">)</span> \
-            <span class="o">=</span> <span class="n">integrate_trajectories</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_src_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_device</span><span class="p">,</span> 
-                <span class="bp">self</span><span class="o">.</span><span class="n">build_info_struct</span><span class="p">(),</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">seed_point_array</span><span class="p">,</span> 
-                <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">u_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">v_array</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">do_trace_downstream</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_trace_upstream</span><span class="p">,</span> 
-                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span>
-            <span class="p">)</span>
-        <span class="k">return</span>
+        <span class="n">mask_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">merge_active_masks</span><span class="p">()</span>
+        <span class="n">bbox</span><span class="p">,</span> <span class="n">bnx</span><span class="p">,</span> <span class="n">bny</span> <span class="o">=</span> <span class="n">get_bbox</span><span class="p">(</span><span class="o">~</span><span class="n">mask_array</span><span class="p">)</span>
+        <span class="n">pad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">pad_width</span>
+        <span class="n">nxp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_nx</span><span class="o">+</span><span class="n">pad</span><span class="o">*</span><span class="mi">2</span>
+        <span class="n">nyp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_ny</span><span class="o">+</span><span class="n">pad</span><span class="o">*</span><span class="mi">2</span>
+        <span class="n">mapping_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nxp</span><span class="p">,</span><span class="n">nyp</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">Info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_pixel_size</span><span class="p">)</span>
+        <span class="n">info</span><span class="o">.</span><span class="n">set_xy</span><span class="p">(</span><span class="n">bnx</span><span class="p">,</span><span class="n">bny</span><span class="p">,</span> <span class="n">pad</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">pad</span><span class="p">,</span>
+                     <span class="n">mapping_array</span> <span class="o">=</span> <span class="n">mapping_array</span><span class="p">,</span>
+                     <span class="n">mask_array</span>    <span class="o">=</span> <span class="n">mask_array</span><span class="p">,</span>
+                     <span class="n">uv_array</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">uv_array</span>
+                     <span class="p">)</span>
+        <span class="n">trajectories</span> <span class="o">=</span> <span class="n">Trajectories</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_device</span><span class="p">,</span>
+                                     <span class="n">cl_src_path</span>         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_src_path</span><span class="p">,</span>
+                                     <span class="n">info</span>                <span class="o">=</span> <span class="n">info</span><span class="p">,</span>
+                                     <span class="n">data</span>                <span class="o">=</span> <span class="n">data</span><span class="p">,</span>
+                                     <span class="n">do_trace_downstream</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_trace_downstream</span><span class="p">,</span>
+                                     <span class="n">do_trace_upstream</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_trace_upstream</span><span class="p">,</span>
+                                     <span class="n">verbose</span>             <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
+                                     <span class="n">gpu_verbose</span>         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">gpu_verbose</span> 
+                                     <span class="p">)</span>
+        <span class="n">trajectories</span><span class="o">.</span><span class="n">integrate</span><span class="p">()</span>
+        <span class="c1"># Only preserve what we need from the trajectories class instance</span>
+        <span class="n">offset_xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">pad</span><span class="p">,</span><span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">pad</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seed_point_array</span>       <span class="o">=</span> <span class="n">trajectories</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">seed_point_array</span><span class="o">+</span><span class="n">offset_xy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">streamline_arrays_list</span> <span class="o">=</span> <span class="n">trajectories</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">streamline_arrays_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traj_stats_df</span>          <span class="o">=</span> <span class="n">trajectories</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">traj_stats_df</span>
+
+    <span class="k">def</span> <span class="nf">compute_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Trace up or downstreamlines across region of interest (ROI) of DTM grid.</span>
+<span class="sd">    </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mask_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">merge_active_masks</span><span class="p">()</span>
+        <span class="n">bbox</span><span class="p">,</span> <span class="n">bnx</span><span class="p">,</span> <span class="n">bny</span> <span class="o">=</span> <span class="n">get_bbox</span><span class="p">(</span><span class="o">~</span><span class="n">mask_array</span><span class="p">)</span>
+        <span class="n">pad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">pad_width</span>
+        <span class="n">nxp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_nx</span><span class="o">+</span><span class="n">pad</span><span class="o">*</span><span class="mi">2</span>
+        <span class="n">nyp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_ny</span><span class="o">+</span><span class="n">pad</span><span class="o">*</span><span class="mi">2</span>
+        <span class="n">mapping_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nxp</span><span class="p">,</span><span class="n">nyp</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">Info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_pixel_size</span><span class="p">)</span>
+        <span class="n">info</span><span class="o">.</span><span class="n">set_xy</span><span class="p">(</span><span class="n">bnx</span><span class="p">,</span><span class="n">bny</span><span class="p">,</span> <span class="n">pad</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">pad</span><span class="p">,</span>
+                     <span class="n">mask_array</span>    <span class="o">=</span> <span class="n">mask_array</span><span class="p">,</span>
+                     <span class="n">uv_array</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">uv_array</span><span class="p">,</span>
+                     <span class="n">mapping_array</span> <span class="o">=</span> <span class="n">mapping_array</span><span class="p">,</span>
+                     <span class="n">traj_stats_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj_stats_df</span> 
+                     <span class="p">)</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">Fields</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_device</span><span class="p">,</span>
+                         <span class="n">cl_src_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">cl_src_path</span><span class="p">,</span>
+                         <span class="n">info</span>        <span class="o">=</span> <span class="n">info</span><span class="p">,</span>
+                         <span class="n">data</span>        <span class="o">=</span> <span class="n">data</span><span class="p">,</span>
+                         <span class="n">verbose</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
+                         <span class="n">gpu_verbose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">gpu_verbose</span> 
+                         <span class="p">)</span>
+        <span class="n">fields</span><span class="o">.</span><span class="n">integrate</span><span class="p">()</span>
+        <span class="c1"># Only preserve what we need from the trajectories class instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slc_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nxp</span><span class="p">,</span><span class="n">nyp</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slt_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nxp</span><span class="p">,</span><span class="n">nyp</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sla_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nxp</span><span class="p">,</span><span class="n">nyp</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="c1"># Insert results back into full (padded) DTM ROI grid arrays</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">bounds_slx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slc_array</span><span class="p">[</span><span class="n">bounds</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">slc_array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slt_array</span><span class="p">[</span><span class="n">bounds</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">slt_array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sla_array</span><span class="p">[</span><span class="n">bounds</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sla_array</span>
+        
 </pre></div>
 </div>
 </div>

@@ -1,0 +1,162 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>IndianCreek2.ipynb &#8212; Streamlines  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="indiancreek2-ipynb">
+<h1><code class="docutils literal notranslate"><span class="pre">IndianCreek2.ipynb</span></code><a class="headerlink" href="#indiancreek2-ipynb" title="Permalink to this headline">¶</a></h1>
+<p>Demo IPython/Jupyter notebook #1</p>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> workflow is invoked in an IPython/Jupyter notebook as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">JSON_parameters_file</span> <span class="o">=</span> <span class="s1">&#39;./IndianCreek2&#39;</span>
+<span class="kn">import</span> <span class="nn">streamlines</span>
+<span class="n">sl</span> <span class="o">=</span> <span class="n">streamlines</span><span class="o">.</span><span class="n">run</span><span class="p">(</span> <span class="n">parameters_file</span><span class="o">=</span><span class="n">JSON_parameters_file</span><span class="p">,</span> \
+                     <span class="n">do_geodata</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> \
+                     <span class="n">do_preprocess</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">do_condition</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> \
+                     <span class="n">do_trace</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> \
+                     <span class="n">do_postprocess</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">do_analysis</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> \
+                     <span class="n">do_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">do_save_state</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> \
+                     <span class="n">do_export</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> \
+                     <span class="n">do_reload_state</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>The default workflow options (set by <a class="reference internal" href="../modules/defaults_json.html"><span class="doc">defaults.json</span></a>) are <code class="docutils literal notranslate"><span class="pre">do_geodata</span></code>, <code class="docutils literal notranslate"><span class="pre">do_preprocess</span></code> along with <code class="docutils literal notranslate"><span class="pre">do_condition</span></code>, and <code class="docutils literal notranslate"><span class="pre">do_trace</span></code>;
+the subsequent options <code class="docutils literal notranslate"><span class="pre">do_postprocess</span></code>, <code class="docutils literal notranslate"><span class="pre">do_analysis</span></code>, <code class="docutils literal notranslate"><span class="pre">do_plot</span></code>, <code class="docutils literal notranslate"><span class="pre">do_save_state</span></code> and  <code class="docutils literal notranslate"><span class="pre">do_export</span></code> are all turned off by default,
+as is the <code class="docutils literal notranslate"><span class="pre">do_reload_state</span></code> option.
+The job JSON file, in this case <span class="xref std std-doc">IndianCreek2.json</span>, can override these defaults.
+Finally, the options set as above in the invocation <code class="docutils literal notranslate"><span class="pre">streamlines.run()</span></code> will override those set in the the JSON files.</p>
+<p>Here the run options mirror the defaults and those set in the job JSON file, such that the main streamline computational steps <a class="reference internal" href="../modules/geodata.html#module-streamlines.geodata" title="streamlines.geodata"><code class="xref py py-mod docutils literal notranslate"><span class="pre">geodata</span></code></a>,
+<a class="reference internal" href="../modules/preprocess.html#module-streamlines.preprocess" title="streamlines.preprocess"><code class="xref py py-mod docutils literal notranslate"><span class="pre">preprocess</span></code></a>
+with  <a class="reference internal" href="../modules/preprocess.html#streamlines.preprocess.Preprocess.conditioned_gradient_vector_field" title="streamlines.preprocess.Preprocess.conditioned_gradient_vector_field"><code class="xref py py-meth docutils literal notranslate"><span class="pre">conditioning</span></code></a>,
+and <a class="reference internal" href="../modules/trace.html#module-streamlines.trace" title="streamlines.trace"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trace</span></code></a> are  executed.
+The workflow state and all of its functionality are then returned in the <a class="reference internal" href="../modules/streamlining.html#streamlines.streamlining.Streamlining" title="streamlines.streamlining.Streamlining"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sl</span></code></a> object.</p>
+<p>Further processing can then be carried out by invoking methods provided by class instances
+referenced by <a class="reference internal" href="../modules/streamlining.html#streamlines.streamlining.Streamlining" title="streamlines.streamlining.Streamlining"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sl</span></code></a>, e.g.,:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">postprocess</span><span class="o">.</span><span class="n">do</span><span class="p">()</span>
+<span class="n">sl</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">do</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Plotting of results can be fine-tuned:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">do_plot_streamlines</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">sl</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">plot_maps</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>which yields:</p>
+<img alt="Tests/../images/IndianCreek2_streamlines.png" src="Tests/../images/IndianCreek2_streamlines.png" />
+<p>Currently the set of class instances and public methods provided by <a class="reference internal" href="../modules/streamlining.html#streamlines.streamlining.Streamlining" title="streamlines.streamlining.Streamlining"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sl</span></code></a> are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">dir</span><span class="p">(</span><span class="n">sl</span><span class="p">)</span>
+<span class="p">[</span><span class="s1">&#39;analysis&#39;</span><span class="p">,</span> <span class="s1">&#39;export&#39;</span><span class="p">,</span> <span class="s1">&#39;geodata&#39;</span><span class="p">,</span> <span class="s1">&#39;inventorize&#39;</span><span class="p">,</span> <span class="s1">&#39;plot&#39;</span><span class="p">,</span> <span class="s1">&#39;postprocess&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;preprocess&#39;</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;trace&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="github-render">
+<h2>GitHub render<a class="headerlink" href="#github-render" title="Permalink to this headline">¶</a></h2>
+<p>See: <a class="reference external" href="https://github.com/cstarknyc/slmnb/blob/master/SmallTests/IndianCreek2.ipynb">IndianCreek2.ipynb</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">Streamlines</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Topographic streamline mapping of landscape structure</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <br>
+  <p class="biglink"><a class="biglink" href="../py-modindex.html">
+         Module Index</a>
+  <br><br>
+  <h3><a href="../index.html">Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">IndianCreek2.ipynb</span></code></a><ul>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#github-render">GitHub render</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related</h3>
+<ul>
+  <li><a href="../index.html"></a><ul>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, CPS.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/Tests/IndianCreekDemo_nb.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

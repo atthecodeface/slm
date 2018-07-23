@@ -38,7 +38,7 @@
 <p>This <a class="reference internal" href="#module-streamlines.core" title="streamlines.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code></a> module provides a base initialization class
 that is inherited by each workflow class.
 On instantiation of each such class, the base initialization parses the parameter
-dictionary loaded from the ‘job’ <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.6)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">JSON</span></code></a> file specified at the command line,
+dictionary loaded from the ‘job’ <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">JSON</span></code></a> file specified at the command line,
 extracts the set of parameters pertaining to the workflow class,
 and assigns the values to the workflow class instance accordingly.</p>
 <p>The following workflow classes inherit
@@ -48,7 +48,9 @@ the <a class="reference internal" href="#module-streamlines.core" title="streaml
 <li><a class="reference internal" href="preprocess.html#streamlines.preprocess.Preprocess" title="streamlines.preprocess.Preprocess"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.preprocess.Preprocess</span></code></a></li>
 <li><a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.trace.Trace</span></code></a></li>
 <li><a class="reference internal" href="analysis.html#streamlines.analysis.Analysis" title="streamlines.analysis.Analysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.analysis.Analysis</span></code></a></li>
+<li><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.analysis.Mapping</span></code></li>
 <li><a class="reference internal" href="plot.html#streamlines.plot.Plot" title="streamlines.plot.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.plot.Plot</span></code></a></li>
+<li><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.plot.Export</span></code></li>
 </ul>
 <dl class="class">
 <dt id="streamlines.core.Core">
@@ -64,9 +66,9 @@ initialization that loads up their parameter sets as class instance attributes.<
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><em>object</em></a>) – The <a class="reference internal" href="state.html#streamlines.state.State" title="streamlines.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> class instance.</li>
-<li><strong>imported_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – The parameters dictionary loaded from
-a <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.6)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">JSON</span></code></a> file.</li>
+<li><strong>state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – The <a class="reference internal" href="state.html#streamlines.state.State" title="streamlines.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> class instance.</li>
+<li><strong>imported_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – The parameters dictionary loaded from
+a <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">JSON</span></code></a> file.</li>
 </ul>
 </td>
 </tr>
@@ -94,7 +96,7 @@ with the value <code class="docutils literal notranslate"><span class="pre">&quo
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><em>object</em></a>) – The <a class="reference internal" href="state.html#streamlines.state.State" title="streamlines.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> class instance.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – The <a class="reference internal" href="state.html#streamlines.state.State" title="streamlines.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> class instance.</td>
 </tr>
 </tbody>
 </table>
@@ -135,12 +137,16 @@ to record the state of the <a class="reference internal" href="trace.html#stream
 <span class="sd">- :class:`streamlines.preprocess.Preprocess`</span>
 <span class="sd">- :class:`streamlines.trace.Trace`</span>
 <span class="sd">- :class:`streamlines.analysis.Analysis`</span>
+<span class="sd">- :class:`streamlines.analysis.Mapping`</span>
 <span class="sd">- :class:`streamlines.plot.Plot`</span>
+<span class="sd">- :class:`streamlines.plot.Export`</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">json</span> <span class="k">import</span> <span class="n">dumps</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
 <span class="kn">import</span> <span class="nn">streamlines</span>
 <span class="n">pdebug</span> <span class="o">=</span> <span class="nb">print</span>
 
@@ -181,6 +187,8 @@ to record the state of the <a class="reference internal" href="trace.html#stream
                 <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">obj_list</span> <span class="o">+=</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active_masks_dict</span> <span class="o">=</span> <span class="p">{}</span>
             
         <span class="n">workflow_class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">imported_parameters</span><span class="p">[</span><span class="n">workflow_class_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -258,7 +266,14 @@ to record the state of the <a class="reference internal" href="trace.html#stream
 
     <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">pprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
 </pre></div>
 </div>
 </div>

@@ -43,8 +43,9 @@
 
 <span class="cp">#if defined(KERNEL_INTEGRATE_TRAJECTORY) || defined(KERNEL_CONNECT_CHANNELS) \</span>
 <span class="cp">    || defined(KERNEL_MAP_CHANNEL_HEADS) || defined(KERNEL_COUNT_DOWNCHANNELS) \</span>
-<span class="cp">    || defined(KERNEL_LINK_HILLSLOPES)   || defined(KERNEL_SEGMENT_HILLSLOPES) \</span>
-<span class="cp">    || defined(KERNEL_SUBSEGMENT_FLANKS) || defined(KERNEL_HILLSLOPE_LENGTHS)</span>
+<span class="cp">    || defined(KERNEL_HILLSLOPES)        || defined(KERNEL_SEGMENT_HILLSLOPES) \</span>
+<span class="cp">    || defined(KERNEL_SUBSEGMENT_FLANKS) || defined(KERNEL_HILLSLOPE_LENGTHS) \</span>
+<span class="cp">    || defined(KERNEL_FIX_RIGHT_FLANKS)  || defined(KERNEL_FIX_LEFT_FLANKS)</span>
 <span class="c1">///</span>
 <span class="c1">/// Compute a 2nd-order Runge-Kutta integration step along a streamline.</span>
 <span class="c1">///</span>
@@ -53,7 +54,7 @@
 <span class="c1">///    - KERNEL_CONNECT_CHANNELS</span>
 <span class="c1">///    - KERNEL_MAP_CHANNEL_HEADS</span>
 <span class="c1">///    - KERNEL_COUNT_DOWNCHANNELS</span>
-<span class="c1">///    - KERNEL_LINK_HILLSLOPES</span>
+<span class="c1">///    - KERNEL_HILLSLOPES</span>
 <span class="c1">///    - KERNEL_SEGMENT_HILLSLOPES</span>
 <span class="c1">///    - KERNEL_SUBSEGMENT_FLANKS</span>
 <span class="c1">///    - KERNEL_HILLSLOPE_LENGTHS</span>
@@ -91,7 +92,7 @@
 <span class="p">}</span>
 <span class="cp">#endif</span>
 
-<span class="cp">#if defined(KERNEL_INTEGRATE_TRAJECTORY) &amp;&amp; defined(IS_RNG_AVAILABLE)</span>
+<span class="cp">#if defined(KERNEL_INTEGRATE_FIELDS) &amp;&amp; defined(IS_RNG_AVAILABLE)</span>
 <span class="c1">///</span>
 <span class="c1">/// Compute a jittered 2nd-order Runge-Kutta integration step along a streamline.</span>
 <span class="c1">/// Jittering is achieved by adding a uniform random vector to of the RK2 flow velocity</span>
@@ -99,7 +100,7 @@
 <span class="c1">/// The [0,1) uniform variates are scaled by JITTER_MAGNITUDE before addition</span>
 <span class="c1">///   to the unit flow vectors.</span>
 <span class="c1">///</span>
-<span class="c1">/// Compiled if KERNEL_INTEGRATE_TRAJECTORY and IS_RNG_AVAILABLE is defined.</span>
+<span class="c1">/// Compiled if KERNEL_INTEGRATE_FIELDS and IS_RNG_AVAILABLE is defined.</span>
 <span class="c1">///</span>
 <span class="c1">/// @param[in]      dt: delta time step</span>
 <span class="c1">/// @param[in]      uv_array  (float *,  RO): gridded velocity vector components (u,v)</span>
@@ -121,7 +122,7 @@
                                              <span class="k">const</span> <span class="n">__global</span> <span class="n">float2</span> <span class="o">*</span><span class="n">uv_array</span><span class="p">,</span>
                                              <span class="n">uint</span> <span class="o">*</span><span class="n">rng_state</span><span class="p">,</span>
                                              <span class="n">float2</span> <span class="o">*</span><span class="n">dxy1_vec</span><span class="p">,</span> <span class="n">float2</span> <span class="o">*</span><span class="n">dxy2_vec</span><span class="p">,</span>
-                                             <span class="n">float2</span> <span class="o">*</span><span class="n">uv1_vec</span><span class="p">,</span> <span class="n">float2</span> <span class="o">*</span><span class="n">uv2_vec</span><span class="p">,</span>
+                                             <span class="n">float2</span> <span class="o">*</span><span class="n">uv1_vec</span><span class="p">,</span>  <span class="n">float2</span> <span class="o">*</span><span class="n">uv2_vec</span><span class="p">,</span>
                                              <span class="k">const</span> <span class="n">float2</span> <span class="n">vec</span><span class="p">,</span> <span class="n">float2</span> <span class="o">*</span><span class="n">next_vec</span><span class="p">,</span>
                                              <span class="n">uint</span> <span class="o">*</span><span class="n">idx</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Calculate RK2 next pt vector and approx into a fixed-point-res vector.</span>

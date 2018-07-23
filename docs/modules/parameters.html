@@ -35,25 +35,26 @@
 <h1><code class="docutils literal notranslate"><span class="pre">parameters.py</span></code><a class="headerlink" href="#parameters-py" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-streamlines.parameters">
 <span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.parameters" title="Permalink to this headline">¶</a></h2>
-<p>Read/write/assign the data contained in the <a class="reference internal" href="streamlining.html#streamlines.streamlining.Streamlining" title="streamlines.streamlining.Streamlining"><code class="xref py py-class docutils literal notranslate"><span class="pre">Streamlining</span></code></a> object, which includes all the
-parameters used to control streamline computation and all the data arrays used to
-hold their results.</p>
+<p>Read/write/assign the data contained in the <a class="reference internal" href="streamlining.html#streamlines.streamlining.Streamlining" title="streamlines.streamlining.Streamlining"><code class="xref py py-class docutils literal notranslate"><span class="pre">Streamlining</span></code></a> object,
+which includes all the parameters used to control streamline computation
+and all the data arrays used to hold their results.</p>
 <dl class="function">
 <dt id="streamlines.parameters.read_json_file">
 <code class="descclassname">streamlines.parameters.</code><code class="descname">read_json_file</code><span class="sig-paren">(</span><em>parameter_file_list</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.parameters.read_json_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load and parse a list of JSON parameters files into a parameters dict</p>
-<p>Step through a list of JSON parameters files (usu “defaults.json” and the job JSON file).
+<dd><p>Load and parse a list of JSON parameters files into a parameters dict.</p>
+<p>Step through a list of JSON parameters files (usually “defaults.json”
+and the job JSON file).
 Parse each into a parameters dict, ensuring that subsequent JSON parameters
 override any set by previous JSON files.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parameter_file_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – JSON parameters files to be read and parsed</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parameter_file_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – JSON parameters files to be read and parsed</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">workflow parameter dictionary</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></td>
 </tr>
 </tbody>
 </table>
@@ -69,15 +70,15 @@ generate a workflow parameters dictionary.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>parameters_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – path to JSON parameters files (broken out as OS path list)</li>
-<li><strong>parameters_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – name of job JSON parameters file</li>
+<li><strong>parameters_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – path to JSON parameters files (broken out as OS path list)</li>
+<li><strong>parameters_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – name of job JSON parameters file</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">workflow parameter dictionary</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
 </td>
 </tr>
 </tbody>
@@ -88,22 +89,26 @@ generate a workflow parameters dictionary.</p>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Read/write/assign the data contained in the :class:`.Streamlining` object, which includes all the </span>
-<span class="sd">parameters used to control streamline computation and all the data arrays used to </span>
-<span class="sd">hold their results.</span>
+<span class="sd">Read/write/assign the data contained in the :class:`.Streamlining` object, </span>
+<span class="sd">which includes all the parameters used to control streamline computation </span>
+<span class="sd">and all the data arrays used to hold their results.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">json</span> <span class="k">import</span> <span class="n">load</span>
+<span class="kn">import</span> <span class="nn">streamlines</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;read_json_file&#39;</span><span class="p">,</span><span class="s1">&#39;import_parameters&#39;</span><span class="p">]</span>
 
+<span class="n">pdebug</span> <span class="o">=</span> <span class="nb">print</span>
+
 <span class="k">def</span> <span class="nf">read_json_file</span><span class="p">(</span><span class="n">parameter_file_list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Load and parse a list of JSON parameters files into a parameters dict</span>
+<span class="sd">    Load and parse a list of JSON parameters files into a parameters dict.</span>
 
-<span class="sd">    Step through a list of JSON parameters files (usu &quot;defaults.json&quot; and the job JSON file).</span>
+<span class="sd">    Step through a list of JSON parameters files (usually &quot;defaults.json&quot; </span>
+<span class="sd">    and the job JSON file).</span>
 <span class="sd">    Parse each into a parameters dict, ensuring that subsequent JSON parameters</span>
 <span class="sd">    override any set by previous JSON files.</span>
 <span class="sd">    </span>
@@ -146,7 +151,7 @@ generate a workflow parameters dictionary.</p>
                 <span class="c1">#   of sub-dicts only, one per workflow class instance</span>
     <span class="k">return</span> <span class="n">parameters_dict</span>
 
-<span class="k">def</span> <span class="nf">import_parameters</span><span class="p">(</span><span class="n">parameters_path</span><span class="p">,</span><span class="n">parameters_file</span><span class="p">):</span> <span class="c1">#,do_reload_state=False</span>
+<span class="k">def</span> <span class="nf">import_parameters</span><span class="p">(</span><span class="n">parameters_path</span><span class="p">,</span> <span class="n">parameters_file</span><span class="p">):</span> <span class="c1">#,do_reload_state=False</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load JSON parameters files (defaults and job) and parse them in turn to </span>
 <span class="sd">    generate a workflow parameters dictionary. </span>
@@ -159,9 +164,17 @@ generate a workflow parameters dictionary.</p>
 <span class="sd">        dict:  workflow parameter dictionary</span>
 <span class="sd">    &quot;&quot;&quot;</span>        
     <span class="c1"># Parse default and assigned JSON parameters files</span>
-    <span class="n">parameters_files_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span><span class="s1">&#39;defaults&#39;</span><span class="p">),</span>
-                             <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parameters_path</span><span class="p">,</span><span class="n">parameters_file</span><span class="p">))]</span>
-    <span class="k">return</span> <span class="n">read_json_file</span><span class="p">(</span><span class="n">parameters_files_list</span><span class="p">)</span>
+    <span class="n">slm_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">streamlines</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;..&#39;</span><span class="p">))</span>
+    <span class="n">slmdata_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">slm_path</span><span class="p">,</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;slmdata&#39;</span><span class="p">))</span>
+    <span class="n">slmnb_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">slm_path</span><span class="p">,</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;slmnb&#39;</span><span class="p">))</span>
+    <span class="n">parameters_files_list</span> \
+        <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">slm_path</span><span class="p">,</span><span class="s1">&#39;json&#39;</span><span class="p">,</span><span class="s1">&#39;defaults&#39;</span><span class="p">)),</span>
+           <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parameters_path</span><span class="p">,</span><span class="n">parameters_file</span><span class="p">))]</span>
+    <span class="k">return</span> <span class="n">read_json_file</span><span class="p">(</span><span class="n">parameters_files_list</span><span class="p">),</span> <span class="n">slm_path</span><span class="p">,</span> <span class="n">slmdata_path</span><span class="p">,</span> <span class="n">slmnb_path</span>
+
+
+
+
 </pre></div>
 </div>
 </div>

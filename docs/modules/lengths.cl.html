@@ -78,31 +78,74 @@ __kernel void hillslope_lengths(
         __global       float  *traj_length_array
    )
 {
-    // For every non-thin-channel pixel
+    // For every mid-slope /or/ ridge pixel
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
-    __private uint idx, hillslope_idx, n_steps=0u;
+#ifdef DO_MEASURE_HSL_FROM_RIDGES
+    const uint from_flag = IS_RIDGE;
+#else
+    const uint from_flag = IS_MIDSLOPE;
+#endif
+#ifdef VERBOSE
+    // Report how kernel instances are distributed
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf(&quot;\n  &gt;&gt;&gt; on GPU/OpenCL device: id=%d offset=%d &quot;,
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf(&quot;#workitems=%d x #workgroups=%d = %d=%d\n&quot;,
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_size(0u));
+    }
+#endif
+    if (global_id&gt;=N_SEED_POINTS) {
+        // This is a &quot;padding&quot; seed, so let&#39;s bail
+        return;
+    }
+    __private uint idx, n_steps=0u;
     __private float dl=0.0f, dt=DT_MAX, l_trajectory=0.0f;
     __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
                      vec = seed_point_array[global_id], prev_vec, next_vec;
+    __private bool moved_off = false;
+
+//    printf(&quot;len=%g (p=%g) vec=%g,%g\n&quot;,traj_length_array[global_id],PIXEL_SIZE,
+//    vec[0]*PIXEL_SIZE+2800.0f,vec[1]*PIXEL_SIZE+2800.0f);
 
     // Remember here
     idx = get_array_idx(vec);
-    hillslope_idx = idx;
     // Integrate downstream until a channel pixel (or masked pixel) is reached
-    while (((~mapping_array[idx])&amp;IS_THINCHANNEL) &amp;&amp; !mask_array[idx]
-           &amp;&amp; n_steps&lt;(MAX_N_STEPS-1)) {
+    while (((~mapping_array[idx])&amp;IS_THINCHANNEL) &amp;&amp; n_steps&lt;MAX_N_STEPS) {
         compute_step_vec(dt, uv_array, &amp;dxy1_vec, &amp;dxy2_vec, &amp;uv1_vec, &amp;uv2_vec,
                          vec, &amp;next_vec, &amp;idx);
+        if (mask_array[idx]) return;
+        if (!moved_off &amp;&amp; ((~mapping_array[idx])&amp;from_flag)) {
+            // Flag when we&#39;ve moved off the initial band of mid-slope/ridge pixels
+            moved_off = true;
+        } else if (moved_off &amp;&amp; ((mapping_array[idx])&amp;from_flag)) {
+            // Bail if we cross another mid-slope pixel, meaning that mid-slope/ridge
+            //   mapping isn&#39;t working for this streamlines
+            return;
+        }
         if (lengths_runge_kutta_step(&amp;dt, &amp;dl, &amp;l_trajectory, &amp;dxy1_vec, &amp;dxy2_vec,
                                      &amp;vec, &amp;prev_vec,  &amp;next_vec, &amp;n_steps, &amp;idx)) {
-            break;
+#ifdef DEBUG
+            printf(&quot;Lengths: R-K breaking\n&quot;);
+#endif
+            return;
+//            break;
         }
     }
     if (mapping_array[idx]&amp;IS_THINCHANNEL) {
         // We&#39;ve reached a (thin) channel, so save this trajectory length
         // No need for atomic here since we&#39;re writing to the source pixel
-        traj_length_array[global_id] = l_trajectory;
+        traj_length_array[global_id] = l_trajectory*PIXEL_SIZE;
+//#ifdef DEBUG
+//        vec = seed_point_array[global_id];
+//        vec *= PIXEL_SIZE;
+//        vec += (float2)(550.0f,400.0f);
+//        if (vec[0]&gt;600.0f &amp;&amp; vec[0]&lt;700.0f &amp;&amp; vec[1]&gt;400.0f &amp;&amp; vec[1]&lt;500.0f)
+//            printf(&quot;vec=%g,%g   len=%g\n&quot;,vec[0],vec[1],traj_length_array[global_id]);
+//#endif
     }
     return;
 }

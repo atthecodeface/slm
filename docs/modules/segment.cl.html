@@ -74,7 +74,7 @@ __kernel void segment_downchannels(
         __global const float2 *seed_point_array,
         __global const bool   *mask_array,
         __global const float2 *uv_array,
-        __global const uint   *mapping_array,
+        __global       uint   *mapping_array,
         __global const uint   *count_array,
         __global const uint   *link_array,
         __global       uint   *label_array
@@ -83,8 +83,24 @@ __kernel void segment_downchannels(
     // For every channel head pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+#ifdef VERBOSE
+    // Report how kernel instances are distributed
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf(&quot;\n  &gt;&gt;&gt; on GPU/OpenCL device: id=%d offset=%d &quot;,
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf(&quot;#workitems=%d x #workgroups=%d = %d=%d\n&quot;,
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_size(0u));
+    }
+#endif
+    if (global_id&gt;=N_SEED_POINTS) {
+        // This is a &quot;padding&quot; seed, so let&#39;s bail
+        return;
+    }
     __private uint idx, prev_idx, segment_label=0u,
-                   segmentation_counter=SEGMENTATION_THRESHOLD;
+                   segmentation_counter=0u;
     __private float2 vec = seed_point_array[global_id];
 
     // Remember here
@@ -92,26 +108,35 @@ __kernel void segment_downchannels(
     // Label this stream segment, starting with the head pixel
     segment_label = prev_idx;
     atomic_xchg(&amp;label_array[prev_idx],segment_label);
+    atomic_or(&amp;mapping_array[prev_idx],IS_SUBSEGMENTHEAD);
     // Step downstream
     idx = link_array[prev_idx];
     // Continue stepping downstream until a dominant confluence
     //    or a masked pixel is reached
-    while (!mask_array[idx] &amp;&amp; prev_idx!=idx) {
-        if ((mapping_array[idx]) &amp; IS_MAJORCONFLUENCE) {
-            if ((mapping_array[prev_idx]) &amp; IS_MAJORINFLOW) {
-                if (count_array[idx]&gt;=segmentation_counter) {
-                    segment_label = idx;
-                    segmentation_counter += SEGMENTATION_THRESHOLD;
-                }
-            } else {
-                break;
-            }
+    while (!mask_array[idx] &amp;&amp; prev_idx!=idx
+            &amp;&amp; (mapping_array[idx] &amp; IS_SUBSEGMENTHEAD)==0) {
+//        if (  0 &amp; ((mapping_array[idx]) &amp; IS_MAJORCONFLUENCE)
+//              &amp;&amp; ((mapping_array[prev_idx]) &amp; IS_MAJORINFLOW)
+//              &amp;&amp; (count_array[idx]&gt;=segmentation_counter) ) {
+//            segment_label = idx;
+//            segmentation_counter += SEGMENTATION_THRESHOLD;
+////            if ((mapping_array[prev_idx]&amp;IS_SUBSEGMENTHEAD)!=0)
+//                atomic_or(&amp;mapping_array[idx],IS_SUBSEGMENTHEAD);
+//        } else
+        if (   (count_array[idx]&gt;=segmentation_counter+SEGMENTATION_THRESHOLD/2)
+//            &amp;&amp; ((~mapping_array[idx]) &amp; IS_MAJORCONFLUENCE)
+//            &amp;&amp; ((~mapping_array[prev_idx]) &amp; IS_MAJORINFLOW)
+            ) {
+                segment_label = idx;
+                segmentation_counter = count_array[idx]+SEGMENTATION_THRESHOLD;
+                    atomic_or(&amp;mapping_array[idx],IS_SUBSEGMENTHEAD);
         }
         // Label here with the current segment&#39;s label
         atomic_xchg(&amp;label_array[idx],segment_label);
         // Continue downstream
         prev_idx = idx;
         idx = link_array[idx];
+//        is_initial = false;
     }
     return;
 }
@@ -153,6 +178,22 @@ __kernel void segment_hillslopes(
     // For every non-thin-channel pixel
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+#ifdef VERBOSE
+    // Report how kernel instances are distributed
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf(&quot;\n  &gt;&gt;&gt; on GPU/OpenCL device: id=%d offset=%d &quot;,
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf(&quot;#workitems=%d x #workgroups=%d = %d=%d\n&quot;,
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_size(0u));
+    }
+#endif
+    if (global_id&gt;=N_SEED_POINTS) {
+        // This is a &quot;padding&quot; seed, so let&#39;s bail
+        return;
+    }
     __private uint idx, hillslope_idx, n_steps=0u;
     __private float dl=0.0f, dt=DT_MAX;
     __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
@@ -161,9 +202,12 @@ __kernel void segment_hillslopes(
     // Remember here
     idx = get_array_idx(vec);
     hillslope_idx = idx;
+//#ifdef DEBUG
+//    printf(&quot;%d\n&quot;,idx);
+//#endif
     // Integrate downstream until a channel pixel (or masked pixel) is reached
     while (!mask_array[idx] &amp;&amp; ((~mapping_array[idx])&amp;IS_THINCHANNEL)
-           &amp;&amp; n_steps&lt;(MAX_N_STEPS-1)) {
+           &amp;&amp; n_steps&lt;MAX_N_STEPS) {
         compute_step_vec(dt, uv_array, &amp;dxy1_vec, &amp;dxy2_vec, &amp;uv1_vec, &amp;uv2_vec,
                          vec, &amp;next_vec, &amp;idx);
         if (segment_runge_kutta_step(&amp;dt, &amp;dl, &amp;dxy1_vec, &amp;dxy2_vec,
@@ -180,6 +224,16 @@ __kernel void segment_hillslopes(
 #endif
 
 #ifdef KERNEL_SUBSEGMENT_CHANNEL_EDGES
+///
+/// TBD
+///
+static inline uint rotate_left(uint prev_x, uint prev_y, char *dx, char *dy) {
+    __private char rotated_dx=*dx-*dy, rotated_dy=*dx+*dy;
+    *dx = rotated_dx/clamp((char)abs(rotated_dx),(char)1,(char)2);
+    *dy = rotated_dy/clamp((char)abs(rotated_dy),(char)1,(char)2);
+    return (prev_x+*dx)*NY_PADDED + (prev_y+*dy);
+}
+
 ///
 /// TBD
 ///
@@ -200,6 +254,9 @@ __kernel void segment_hillslopes(
 /// @returns void
 ///
 /// @ingroup segmentation
+
+/// @bugs Corner case problem where thin channel seq has a fat kink, leading
+///       to mislabeling of left flank pixel &amp; thin hillslope sl among right flank zone
 ///
 __kernel void subsegment_channel_edges(
         __global const float2 *seed_point_array,
@@ -211,57 +268,92 @@ __kernel void subsegment_channel_edges(
         __global       uint   *label_array
    )
 {
-    // For every channel head and major confluence pixel...
+    // For every subsegment head pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
-    __private uint idx, prev_idx, left_idx, segment_label=0u, prev_x,prev_y, x,y, n_turns;
-    __private char dx,dy, rotated_dx,rotated_dy;
+#ifdef VERBOSE
+    // Report how kernel instances are distributed
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf(&quot;\n  &gt;&gt;&gt; on GPU/OpenCL device: id=%d offset=%d &quot;,
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf(&quot;#workitems=%d x #workgroups=%d = %d=%d\n&quot;,
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_size(0u));
+    }
+#endif
+    if (global_id&gt;=N_SEED_POINTS) {
+        // This is a &quot;padding&quot; seed, so let&#39;s bail
+        return;
+    }
+    __private uint idx, prev_idx, left_idx, segment_label=0u,
+            prev_x,prev_y, x,y, n_turns, n_steps;
+    __private char dx,dy;
     __private float2 vec = seed_point_array[global_id];
+    __private bool do_label_left;
 
     // Remember here
     prev_idx = get_array_idx(vec);
     segment_label = channel_label_array[prev_idx];
-    // Step downstream off channel head / major confluence pixel
+    // Step downstream off subsegment head pixel
     idx = link_array[prev_idx];
     // Even if this pixel is masked, we still need to try to subsegment
-    while (prev_idx!=idx) {
-
-#ifdef F_ORDER
-        prev_x = prev_idx%NX_PADDED;
-        prev_y = prev_idx/NX_PADDED;
-        x =  idx%NX_PADDED;
-        y =  idx/NX_PADDED;
-#else
+    n_steps = 0u;
+    while (prev_idx!=idx &amp;&amp; n_steps++&lt;MAX_N_STEPS) {
         prev_x = prev_idx/NY_PADDED;
         prev_y = prev_idx%NY_PADDED;
         x =  idx/NY_PADDED;
         y =  idx%NY_PADDED;
-#endif
+
+        // &quot;Scan&quot; progressively left nbr pixels to ensure we are on the left flank
+        n_turns = 0;
+        left_idx = idx;
         dx = (char)(x-prev_x);
         dy = (char)(y-prev_y);
-
-        // Rotate 45deg anticlockwise repeatedly until a non-fillable pixel is reached
-        n_turns = 0;
-        while (left_idx!=prev_idx &amp;&amp; ++n_turns&lt;=4) {
-            rotated_dx = dx-dy;
-            rotated_dy = dx+dy;
-            rotated_dx = rotated_dx/clamp((char)abs(rotated_dx),(char)1,(char)2);
-            rotated_dy = rotated_dy/clamp((char)abs(rotated_dy),(char)1,(char)2);
-            dx = rotated_dx;
-            dy = rotated_dy;
-#ifdef F_ORDER
-            left_idx = (prev_x+rotated_dx) + (prev_y+rotated_dy)*NX_PADDED;
-#else
-            left_idx = (prev_x+rotated_dx)*NY_PADDED + (prev_y+rotated_dy);
-#endif
-            if (!mask_array[left_idx] &amp;&amp; label_array[left_idx]==segment_label) {
-                if ((mapping_array[left_idx]) &amp; IS_THINCHANNEL) {
-                    if (n_turns&gt;1) {
-                        break;
+        // Step across nbrhood pixels by repeatedly rotating the vector
+        // (dx,dy) = pixel[prev_idx] -&gt; pixel[idx] (which defines &quot;N&quot;).
+        // Start with the W nbr, stop at the NE nbr.
+        // If a thin channel pixel nbr is reached, check if the rotated vector
+        //   points downstream - if so, flag DO NOT label left here
+        //   - otherwise, break and continue on to left-flank labeling.
+        // This deals with the corner case in which the downstream pixel sequence
+        //   has a nasty &quot;bump&quot; turning sharp R then sharp L,
+        //   i.e., when this downstream-vector rotation finds itself on the R flank
+        //   not the L flank as required here.
+        do_label_left = true;
+        while (left_idx!=prev_idx &amp;&amp; ++n_turns&lt;=7) {
+            left_idx = rotate_left(prev_x,prev_y,&amp;dx,&amp;dy);
+            if (n_turns&gt;=2 &amp;&amp; !mask_array[left_idx]
+                          &amp;&amp; ((mapping_array[left_idx]) &amp; IS_THINCHANNEL)) {
+                if (left_idx==link_array[idx]) {
+                    do_label_left = false;
+//                    printf(&quot;don&#39;t label left\n&quot;);
+                }
+                break;
+            }
+        }
+        if (do_label_left) {
+            // &quot;Scan&quot; left-side thin-channel-adjacent pixels and label as &quot;left flank&quot;
+            //    until another thin-channel pixel is reached in the scan - then stop
+            n_turns = 0;
+            left_idx = idx;
+            dx = (char)(x-prev_x);
+            dy = (char)(y-prev_y);
+            // Step across nbrhood pixels by repeatedly rotating the vector
+            // (dx,dy) = pixel[prev_idx] -&gt; pixel[idx] (which defines &quot;N&quot;).
+            // Start with the W nbr, stop at the S nbr.
+            // Break if a thin channel pixel nbr is reached.
+            // Label as left flank if not a thin channel pixel.
+            while (left_idx!=prev_idx &amp;&amp; ++n_turns&lt;=4) {
+                left_idx = rotate_left(prev_x,prev_y,&amp;dx,&amp;dy);
+                if (n_turns&gt;=2 &amp;&amp; !mask_array[left_idx]) {
+                    if ((mapping_array[left_idx]) &amp; IS_THINCHANNEL) {
+                            break;
+                    } else {
+                        atomic_or(&amp;mapping_array[left_idx],IS_LEFTFLANK);
+                        atomic_or(&amp;label_array[left_idx],LEFT_FLANK_ADDITION);
                     }
-                } else {
-                    atomic_or(&amp;mapping_array[left_idx],IS_LEFTFLANK);
-                    atomic_or(&amp;label_array[left_idx],LEFT_FLANK_ADDITION);
                 }
             }
         }
@@ -269,11 +361,7 @@ __kernel void subsegment_channel_edges(
         // Step further downstream if necessary
         prev_idx = idx;
         idx = link_array[idx];
-        // Stop if we&#39;ve reached the next major confluence pixel, or the mask
-        if (!mask_array[idx] &amp;&amp; (   ((mapping_array[prev_idx]) &amp; IS_MAJORCONFLUENCE)
-                                 || ((mapping_array[prev_idx]) &amp; IS_MAJORINFLOW)
-                                 || ((mapping_array[prev_idx]) &amp; IS_MINORINFLOW)
-                                 ) ) {
+        if (mask_array[idx] || (mapping_array[prev_idx] &amp; IS_SUBSEGMENTHEAD) ) {
             break;
         }
     }
@@ -308,7 +396,7 @@ __kernel void subsegment_flanks(
         __global const float2 *seed_point_array,
         __global const bool   *mask_array,
         __global const float2 *uv_array,
-        __global const uint   *mapping_array,
+        __global       uint   *mapping_array,
         __global const uint   *count_array,
         __global const uint   *link_array,
         __global       uint   *label_array
@@ -317,7 +405,23 @@ __kernel void subsegment_flanks(
     // For every non-left-flank hillslope pixel...
 
     const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
-    __private uint idx, hillslope_idx, n_steps=0u;
+#ifdef VERBOSE
+    // Report how kernel instances are distributed
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf(&quot;\n  &gt;&gt;&gt; on GPU/OpenCL device: id=%d offset=%d &quot;,
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf(&quot;#workitems=%d x #workgroups=%d = %d=%d\n&quot;,
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_size(0u));
+    }
+#endif
+    if (global_id&gt;=N_SEED_POINTS) {
+        // This is a &quot;padding&quot; seed, so let&#39;s bail
+        return;
+    }
+    __private uint idx, hillslope_idx, n_steps;
     __private float dl=0.0f, dt=DT_MAX;
     __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
                      vec = seed_point_array[global_id], next_vec;
@@ -326,8 +430,9 @@ __kernel void subsegment_flanks(
     idx = get_array_idx(vec);
     hillslope_idx = idx;
     // Integrate downstream until thin channel or left-flank pixel is reached
+    n_steps = 0u;
     while (!mask_array[idx] &amp;&amp; ((~mapping_array[idx])&amp;IS_LEFTFLANK)
-            &amp;&amp; ((~mapping_array[idx])&amp;IS_THINCHANNEL) &amp;&amp; n_steps&lt;(MAX_N_STEPS-1)) {
+            &amp;&amp; ((~mapping_array[idx])&amp;IS_THINCHANNEL) &amp;&amp; n_steps&lt;MAX_N_STEPS) {
         compute_step_vec(dt, uv_array, &amp;dxy1_vec, &amp;dxy2_vec, &amp;uv1_vec, &amp;uv2_vec,
                          vec, &amp;next_vec, &amp;idx);
         if (segment_runge_kutta_step(&amp;dt, &amp;dl, &amp;dxy1_vec, &amp;dxy2_vec,
@@ -339,7 +444,186 @@ __kernel void subsegment_flanks(
         //   the source hillslope pixel
         // No need for atomic here since we&#39;re writing to the source pixel
         label_array[hillslope_idx] |= LEFT_FLANK_ADDITION;
-//        atomic_or(&amp;label_array[hillslope_idx],LEFT_FLANK_ADDITION);
+    }
+    return;
+}
+#endif
+
+
+#ifdef KERNEL_FIX_RIGHT_FLANKS
+///
+/// TBD
+///
+/// Compiled if KERNEL_FIX_RIGHT_FLANKS is defined.
+///
+/// @param[in]  seed_point_array: list of initial streamline point vectors,
+///                               one allotted to each kernel instance
+/// @param[in]  mask_array: grid pixel mask (padded),
+///                         with @p true = masked, @p false = good
+/// @param[in]  uv_array: flow unit velocity vector grid (padded)
+/// @param[in,out] mapping_array: flag grid recording status of each pixel (padded)
+/// @param[in,out] count_array: counter grid recording number of pixel steps
+///                             downstream from dominant channel head (padded)
+/// @param[in,out] link_array: link grid providing the grid array index of the next
+///                             downstream pixel (padded)
+/// @param[in,out] label_array: label grid giving the ID of the subsegment to which
+///                             this pixel belongs (padded); the MSB is set if left flank
+///
+/// @returns void
+///
+/// @ingroup segmentation
+///
+__kernel void fix_right_flanks(
+        __global const float2 *seed_point_array,
+        __global const bool   *mask_array,
+        __global const float2 *uv_array,
+        __global       uint   *mapping_array,
+        __global const uint   *count_array,
+        __global const uint   *link_array,
+        __global       uint   *label_array
+   )
+{
+    // For every right-flank hillslope pixel...
+
+    const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+#ifdef VERBOSE
+    // Report how kernel instances are distributed
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf(&quot;\n  &gt;&gt;&gt; on GPU/OpenCL device: id=%d offset=%d &quot;,
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf(&quot;#workitems=%d x #workgroups=%d = %d=%d\n&quot;,
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_size(0u));
+    }
+#endif
+    if (global_id&gt;=N_SEED_POINTS) {
+        // This is a &quot;padding&quot; seed, so let&#39;s bail
+        return;
+    }
+    __private uint idx, hillslope_idx, n_steps;
+    __private float dl=0.0f, dt=DT_MAX;
+    __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
+                     vec = seed_point_array[global_id], next_vec;
+
+    // Remember here
+    idx = get_array_idx(vec);
+    hillslope_idx = idx;
+    // Integrate downstream until thin channel or left-flank pixel is reached
+    n_steps = 0u;
+    while (!mask_array[idx] &amp;&amp; ((~label_array[idx])&amp;LEFT_FLANK_ADDITION)
+            &amp;&amp; ((~mapping_array[idx])&amp;IS_THINCHANNEL) &amp;&amp; n_steps&lt;MAX_N_STEPS) {
+        compute_step_vec(dt, uv_array, &amp;dxy1_vec, &amp;dxy2_vec, &amp;uv1_vec, &amp;uv2_vec,
+                         vec, &amp;next_vec, &amp;idx);
+        if ( (label_array[hillslope_idx]&amp;(~LEFT_FLANK_ADDITION))
+                    != (label_array[idx]&amp;(~LEFT_FLANK_ADDITION)) ) {
+            label_array[hillslope_idx] = label_array[idx];
+        }
+        if (segment_runge_kutta_step(&amp;dt, &amp;dl, &amp;dxy1_vec, &amp;dxy2_vec,
+                                     &amp;vec, &amp;next_vec, &amp;n_steps, &amp;idx))
+            break;
+    }
+    if ( (label_array[hillslope_idx]&amp;(~LEFT_FLANK_ADDITION))
+                != (label_array[idx]&amp;(~LEFT_FLANK_ADDITION)) ) {
+        label_array[hillslope_idx] = label_array[idx];
+//            break;
+    }
+    if (label_array[idx]&amp;LEFT_FLANK_ADDITION) {
+        // We&#39;ve reached a (thin) channel, so grab its label and apply it to
+        //   the source hillslope pixel
+        // No need for atomic here since we&#39;re writing to the source pixel
+        label_array[hillslope_idx] |= LEFT_FLANK_ADDITION;
+    }
+    return;
+}
+#endif
+
+#ifdef KERNEL_FIX_LEFT_FLANKS
+///
+/// TBD
+///
+/// Compiled if KERNEL_FIX_LEFT_FLANKS is defined.
+///
+/// @param[in]  seed_point_array: list of initial streamline point vectors,
+///                               one allotted to each kernel instance
+/// @param[in]  mask_array: grid pixel mask (padded),
+///                         with @p true = masked, @p false = good
+/// @param[in]  uv_array: flow unit velocity vector grid (padded)
+/// @param[in,out] mapping_array: flag grid recording status of each pixel (padded)
+/// @param[in,out] count_array: counter grid recording number of pixel steps
+///                             downstream from dominant channel head (padded)
+/// @param[in,out] link_array: link grid providing the grid array index of the next
+///                             downstream pixel (padded)
+/// @param[in,out] label_array: label grid giving the ID of the subsegment to which
+///                             this pixel belongs (padded); the MSB is set if left flank
+///
+/// @returns void
+///
+/// @ingroup segmentation
+///
+__kernel void fix_left_flanks(
+        __global const float2 *seed_point_array,
+        __global const bool   *mask_array,
+        __global const float2 *uv_array,
+        __global       uint   *mapping_array,
+        __global const uint   *count_array,
+        __global const uint   *link_array,
+        __global       uint   *label_array
+   )
+{
+    // For every left-flank hillslope pixel...
+
+    const uint global_id = get_global_id(0u)+get_global_id(1u)*get_global_size(0u);
+#ifdef VERBOSE
+    // Report how kernel instances are distributed
+    if (global_id==0 || global_id==get_global_offset(0u)) {
+        printf(&quot;\n  &gt;&gt;&gt; on GPU/OpenCL device: id=%d offset=%d &quot;,
+                get_global_id(0u),
+                get_global_offset(0u));
+        printf(&quot;#workitems=%d x #workgroups=%d = %d=%d\n&quot;,
+                get_local_size(0u), get_num_groups(0u),
+                get_local_size(0u)*get_num_groups(0u),
+                get_global_size(0u));
+    }
+#endif
+    if (global_id&gt;=N_SEED_POINTS) {
+        // This is a &quot;padding&quot; seed, so let&#39;s bail
+        return;
+    }
+    __private uint idx, hillslope_idx, n_steps;
+    __private float dl=0.0f, dt=DT_MAX;
+    __private float2 uv1_vec, uv2_vec, dxy1_vec, dxy2_vec,
+                     vec = seed_point_array[global_id], next_vec;
+
+    // Remember here
+    idx = get_array_idx(vec);
+    hillslope_idx = idx;
+    // Integrate downstream until thin channel or right-flank pixel is reached
+    n_steps = 0u;
+    while (!mask_array[idx] &amp;&amp; ((label_array[idx])&amp;LEFT_FLANK_ADDITION)
+            &amp;&amp; ((~mapping_array[idx])&amp;IS_THINCHANNEL) &amp;&amp; n_steps&lt;MAX_N_STEPS) {
+        compute_step_vec(dt, uv_array, &amp;dxy1_vec, &amp;dxy2_vec, &amp;uv1_vec, &amp;uv2_vec,
+                         vec, &amp;next_vec, &amp;idx);
+        if ( (label_array[hillslope_idx]&amp;(~LEFT_FLANK_ADDITION))
+                    != (label_array[idx]&amp;(~LEFT_FLANK_ADDITION)) ) {
+            label_array[hillslope_idx] = label_array[idx];
+        }
+        if (segment_runge_kutta_step(&amp;dt, &amp;dl, &amp;dxy1_vec, &amp;dxy2_vec,
+                                     &amp;vec, &amp;next_vec, &amp;n_steps, &amp;idx))
+            break;
+    }
+    if ( (label_array[hillslope_idx]&amp;(~LEFT_FLANK_ADDITION))
+                != (label_array[idx]&amp;(~LEFT_FLANK_ADDITION)) ) {
+        label_array[hillslope_idx] = label_array[idx];
+//            break;
+    }
+    if ( ((~label_array[idx])&amp;LEFT_FLANK_ADDITION)
+            &amp;&amp; ((~mapping_array[idx])&amp;IS_THINCHANNEL) ) {
+        // We&#39;ve reached a right-flank channel, so grab its label and apply it to
+        //   the source hillslope pixel
+        // No need for atomic here since we&#39;re writing to the source pixel
+        label_array[hillslope_idx] &amp;= ~LEFT_FLANK_ADDITION;
     }
     return;
 }

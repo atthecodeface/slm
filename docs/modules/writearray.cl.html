@@ -42,7 +42,7 @@
 <span class="c1">/// @bug No known bugs</span>
 <span class="c1">///</span>
 
-<span class="cp">#ifdef KERNEL_INTEGRATE_TRAJECTORY</span>
+<span class="cp">#ifdef KERNEL_INTEGRATE_FIELDS</span>
 <span class="c1">///</span>
 <span class="c1">/// Add the current streamline length (@p l_trajectory) to the current pixel of the</span>
 <span class="c1">///    @p slt accumulation array.</span>
@@ -53,10 +53,10 @@
 <span class="c1">///</span>
 <span class="c1">/// Compiled if KERNEL_INTEGRATE_TRAJECTORY is defined.</span>
 <span class="c1">///</span>
-<span class="c1">/// @param[in,out] slc: grid recording accumulated count of streamline integration</span>
-<span class="c1">///                         steps across each pixel (padded)</span>
 <span class="c1">/// @param[in,out] slt: grid recording accumulated count of streamline segment lengths</span>
 <span class="c1">///                         crossing each pixel (padded)</span>
+<span class="c1">/// @param[in,out] slc: grid recording accumulated count of streamline integration</span>
+<span class="c1">///                         steps across each pixel (padded)</span>
 <span class="c1">/// @param[in]     l_trajectory: total streamline distance so far</span>
 <span class="c1">///</span>
 <span class="c1">/// @returns void</span>
@@ -75,7 +75,7 @@
 <span class="p">}</span>
 <span class="cp">#endif</span>
 
-<span class="cp">#ifdef KERNEL_INTEGRATE_TRAJECTORY</span>
+<span class="cp">#ifdef KERNEL_INTEGRATE_FIELDS</span>
 <span class="c1">///</span>
 <span class="c1">/// Extended version of atomic_write_sl_data() to include testing whether the</span>
 <span class="c1">///    current pixel is masked, and an assignment of the previous pixel index</span>
@@ -93,21 +93,20 @@
 <span class="c1">/// @param[in]      idx: array index of pixel at current (x,y) position</span>
 <span class="c1">/// @param[in,out]  prev_idx: array index of pixel at previous (x,y) position</span>
 <span class="c1">/// @param[in]      mask_flag: whether current pixel is masked or not</span>
-<span class="c1">/// @param[in,out]  slc: grid recording accumulated count of streamline integration</span>
-<span class="c1">///                         steps across each pixel (padded)</span>
 <span class="c1">/// @param[in,out]  slt: grid recording accumulated count of streamline segment lengths</span>
 <span class="c1">///                         crossing each pixel (padded)</span>
+<span class="c1">/// @param[in,out]  slc: grid recording accumulated count of streamline integration</span>
+<span class="c1">///                         steps across each pixel (padded)</span>
 <span class="c1">/// @param[in]      l_trajectory: total streamline distance so far</span>
 <span class="c1">///</span>
 <span class="c1">/// @returns void</span>
 <span class="c1">///</span>
 <span class="c1">/// @ingroup trajectoryfns</span>
 <span class="c1">///</span>
-<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">check_atomic_write_sl_data</span><span class="p">(</span><span class="k">const</span> <span class="n">uint</span> <span class="n">idx</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">prev_idx</span><span class="p">,</span>
-                                              <span class="k">const</span> <span class="kt">bool</span> <span class="n">mask_flag</span><span class="p">,</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">check_atomic_write_sl_data</span><span class="p">(</span><span class="k">const</span> <span class="n">uint</span> <span class="n">idx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">bool</span> <span class="n">mask_flag</span><span class="p">,</span>
                                               <span class="n">__global</span> <span class="n">uint</span> <span class="o">*</span><span class="n">slt</span><span class="p">,</span> <span class="n">__global</span> <span class="n">uint</span> <span class="o">*</span><span class="n">slc</span><span class="p">,</span>
                                               <span class="k">const</span> <span class="kt">float</span> <span class="n">l_trajectory</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">mask_flag</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">idx</span><span class="o">&lt;</span><span class="n">NXY_PADDED</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">mask_flag</span><span class="p">)</span> <span class="p">{</span>
         <span class="c1">// Add streamline length-so-far to total slt for this pixel</span>
         <span class="c1">//   - rounding up to &amp; casting as 32bit int</span>
         <span class="c1">// There may be issues for short trajectories as a result.</span>
@@ -116,7 +115,6 @@
         <span class="c1">// Increment the &#39;visit&#39; counter slc at this pixel.</span>
         <span class="n">atomic_inc</span><span class="p">(</span><span class="n">slc</span><span class="p">);</span>
     <span class="p">}</span>
-    <span class="o">*</span><span class="n">prev_idx</span> <span class="o">=</span> <span class="n">idx</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="cp">#endif</span>
 </pre></div>

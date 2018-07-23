@@ -1,0 +1,497 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>kde.py &#8212; Streamlines  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="label.py" href="label.html" />
+    <link rel="prev" title="hillslopes.py" href="hillslopes.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="kde-py">
+<h1><code class="docutils literal notranslate"><span class="pre">kde.py</span></code><a class="headerlink" href="#kde-py" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-streamlines.kde">
+<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.kde" title="Permalink to this headline">¶</a></h2>
+<p>Kernel density estimation.</p>
+<dl class="function">
+<dt id="streamlines.kde.estimate_univariate_pdf">
+<code class="descclassname">streamlines.kde.</code><code class="descname">estimate_univariate_pdf</code><span class="sig-paren">(</span><em>distbn</em>, <em>do_detrend=False</em>, <em>logx_vec=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.kde.estimate_univariate_pdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute univariate histogram and subsequent kernel-density smoothed pdf.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>distbn</strong> (<em>obj</em>) – </li>
+<li><strong>do_detrend</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
+<li><strong>logx_vec</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.kde.estimate_bivariate_pdf">
+<code class="descclassname">streamlines.kde.</code><code class="descname">estimate_bivariate_pdf</code><span class="sig-paren">(</span><em>distbn</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.kde.estimate_bivariate_pdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute bivariate histogram and subsequent kernel-density smoothed pdf.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>distbn</strong> (<em>obj</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+</div>
+<div class="section" id="code">
+<h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Kernel density estimation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pyopencl</span> <span class="k">as</span> <span class="nn">cl</span>
+<span class="kn">import</span> <span class="nn">pyopencl.array</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="k">import</span> <span class="n">norm</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYTHONUNBUFFERED&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;True&#39;</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">from</span> <span class="nn">streamlines</span>        <span class="k">import</span> <span class="n">pocl</span>
+<span class="kn">from</span> <span class="nn">streamlines.useful</span> <span class="k">import</span> <span class="n">vprint</span><span class="p">,</span> <span class="n">pick_seeds</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;estimate_univariate_pdf&#39;</span><span class="p">,</span><span class="s1">&#39;estimate_bivariate_pdf&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;gpu_compute_1d&#39;</span><span class="p">,</span><span class="s1">&#39;prepare_memory_1d&#39;</span><span class="p">]</span>
+
+<span class="n">pdebug</span> <span class="o">=</span> <span class="nb">print</span>
+
+<span class="k">def</span> <span class="nf">estimate_bivariate_pdf</span><span class="p">(</span> <span class="n">distbn</span> <span class="p">):</span>
+        
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute bivariate histogram and subsequent kernel-density smoothed pdf.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        distbn (obj):</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">verbose</span> <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">verbose</span>
+    <span class="n">gpu_verbose</span> <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">gpu_verbose</span>
+    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;Estimating bivariate pdf...&#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Prepare CL essentials</span>
+    <span class="n">platform</span><span class="p">,</span><span class="n">device</span><span class="p">,</span><span class="n">context</span><span class="o">=</span> <span class="n">pocl</span><span class="o">.</span><span class="n">prepare_cl_context</span><span class="p">(</span><span class="n">distbn</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span><span class="n">distbn</span><span class="o">.</span><span class="n">cl_device</span><span class="p">)</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">CommandQueue</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    
+    <span class="n">cl_files</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;kde.cl&#39;</span><span class="p">]</span>
+    <span class="n">cl_kernel_source</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">cl_file</span> <span class="ow">in</span> <span class="n">cl_files</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">distbn</span><span class="o">.</span><span class="n">cl_src_path</span><span class="p">,</span><span class="n">cl_file</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">cl_kernel_source</span> <span class="o">+=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            
+    <span class="n">sl_array</span>     <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">logxy_data</span>
+    <span class="n">n_data</span>       <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">n_data</span>
+    <span class="n">bandwidth</span>    <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">bandwidth</span>
+    
+    <span class="n">x_range</span>      <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">logx_range</span>
+    <span class="n">bin_dx</span>       <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">bin_dx</span>
+    <span class="n">pdf_dx</span>       <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">pdf_dx</span>
+    <span class="n">stddev_x</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">sl_array</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+<span class="c1">#     pdebug(&#39;\nstd x={0:0.2} lxmin={1:0.2}  lxmax={2:0.2}=&gt;{3:0.0f}&#39;</span>
+<span class="c1">#            .format(stddev_x,  distbn.logx_min,distbn.logx_max,</span>
+<span class="c1">#                    np.exp(distbn.logx_max)))</span>
+    
+    <span class="n">y_range</span>      <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">logy_range</span>
+    <span class="n">bin_dy</span>       <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">bin_dy</span>
+    <span class="n">pdf_dy</span>       <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">pdf_dy</span>
+    <span class="n">stddev_y</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">sl_array</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+<span class="c1">#     pdebug(&#39;std y={0:0.2} lymin={1:0.2}  lymax={2:0.2}&#39; </span>
+<span class="c1">#            .format(stddev_y,distbn.logy_min,distbn.logy_max))</span>
+
+    <span class="c1"># Set up kernel filter</span>
+    <span class="c1"># Hacked Silverman hack</span>
+    <span class="n">distbn</span><span class="o">.</span><span class="n">kdf_width_x</span> <span class="o">=</span> <span class="mf">1.06</span><span class="o">*</span><span class="n">stddev_x</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">n_data</span><span class="p">,</span><span class="o">-</span><span class="mf">0.2</span><span class="p">)</span><span class="o">*</span><span class="n">bandwidth</span>
+    <span class="n">distbn</span><span class="o">.</span><span class="n">kdf_width_y</span> <span class="o">=</span> <span class="mf">1.06</span><span class="o">*</span><span class="n">stddev_y</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">n_data</span><span class="p">,</span><span class="o">-</span><span class="mf">0.2</span><span class="p">)</span><span class="o">*</span><span class="n">bandwidth</span>
+    <span class="n">distbn</span><span class="o">.</span><span class="n">n_kdf_part_points_x</span><span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">distbn</span><span class="o">.</span><span class="n">kdf_width_x</span><span class="o">/</span><span class="n">bin_dx</span><span class="p">))</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">distbn</span><span class="o">.</span><span class="n">n_kdf_part_points_y</span><span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">distbn</span><span class="o">.</span><span class="n">kdf_width_y</span><span class="o">/</span><span class="n">bin_dy</span><span class="p">))</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
+            
+    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;histogram...&#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="c1"># Histogram</span>
+    <span class="n">cl_kernel_fn</span> <span class="o">=</span> <span class="s1">&#39;histogram_bivariate&#39;</span>
+    <span class="n">histogram_array</span> \
+        <span class="o">=</span> <span class="n">gpu_compute</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="p">,</span> <span class="n">cl_kernel_fn</span><span class="p">,</span> 
+                      <span class="n">distbn</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;histogram&#39;</span><span class="p">,</span>  <span class="n">is_bivariate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                      <span class="n">sl_array</span><span class="o">=</span><span class="n">sl_array</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">gpu_verbose</span><span class="o">=</span><span class="n">gpu_verbose</span><span class="p">)</span>
+        
+    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;kernel filtering rows...&#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="c1"># PDF</span>
+    <span class="n">cl_kernel_fn</span> <span class="o">=</span> <span class="s1">&#39;pdf_bivariate_rows&#39;</span>
+    <span class="n">partial_pdf_array</span> \
+        <span class="o">=</span> <span class="n">gpu_compute</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="p">,</span> <span class="n">cl_kernel_fn</span><span class="p">,</span> 
+                      <span class="n">distbn</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;partial_pdf&#39;</span><span class="p">,</span>  <span class="n">is_bivariate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                      <span class="n">histogram_array</span><span class="o">=</span><span class="n">histogram_array</span><span class="p">,</span>
+                      <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">gpu_verbose</span><span class="o">=</span><span class="n">gpu_verbose</span><span class="p">)</span>
+
+    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;kernel filtering columns...&#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">cl_kernel_fn</span> <span class="o">=</span> <span class="s1">&#39;pdf_bivariate_cols&#39;</span>
+    <span class="n">pdf_array</span> \
+        <span class="o">=</span> <span class="n">gpu_compute</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="p">,</span> <span class="n">cl_kernel_fn</span><span class="p">,</span> 
+                      <span class="n">distbn</span><span class="p">,</span>  <span class="n">action</span><span class="o">=</span><span class="s1">&#39;full_pdf&#39;</span><span class="p">,</span>  <span class="n">is_bivariate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                      <span class="n">partial_pdf_array</span><span class="o">=</span><span class="n">partial_pdf_array</span><span class="p">,</span>
+                      <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">gpu_verbose</span><span class="o">=</span><span class="n">gpu_verbose</span><span class="p">)</span>
+    <span class="c1"># Done</span>
+    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;done&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">pdf_array</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pdf_array</span><span class="p">)</span><span class="o">*</span><span class="n">bin_dx</span><span class="o">*</span><span class="n">bin_dy</span><span class="p">),</span> 
+            <span class="n">histogram_array</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">histogram_array</span><span class="p">)</span><span class="o">*</span><span class="n">bin_dx</span><span class="o">*</span><span class="n">bin_dy</span><span class="p">))</span>
+    
+<span class="k">def</span> <span class="nf">estimate_univariate_pdf</span><span class="p">(</span> <span class="n">distbn</span><span class="p">,</span> <span class="n">do_detrend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">logx_vec</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute univariate histogram and subsequent kernel-density smoothed pdf.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        distbn (obj):</span>
+<span class="sd">        do_detrend (bool):</span>
+<span class="sd">        logx_vec (numpy.ndarray):</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">verbose</span> <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">verbose</span>
+    <span class="n">gpu_verbose</span> <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">gpu_verbose</span>
+    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;Estimating univariate pdf...&#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Prepare CL essentials</span>
+    <span class="n">platform</span><span class="p">,</span><span class="n">device</span><span class="p">,</span><span class="n">context</span><span class="o">=</span> <span class="n">pocl</span><span class="o">.</span><span class="n">prepare_cl_context</span><span class="p">(</span><span class="n">distbn</span><span class="o">.</span><span class="n">cl_platform</span><span class="p">,</span><span class="n">distbn</span><span class="o">.</span><span class="n">cl_device</span><span class="p">)</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">CommandQueue</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    
+    <span class="n">cl_files</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;kde.cl&#39;</span><span class="p">]</span>
+    <span class="n">cl_kernel_source</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">cl_file</span> <span class="ow">in</span> <span class="n">cl_files</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">distbn</span><span class="o">.</span><span class="n">cl_src_path</span><span class="p">,</span><span class="n">cl_file</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">cl_kernel_source</span> <span class="o">+=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            
+    <span class="n">sl_array</span>     <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">logx_data</span>
+    <span class="n">n_data</span>       <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">n_data</span>
+    <span class="n">x_range</span>      <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">logx_range</span>
+    <span class="n">bandwidth</span>    <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">bandwidth</span>
+    <span class="n">bin_dx</span>       <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">bin_dx</span>
+    <span class="n">pdf_dx</span>       <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">pdf_dx</span>
+    <span class="n">stddev_x</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">sl_array</span><span class="p">)</span>
+    
+    <span class="c1"># Set up kernel filter</span>
+    <span class="c1"># Hacked Silverman hack</span>
+    <span class="n">distbn</span><span class="o">.</span><span class="n">kdf_width_x</span> <span class="o">=</span> <span class="mf">1.06</span><span class="o">*</span><span class="n">stddev_x</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">n_data</span><span class="p">,</span><span class="o">-</span><span class="mf">0.2</span><span class="p">)</span><span class="o">*</span><span class="n">bandwidth</span>
+    <span class="n">distbn</span><span class="o">.</span><span class="n">kdf_width_y</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">distbn</span><span class="o">.</span><span class="n">n_kdf_part_points_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">distbn</span><span class="o">.</span><span class="n">kdf_width_x</span><span class="o">/</span><span class="n">pdf_dx</span><span class="p">))</span><span class="o">//</span><span class="mi">2</span>
+    <span class="n">distbn</span><span class="o">.</span><span class="n">n_kdf_part_points_y</span> <span class="o">=</span> <span class="mi">0</span>
+    
+<span class="c1">#     if not do_detrend:</span>
+<span class="c1">#         pdebug(&#39;\nstd x={0:0.2} lxmin={1:0.2}  lxmax={2:0.2}&#39;</span>
+<span class="c1">#            .format(stddev_x,  distbn.logx_min,distbn.logx_max))</span>
+        
+    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;histogram...&#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="c1"># Histogram</span>
+    <span class="n">cl_kernel_fn</span> <span class="o">=</span> <span class="s1">&#39;histogram_univariate&#39;</span>
+    <span class="n">histogram_array</span> \
+        <span class="o">=</span> <span class="n">gpu_compute</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="p">,</span> <span class="n">cl_kernel_fn</span><span class="p">,</span> 
+                      <span class="n">distbn</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;histogram&#39;</span><span class="p">,</span> <span class="n">sl_array</span><span class="o">=</span><span class="n">sl_array</span><span class="p">,</span> 
+                      <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">gpu_verbose</span><span class="o">=</span><span class="n">gpu_verbose</span><span class="p">)</span>
+        
+    <span class="k">if</span> <span class="n">do_detrend</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">logx_vec</span>
+        <span class="n">pdf</span> <span class="o">=</span> <span class="n">histogram_array</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">pdf</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pdf</span><span class="p">))</span>
+        <span class="n">stddev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">mean</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pdf</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pdf</span><span class="p">))</span>
+<span class="c1">#         pdebug(np.exp(mean),np.exp(stddev))</span>
+        <span class="n">norm_pdf</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">logx_vec</span><span class="p">,</span><span class="n">mean</span><span class="p">,</span><span class="n">stddev</span><span class="p">)</span>
+        <span class="n">pdf</span> <span class="o">/=</span> <span class="n">norm_pdf</span>
+        <span class="n">pdf</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span>
+        <span class="n">pdf</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">histogram_array</span><span class="p">)</span>
+        <span class="n">histogram_array</span> <span class="o">=</span> <span class="n">pdf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+        
+    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;kernel filtering...&#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="c1"># PDF</span>
+    <span class="n">cl_kernel_fn</span> <span class="o">=</span> <span class="s1">&#39;pdf_univariate&#39;</span>
+    <span class="n">pdf_array</span> \
+        <span class="o">=</span> <span class="n">gpu_compute</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="p">,</span> <span class="n">cl_kernel_fn</span><span class="p">,</span> 
+                      <span class="n">distbn</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;full_pdf&#39;</span><span class="p">,</span> <span class="n">histogram_array</span><span class="o">=</span><span class="n">histogram_array</span><span class="p">,</span>
+                      <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">gpu_verbose</span><span class="o">=</span><span class="n">gpu_verbose</span><span class="p">)</span>
+    <span class="c1"># Done</span>
+    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;done&#39;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="p">(</span><span class="n">pdf_array</span><span class="o">/</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">pdf_array</span><span class="p">)</span><span class="o">*</span><span class="n">bin_dx</span><span class="p">),</span>
+            <span class="n">histogram_array</span><span class="o">/</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">histogram_array</span><span class="p">)</span><span class="o">*</span><span class="n">bin_dx</span><span class="p">))</span>
+    
+<span class="k">def</span> <span class="nf">gpu_compute</span><span class="p">(</span> <span class="n">device</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="p">,</span> <span class="n">cl_kernel_fn</span><span class="p">,</span> <span class="n">distbn</span><span class="p">,</span>
+                 <span class="n">action</span><span class="o">=</span><span class="s1">&#39;histogram&#39;</span><span class="p">,</span> <span class="n">is_bivariate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                 <span class="n">sl_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="n">histogram_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                 <span class="n">partial_pdf_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="n">pdf_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                 <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">gpu_verbose</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Carry out GPU computation of histogram.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        device (pyopencl.Device):</span>
+<span class="sd">        context (pyopencl.Context):</span>
+<span class="sd">        queue (pyopencl.CommandQueue):</span>
+<span class="sd">        cl_kernel_source (str):</span>
+<span class="sd">        cl_kernel_fn (str):</span>
+<span class="sd">        distbn (obj):</span>
+<span class="sd">        sl_array (numpy.ndarray):</span>
+<span class="sd">        histogram_array (numpy.ndarray):</span>
+<span class="sd">        verbose (bool):  </span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+        
+    <span class="c1"># Prepare memory, buffers </span>
+    <span class="n">n_hist_bins</span>  <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">n_hist_bins</span>
+    <span class="n">n_data</span>       <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">n_data</span>
+    <span class="n">n_pdf_points</span> <span class="o">=</span> <span class="n">distbn</span><span class="o">.</span><span class="n">n_pdf_points</span>
+        
+    <span class="k">if</span> <span class="n">action</span><span class="o">==</span><span class="s1">&#39;histogram&#39;</span><span class="p">:</span>
+        <span class="c1"># Compute histogram</span>
+        <span class="p">(</span><span class="n">histogram_array</span><span class="p">,</span> <span class="n">sl_buffer</span><span class="p">,</span> <span class="n">histogram_buffer</span><span class="p">)</span> \
+            <span class="o">=</span> <span class="n">prepare_memory</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> 
+                             <span class="n">n_hist_bins</span><span class="o">=</span><span class="n">n_hist_bins</span><span class="p">,</span> 
+                             <span class="n">sl_array</span><span class="o">=</span><span class="n">sl_array</span><span class="p">,</span> 
+                             <span class="n">action</span><span class="o">=</span><span class="n">action</span><span class="p">,</span> <span class="n">is_bivariate</span><span class="o">=</span><span class="n">is_bivariate</span><span class="p">,</span>
+                             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>    
+        <span class="n">global_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">n_data</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">buffer_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">sl_buffer</span><span class="p">,</span> <span class="n">histogram_buffer</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">action</span><span class="o">==</span><span class="s1">&#39;partial_pdf&#39;</span><span class="p">:</span>
+        <span class="c1"># Compute partially (rows-only) kd-smoothed pdf</span>
+        <span class="p">(</span><span class="n">partial_pdf_array</span><span class="p">,</span> <span class="n">histogram_buffer</span><span class="p">,</span> <span class="n">partial_pdf_buffer</span><span class="p">)</span> \
+            <span class="o">=</span> <span class="n">prepare_memory</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> 
+                             <span class="n">n_hist_bins</span><span class="o">=</span><span class="n">n_hist_bins</span><span class="p">,</span>
+                             <span class="n">histogram_array</span><span class="o">=</span><span class="n">histogram_array</span><span class="p">,</span>
+                             <span class="n">action</span><span class="o">=</span><span class="n">action</span><span class="p">,</span> <span class="n">is_bivariate</span><span class="o">=</span><span class="n">is_bivariate</span><span class="p">,</span>
+                             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>    
+        <span class="n">global_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">partial_pdf_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">partial_pdf_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">buffer_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">histogram_buffer</span><span class="p">,</span> <span class="n">partial_pdf_buffer</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Compute kd-smoothed pdf</span>
+        <span class="k">if</span> <span class="n">is_bivariate</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">pdf_array</span><span class="p">,</span> <span class="n">partial_pdf_buffer</span><span class="p">,</span> <span class="n">pdf_buffer</span><span class="p">)</span> \
+                <span class="o">=</span> <span class="n">prepare_memory</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> 
+                                 <span class="n">n_pdf_points</span><span class="o">=</span><span class="n">n_pdf_points</span><span class="p">,</span> 
+                                 <span class="n">partial_pdf_array</span><span class="o">=</span><span class="n">partial_pdf_array</span><span class="p">,</span> 
+                                 <span class="n">action</span><span class="o">=</span><span class="n">action</span><span class="p">,</span> <span class="n">is_bivariate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                 <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>    
+            <span class="n">global_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">pdf_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">pdf_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">buffer_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">partial_pdf_buffer</span><span class="p">,</span> <span class="n">pdf_buffer</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">pdf_array</span><span class="p">,</span> <span class="n">histogram_buffer</span><span class="p">,</span> <span class="n">pdf_buffer</span><span class="p">)</span> \
+                <span class="o">=</span> <span class="n">prepare_memory</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> 
+                                 <span class="n">n_pdf_points</span><span class="o">=</span><span class="n">n_pdf_points</span><span class="p">,</span> 
+                                 <span class="n">histogram_array</span><span class="o">=</span><span class="n">histogram_array</span><span class="p">,</span>
+                                 <span class="n">action</span><span class="o">=</span><span class="n">action</span><span class="p">,</span> <span class="n">is_bivariate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                 <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>    
+            <span class="n">global_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">pdf_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">buffer_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">histogram_buffer</span><span class="p">,</span> <span class="n">pdf_buffer</span><span class="p">]</span>
+        
+    <span class="n">local_size</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># Compile the CL code</span>
+    <span class="n">compile_options</span> <span class="o">=</span> <span class="n">pocl</span><span class="o">.</span><span class="n">set_compile_options</span><span class="p">(</span><span class="n">distbn</span><span class="p">,</span> <span class="n">cl_kernel_fn</span><span class="p">,</span> <span class="n">job_type</span><span class="o">=</span><span class="s1">&#39;kde&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="n">program</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">cl_kernel_source</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">compile_options</span><span class="p">)</span>
+    <span class="n">pocl</span><span class="o">.</span><span class="n">report_build_log</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">gpu_verbose</span><span class="p">)</span>
+    <span class="c1"># Set the GPU kernel</span>
+    <span class="n">kernel</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">program</span><span class="p">,</span><span class="n">cl_kernel_fn</span><span class="p">)</span>
+    <span class="c1"># Designate buffered arrays</span>
+    <span class="n">kernel</span><span class="o">.</span><span class="n">set_args</span><span class="p">(</span><span class="o">*</span><span class="n">buffer_list</span><span class="p">)</span>
+    <span class="n">kernel</span><span class="o">.</span><span class="n">set_scalar_arg_dtypes</span><span class="p">(</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">buffer_list</span><span class="p">)</span> <span class="p">)</span>
+    <span class="c1"># Do the GPU compute</span>
+    <span class="n">event</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">enqueue_nd_range_kernel</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">global_size</span><span class="p">,</span> <span class="n">local_size</span><span class="p">)</span>
+    
+    <span class="c1"># Fetch the data back from the GPU and finish</span>
+    <span class="k">if</span> <span class="n">action</span><span class="o">==</span><span class="s1">&#39;histogram&#39;</span><span class="p">:</span>
+        <span class="c1"># Compute histogram</span>
+        <span class="n">cl</span><span class="o">.</span><span class="n">enqueue_copy</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">histogram_array</span><span class="p">,</span> <span class="n">histogram_buffer</span><span class="p">)</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>   
+        <span class="k">return</span> <span class="n">histogram_array</span>
+    <span class="k">elif</span> <span class="n">action</span><span class="o">==</span><span class="s1">&#39;partial_pdf&#39;</span><span class="p">:</span>
+        <span class="c1"># Compute partial pdf</span>
+        <span class="n">cl</span><span class="o">.</span><span class="n">enqueue_copy</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">partial_pdf_array</span><span class="p">,</span> <span class="n">partial_pdf_buffer</span><span class="p">)</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">partial_pdf_array</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Compute pdf</span>
+        <span class="n">cl</span><span class="o">.</span><span class="n">enqueue_copy</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">pdf_array</span><span class="p">,</span> <span class="n">pdf_buffer</span><span class="p">)</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">pdf_array</span>
+    
+<span class="k">def</span> <span class="nf">prepare_memory</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> 
+                   <span class="n">action</span><span class="o">=</span><span class="s1">&#39;histogram&#39;</span><span class="p">,</span> <span class="n">is_bivariate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                   <span class="n">n_hist_bins</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_pdf_points</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                   <span class="n">sl_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">histogram_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                   <span class="n">partial_pdf_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pdf_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                   <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        context (pyopencl.Context):</span>
+<span class="sd">        queue (pyopencl.CommandQueue):</span>
+<span class="sd">        n_bins (int):</span>
+<span class="sd">        sl_array (numpy.ndarray):</span>
+<span class="sd">        histogram_array (numpy.ndarray):</span>
+<span class="sd">        pdf_array (numpy.ndarray):</span>
+<span class="sd">        verbose (bool):</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray, pyopencl.Buffer, pyopencl.Buffer: </span>
+<span class="sd">        histogram_array or pdf_array, sl_buffer or histogram_buffer, </span>
+<span class="sd">        histogram_buffer or pdf_buffer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">COPY_READ_ONLY</span>  <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">mem_flags</span><span class="o">.</span><span class="n">READ_ONLY</span>  <span class="o">|</span> <span class="n">cl</span><span class="o">.</span><span class="n">mem_flags</span><span class="o">.</span><span class="n">COPY_HOST_PTR</span>
+    <span class="n">COPY_READ_WRITE</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">mem_flags</span><span class="o">.</span><span class="n">READ_WRITE</span> <span class="o">|</span> <span class="n">cl</span><span class="o">.</span><span class="n">mem_flags</span><span class="o">.</span><span class="n">COPY_HOST_PTR</span>
+
+    <span class="k">if</span> <span class="n">action</span><span class="o">==</span><span class="s1">&#39;histogram&#39;</span><span class="p">:</span>
+        <span class="n">nx</span> <span class="o">=</span> <span class="n">n_hist_bins</span>
+        <span class="k">if</span> <span class="n">is_bivariate</span><span class="p">:</span>
+            <span class="n">ny</span> <span class="o">=</span> <span class="n">n_hist_bins</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ny</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">sl_buffer</span>         <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">COPY_READ_ONLY</span><span class="p">,</span>  <span class="n">hostbuf</span><span class="o">=</span><span class="n">sl_array</span><span class="p">)</span>
+        <span class="n">histogram_array</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+        <span class="n">histogram_buffer</span>  <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">COPY_READ_WRITE</span><span class="p">,</span> <span class="n">hostbuf</span><span class="o">=</span><span class="n">histogram_array</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">histogram_array</span><span class="p">,</span> <span class="n">sl_buffer</span><span class="p">,</span> <span class="n">histogram_buffer</span><span class="p">)</span> 
+    <span class="k">elif</span> <span class="n">action</span><span class="o">==</span><span class="s1">&#39;partial_pdf&#39;</span><span class="p">:</span>
+        <span class="n">nx</span> <span class="o">=</span> <span class="n">n_hist_bins</span>
+        <span class="n">ny</span> <span class="o">=</span> <span class="n">n_hist_bins</span>
+        <span class="n">histogram_buffer</span>  <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">COPY_READ_ONLY</span><span class="p">,</span> <span class="n">hostbuf</span><span class="o">=</span><span class="n">histogram_array</span><span class="p">)</span>
+        <span class="n">partial_pdf_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">partial_pdf_buffer</span><span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">COPY_READ_WRITE</span><span class="p">,</span><span class="n">hostbuf</span><span class="o">=</span><span class="n">partial_pdf_array</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">partial_pdf_array</span><span class="p">,</span> <span class="n">histogram_buffer</span><span class="p">,</span> <span class="n">partial_pdf_buffer</span><span class="p">)</span> 
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nx</span> <span class="o">=</span> <span class="n">n_pdf_points</span>
+        <span class="k">if</span> <span class="n">is_bivariate</span><span class="p">:</span>
+            <span class="n">ny</span> <span class="o">=</span> <span class="n">n_pdf_points</span>
+            <span class="n">partial_pdf_buffer</span><span class="o">=</span><span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="n">COPY_READ_ONLY</span><span class="p">,</span><span class="n">hostbuf</span><span class="o">=</span><span class="n">partial_pdf_array</span><span class="p">)</span>
+            <span class="n">pdf_array</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="n">pdf_buffer</span>        <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">COPY_READ_WRITE</span><span class="p">,</span> <span class="n">hostbuf</span><span class="o">=</span><span class="n">pdf_array</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">pdf_array</span><span class="p">,</span> <span class="n">partial_pdf_buffer</span><span class="p">,</span> <span class="n">pdf_buffer</span><span class="p">)</span> 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">histogram_buffer</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">COPY_READ_ONLY</span><span class="p">,</span> <span class="n">hostbuf</span><span class="o">=</span><span class="n">histogram_array</span><span class="p">)</span>
+            <span class="n">pdf_array</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="n">pdf_buffer</span>        <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">COPY_READ_WRITE</span><span class="p">,</span> <span class="n">hostbuf</span><span class="o">=</span><span class="n">pdf_array</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">pdf_array</span><span class="p">,</span> <span class="n">histogram_buffer</span><span class="p">,</span> <span class="n">pdf_buffer</span><span class="p">)</span> 
+        
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">Streamlines</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Topographic streamline mapping of landscape structure</p>
+
+
+
+
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <br>
+  <p class="biglink"><a class="biglink" href="../py-modindex.html">
+         Module Index</a>
+  <br><br>
+  <h3><a href="../index.html">Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">kde.py</span></code></a><ul>
+<li><a class="reference internal" href="#module-streamlines.kde">Usage</a></li>
+<li><a class="reference internal" href="#code">Code</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related</h3>
+<ul>
+  <li><a href="../index.html"></a><ul>
+      <li><a href="hillslopes.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">hillslopes.py</span></code></a></li>
+      <li><a href="label.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">label.py</span></code></a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, CPS.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/modules/kde.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

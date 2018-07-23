@@ -33,87 +33,11 @@
             
   <div class="section" id="export-py">
 <h1><code class="docutils literal notranslate"><span class="pre">export.py</span></code><a class="headerlink" href="#export-py" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-streamlines.export">
-<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.export" title="Permalink to this headline">¶</a></h2>
-<p>Map and graph plotting</p>
-<dl class="class">
-<dt id="streamlines.export.Export">
-<em class="property">class </em><code class="descclassname">streamlines.export.</code><code class="descname">Export</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>plot</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.export.Export" title="Permalink to this definition">¶</a></dt>
-<dd><p>Export plots to files</p>
-<dl class="method">
-<dt id="streamlines.export.Export.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>plot</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.export.Export.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>TBD</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="streamlines.export.Export.do">
-<code class="descname">do</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.export.Export.do" title="Permalink to this definition">¶</a></dt>
-<dd><p>Export all Matplotlib plots</p>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Map and graph plotting</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="k">import</span> <span class="n">savefig</span><span class="p">,</span><span class="n">figure</span>
-<span class="kn">import</span> <span class="nn">os</span>
-
-<span class="kn">from</span> <span class="nn">streamlines.core</span> <span class="k">import</span> <span class="n">Core</span>
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Export&#39;</span><span class="p">]</span>
-
-<span class="k">class</span> <span class="nc">Export</span><span class="p">(</span><span class="n">Core</span><span class="p">):</span>       
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Export plots to files</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span><span class="n">plot</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        TBD</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">)</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="n">plot</span>
-        
-    <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Export all Matplotlib plots</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">**Export plots begin**&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
-            
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">export_path</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Export directory doesn</span><span class="se">\&#39;</span><span class="s1">t exist: creating &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span>
-                      <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">export_path</span><span class="p">),</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">export_path</span><span class="p">))</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s1">&#39;Cannot create export directory &quot;&#39;</span>
-                              <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">export_path</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> 
-                              <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">export_path</span><span class="p">)):</span>
-                <span class="n">err</span> <span class="o">=</span> <span class="s1">&#39;&quot;&#39;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">export_path</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;&quot; is not a directory&#39;</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OS error: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
-                <span class="k">raise</span> <span class="ne">OSError</span>
-            
-        <span class="n">filestem</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">export_path</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">parameters_file</span><span class="p">))</span>
-
-        <span class="k">for</span> <span class="n">fig_item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">figs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">fig_obj</span> <span class="o">=</span> <span class="n">fig_item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">for</span> <span class="nb">format</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">:</span>
-                <span class="n">filename</span> <span class="o">=</span> <span class="n">filestem</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">fig_item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="nb">format</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Exporting &lt;</span><span class="si">{0}</span><span class="s1">&gt; to &quot;</span><span class="si">{1}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">fig_item</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">filename</span> <span class="p">)</span> <span class="p">)</span>
-                <span class="n">fig_obj</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;**Export plots end**</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
-        
-</pre></div>
-</div>
 </div>
 </div>
 
@@ -161,7 +85,7 @@
   <h3><a href="../index.html">Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">export.py</span></code></a><ul>
-<li><a class="reference internal" href="#module-streamlines.export">Usage</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
 <li><a class="reference internal" href="#code">Code</a></li>
 </ul>
 </li>

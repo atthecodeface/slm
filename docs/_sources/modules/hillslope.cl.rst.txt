@@ -1,0 +1,5 @@
+``hillslope.cl`` 
+========================
+
+
+.. literalinclude:: ../../opencl/hillslope.cl
