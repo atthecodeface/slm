@@ -5,9 +5,9 @@
 		"basins_file" :   "Huasna_res2m_fillsinks0p01_basins.tif",
 		"data_path" :     [ "$SLMDATA", "Huasna" ],
 		"export_path" :   [ "$SLMXPT",  "Huasna1" ],
-		"do_clip_roi" :   false,
-        "roi_x_bounds" :  [],
-        "roi_y_bounds" :  [],
+		"do_clip_roi" :   true,
+        "roi_x_bounds" :  [20,1050],
+        "roi_y_bounds" :  [340,2000],
 		"basins" :          [50],
 		"do_basin_masking": true
 	},
@@ -15,8 +15,7 @@
 	"plot": {
         "mhsl_pdf_x_stretch" : 1.2,
         "contour_label_fontsize" : 3,
-        "contour_hsl_colorbar_size" : 3,
-        "contour_hsl_colorbar_aspect" : 10,
+        "do_plot_hsl_contours" : false,
         "do_plot_aspect_contours" : false
 	}
 }

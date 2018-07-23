@@ -77,7 +77,7 @@ class Plot(Core):
         TBD
         """
 #         mpl.rc( 'savefig', dpi=300)
-        mpl.rc( 'figure', autolayout=False,  titlesize='Large',dpi=75)
+        mpl.rc( 'figure', autolayout=False,  titlesize='Large',dpi=self.fig_dpi)
         mpl.rc( 'lines', linewidth=2.0, markersize=10)
         # mpl.rc( 'font', size=14,family='Times New Roman', serif='cm')
         # mpl.rc( 'font', size=14,family='DejaVu Sans', serif='cm')
@@ -524,11 +524,12 @@ class Plot(Core):
                                grid_alpha=self.hsl_alpha)
     
     def plot_hsl_contoured(self, window_size_factor=None, cmap=None,
-                           do_colorbar=False, colorbar_title='hillslope length [m]',
+                           do_colorbar=True, colorbar_title='hillslope length [m]',
                            n_contours=None, contour_interval=None, linewidth=None,
                            z_min=None,z_max=None, do_shaded_relief=None,
-                           colorbar_aspect=None, contour_label_suffix=None,
-                           contour_label_fontsize=None):
+                           colorbar_size=None, colorbar_aspect=None, 
+                           contour_label_suffix=None,
+                           contour_label_fontsize=None, do_plot_contours=None):
         """
         TBD
         """
@@ -542,6 +543,10 @@ class Plot(Core):
         pslice = np.index_exp[pad:-pad,pad:-pad]
         if cmap is None:
             cmap = self.contour_hsl_cmap
+        if do_plot_contours is None:
+            do_plot_contours = self.do_plot_hsl_contours
+        if colorbar_size is None:
+            colorbar_size = self.contour_hsl_colorbar_size
         if colorbar_aspect is None:
             colorbar_aspect = self.contour_hsl_colorbar_aspect
         if do_shaded_relief is None:
@@ -576,7 +581,7 @@ class Plot(Core):
 #         mask_array &= False
         if do_shaded_relief:
             hillshade_alpha = self.grid_shaded_relief_hillshade_alpha
-            hsl_alpha = 0.3
+            hsl_alpha = self.contour_hsl_alpha
         else:
             hillshade_alpha = 0.0
             hsl_alpha = 1.0
@@ -584,18 +589,27 @@ class Plot(Core):
                                             hillshade_alpha=hillshade_alpha)
         im = self.plot_simple_grid((grid_array),
                               mask_array,axes,cmap=cmap,alpha=hsl_alpha,do_vlimit=False)
+#         if do_colorbar:
+#             divider = make_axes_locatable(axes)
+#             cax = divider.append_axes("bottom", size="4%", 
+#                                       pad=0.5, aspect=colorbar_aspect)
+#             cbar = plt.colorbar(im, cax=cax, orientation="horizontal")
+#             cbar.set_label(colorbar_title)
+            
         if do_colorbar:
             divider = make_axes_locatable(axes)
-            cax = divider.append_axes("bottom", size="4%", 
+            cax = divider.append_axes("bottom", size="{}%".format(colorbar_size), 
                                       pad=0.5, aspect=colorbar_aspect)
             cbar = plt.colorbar(im, cax=cax, orientation="horizontal")
             cbar.set_label(colorbar_title)
-        self.plot_contours_overlay(axes,grid_array.T,mask=mask_array,
-                                   n_contours=n_contours,
-                                   contour_interval=contour_interval,
-                                   linewidth=linewidth,
-                                   contour_label_suffix=contour_label_suffix, 
-                                   contour_label_fontsize=contour_label_fontsize)
+            
+        if do_plot_contours:
+            self.plot_contours_overlay(axes,grid_array.T,mask=mask_array,
+                                       n_contours=n_contours,
+                                       contour_interval=contour_interval,
+                                       linewidth=linewidth,
+                                       contour_label_suffix=contour_label_suffix, 
+                                       contour_label_fontsize=contour_label_fontsize)
         # Force map limits to match those of the ROI
         #   - turn this off to check for boundary overflow errors in e.g. streamlines
         axes.set_xlim(xmin=self.geodata.roi_x_bounds[0],xmax=self.geodata.roi_x_bounds[1])
@@ -654,8 +668,8 @@ class Plot(Core):
         
         divider = make_axes_locatable(axes)
         cax = divider.append_axes("right",  pad=0.3,
-                                  size="{}%".format(self.contour_hsl_colorbar_size), 
-                                  aspect=self.contour_hsl_colorbar_aspect)
+                                  size="{}%".format(self.contour_aspect_colorbar_size), 
+                                  aspect=self.contour_aspect_colorbar_aspect)
         ticks       = [-180,-90,0,90,180]
         tick_labels = ['W','S','E','N','W']
         # Omit top W tick/label

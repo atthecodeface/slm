@@ -1,0 +1,25 @@
+{	
+	"geodata": {
+		"title" :         "San Bernadino Mtns, ROI#2",
+		"dtm_file" :      "SanBernadinoMtns1_res2m_patched_fillsinks0p01.tif",
+		"basins_file" :   "SanBernadinoMtns1_res2m_patched_fillsinks0p01_basins.tif",
+		"data_path" :     [ "$SLMDATA", "SanBernadinoMtns" ],
+		"export_path" :   [ "$SLMXPT",  "SanBernadinoMtns2" ],
+		"do_clip_roi" :   true,
+        "roi_x_bounds" :  [500,2700],
+        "roi_y_bounds" :  [100,3300],
+		"Xbasins" :          [1479],
+		"basins" :          [1028],
+		"Ybasins" :          [681,899],
+		"do_basin_masking": true
+	},
+	
+	
+	
+
+	"plot": {
+        "contour_label_fontsize" : 3,
+        "do_plot_hsl_contours" : false,
+        "do_plot_aspect_contours" : false
+	}
+}

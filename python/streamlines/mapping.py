@@ -934,13 +934,13 @@ class Mapping(Core):
                    .format(self.hsl_ns_disparity_confidence) )
         indent = '\t'*5
         if self.hsl_ns_disparity_confidence<0.5:
-            self.print(indent+'=> very weak {} disparity'.format(is_n_or_s_disparity))
+            self.print(indent+'=> very weak {} bias'.format(is_n_or_s_disparity))
         elif self.hsl_ns_disparity_confidence<1.0:
-            self.print(indent+'=> weak {} disparity'.format(is_n_or_s_disparity))
+            self.print(indent+'=> weak {} bias'.format(is_n_or_s_disparity))
         elif self.hsl_ns_disparity_confidence<2.0:
-            self.print(indent+'=> moderate {} disparity'.format(is_n_or_s_disparity))
+            self.print(indent+'=> moderate {} bias'.format(is_n_or_s_disparity))
         else:
-            self.print(indent+'=> strong {} disparity'.format(is_n_or_s_disparity))  
+            self.print(indent+'=> strong {} bias'.format(is_n_or_s_disparity))  
         
         # Report classical frequentist tests comparing N and S HSL distributions
         try:

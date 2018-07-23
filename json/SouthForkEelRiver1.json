@@ -1,0 +1,23 @@
+{	
+	"geodata": {
+		"title" :         "South Fork Eel River, ROI#1.1",
+		"dtm_file" :      "SouthForkEelRiver1_res2m_fillsinks0p01.tif",
+		"basins_file" :   "SouthForkEelRiver1_res2m_fillsinks0p01_basins.tif",
+		"data_path" :     [ "$SLMDATA", "SouthForkEelRiver" ],
+		"export_path" :   [ "$SLMXPT",  "SouthForkEelRiver1" ],
+		"do_clip_roi" :   true,
+        "roi_x_bounds" :  [650,3180],
+        "roi_y_bounds" :  [0,1550],
+		"basins" :          [19],
+		"do_basin_masking": true
+	},
+	
+	
+	
+
+	"plot": {
+        "contour_label_fontsize" : 3,
+        "do_plot_hsl_contours" : false,
+        "do_plot_aspect_contours" : false
+	}
+}

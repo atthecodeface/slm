@@ -109,7 +109,6 @@ class Geodata(Core):
             
         # Handle empty ROI bounds which imply full DTM
         if not self.do_clip_roi or self.roi_x_bounds==[]:
-            pdebug('clip',self.do_clip_roi)
             self.roi_x_bounds = [0,self.dtm_array.shape[1]]
         if not self.do_clip_roi or self.roi_y_bounds==[]:
             self.roi_y_bounds = [0,self.dtm_array.shape[0]]
