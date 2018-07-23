@@ -11,8 +11,9 @@ and a custom set of open-source lidar DTM data files for the notebooks to work o
 
 
 .. warning::
-	This documentation is a work in progress. Recent deployments of OpenCL acceleration 
-	and splitting of the git repo have not yet been incorporated.
+	This documentation is a work in progress. 
+	Recent deployments of OpenCL acceleration 
+	and splitting of the git repo are being incorporated now.
 
 
 
