@@ -18,7 +18,9 @@
 	"plot": {
         "contour_label_fontsize" : 3,
         "hsl_colorbar_size" : 7,
+        "hsl_colorbar_aspect" : 0.06,
         "contour_hsl_colorbar_size" : 7,
+        "contour_hsl_colorbar_aspect" : 0.06,
         "do_plot_hsl_contours" : false,
         "do_plot_aspect_contours" : false
 	}

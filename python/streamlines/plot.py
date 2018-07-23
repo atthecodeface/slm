@@ -826,8 +826,8 @@ class Plot(Core):
         name = 'hsl_nsall_distbn'
         title = 'N-facing vs S-facing hillslope length distributions'
         fig,_ = self._new_figure(window_title=name)
-        axes  = df['hsl'].plot.density(figsize=(8,8), title=title, color='k', style='-.',
-                                      label='360°', alpha=0.5, lw=1, secondary_y='360°')
+        axes  = df['hsl'].plot.density(figsize=(8,8), title=title, color='k',#style='-.',
+                                      label='360°', alpha=0.7, lw=1, secondary_y='360°')
         x_max = df['hsl'].quantile(q=1)*x_stretch
         try:
             axes2 = hsl_n.plot.density(figsize=(8,8),color='steelblue', label='N-facing')

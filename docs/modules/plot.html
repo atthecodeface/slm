@@ -15,7 +15,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="export.py" href="export.html" />
+    <link rel="next" title="save.py" href="save.html" />
     <link rel="prev" title="mapping.py" href="mapping.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -1150,8 +1150,8 @@ angle_attitude_degrees</p>
         <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;hsl_nsall_distbn&#39;</span>
         <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;N-facing vs S-facing hillslope length distributions&#39;</span>
         <span class="n">fig</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_new_figure</span><span class="p">(</span><span class="n">window_title</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">axes</span>  <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;hsl&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">density</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">),</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;-.&#39;</span><span class="p">,</span>
-                                      <span class="n">label</span><span class="o">=</span><span class="s1">&#39;360°&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="s1">&#39;360°&#39;</span><span class="p">)</span>
+        <span class="n">axes</span>  <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;hsl&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">density</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">),</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span><span class="c1">#style=&#39;-.&#39;,</span>
+                                      <span class="n">label</span><span class="o">=</span><span class="s1">&#39;360°&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="s1">&#39;360°&#39;</span><span class="p">)</span>
         <span class="n">x_max</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;hsl&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">x_stretch</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">axes2</span> <span class="o">=</span> <span class="n">hsl_n</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">density</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">),</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;steelblue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;N-facing&#39;</span><span class="p">)</span>
@@ -2320,7 +2320,7 @@ angle_attitude_degrees</p>
 <ul>
   <li><a href="../index.html"></a><ul>
       <li><a href="mapping.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">mapping.py</span></code></a></li>
-      <li><a href="export.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">export.py</span></code></a></li>
+      <li><a href="save.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">save.py</span></code></a></li>
   </ul></li>
 </ul>
 </div>
