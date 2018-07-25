@@ -1,5 +1,5 @@
 ///
-/// @file trajectoryfns.cl
+/// @file updatetraj.cl
 ///
 /// Various functions to compute trajectories and record data along them
 ///
@@ -26,7 +26,6 @@
 /// @param[in]      prev_vec: previous (x,y) coordinate vector on streamline trajectory
 /// @param[in,out]  n_steps: number of integration steps so far in streamline trajectory
 /// @param[in,out]  idx: array index of pixel at current (x,y) position
-/// @param[in,out]  prev_idx: array index of pixel at previous (x,y) position
 /// @param[in]      mask_array: grid pixel mask (padded),
 ///                         with @p true = masked, @p false = good
 /// @param[in,out]  slc_array: grid recording accumulated count of streamline integration

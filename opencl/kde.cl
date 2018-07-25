@@ -323,8 +323,8 @@ static inline void filter_along_cols(
 ///
 /// Compiled if @p KERNEL_PDF_BIVARIATE is defined.
 ///
-/// @param[in]     histogram_array (uint *,  RO):
-/// @param[in,out] pdf_array       (float *, RW):
+/// @param[in]     partial_pdf_array (float *, RO):
+/// @param[in,out] pdf_array         (float *, RW):
 ///
 /// @returns void
 ///

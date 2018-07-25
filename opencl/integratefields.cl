@@ -1,5 +1,5 @@
 ///
-/// @file integration.cl
+/// @file integratefields.cl
 ///
 /// Streamline trajectory integration kernel and related tracing functions.
 ///

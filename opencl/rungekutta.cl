@@ -1,5 +1,5 @@
 ///
-/// @file integrationfns.cl
+/// @file rungekutta.cl
 ///
 /// Adaptive 1st or 2nd order Runge-Kutta single-stepping functions
 ///
@@ -146,9 +146,9 @@ static inline void euler_step_record(float *dt, float  *dl,
 /// @param[in]      next_vec: next (x,y) coordinate vector on streamline trajectory
 /// @param[in,out]  n_steps: number of integration steps so far in streamline trajectory
 /// @param[in,out]  idx: array index of pixel at current (x,y) position
-/// @param[in,out]  prev_idx: array index of pixel at previous (x,y) position
 /// @param[in]  mask_array: grid pixel mask (padded),
 ///                         with @p true = masked, @p false = good
+/// @param[in,out]  mapping_array: flag grid recording status of each pixel (padded)
 /// @param[in,out] slc_array: grid recording accumulated count of streamline integration
 ///                           steps across each pixel (padded)
 /// @param[in,out] slt_array: grid recording accumulated count of streamline segment
@@ -203,7 +203,6 @@ static inline bool runge_kutta_step_write_sl_data(
 /// @param[in]      prev_vec: previous (x,y) coordinate vector on streamline trajectory
 /// @param[in,out]  n_steps: number of integration steps so far in streamline trajectory
 /// @param[in,out]  idx: array index of pixel at current (x,y) position
-/// @param[in,out]  prev_idx: array index of pixel at previous (x,y) position
 /// @param[in]      mask_array: grid pixel mask (padded),
 ///                         with @p true = masked, @p false = good
 /// @param[in,out]  slc_array: grid recording accumulated count of streamline integration

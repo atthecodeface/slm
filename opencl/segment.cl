@@ -220,7 +220,7 @@ static inline uint rotate_left(uint prev_x, uint prev_y, char *dx, char *dy) {
 ///
 /// @ingroup segmentation
 
-/// @bugs Corner case problem where thin channel seq has a fat kink, leading
+/// @bug Corner case problem where thin channel seq has a fat kink, leading
 ///       to mislabeling of left flank pixel & thin hillslope sl among right flank zone
 ///
 __kernel void subsegment_channel_edges(

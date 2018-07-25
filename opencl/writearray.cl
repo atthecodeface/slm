@@ -56,7 +56,6 @@ static inline void atomic_write_sl_data(__global uint *slt, __global uint *slc,
 /// Compiled if KERNEL_INTEGRATE_TRAJECTORY is defined.
 ///
 /// @param[in]      idx: array index of pixel at current (x,y) position
-/// @param[in,out]  prev_idx: array index of pixel at previous (x,y) position
 /// @param[in]      mask_flag: whether current pixel is masked or not
 /// @param[in,out]  slt: grid recording accumulated count of streamline segment lengths
 ///                         crossing each pixel (padded)

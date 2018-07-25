@@ -123,9 +123,9 @@ __kernel void count_downchannels(
 /// @param[in]      seed_point_array   (float2 *, RO):
 /// @param[in]      mask_array         (bool *,   RO):
 /// @param[in]      uv_array           (float2 *, RO):
-/// @param[in/out]  mapping_array      (uint *,   RW):
-/// @param[in/out]  count_array        (uint *,   RW):
-/// @param[in/out]  link_array         (uint *,   RW):
+/// @param[in,out]  mapping_array      (uint *,   RW):
+/// @param[in,out]  count_array        (uint *,   RW):
+/// @param[in,out]  link_array         (uint *,   RW):
 ///
 /// @returns void
 ///

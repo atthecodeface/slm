@@ -208,10 +208,7 @@ class Mapping(Core):
         self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask_array})
         # Initialize the full ROI-scale HSL grid and a buffer
         # Also a mapping array for channels etc
-        raw_mask_array     = np.zeros((nxp,nyp), dtype=np.bool)
-#         pdebug('self.geodata.roi_nx,ny = ',(self.geodata.roi_nx,self.geodata.roi_ny))
-#         pdebug('nxp,nyp = ',(nxp,nyp))
-#         pdebug('raw_mask_array',raw_mask_array.shape)
+        raw_mask_array      = np.zeros((nxp,nyp), dtype=np.bool)
         dilated_mask_array  = np.zeros((nxp,nyp), dtype=np.bool)
         merged_mask_array   = np.zeros((nxp,nyp), dtype=np.bool)
         self.hsl_array      = np.zeros((nxp,nyp), dtype=np.float32)
@@ -294,6 +291,10 @@ class Mapping(Core):
                     (data.hsl_stats_df['count']>1) 
                     & (data.hsl_stats_df['mean [m]']>5.0)
                     ])
+            
+            # FMM
+            import skfmm
+            
             
             # Remove this iteration's dilated coarse-subsegment mask
             self.state.remove_active_mask('dilated_segment')
