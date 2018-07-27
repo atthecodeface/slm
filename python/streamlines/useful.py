@@ -66,9 +66,11 @@ class Data():
         self.link_array = None
         self.label_array = None
         self.channel_label_array = None
-        self.hillslope_labels = None
+        self.selected_subsegments_array = None
         self.traj_label_array = None
         self.traj_length_array = None
+        self.subsegment_label_array = None
+        self.subsegment_hsl_array = None
         if hsl_array is not None:
             self.hsl_array = hsl_array[bounds_slx].copy()
         else:
@@ -187,7 +189,7 @@ def get_bbox(array):
 def check_sizes(nx,ny,array_dict):
     for ad_item in array_dict.items():
         array_name = ad_item[0]
-        if array_name not in ('seed_point','traj_length'):
+        if array_name not in ('seed_point','subsegment_hsl'):
             array = ad_item[1]['array']
             if array.shape[0]!=nx or array.shape[1]!=ny:
                 # raise ValueError

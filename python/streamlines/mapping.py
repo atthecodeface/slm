@@ -14,6 +14,7 @@ from scipy.ndimage.morphology import binary_fill_holes, grey_dilation, \
                                      binary_dilation, generate_binary_structure
 from scipy.stats import ks_2samp, mannwhitneyu, ranksums, ttest_ind
 from scipy.interpolate import interp1d 
+import skfmm
 import warnings
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
@@ -268,13 +269,29 @@ class Mapping(Core):
                 vprint(self.vprogress,'   ---')
                 continue
             
-            # Find the HSL-mappable subsegments
-            self.select_subsegments(info, data)
-            # Measure HSL from ridges or midslopes to thin channels per subsegment
-            if not self.measure_hsl(info, data):
+            
+            
+            # Map all subsegments
+            self.select_subsegments(info, data, do_restrict=False)
+            if not self.measure_hsl_fmm(info, data) \
+                  or not self.parse_hsl(info, data) \
+                  or not self.remap_hsl(info, data):
                 del data
                 vprint(self.vprogress,'   ---')
                 continue
+            
+#             # Find the HSL-mappable subsegments
+#             self.select_subsegments(info, data)
+#             # Measure HSL from ridges or midslopes to thin channels per subsegment
+#             if not self.measure_hsl_traced(info, data) \
+#                      or not self.parse_hsl(info, data) \
+#                      or not self.remap_hsl(info, data):
+#                 del data
+#                 vprint(self.vprogress,'   ---')
+#                 continue
+            
+            
+            
             vprint(self.vprogress,'Mean HSL = {0:0.1f}m'.format(data.hsl_mean))
             # Inefficient but simple
             self.hsl_mean_array = np.append(self.hsl_mean_array,data.hsl_mean)
@@ -291,10 +308,6 @@ class Mapping(Core):
                     (data.hsl_stats_df['count']>1) 
                     & (data.hsl_stats_df['mean [m]']>5.0)
                     ])
-            
-            # FMM
-            import skfmm
-            
             
             # Remove this iteration's dilated coarse-subsegment mask
             self.state.remove_active_mask('dilated_segment')
@@ -508,9 +521,8 @@ class Mapping(Core):
         n = segment.segment_channels(self.cl_state, info, data, self.verbose)
         if n==0:
             return False
-        # Save the channel-only segment labeling for now - also convert to unsigned
+        # Save the channel-only segment labeling for now; also convert to unsigned
         data.channel_label_array = data.label_array.copy().astype(np.uint32)
-        is_majorconfluence = info.is_majorconfluence
         return True
         
     def link_hillslopes(self, info, data):
@@ -571,38 +583,113 @@ class Mapping(Core):
         data.mapping_array[skeletonize(fat_ridge_array)] |= info.is_ridge
         self.print('done')  
 
-    def select_subsegments(self, info, data):
+    def select_subsegments(self, info, data, do_restrict=True):
         self.print('Selecting subsegments for HSL mapping...',end='')  
-        if self.do_measure_hsl_from_ridges:
-            flag = info.is_ridge
-            self.print('measuring from ridges...')
+        if do_restrict:
+            if self.do_measure_hsl_from_ridges:
+                flag = info.is_ridge
+                self.print('measuring from ridges...')
+            else:
+                flag = info.is_midslope
+                self.print('measuring from midslopes...')
+                data.subsegment_label_array = data.label_array[
+        #             np.logical_and((data.mapping_array & flag)>0,~data.mask_array))
+                         ((data.mapping_array & flag)>0) & (~data.mask_array)
+                                            ].astype(np.int32)
         else:
-            flag = info.is_midslope
-            self.print('measuring from midslopes...')
-        data.traj_label_array = data.label_array[
-                 ((data.mapping_array & flag)>0) & (~data.mask_array)
-                                    ].astype(np.int32)
-        unique_labels         = np.unique(data.traj_label_array)
-        data.hillslope_labels = unique_labels[unique_labels!=0].astype(np.int32)
-        self.n_subsegments    = unique_labels.shape[0]
+            data.subsegment_label_array = data.label_array[(~data.mask_array)
+                                        ].astype(np.int32)
+        unique_labels         = np.unique(data.subsegment_label_array)
+        data.selected_subsegments_array = unique_labels[unique_labels!=0].astype(np.int32)
+        self.n_subsegments    = unique_labels.size
         self.print('selected {}'.format(self.n_subsegments))
         self.print('...done')  
-                
-    def measure_hsl(self, info, data):
+                                
+    def fmm_lengths(self, info, data):
+        data.subsegment_hsl_array = np.zeros_like(data.selected_subsegments_array)
+        pdebug()
+        for idx,subsegment in enumerate(data.selected_subsegments_array):
+            phi_bool = np.zeros_like(data.label_array,dtype=np.bool)
+            phi_mod  = np.zeros_like(data.label_array,dtype=np.int32)
+            mask     = np.zeros_like(data.label_array,dtype=np.bool)
+            phi_bool[data.label_array==subsegment]=True
+            n_phi_pixels = phi_bool[phi_bool==True].size
+            n_dilations = 1
+            dilation_structure = generate_binary_structure(2, 2)
+            if n_dilations>0:
+                phi_bool_dilated = binary_dilation(phi_bool, structure=dilation_structure, 
+                                                   iterations=n_dilations)
+            else:
+                phi_bool_dilated = phi_bool
+            phi_mod = phi_bool_dilated.astype(np.float32)
+            phi_mod[((data.mapping_array & info.is_thinchannel)==info.is_thinchannel)
+                    & (np.abs(data.label_array)==np.abs(subsegment))]=-1
+            mask[phi_bool_dilated==0]=True
+            phi_mod  = np.ma.MaskedArray(phi_mod, mask)
+
+            n_channel_pixels = phi_mod[phi_mod==-1].size
+            if n_channel_pixels==0:
+                continue
+            ratio_phi_channel = n_phi_pixels/n_channel_pixels
+
+            try:   
+                distance = skfmm.distance(phi_mod, dx=self.geodata.roi_pixel_size)
+                hsl = np.max(distance)
+                if ratio_phi_channel>4.0:
+                    data.subsegment_hsl_array[idx] = hsl
+            except:
+                pass
+            
+#             self.plot.plot_gridded_data(phi_mod,'jet', #'randomized',
+#                                         do_colorbar=True, #mask_array=mask,
+#                                         do_balance_cmap=False, do_shaded_relief=False,
+#                                         extent=[0,phi_mod.shape[0],0,phi_mod.shape[1]],
+#                                         window_size_factor=2)
+#             self.plot.plot_gridded_data(distance,'jet', #mask_array=mask,
+#                                         do_colorbar=True,
+#                                         do_balance_cmap=False, do_shaded_relief=False,
+#                                         extent=[0,distance.shape[0],0,distance.shape[1]],
+#                                         window_size_factor=2)
+        pdebug(data.subsegment_label_array.size,data.subsegment_hsl_array.size)
+        hsl_array = data.subsegment_hsl_array
+        
+#         hsl_array = hsl_array[hsl_array>0.0]
+        if hsl_array[hsl_array>0.0].size>0:
+            fmm_mean_hsl = np.mean(hsl_array[hsl_array>0.0])
+            pdebug('FMM  HSL = {:.1f}m'.format(fmm_mean_hsl))
+            return True
+        else:
+            return False
+      
+    def measure_hsl_fmm(self, info, data):
+        self.print('Measuring hillslope lengths using eikonal distance...')
+        data.subsegment_label_array = data.selected_subsegments_array
+        if not self.fmm_lengths(info, data):
+            return False
+        self.print('...done')  
+        return True
+
+    def measure_hsl_traced(self, info, data):
         self.print('Measuring hillslope lengths...')
-        data.traj_length_array = np.zeros_like(data.traj_label_array,dtype=np.float32)
+        data.subsegment_hsl_array = np.zeros_like(data.subsegment_label_array,
+                                                  dtype=np.float32)
         if not lengths.hsl(self.cl_state, info, data, self.do_measure_hsl_from_ridges,
                            self.verbose):
             return False
-        n = data.traj_length_array.shape[0]
+        self.print('...done')  
+        return True
+        
+    def parse_hsl(self, info, data):
+        self.print('Parsing hillslope lengths...')
+        n = data.subsegment_hsl_array.shape[0]
         df = pd.DataFrame(np.zeros((n,), dtype=[('fine', np.int32), 
                                                 ('length', np.float32)]))
-        df['fine']  = data.traj_label_array
-        df['length'] = data.traj_length_array
+        df['fine']   = data.subsegment_label_array
+        df['length'] = data.subsegment_hsl_array
+#         pdebug(df)
         df = df[df.fine!=0]
-        
         try:
-            stats_df = pd.DataFrame(data.hillslope_labels,columns=['fine'])
+            stats_df = pd.DataFrame(data.selected_subsegments_array,columns=['fine'])
             stats_list = ( ('count','count'), ('mean','mean [m]'), ('std','stddev [m]') )
             for stat in stats_list:
                 stats_df = stats_df.join( getattr(df.groupby('fine'),stat[0])(),
@@ -613,7 +700,13 @@ class Mapping(Core):
             return False
         stats_df['coarse']=info.coarse_label
         stats_df.set_index(['fine','coarse'],inplace=True)
+        data.hsl_stats_df  = stats_df
+        self.print('...done')  
+        return True
 
+    def remap_hsl(self, info, data):
+        self.print('Remapping hillslope lengths onto grid...')
+        stats_df =data.hsl_stats_df
         nxp = info.nx_padded
         nyp = info.ny_padded
         try:   
@@ -637,7 +730,6 @@ class Mapping(Core):
             return False
         
         data.hsl_mean  = np.mean(hsl_nonan)
-        data.hsl_stats_df  = stats_df
         self.print('...done')  
         return True
 

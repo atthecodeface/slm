@@ -980,7 +980,7 @@ class Plot(Core):
                           window_title='', do_flip_cmap=False, do_balance_cmap=True,
                           do_shaded_relief=True, do_colorbar=False, 
                           colorbar_title=None, colorbar_aspect=0.07,
-                          colorbar_size=4, grid_alpha=None):
+                          colorbar_size=4, grid_alpha=None, extent=None):
         """
         TBD
         """
@@ -989,6 +989,8 @@ class Plot(Core):
         pad = self.geodata.pad_width
         pslice = np.index_exp[pad:-pad,pad:-pad]
         mask_array = mask_array[pslice]
+        if extent is None:
+            extent = [*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds]
         if self.geodata.do_basin_masking:
             mask_array |= self.state.merge_active_masks()[pslice]
             
@@ -1035,7 +1037,7 @@ class Plot(Core):
                                                random_seed=self.random_cmap_seed)
         im = axes.imshow(np.flipud(masked_grid_array.T), 
                   cmap=gridded_cmap, 
-                  extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds],
+                  extent=extent,
                   alpha=grid_alpha,
                   interpolation=self.interpolation_method,
                   vmin=vmin, vmax=vmax

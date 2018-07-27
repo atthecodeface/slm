@@ -49,16 +49,16 @@ def hsl( cl_state, info, data, do_use_ridges, verbose ):
         vprint(verbose,'from midslopes...',end='')
     seed_point_array = pick_seeds(mask=data.mask_array, map=data.mapping_array, 
                                   flag=flag, pad=pad)
-    if ( seed_point_array.shape[0]!=data.traj_length_array.shape[0] ):
+    if ( seed_point_array.shape[0]!=data.subsegment_hsl_array.shape[0] ):
         raise ValueError(
             'Mismatched midslope/ridge point arrays: seed pts={0} traj len={1}'
-              .format(seed_point_array.shape,data.traj_length_array.shape))
+              .format(seed_point_array.shape,data.subsegment_hsl_array.shape))
     array_dict = { 'seed_point': {'array': seed_point_array,      'rwf': 'RO'},
                    'mask':       {'array': data.mask_array,       'rwf': 'RO'}, 
                    'uv':         {'array': data.uv_array,         'rwf': 'RO'}, 
                    'mapping':    {'array': data.mapping_array,    'rwf': 'RO'}, 
                    'label':      {'array': data.label_array,      'rwf': 'RO'}, 
-                   'traj_length':{'array': data.traj_length_array,'rwf': 'RW'} }
+                   'subsegment_hsl':{'array': data.subsegment_hsl_array,'rwf': 'RW'} }
     info.n_seed_points = seed_point_array.shape[0]
     if ( info.n_seed_points==0 ):
         # Flag an error - empty seeds list
@@ -71,7 +71,7 @@ def hsl( cl_state, info, data, do_use_ridges, verbose ):
     
     # Scale by two if we measured only half hillslope lengths from midslope pixels
     if not do_use_ridges:
-        data.traj_length_array *= 2.0
+        data.subsegment_hsl_array *= 2.0
     # Done
     vprint(verbose,'...done')  
     # Flag all went well
