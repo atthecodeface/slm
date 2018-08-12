@@ -189,7 +189,7 @@ __kernel void flag_downchannels(
             if (counter>=count_array[idx]) {
                 atomic_xchg(&count_array[idx],counter);
             } else {
-                return;
+//                return;
             }
         } else {
             break;

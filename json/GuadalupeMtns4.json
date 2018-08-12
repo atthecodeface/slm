@@ -14,6 +14,8 @@
 
 	"plot": {
         "mhsl_pdf_x_stretch" : 0.85,
+        "hsl_colorbar_aspect" : 0.04,
+        "contour_hsl_colorbar_aspect" : 0.04,
         "contour_label_fontsize" : 5
 	}
 }

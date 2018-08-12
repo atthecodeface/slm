@@ -11,7 +11,8 @@ from skimage.filters       import gaussian
 from skimage.filters.rank  import mean, median
 from scipy.ndimage            import gaussian_filter
 from scipy.ndimage.morphology import binary_fill_holes, grey_dilation, \
-                                     binary_dilation, generate_binary_structure
+                                     binary_dilation, binary_erosion, \
+                                     generate_binary_structure
 from scipy.stats import ks_2samp, mannwhitneyu, ranksums, ttest_ind
 from scipy.interpolate import interp1d 
 import skfmm
@@ -169,6 +170,11 @@ class Mapping(Core):
         # What about after pass#2 (keeping channel heads)?
         self.mapping_array[bounds][~mask_array[bounds]] \
                 |= data.mapping_array[~mask_array[bounds]]
+        # Erase pass#1 channel heads
+        self.mapping_array[(self.mapping_array&info.is_channelhead)!=0]\
+                            ^= info.is_channelhead
+        self.mapping_array[(self.mapping_array&info.is_thinchannel)!=0]\
+                            ^= info.is_thinchannel
 
         vprint(self.vprogress,'**Pass#1 end**') 
 
@@ -215,11 +221,14 @@ class Mapping(Core):
         self.hsl_array      = np.zeros((nxp,nyp), dtype=np.float32)
         self.hsl_mean_array = np.array([], dtype=np.float32)
         self.hsl_stats_df   = None
+
         # Iterate over the coarse subsegments
         for idx,coarse_subsegment in enumerate(self.coarse_subsegments_list_array):
 #         for idx,coarse_subsegment in enumerate([71]):
             if idx>0:
                 merged_mask_array.fill(False)
+#             if (coarse_subsegment)!=-4 and (coarse_subsegment)!=-3:
+#                 continue
             # Report % progress
             self.report_progress(idx, n_segments, subsegment=coarse_subsegment)
             # Revert to 'dtm', 'basin' (if set), and 'uv' masks only
@@ -254,35 +263,46 @@ class Mapping(Core):
                          sla_array     = self.trace.sla_array )
 
             # Compute slt pdf and estimate channel threshold from it
-            channel_threshold \
+            data.channel_threshold \
                 = self.analysis.estimate_channel_threshold(data, verbose=self.vbackup)
             # Don't HSL map if there's a problem with channel threshold estimation here
-            if channel_threshold is None or channel_threshold<self.min_channel_threshold: 
-                vprint(self.vprogress,'   ---')
-                continue
-            info.set_thresholds(channel_threshold=channel_threshold,
+            if data.channel_threshold is None:
+                data.channel_threshold = self.guess_channel_threshold
+#                 vprint(self.vprogress,'   ---')
+#                 continue
+            elif data.channel_threshold>self.max_channel_threshold: 
+                data.channel_threshold = self.guess_channel_threshold
+#                 vprint(self.vprogress,'   ---')
+#                 continue
+            elif data.channel_threshold<self.min_channel_threshold: 
+                data.channel_threshold = self.guess_channel_threshold/2
+#                 vprint(self.vprogress,'   ---')
+#                 continue
+            info.set_thresholds(channel_threshold=data.channel_threshold,
                                 segmentation_threshold=self.fine_segmentation_threshold)
             
             # Big step - map subsegments using above channel threshold
             if not self.do_map_channels_segments(info, data):
                 del data
-                vprint(self.vprogress,'   ---')
+                vprint(self.vprogress,'   --- (problem mapping channels & subsegments)')
                 continue
             
+            data.mapping_array[(data.mapping_array & info.is_channelhead
+                                ==info.is_channelhead )] \
+                |= info.was_channelhead
             
             
-            # Map all subsegments
+            # Map using FMM
             self.select_subsegments(info, data, do_restrict=False)
             if not self.measure_hsl_fmm(info, data) \
                   or not self.parse_hsl(info, data) \
-                  or not self.remap_hsl(info, data):
+                  or not self.remap_hsl(info, data, n_hsl_averaging_threshold=0):
                 del data
-                vprint(self.vprogress,'   ---')
+                vprint(self.vprogress,'   --- (problem measuring HSL using FM)')
                 continue
             
-#             # Find the HSL-mappable subsegments
+#             # Map using streamlines
 #             self.select_subsegments(info, data)
-#             # Measure HSL from ridges or midslopes to thin channels per subsegment
 #             if not self.measure_hsl_traced(info, data) \
 #                      or not self.parse_hsl(info, data) \
 #                      or not self.remap_hsl(info, data):
@@ -290,11 +310,17 @@ class Mapping(Core):
 #                 vprint(self.vprogress,'   ---')
 #                 continue
             
+#             if (coarse_subsegment)==-4 or (coarse_subsegment)==-3:
+#                 self.plot.plot_distributions()
             
-            
-            vprint(self.vprogress,'Mean HSL = {0:0.1f}m'.format(data.hsl_mean))
+            vprint(self.vprogress,
+                   '\nChannel threshold = {0:0.1f}m'.format(data.channel_threshold))
+            vprint(self.vprogress,
+                   'FMM mean HSL   = {0:0.1f}m'.format(data.fmm_mean_hsl))
+            vprint(self.vprogress,
+                   'Trace mean HSL = {0:0.1f}m'.format(data.trace_mean_hsl))
             # Inefficient but simple
-            self.hsl_mean_array = np.append(self.hsl_mean_array,data.hsl_mean)
+            self.hsl_mean_array = np.append(self.hsl_mean_array,data.trace_mean_hsl)
             # Eliminate almost certainly spurious count=1 HSL mean values
 #             data.hsl_stats_df = data.hsl_stats_df[data.hsl_stats_df['count']>1]
             if self.hsl_stats_df is None:
@@ -326,6 +352,7 @@ class Mapping(Core):
             #     during pass#3
             self.mapping_array[bounds][~merged_mask_array[bounds]] \
                 |= data.mapping_array[~merged_mask_array[bounds]]
+#             self.mapping_array[bounds] |= data.mapping_array & info.is_channel
             # Delete this iteration's raw coarse mask from the active list
             self.state.remove_active_mask('raw_segment')
             # Erase the working instance of data to ensure 
@@ -417,6 +444,7 @@ class Mapping(Core):
             # Count downstream from channel heads
             if not self.flag_downchannels(info, data):
                 return False
+            # Stop now if we're on pass3
             if not do_map_segments:
                 return True
             # Map locations of channel confluences & designate types
@@ -607,21 +635,25 @@ class Mapping(Core):
                                 
     def fmm_lengths(self, info, data):
         data.subsegment_hsl_array = np.zeros_like(data.selected_subsegments_array)
-        pdebug()
         for idx,subsegment in enumerate(data.selected_subsegments_array):
             phi_bool = np.zeros_like(data.label_array,dtype=np.bool)
             phi_mod  = np.zeros_like(data.label_array,dtype=np.int32)
             mask     = np.zeros_like(data.label_array,dtype=np.bool)
-            phi_bool[data.label_array==subsegment]=True
+            phi_bool[np.abs(data.label_array)==np.abs(subsegment)]=True
             n_phi_pixels = phi_bool[phi_bool==True].size
+            n_erosions = 0
+            if n_erosions>0:
+                erosion_structure = generate_binary_structure(2, 1)
+                phi_bool_eroded = binary_erosion(phi_bool, structure=erosion_structure, 
+                                                           iterations=n_erosions)
+                phi_bool = phi_bool_eroded
             n_dilations = 1
-            dilation_structure = generate_binary_structure(2, 2)
             if n_dilations>0:
+                dilation_structure = generate_binary_structure(2, 1)
                 phi_bool_dilated = binary_dilation(phi_bool, structure=dilation_structure, 
                                                    iterations=n_dilations)
-            else:
-                phi_bool_dilated = phi_bool
-            phi_mod = phi_bool_dilated.astype(np.float32)
+                phi_bool = phi_bool_dilated
+            phi_mod = phi_bool.astype(np.float32)
             phi_mod[((data.mapping_array & info.is_thinchannel)==info.is_thinchannel)
                     & (np.abs(data.label_array)==np.abs(subsegment))]=-1
             mask[phi_bool_dilated==0]=True
@@ -634,7 +666,8 @@ class Mapping(Core):
 
             try:   
                 distance = skfmm.distance(phi_mod, dx=self.geodata.roi_pixel_size)
-                hsl = np.max(distance)
+#                 hsl = np.max(distance)
+                hsl = np.mean(distance)*2.0
                 if ratio_phi_channel>4.0:
                     data.subsegment_hsl_array[idx] = hsl
             except:
@@ -650,13 +683,13 @@ class Mapping(Core):
 #                                         do_balance_cmap=False, do_shaded_relief=False,
 #                                         extent=[0,distance.shape[0],0,distance.shape[1]],
 #                                         window_size_factor=2)
-        pdebug(data.subsegment_label_array.size,data.subsegment_hsl_array.size)
+#         pdebug(data.subsegment_label_array.size,data.subsegment_hsl_array.size)
         hsl_array = data.subsegment_hsl_array
         
 #         hsl_array = hsl_array[hsl_array>0.0]
         if hsl_array[hsl_array>0.0].size>0:
-            fmm_mean_hsl = np.mean(hsl_array[hsl_array>0.0])
-            pdebug('FMM  HSL = {:.1f}m'.format(fmm_mean_hsl))
+            data.fmm_mean_hsl = np.mean(hsl_array[hsl_array>0.0])
+#             pdebug('FMM  HSL = {:.1f}m'.format(fmm_mean_hsl))
             return True
         else:
             return False
@@ -700,24 +733,27 @@ class Mapping(Core):
             return False
         stats_df['coarse']=info.coarse_label
         stats_df.set_index(['fine','coarse'],inplace=True)
-        data.hsl_stats_df  = stats_df
+        data.hsl_stats_df = stats_df
+#         pdebug(stats_df)
         self.print('...done')  
         return True
 
-    def remap_hsl(self, info, data):
+    def remap_hsl(self, info, data, n_hsl_averaging_threshold=None):
         self.print('Remapping hillslope lengths onto grid...')
-        stats_df =data.hsl_stats_df
+        if n_hsl_averaging_threshold is None:
+            n_hsl_averaging_threshold = self.n_hsl_averaging_threshold
+        stats_df = data.hsl_stats_df
         nxp = info.nx_padded
         nyp = info.ny_padded
         try:   
             data.hsl_array = np.zeros((nxp,nyp), dtype=np.float32)
             for idx,row in stats_df.iterrows():
-                if row['count']>=self.n_hsl_averaging_threshold:
+                if row['count']>=n_hsl_averaging_threshold:
                     data.hsl_array[data.label_array==idx[0]] = row['mean [m]']
                 else:
                     data.hsl_array[data.label_array==idx[0]] = 0
         except:
-            self.print('Problem parsing HSL stats dataframe')
+            self.print('Problem with HSL stats dataframe')
             return False
         if stats_df.empty:
             self.print('Unable to map HSL here - skipping')
@@ -729,7 +765,7 @@ class Mapping(Core):
             self.print('No HSL values in dataframe - skipping')
             return False
         
-        data.hsl_mean  = np.mean(hsl_nonan)
+        data.trace_mean_hsl  = np.mean(hsl_nonan)
         self.print('...done')  
         return True
 

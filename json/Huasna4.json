@@ -16,6 +16,10 @@
 	"plot": {
         "mhsl_pdf_x_stretch" : 1.2,
         "contour_label_fontsize" : 3,
+        "hsl_colorbar_size" : 3,
+        "contour_hsl_colorbar_size" : 3,
+        "hsl_colorbar_aspect" : 0.05,
+        "contour_hsl_colorbar_aspect" : 0.05,
         "do_plot_hsl_contours" : false,
         "do_plot_aspect_contours" : false
 	}

@@ -26,6 +26,7 @@ from   mpl_toolkits.axes_grid1 import make_axes_locatable
 import colorsys
 from   scipy.interpolate import interp1d 
 from   scipy.signal      import decimate
+from   scipy.stats import norm
 from   os import environ
 environ['PYTHONUNBUFFERED']='True'
 import warnings
@@ -384,7 +385,8 @@ class Plot(Core):
 #         self.plot_compound_markers(axes, is_loop,     ['pink','black'], msf=2)
         self.plot_compound_markers(axes, is_channeltail,     ['cyan','black'], msf=1.5)
 #         self.plot_compound_markers(axes, is_leftflank,     ['purple','black'], msf=0.2)
-#         self.plot_compound_markers(axes, is_channelhead,     ['red','black'], msf=0.5)
+        self.plot_compound_markers(axes, is_channelhead,     ['blue','black'], msf=0.5)
+#         self.plot_compound_markers(axes, was_channelhead,    ['orange','black'], msf=0.3)
 #         self.plot_compound_markers(axes, is_subsegmenthead,  ['orange','black'], msf=0.25)
 #         self.plot_compound_markers(axes, is_midslope,        ['purple','black'])
 #         self.plot_compound_markers(axes, is_ridge,        ['purple','black'])
@@ -476,7 +478,7 @@ class Plot(Core):
                                do_flip_cmap=False, do_balance_cmap=False)
 
     def plot_hsl(self, cmap=None, window_size_factor=None,
-                 z_min=None,z_max=None, do_shaded_relief=None, 
+                 z_min=None,z_max=None,z_pctile=None, do_shaded_relief=None, 
                  colorbar_size=None, colorbar_aspect=None, grid_alpha=None):
         """
         TBD
@@ -491,6 +493,8 @@ class Plot(Core):
             colorbar_aspect = self.hsl_colorbar_aspect
         if do_shaded_relief is None:
             do_shaded_relief = self.hsl_do_shaded_relief
+        if z_pctile is None:
+            z_pctile = self.hsl_z_pctile
         if z_min is None:
             if self.hsl_z_min=='full':
                 z_min = np.percentile(self.mapping.hsl_array, 0.0)
@@ -502,7 +506,7 @@ class Plot(Core):
             if self.hsl_z_max=='full':
                 z_max = np.percentile(self.mapping.hsl_array,100.0)  
             elif self.hsl_z_max=='auto':
-                z_max = np.percentile(self.mapping.hsl_array,99.9)  
+                z_max = np.percentile(self.mapping.hsl_array,z_pctile)  
             else:
                 z_max = self.hsl_z_max
         grid_array = np.clip(self.mapping.hsl_array.copy(),z_min,z_max)
@@ -526,7 +530,7 @@ class Plot(Core):
     def plot_hsl_contoured(self, window_size_factor=None, cmap=None,
                            do_colorbar=True, colorbar_title='hillslope length [m]',
                            n_contours=None, contour_interval=None, linewidth=None,
-                           z_min=None,z_max=None, do_shaded_relief=None,
+                           z_min=None,z_max=None,z_pctile=None, do_shaded_relief=None,
                            colorbar_size=None, colorbar_aspect=None, 
                            contour_label_suffix=None,
                            contour_label_fontsize=None, do_plot_contours=None):
@@ -555,6 +559,8 @@ class Plot(Core):
             contour_label_fontsize = self.contour_label_fontsize
         if contour_label_suffix is None:
             contour_label_suffix = self.contour_hsl_label_suffix
+        if z_pctile is None:
+            z_pctile = self.contour_hsl_z_pctile
         if z_min is None:
             if self.contour_hsl_z_min=='full':
                 z_min = np.percentile(self.mapping.hsl_smoothed_array[pslice], 0.0)
@@ -566,7 +572,7 @@ class Plot(Core):
             if self.contour_hsl_z_max=='full':
                 z_max = np.percentile(self.mapping.hsl_smoothed_array,100.0)  
             elif self.contour_hsl_z_max=='auto':
-                z_max = np.percentile(self.mapping.hsl_smoothed_array,99.0)  
+                z_max = np.percentile(self.mapping.hsl_array,z_pctile)  
             else:
                 z_max = self.contour_hsl_z_max     
         grid_array = np.clip(self.mapping.hsl_smoothed_array[pslice].copy(),z_min,z_max)
@@ -916,6 +922,8 @@ class Plot(Core):
             self._force_display(fig)
             self._record_fig(name,fig)    
     
+        return
+    
         name = 'hsl_means_distbn'
         title = 'Distribution of means of hillslope length'
         fig,_ = self._new_figure(window_title=name)
@@ -926,6 +934,7 @@ class Plot(Core):
         x_label  = r'distance $L$  [m]'
         y_label  = r'probability density  $f(L)$  [m$^{-1}$]'
         y_label2 = r'number  $N(L)$  [$-$]'
+        print(df)
         if df.shape[0]>kde_min_labels:
             axes = df['mean [m]'].plot.density(figsize=(8,8), title=title,
                                                label='pdf',secondary_y='pdf')
@@ -1393,10 +1402,11 @@ class Plot(Core):
         line_colors = ['crimson']
         line_styles = ['-']
         line_alphas = [1]
-        
+
         legend += ['Gaussian']
         loc   = np.log(marginal_distbn.mean)
         scale = np.log(marginal_distbn.stddev)
+        
         pdf   = norm.pdf(np.log(x_vec),loc,scale)
         pdf_max = pdf.max() 
         pdf_ysf_list += [ pdf_max ]

@@ -3,7 +3,10 @@
 		"title" :         "Gabilan Mesa ROI1",
 		"dtm_file" :      "Gabilan_DTM1_resampled1m_fillsinks0p01deg.tif",
 		"data_path" :     [ "$SLMDATA", "GabilanMesa" ],
-		"export_path" :   [ "$SLMXPT",  "GabilanMesa1" ]
+		"export_path" :   [ "$SLMXPT",  "GabilanMesa1" ],
+		"do_clip_roi" :   false, 
+        "roi_x_bounds" :  [0,600],
+        "roi_y_bounds" :  [0,750]
 	},
 	
 	
@@ -13,6 +16,8 @@
 	"plot": {
         "mhsl_pdf_x_stretch" : 1.1,
         "contour_label_fontsize" : 7,
+        "hsl_colorbar_aspect" : 0.04,
+        "contour_hsl_colorbar_aspect" : 0.04,
         "do_plot_aspect_contours" : true
 	}
 }

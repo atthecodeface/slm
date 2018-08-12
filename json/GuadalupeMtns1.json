@@ -9,7 +9,7 @@
         "roi_x_bounds" :  [1400,1542],
         "roi_y_bounds" :  [1400,1640],  
         "basins" :        [701,702],
-		"do_basin_masking" : false
+		"do_basin_masking" : true
 	},
 
 	"trace": {
@@ -22,6 +22,7 @@
 	},
 
 	"mapping": {
+		"fine_segmentation_threshold"   : 3,
 		"Xcoarse_segmentation_threshold" : 2000,
 		"Xcoarse_channel_threshold" : 200,
 		"n_hsl_averaging_threshold" : 5
