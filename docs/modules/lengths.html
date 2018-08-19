@@ -15,8 +15,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="integration.cl" href="integration.cl.html" />
-    <link rel="prev" title="segment.py" href="segment.html" />
+    <link rel="next" title="segment.py" href="segment.html" />
+    <link rel="prev" title="label.py" href="label.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -90,16 +90,16 @@
         <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;from midslopes...&#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">seed_point_array</span> <span class="o">=</span> <span class="n">pick_seeds</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">mask_array</span><span class="p">,</span> <span class="nb">map</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span> 
                                   <span class="n">flag</span><span class="o">=</span><span class="n">flag</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">pad</span><span class="p">)</span>
-    <span class="k">if</span> <span class="p">(</span> <span class="n">seed_point_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="n">data</span><span class="o">.</span><span class="n">traj_length_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="n">seed_point_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="n">data</span><span class="o">.</span><span class="n">subsegment_hsl_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s1">&#39;Mismatched midslope/ridge point arrays: seed pts=</span><span class="si">{0}</span><span class="s1"> traj len=</span><span class="si">{1}</span><span class="s1">&#39;</span>
-              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">seed_point_array</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">data</span><span class="o">.</span><span class="n">traj_length_array</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">seed_point_array</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">data</span><span class="o">.</span><span class="n">subsegment_hsl_array</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
     <span class="n">array_dict</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;seed_point&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;array&#39;</span><span class="p">:</span> <span class="n">seed_point_array</span><span class="p">,</span>      <span class="s1">&#39;rwf&#39;</span><span class="p">:</span> <span class="s1">&#39;RO&#39;</span><span class="p">},</span>
                    <span class="s1">&#39;mask&#39;</span><span class="p">:</span>       <span class="p">{</span><span class="s1">&#39;array&#39;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span><span class="p">,</span>       <span class="s1">&#39;rwf&#39;</span><span class="p">:</span> <span class="s1">&#39;RO&#39;</span><span class="p">},</span> 
                    <span class="s1">&#39;uv&#39;</span><span class="p">:</span>         <span class="p">{</span><span class="s1">&#39;array&#39;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">uv_array</span><span class="p">,</span>         <span class="s1">&#39;rwf&#39;</span><span class="p">:</span> <span class="s1">&#39;RO&#39;</span><span class="p">},</span> 
                    <span class="s1">&#39;mapping&#39;</span><span class="p">:</span>    <span class="p">{</span><span class="s1">&#39;array&#39;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span>    <span class="s1">&#39;rwf&#39;</span><span class="p">:</span> <span class="s1">&#39;RO&#39;</span><span class="p">},</span> 
                    <span class="s1">&#39;label&#39;</span><span class="p">:</span>      <span class="p">{</span><span class="s1">&#39;array&#39;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">label_array</span><span class="p">,</span>      <span class="s1">&#39;rwf&#39;</span><span class="p">:</span> <span class="s1">&#39;RO&#39;</span><span class="p">},</span> 
-                   <span class="s1">&#39;traj_length&#39;</span><span class="p">:{</span><span class="s1">&#39;array&#39;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">traj_length_array</span><span class="p">,</span><span class="s1">&#39;rwf&#39;</span><span class="p">:</span> <span class="s1">&#39;RW&#39;</span><span class="p">}</span> <span class="p">}</span>
+                   <span class="s1">&#39;subsegment_hsl&#39;</span><span class="p">:{</span><span class="s1">&#39;array&#39;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">subsegment_hsl_array</span><span class="p">,</span><span class="s1">&#39;rwf&#39;</span><span class="p">:</span> <span class="s1">&#39;RW&#39;</span><span class="p">}</span> <span class="p">}</span>
     <span class="n">info</span><span class="o">.</span><span class="n">n_seed_points</span> <span class="o">=</span> <span class="n">seed_point_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="p">(</span> <span class="n">info</span><span class="o">.</span><span class="n">n_seed_points</span><span class="o">==</span><span class="mi">0</span> <span class="p">):</span>
         <span class="c1"># Flag an error - empty seeds list</span>
@@ -112,7 +112,7 @@
     
     <span class="c1"># Scale by two if we measured only half hillslope lengths from midslope pixels</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">do_use_ridges</span><span class="p">:</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">traj_length_array</span> <span class="o">*=</span> <span class="mf">2.0</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">subsegment_hsl_array</span> <span class="o">*=</span> <span class="mf">2.0</span>
     <span class="c1"># Done</span>
     <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span>  
     <span class="c1"># Flag all went well</span>
@@ -175,8 +175,8 @@
 <h3>Related</h3>
 <ul>
   <li><a href="../index.html"></a><ul>
-      <li><a href="segment.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">segment.py</span></code></a></li>
-      <li><a href="integration.cl.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">integration.cl</span></code></a></li>
+      <li><a href="label.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">label.py</span></code></a></li>
+      <li><a href="segment.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">segment.py</span></code></a></li>
   </ul></li>
 </ul>
 </div>

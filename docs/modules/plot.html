@@ -145,19 +145,19 @@ angle_attitude_degrees</p>
 
 <dl class="method">
 <dt id="streamlines.plot.Plot.plot_gridded_data">
-<code class="descname">plot_gridded_data</code><span class="sig-paren">(</span><em>grid_array</em>, <em>gridded_cmap</em>, <em>window_size_factor=None</em>, <em>fig_name=None</em>, <em>mask_array=None</em>, <em>window_title=''</em>, <em>do_flip_cmap=False</em>, <em>do_balance_cmap=True</em>, <em>do_shaded_relief=True</em>, <em>do_colorbar=False</em>, <em>colorbar_title=None</em>, <em>colorbar_aspect=0.07</em>, <em>colorbar_size=4</em>, <em>grid_alpha=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.plot.Plot.plot_gridded_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot_gridded_data</code><span class="sig-paren">(</span><em>grid_array</em>, <em>gridded_cmap</em>, <em>window_size_factor=None</em>, <em>fig_name=None</em>, <em>mask_array=None</em>, <em>window_title=''</em>, <em>do_flip_cmap=False</em>, <em>do_balance_cmap=True</em>, <em>do_shaded_relief=True</em>, <em>do_colorbar=False</em>, <em>colorbar_title=None</em>, <em>colorbar_aspect=0.07</em>, <em>colorbar_size=4</em>, <em>grid_alpha=None</em>, <em>extent=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.plot.Plot.plot_gridded_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>TBD</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="streamlines.plot.Plot.plot_hsl">
-<code class="descname">plot_hsl</code><span class="sig-paren">(</span><em>cmap=None</em>, <em>window_size_factor=None</em>, <em>z_min=None</em>, <em>z_max=None</em>, <em>do_shaded_relief=None</em>, <em>colorbar_size=None</em>, <em>colorbar_aspect=None</em>, <em>grid_alpha=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.plot.Plot.plot_hsl" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot_hsl</code><span class="sig-paren">(</span><em>cmap=None</em>, <em>window_size_factor=None</em>, <em>z_min=None</em>, <em>z_max=None</em>, <em>z_pctile=None</em>, <em>do_shaded_relief=None</em>, <em>colorbar_size=None</em>, <em>colorbar_aspect=None</em>, <em>grid_alpha=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.plot.Plot.plot_hsl" title="Permalink to this definition">¶</a></dt>
 <dd><p>TBD</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="streamlines.plot.Plot.plot_hsl_contoured">
-<code class="descname">plot_hsl_contoured</code><span class="sig-paren">(</span><em>window_size_factor=None</em>, <em>cmap=None</em>, <em>do_colorbar=True</em>, <em>colorbar_title='hillslope length [m]'</em>, <em>n_contours=None</em>, <em>contour_interval=None</em>, <em>linewidth=None</em>, <em>z_min=None</em>, <em>z_max=None</em>, <em>do_shaded_relief=None</em>, <em>colorbar_size=None</em>, <em>colorbar_aspect=None</em>, <em>contour_label_suffix=None</em>, <em>contour_label_fontsize=None</em>, <em>do_plot_contours=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.plot.Plot.plot_hsl_contoured" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot_hsl_contoured</code><span class="sig-paren">(</span><em>window_size_factor=None</em>, <em>cmap=None</em>, <em>do_colorbar=True</em>, <em>colorbar_title='hillslope length [m]'</em>, <em>n_contours=None</em>, <em>contour_interval=None</em>, <em>linewidth=None</em>, <em>z_min=None</em>, <em>z_max=None</em>, <em>z_pctile=None</em>, <em>do_shaded_relief=None</em>, <em>colorbar_size=None</em>, <em>colorbar_aspect=None</em>, <em>contour_label_suffix=None</em>, <em>contour_label_fontsize=None</em>, <em>do_plot_contours=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.plot.Plot.plot_hsl_contoured" title="Permalink to this definition">¶</a></dt>
 <dd><p>TBD</p>
 </dd></dl>
 
@@ -350,6 +350,7 @@ angle_attitude_degrees</p>
 <span class="kn">import</span> <span class="nn">colorsys</span>
 <span class="kn">from</span>   <span class="nn">scipy.interpolate</span> <span class="k">import</span> <span class="n">interp1d</span> 
 <span class="kn">from</span>   <span class="nn">scipy.signal</span>      <span class="k">import</span> <span class="n">decimate</span>
+<span class="kn">from</span>   <span class="nn">scipy.stats</span> <span class="k">import</span> <span class="n">norm</span>
 <span class="kn">from</span>   <span class="nn">os</span> <span class="k">import</span> <span class="n">environ</span>
 <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYTHONUNBUFFERED&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;True&#39;</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
@@ -708,7 +709,8 @@ angle_attitude_degrees</p>
 <span class="c1">#         self.plot_compound_markers(axes, is_loop,     [&#39;pink&#39;,&#39;black&#39;], msf=2)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_compound_markers</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">is_channeltail</span><span class="p">,</span>     <span class="p">[</span><span class="s1">&#39;cyan&#39;</span><span class="p">,</span><span class="s1">&#39;black&#39;</span><span class="p">],</span> <span class="n">msf</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
 <span class="c1">#         self.plot_compound_markers(axes, is_leftflank,     [&#39;purple&#39;,&#39;black&#39;], msf=0.2)</span>
-<span class="c1">#         self.plot_compound_markers(axes, is_channelhead,     [&#39;red&#39;,&#39;black&#39;], msf=0.5)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_compound_markers</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">is_channelhead</span><span class="p">,</span>     <span class="p">[</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="s1">&#39;black&#39;</span><span class="p">],</span> <span class="n">msf</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="c1">#         self.plot_compound_markers(axes, was_channelhead,    [&#39;orange&#39;,&#39;black&#39;], msf=0.3)</span>
 <span class="c1">#         self.plot_compound_markers(axes, is_subsegmenthead,  [&#39;orange&#39;,&#39;black&#39;], msf=0.25)</span>
 <span class="c1">#         self.plot_compound_markers(axes, is_midslope,        [&#39;purple&#39;,&#39;black&#39;])</span>
 <span class="c1">#         self.plot_compound_markers(axes, is_ridge,        [&#39;purple&#39;,&#39;black&#39;])</span>
@@ -800,7 +802,7 @@ angle_attitude_degrees</p>
                                <span class="n">do_flip_cmap</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">do_balance_cmap</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">plot_hsl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window_size_factor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">z_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">z_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">do_shaded_relief</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                 <span class="n">z_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">z_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">z_pctile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">do_shaded_relief</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
                  <span class="n">colorbar_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colorbar_aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grid_alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TBD</span>
@@ -815,6 +817,8 @@ angle_attitude_degrees</p>
             <span class="n">colorbar_aspect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hsl_colorbar_aspect</span>
         <span class="k">if</span> <span class="n">do_shaded_relief</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">do_shaded_relief</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hsl_do_shaded_relief</span>
+        <span class="k">if</span> <span class="n">z_pctile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">z_pctile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hsl_z_pctile</span>
         <span class="k">if</span> <span class="n">z_min</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hsl_z_min</span><span class="o">==</span><span class="s1">&#39;full&#39;</span><span class="p">:</span>
                 <span class="n">z_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">hsl_array</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
@@ -826,7 +830,7 @@ angle_attitude_degrees</p>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hsl_z_max</span><span class="o">==</span><span class="s1">&#39;full&#39;</span><span class="p">:</span>
                 <span class="n">z_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">hsl_array</span><span class="p">,</span><span class="mf">100.0</span><span class="p">)</span>  
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">hsl_z_max</span><span class="o">==</span><span class="s1">&#39;auto&#39;</span><span class="p">:</span>
-                <span class="n">z_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">hsl_array</span><span class="p">,</span><span class="mf">99.9</span><span class="p">)</span>  
+                <span class="n">z_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">hsl_array</span><span class="p">,</span><span class="n">z_pctile</span><span class="p">)</span>  
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">z_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hsl_z_max</span>
         <span class="n">grid_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">hsl_array</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span><span class="n">z_min</span><span class="p">,</span><span class="n">z_max</span><span class="p">)</span>
@@ -850,7 +854,7 @@ angle_attitude_degrees</p>
     <span class="k">def</span> <span class="nf">plot_hsl_contoured</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window_size_factor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                            <span class="n">do_colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">colorbar_title</span><span class="o">=</span><span class="s1">&#39;hillslope length [m]&#39;</span><span class="p">,</span>
                            <span class="n">n_contours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">contour_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                           <span class="n">z_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">z_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">do_shaded_relief</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">z_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">z_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">z_pctile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">do_shaded_relief</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                            <span class="n">colorbar_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colorbar_aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
                            <span class="n">contour_label_suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                            <span class="n">contour_label_fontsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">do_plot_contours</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -879,6 +883,8 @@ angle_attitude_degrees</p>
             <span class="n">contour_label_fontsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contour_label_fontsize</span>
         <span class="k">if</span> <span class="n">contour_label_suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">contour_label_suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contour_hsl_label_suffix</span>
+        <span class="k">if</span> <span class="n">z_pctile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">z_pctile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contour_hsl_z_pctile</span>
         <span class="k">if</span> <span class="n">z_min</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">contour_hsl_z_min</span><span class="o">==</span><span class="s1">&#39;full&#39;</span><span class="p">:</span>
                 <span class="n">z_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">hsl_smoothed_array</span><span class="p">[</span><span class="n">pslice</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)</span>
@@ -890,7 +896,7 @@ angle_attitude_degrees</p>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">contour_hsl_z_max</span><span class="o">==</span><span class="s1">&#39;full&#39;</span><span class="p">:</span>
                 <span class="n">z_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">hsl_smoothed_array</span><span class="p">,</span><span class="mf">100.0</span><span class="p">)</span>  
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">contour_hsl_z_max</span><span class="o">==</span><span class="s1">&#39;auto&#39;</span><span class="p">:</span>
-                <span class="n">z_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">hsl_smoothed_array</span><span class="p">,</span><span class="mf">99.0</span><span class="p">)</span>  
+                <span class="n">z_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">hsl_array</span><span class="p">,</span><span class="n">z_pctile</span><span class="p">)</span>  
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">z_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contour_hsl_z_max</span>     
         <span class="n">grid_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">hsl_smoothed_array</span><span class="p">[</span><span class="n">pslice</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span><span class="n">z_min</span><span class="p">,</span><span class="n">z_max</span><span class="p">)</span>
@@ -1240,6 +1246,8 @@ angle_attitude_degrees</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">_force_display</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_record_fig</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">fig</span><span class="p">)</span>    
     
+        <span class="k">return</span>
+    
         <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;hsl_means_distbn&#39;</span>
         <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Distribution of means of hillslope length&#39;</span>
         <span class="n">fig</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_new_figure</span><span class="p">(</span><span class="n">window_title</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
@@ -1250,6 +1258,7 @@ angle_attitude_degrees</p>
         <span class="n">x_label</span>  <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;distance $L$  [m]&#39;</span>
         <span class="n">y_label</span>  <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;probability density  $f(L)$  [m$^{-1}$]&#39;</span>
         <span class="n">y_label2</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;number  $N(L)$  [$-$]&#39;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;</span><span class="n">kde_min_labels</span><span class="p">:</span>
             <span class="n">axes</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;mean [m]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">density</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">),</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
                                                <span class="n">label</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">,</span><span class="n">secondary_y</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">)</span>
@@ -1304,7 +1313,7 @@ angle_attitude_degrees</p>
                           <span class="n">window_title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">do_flip_cmap</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">do_balance_cmap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                           <span class="n">do_shaded_relief</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">do_colorbar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
                           <span class="n">colorbar_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colorbar_aspect</span><span class="o">=</span><span class="mf">0.07</span><span class="p">,</span>
-                          <span class="n">colorbar_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">grid_alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                          <span class="n">colorbar_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">grid_alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TBD</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1313,6 +1322,8 @@ angle_attitude_degrees</p>
         <span class="n">pad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">pad_width</span>
         <span class="n">pslice</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">index_exp</span><span class="p">[</span><span class="n">pad</span><span class="p">:</span><span class="o">-</span><span class="n">pad</span><span class="p">,</span><span class="n">pad</span><span class="p">:</span><span class="o">-</span><span class="n">pad</span><span class="p">]</span>
         <span class="n">mask_array</span> <span class="o">=</span> <span class="n">mask_array</span><span class="p">[</span><span class="n">pslice</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">extent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">extent</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">,</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">do_basin_masking</span><span class="p">:</span>
             <span class="n">mask_array</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">merge_active_masks</span><span class="p">()[</span><span class="n">pslice</span><span class="p">]</span>
             
@@ -1359,7 +1370,7 @@ angle_attitude_degrees</p>
                                                <span class="n">random_seed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_cmap_seed</span><span class="p">)</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">masked_grid_array</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> 
                   <span class="n">cmap</span><span class="o">=</span><span class="n">gridded_cmap</span><span class="p">,</span> 
-                  <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_x_bounds</span><span class="p">,</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_y_bounds</span><span class="p">],</span>
+                  <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
                   <span class="n">alpha</span><span class="o">=</span><span class="n">grid_alpha</span><span class="p">,</span>
                   <span class="n">interpolation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">interpolation_method</span><span class="p">,</span>
                   <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span>
@@ -1715,10 +1726,11 @@ angle_attitude_degrees</p>
         <span class="n">line_colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;crimson&#39;</span><span class="p">]</span>
         <span class="n">line_styles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-&#39;</span><span class="p">]</span>
         <span class="n">line_alphas</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        
+
         <span class="n">legend</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;Gaussian&#39;</span><span class="p">]</span>
         <span class="n">loc</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">marginal_distbn</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
         <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">marginal_distbn</span><span class="o">.</span><span class="n">stddev</span><span class="p">)</span>
+        
         <span class="n">pdf</span>   <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x_vec</span><span class="p">),</span><span class="n">loc</span><span class="p">,</span><span class="n">scale</span><span class="p">)</span>
         <span class="n">pdf_max</span> <span class="o">=</span> <span class="n">pdf</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> 
         <span class="n">pdf_ysf_list</span> <span class="o">+=</span> <span class="p">[</span> <span class="n">pdf_max</span> <span class="p">]</span>

@@ -15,7 +15,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="IndianCreekDemo1.json" href="../Tests/IndianCreekDemo1_json.html" />
+    <link rel="next" title="IndianCreek2.json" href="../Tests/IndianCreek2_json.html" />
     <link rel="prev" title="How to run" href="../documentation/howtorun.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -111,7 +111,7 @@
 	<span class="p">},</span>
 
 	<span class="s2">&quot;analysis&quot;</span><span class="p">:</span> <span class="p">{</span>
-		<span class="s2">&quot;search_cdf_min&quot;</span> <span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>
+		<span class="s2">&quot;search_cdf_min&quot;</span> <span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
 		<span class="s2">&quot;search_cdf_max&quot;</span> <span class="p">:</span> <span class="mf">0.999</span><span class="p">,</span>
 		<span class="s2">&quot;Xsearch_cdf_max&quot;</span> <span class="p">:</span> <span class="mf">0.995</span><span class="p">,</span>
 		<span class="s2">&quot;marginal_distbn_kde_bandwidth&quot;</span> <span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
@@ -157,10 +157,13 @@
 		<span class="s2">&quot;coarse_segmentation_threshold&quot;</span> <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
 		<span class="s2">&quot;coarse_channel_threshold&quot;</span>      <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
 		<span class="s2">&quot;fine_segmentation_threshold&quot;</span>   <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+		<span class="s2">&quot;Yfine_segmentation_threshold&quot;</span>   <span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
 		<span class="s2">&quot;Xcoarse_segmentation_threshold&quot;</span> <span class="p">:</span> <span class="mi">3000</span><span class="p">,</span>
 		<span class="s2">&quot;Xcoarse_channel_threshold&quot;</span>      <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
 		<span class="s2">&quot;Xfine_segmentation_threshold&quot;</span>   <span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
 		<span class="s2">&quot;min_channel_threshold&quot;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+		<span class="s2">&quot;guess_channel_threshold&quot;</span> <span class="p">:</span> <span class="mi">150</span><span class="p">,</span>
+		<span class="s2">&quot;max_channel_threshold&quot;</span> <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
 		<span class="s2">&quot;n_hsl_averaging_threshold&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
 		<span class="s2">&quot;hsl_dilation_width&quot;</span> <span class="p">:</span> <span class="mi">51</span><span class="p">,</span>
 		<span class="s2">&quot;hsl_mean_radius&quot;</span>  <span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
@@ -287,21 +290,23 @@
         <span class="s2">&quot;mhsl_pdf_x_stretch&quot;</span> <span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="s2">&quot;hsl_cmap&quot;</span> <span class="p">:</span> <span class="s2">&quot;jet&quot;</span><span class="p">,</span>
         <span class="s2">&quot;hsl_do_shaded_relief&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-        <span class="s2">&quot;hsl_alpha&quot;</span> <span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
-        <span class="s2">&quot;hsl_z_min&quot;</span> <span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;hsl_alpha&quot;</span> <span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+        <span class="s2">&quot;hsl_z_min&quot;</span> <span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="s2">&quot;hsl_z_max&quot;</span> <span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;hsl_colorbar_size&quot;</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-        <span class="s2">&quot;hsl_colorbar_aspect&quot;</span> <span class="p">:</span> <span class="mf">0.07</span><span class="p">,</span>
+        <span class="s2">&quot;hsl_z_pctile&quot;</span> <span class="p">:</span> <span class="mf">99.5</span><span class="p">,</span>
+        <span class="s2">&quot;hsl_colorbar_size&quot;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;hsl_colorbar_aspect&quot;</span> <span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
         <span class="s2">&quot;contour_hsl_cmap&quot;</span> <span class="p">:</span> <span class="s2">&quot;jet&quot;</span><span class="p">,</span>
         <span class="s2">&quot;contour_hsl_do_shaded_relief&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
         <span class="s2">&quot;contour_hsl_n_contours&quot;</span> <span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;contour_hsl_alpha&quot;</span> <span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="s2">&quot;contour_hsl_alpha&quot;</span> <span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
         <span class="s2">&quot;do_plot_hsl_contours&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
         <span class="s2">&quot;do_plot_aspect_contours&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span>
-        <span class="s2">&quot;contour_hsl_z_min&quot;</span> <span class="p">:</span> <span class="s2">&quot;full&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;contour_hsl_z_max&quot;</span> <span class="p">:</span> <span class="s2">&quot;full&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;contour_hsl_colorbar_size&quot;</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-        <span class="s2">&quot;contour_hsl_colorbar_aspect&quot;</span> <span class="p">:</span> <span class="mf">0.07</span><span class="p">,</span>
+        <span class="s2">&quot;contour_hsl_z_min&quot;</span> <span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="s2">&quot;contour_hsl_z_max&quot;</span> <span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;contour_hsl_z_pctile&quot;</span> <span class="p">:</span> <span class="mf">99.5</span><span class="p">,</span>
+        <span class="s2">&quot;contour_hsl_colorbar_size&quot;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;contour_hsl_colorbar_aspect&quot;</span> <span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
         <span class="s2">&quot;contour_aspect_colorbar_size&quot;</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
         <span class="s2">&quot;contour_aspect_colorbar_aspect&quot;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
         <span class="s2">&quot;contour_hsl_linewidth&quot;</span> <span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
@@ -379,7 +384,7 @@
 <ul>
   <li><a href="../index.html"></a><ul>
       <li><a href="../documentation/howtorun.html" title="previous chapter">How to run</a></li>
-      <li><a href="../Tests/IndianCreekDemo1_json.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">IndianCreekDemo1.json</span></code></a></li>
+      <li><a href="../Tests/IndianCreek2_json.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">IndianCreek2.json</span></code></a></li>
   </ul></li>
 </ul>
 </div>

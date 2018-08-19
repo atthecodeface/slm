@@ -123,7 +123,7 @@ __kernel void hillslope_lengths(
             moved_off = true;
         } else if (moved_off &amp;&amp; ((mapping_array[idx])&amp;from_flag)) {
             // Bail if we cross another mid-slope pixel, meaning that mid-slope/ridge
-            //   mapping isn&#39;t working for this streamlines
+            //   mapping isn&#39;t working for this streamline
             return;
         }
         if (lengths_runge_kutta_step(&amp;dt, &amp;dl, &amp;l_trajectory, &amp;dxy1_vec, &amp;dxy2_vec,

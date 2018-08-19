@@ -15,8 +15,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="segment.cl" href="segment.cl.html" />
-    <link rel="prev" title="channelheads.cl" href="channelheads.cl.html" />
+    <link rel="next" title="essentials.cl" href="essentials.cl.html" />
+    <link rel="prev" title="connect.cl" href="connect.cl.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -158,9 +158,9 @@ __kernel void count_downchannels(
 /// @param[in]      seed_point_array   (float2 *, RO):
 /// @param[in]      mask_array         (bool *,   RO):
 /// @param[in]      uv_array           (float2 *, RO):
-/// @param[in/out]  mapping_array      (uint *,   RW):
-/// @param[in/out]  count_array        (uint *,   RW):
-/// @param[in/out]  link_array         (uint *,   RW):
+/// @param[in,out]  mapping_array      (uint *,   RW):
+/// @param[in,out]  count_array        (uint *,   RW):
+/// @param[in,out]  link_array         (uint *,   RW):
 ///
 /// @returns void
 ///
@@ -224,7 +224,7 @@ __kernel void flag_downchannels(
             if (counter&gt;=count_array[idx]) {
                 atomic_xchg(&amp;count_array[idx],counter);
             } else {
-                return;
+//                return;
             }
         } else {
             break;
@@ -288,8 +288,8 @@ __kernel void flag_downchannels(
 <h3>Related</h3>
 <ul>
   <li><a href="../index.html"></a><ul>
-      <li><a href="channelheads.cl.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">channelheads.cl</span></code></a></li>
-      <li><a href="segment.cl.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">segment.cl</span></code></a></li>
+      <li><a href="connect.cl.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">connect.cl</span></code></a></li>
+      <li><a href="essentials.cl.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">essentials.cl</span></code></a></li>
   </ul></li>
 </ul>
 </div>

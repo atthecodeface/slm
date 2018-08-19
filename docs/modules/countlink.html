@@ -15,7 +15,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="label.py" href="label.html" />
+    <link rel="next" title="fields.py" href="fields.html" />
     <link rel="prev" title="connect.py" href="connect.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -168,7 +168,7 @@
             
     <span class="c1"># Generate a list (array) of seed points from the set of channel heads</span>
     <span class="c1"># Reset thin channel flag and downstream count - both are recomputed here</span>
-    <span class="n">data</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">[(</span><span class="n">data</span><span class="o">.</span><span class="n">mapping_array</span><span class="o">&amp;</span><span class="n">info</span><span class="o">.</span><span class="n">is_thinchannel</span><span class="p">)</span><span class="o">!=</span><span class="mi">0</span><span class="p">]</span> <span class="o">^=</span> <span class="n">info</span><span class="o">.</span><span class="n">is_thinchannel</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">[(</span><span class="n">data</span><span class="o">.</span><span class="n">mapping_array</span><span class="o">&amp;</span><span class="n">info</span><span class="o">.</span><span class="n">is_thinchannel</span><span class="p">)</span><span class="o">!=</span><span class="mi">0</span><span class="p">]</span><span class="o">^=</span> <span class="n">info</span><span class="o">.</span><span class="n">is_thinchannel</span>
     <span class="k">if</span> <span class="n">do_reset_count</span><span class="p">:</span>
         <span class="n">data</span><span class="o">.</span><span class="n">count_array</span> <span class="o">*=</span> <span class="mi">0</span>
     <span class="n">seed_point_array</span> <span class="o">=</span> <span class="n">pick_seeds</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">mask_array</span><span class="p">,</span> <span class="nb">map</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span> 
@@ -257,7 +257,7 @@
 <ul>
   <li><a href="../index.html"></a><ul>
       <li><a href="connect.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">connect.py</span></code></a></li>
-      <li><a href="label.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">label.py</span></code></a></li>
+      <li><a href="fields.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">fields.py</span></code></a></li>
   </ul></li>
 </ul>
 </div>

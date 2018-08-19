@@ -15,8 +15,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="label.cl" href="label.cl.html" />
-    <link rel="prev" title="countlink.cl" href="countlink.cl.html" />
+    <link rel="next" title="trajectory.cl" href="trajectory.cl.html" />
+    <link rel="prev" title="rungekutta.cl" href="rungekutta.cl.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -255,7 +255,7 @@ static inline uint rotate_left(uint prev_x, uint prev_y, char *dx, char *dy) {
 ///
 /// @ingroup segmentation
 
-/// @bugs Corner case problem where thin channel seq has a fat kink, leading
+/// @bug Corner case problem where thin channel seq has a fat kink, leading
 ///       to mislabeling of left flank pixel &amp; thin hillslope sl among right flank zone
 ///
 __kernel void subsegment_channel_edges(
@@ -672,8 +672,8 @@ __kernel void fix_left_flanks(
 <h3>Related</h3>
 <ul>
   <li><a href="../index.html"></a><ul>
-      <li><a href="countlink.cl.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">countlink.cl</span></code></a></li>
-      <li><a href="label.cl.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">label.cl</span></code></a></li>
+      <li><a href="rungekutta.cl.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">rungekutta.cl</span></code></a></li>
+      <li><a href="trajectory.cl.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">trajectory.cl</span></code></a></li>
   </ul></li>
 </ul>
 </div>

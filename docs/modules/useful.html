@@ -15,7 +15,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="integration.py" href="integration.html" />
+    <link rel="next" title="channelheads.py" href="channelheads.html" />
     <link rel="prev" title="pocl.py" href="pocl.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -54,15 +54,10 @@ Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first">ValueError if file cannot be opened for reading</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
-<dt>Numpy array of GeoTIFF grid, size (in meters)</dt>
-<dd><p class="first last">of a grid pixel</p>
-</dd>
-</dl>
-</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Numpy array of GeoTIFF grid; size (in meters) of a grid pixel</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)">numpy.ndarray</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></p>
 </td>
 </tr>
 </tbody>
@@ -81,7 +76,7 @@ Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to folder containing GeoTIFF file to be read</li>
 <li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – GeoTIFF filename</li>
-<li><strong>float</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a><em>,</em>) – Numpy array of GeoTIFF grid, size (in meters)
+<li><strong>float</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a><em>,</em>) – Numpy array of GeoTIFF grid, size (in meters)
 of a grid pixel</li>
 </ul>
 </td>
@@ -132,11 +127,9 @@ of a grid pixel</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">seed point array
-int: n_seed_points
-int: n_padded_seed_points</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">seed point array, n_seed_points, n_padded_seed_points</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)">numpy.ndarray</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></td>
 </tr>
 </tbody>
 </table>
@@ -151,8 +144,8 @@ int: n_padded_seed_points</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mask</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – pixel mask array</li>
-<li><strong>map</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – mapping array (as generated by mapping())</li>
+<li><strong>mask</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – pixel mask array</li>
+<li><strong>map</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – mapping array (as generated by mapping())</li>
 <li><strong>flag</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – binary flag ORed with mapping array to pick seed pixels</li>
 <li><strong>pad</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – grid boundary padding with in pixels</li>
 </ul>
@@ -161,7 +154,7 @@ int: n_padded_seed_points</td>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">seed point array</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)">numpy.ndarray</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></p>
 </td>
 </tr>
 </tbody>
@@ -179,8 +172,8 @@ Return them as a small Pandas dataframe table.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>traj_length_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
-<li><strong>traj_nsteps_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>traj_length_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>traj_nsteps_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – </li>
 <li><strong>pixel_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – </li>
 <li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
 </ul>
@@ -189,7 +182,7 @@ Return them as a small Pandas dataframe table.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">lnds_stats_df</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.23.3)">pandas.DataFrame</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.23.4)">pandas.DataFrame</a></p>
 </td>
 </tr>
 </tbody>
@@ -267,9 +260,11 @@ Return them as a small Pandas dataframe table.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">link_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">label_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_label_array</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hillslope_labels</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_subsegments_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traj_label_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traj_length_array</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subsegment_label_array</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subsegment_hsl_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">hsl_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">hsl_array</span> <span class="o">=</span> <span class="n">hsl_array</span><span class="p">[</span><span class="n">bounds_slx</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -388,7 +383,7 @@ Return them as a small Pandas dataframe table.</p>
 <span class="k">def</span> <span class="nf">check_sizes</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span><span class="n">array_dict</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">ad_item</span> <span class="ow">in</span> <span class="n">array_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">array_name</span> <span class="o">=</span> <span class="n">ad_item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">array_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;seed_point&#39;</span><span class="p">,</span><span class="s1">&#39;traj_length&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">array_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;seed_point&#39;</span><span class="p">,</span><span class="s1">&#39;subsegment_hsl&#39;</span><span class="p">):</span>
             <span class="n">array</span> <span class="o">=</span> <span class="n">ad_item</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;array&#39;</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="n">nx</span> <span class="ow">or</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">!=</span><span class="n">ny</span><span class="p">:</span>
                 <span class="c1"># raise ValueError</span>
@@ -412,8 +407,8 @@ Return them as a small Pandas dataframe table.</p>
 <span class="sd">        ValueError if file cannot be opened for reading</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        numpy.ndarray, float: Numpy array of GeoTIFF grid, size (in meters) </span>
-<span class="sd">                                of a grid pixel</span>
+<span class="sd">        numpy.ndarray, float: </span>
+<span class="sd">        Numpy array of GeoTIFF grid; size (in meters) of a grid pixel</span>
 <span class="sd">    &quot;&quot;&quot;</span>          
     <span class="n">fullpath_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">filename</span><span class="p">)</span>
     <span class="n">tiff</span><span class="o">=</span><span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">fullpath_filename</span><span class="p">)</span>
@@ -525,9 +520,8 @@ Return them as a small Pandas dataframe table.</p>
 <span class="sd">    Generate seed points for tracing of streamline trajectories.   </span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        numpy.ndarray: seed point array   </span>
-<span class="sd">        int: n_seed_points  </span>
-<span class="sd">        int: n_padded_seed_points  </span>
+<span class="sd">        numpy.ndarray, int, int: </span>
+<span class="sd">        seed point array, n_seed_points, n_padded_seed_points  </span>
 <span class="sd">    &quot;&quot;&quot;</span>    
     <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;Generating seed points...&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">seed_point_array</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">-</span><span class="n">pad</span><span class="p">))</span>
@@ -670,7 +664,7 @@ Return them as a small Pandas dataframe table.</p>
 <ul>
   <li><a href="../index.html"></a><ul>
       <li><a href="pocl.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">pocl.py</span></code></a></li>
-      <li><a href="integration.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">integration.py</span></code></a></li>
+      <li><a href="channelheads.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">channelheads.py</span></code></a></li>
   </ul></li>
 </ul>
 </div>
