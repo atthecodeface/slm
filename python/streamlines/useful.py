@@ -213,8 +213,8 @@ def read_geotiff(path, filename):
         ValueError if file cannot be opened for reading
         
     Returns:
-        numpy.ndarray, float: Numpy array of GeoTIFF grid, size (in meters) 
-                                of a grid pixel
+        numpy.ndarray, float: 
+        Numpy array of GeoTIFF grid; size (in meters) of a grid pixel
     """          
     fullpath_filename = os.path.join(path,filename)
     tiff=gdal.Open(fullpath_filename)
@@ -326,9 +326,8 @@ def create_seeds(mask, pad, n_work_items, n_seed_points=None,
     Generate seed points for tracing of streamline trajectories.   
         
     Returns:
-        numpy.ndarray: seed point array   
-        int: n_seed_points  
-        int: n_padded_seed_points  
+        numpy.ndarray, int, int: 
+        seed point array, n_seed_points, n_padded_seed_points  
     """    
     vprint(verbose,'Generating seed points...', end='')
     seed_point_array = ((np.argwhere(~mask).astype(np.float32)-pad))

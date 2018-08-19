@@ -1,5 +1,12 @@
 """
-TBD
+HSL mapping module. 
+
+Requires pandas, sklearn, skimage, scipy, skfmm.
+
+Imports modules from streamlines.core,  streamlines.useful,  streamlines.pocl.
+
+Imports streamlines modules connect, channelheads, countlink, label, 
+segment, hillslopes, lengths.
 """
 
 import numpy  as np
@@ -32,11 +39,21 @@ pdebug = print
 
 class Mapping(Core):
     """
-    TBD.
+    Class providing methods to map HSL.
+    
+    These methods do the bulk of the hard work in mapping hillslope length, 
+    in linking to topographic aspect, and in measuring related statistics. 
+    The master method carries
+    out three "passes" or processing steps in order to map the slm grids (sla, slt, slc)
+    into grids of HSL and aspect, as well as to generate derivative data from them.
     """
     def __init__(self,state,imported_parameters,geodata,preprocess,trace,analysis):
         """
-        TBD
+        Initialize a mapping class instance.
+        
+        Provides hooks to geodata, preprocess, trace and analysis modules.
+        Initializes the OpenCL device and a context, and creates a command queue.
+        Initializes (nulls) HSL statistics variables.
         """
         super().__init__(state,imported_parameters)  
         self.geodata = geodata
@@ -66,7 +83,8 @@ class Mapping(Core):
      
     def do(self):
         """
-        TBD.
+        Master method to carry out all steps of HSL and related mapping, as well
+        as computation of statistics.
         """
         self.print('\n**Mapping begin**') 
         # Estimate the DTM-wide channel threshold and use it 
@@ -87,6 +105,17 @@ class Mapping(Core):
         self.print('**Mapping end**\n')  
 
     def pass1(self):
+        """
+        Pass or step 1 of HSL mapping.
+        
+        Estimate the DTM-wide channel threshold and use it 
+        to coarsely subsegment into "moderate"-size watersheds.
+        Note that the "sub" prefix means that each segment is split 
+        into left and right flanks along its channel, with an attempt made to 
+        subdivide symmetrically above each channel head (this is not always
+        very successful).
+
+        """
         vprint(self.vprogress,'\n**Pass#1 begin**')
 #         self._switch_to_quiet_mode()
         # Shorthand
@@ -180,6 +209,24 @@ class Mapping(Core):
 
     def make_coarse_subsegment_masks(self, coarse_subsegment, is_left_or_right,
                                      raw_mask, dilated_mask):
+        """
+        Args:
+            coarse_subsegment (int): index of catchment coarse subsegment
+            is_left_or_right (str): string-flag indicating if subsegment is left or right
+                                    flank ("left" subsegments need dilation=2, 
+                                    "right" need dilation=1)
+            raw_mask (numpy.ndarray): empty grid for raw coarse subsegment mask
+            dilated_mask (numpy.ndarray): empty grid for dilated coarse subsegment mask
+        
+        Create a boolean mask grid for the given catchment coarse subsegment.
+        Returns masks in the raw_mask and dilated_mask grids by modifying in place.
+        Computes bounding box (grid coords) of the dilated mask in bbox_dilated_mask  
+        and its dimensions nxd,nyd.
+
+        Returns:
+            list, int, int:
+            bbox_dilated_mask, nxd,nyd 
+        """
         # Initialize raw mask with masked everywhere
         raw_mask.fill(True)
         # Unmask this coarse segment
@@ -201,6 +248,16 @@ class Mapping(Core):
         return bbox_dilated_mask, nxd,nyd
 
     def pass2(self):
+        """
+        Pass or step 2 of HSL mapping.
+        
+        Iterate over the coarse subsegments and in each:
+          - estimate the channel threshold
+          - map channels, ridges & midslopes
+          - measure HSL from either ridges or midslopes to channels
+          - merge the HSL and (TBD) channel mapping into "global" results grid(s)
+
+        """
         vprint(self.vprogress,'\n**Pass#2 begin**') 
         self._switch_to_quiet_mode()
         # Shorthand
@@ -364,7 +421,15 @@ class Mapping(Core):
         self.report_progress(idx+1, n_segments)
         vprint(self.vprogress,'\n**Pass#2 end**') 
                 
-    def pass3(self):        
+    def pass3(self):   
+        """
+        Pass or step 3 of HSL mapping.
+        
+        - Filter the HSL results into a smoothed, contourable grid.
+        - Compute filtered terrain aspect and combine with this HSL grid.
+        - Generate a mean HSL(aspect) function and related statistics
+        to determine whether or not there is a N-S bias.
+        """     
         vprint(self.vprogress,'\n**Pass#3 begin**') 
         self.state.reset_active_masks()
         self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask_array})
