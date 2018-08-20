@@ -2,8 +2,7 @@
 ==================
 
 
-Usage
--------
+
 .. automodule:: streamlines.lengths
    :members: 
    :private-members:

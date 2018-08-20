@@ -3,10 +3,6 @@
 
 
 
-
-Usage
--------
-
 .. automodule:: streamlines.slm
    :private-members:
    :members:

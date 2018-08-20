@@ -2,15 +2,6 @@
 =======================================
 
 
-Summary
--------
-
-
-- TBD
-
-
-Usage
--------
 .. automodule:: streamlines.geodata
    :members: 
    :private-members:

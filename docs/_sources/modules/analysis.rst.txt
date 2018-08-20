@@ -1,15 +1,7 @@
 ``analysis.py`` 
 =======================================
 
-Summary
--------
 
-
-- TBD
-
-
-Usage
--------
 .. automodule:: streamlines.analysis
    :members: 
    :private-members:

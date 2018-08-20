@@ -15,8 +15,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="lengths.py" href="lengths.html" />
-    <link rel="prev" title="label.py" href="label.html" />
+    <link rel="next" title="trajectories.py" href="trajectories.html" />
+    <link rel="prev" title="lengths.py" href="lengths.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -31,11 +31,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="segment-py">
-<h1><code class="docutils literal notranslate"><span class="pre">segment.py</span></code><a class="headerlink" href="#segment-py" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-streamlines.segment">
-<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.segment" title="Permalink to this headline">¶</a></h2>
-<p>Segment downstream.</p>
+  <div class="section" id="module-streamlines.segment">
+<span id="segment-py"></span><h1><code class="docutils literal notranslate"><span class="pre">segment.py</span></code><a class="headerlink" href="#module-streamlines.segment" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
+<p>Wrapper module to downstream-wise channel segmentation using <a class="reference external" href="https://www.khronos.org/opencl">OpenCL</a>.</p>
+<p>Requires <a class="reference external" href="https://documen.tician.de/pyopencl/index.html">PyOpenCL</a>.</p>
+<p>Imports streamlines module <a class="reference internal" href="pocl.html"><span class="doc">pocl.py</span></a>.
+Imports functions from streamlines module <a class="reference internal" href="useful.html"><span class="doc">useful.py</span></a>.</p>
+<hr class="docutils" />
 <dl class="function">
 <dt id="streamlines.segment.segment_channels">
 <code class="descclassname">streamlines.segment.</code><code class="descname">segment_channels</code><span class="sig-paren">(</span><em>cl_state</em>, <em>info</em>, <em>data</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.segment.segment_channels" title="Permalink to this definition">¶</a></dt>
@@ -96,11 +99,25 @@
 </table>
 </dd></dl>
 
-</div>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Segment downstream.</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Wrapper module to downstream-wise channel segmentation using `OpenCL`_.</span>
+
+<span class="sd">Requires `PyOpenCL`_.</span>
+
+<span class="sd">Imports streamlines module :doc:`pocl`.</span>
+<span class="sd">Imports functions from streamlines module :doc:`useful`.</span>
+
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">.. _OpenCL: https://www.khronos.org/opencl</span>
+<span class="sd">.. _PyOpenCL: https://documen.tician.de/pyopencl/index.html</span>
+
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">pyopencl</span> <span class="k">as</span> <span class="nn">cl</span>
@@ -368,7 +385,6 @@
   <h3><a href="../index.html">Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">segment.py</span></code></a><ul>
-<li><a class="reference internal" href="#module-streamlines.segment">Usage</a></li>
 <li><a class="reference internal" href="#code">Code</a></li>
 </ul>
 </li>
@@ -377,8 +393,8 @@
 <h3>Related</h3>
 <ul>
   <li><a href="../index.html"></a><ul>
-      <li><a href="label.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">label.py</span></code></a></li>
-      <li><a href="lengths.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">lengths.py</span></code></a></li>
+      <li><a href="lengths.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">lengths.py</span></code></a></li>
+      <li><a href="trajectories.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">trajectories.py</span></code></a></li>
   </ul></li>
 </ul>
 </div>

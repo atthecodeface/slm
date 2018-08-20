@@ -1,5 +1,9 @@
 """
-Map and graph plotting
+Module providing tools to write results, grids, data to output files.
+
+Requires matplotlib (pyplot).
+
+Imports modules from streamlines.core,  streamlines.useful.
 """
 
 import numpy  as np
@@ -16,12 +20,28 @@ pdebug = print
 class Save(Core):       
     """
     Save plots to files
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
     """
     def __init__(self, state, imported_parameters, 
                  geodata, preprocess, trace, analysis, mapping, plot):
         """
+        Args:
+            TBD (TBD): 
+        
         TBD
-        """
+    
+        Returns:
+            TBD: 
+            TBD
+        """  
         super().__init__(state,imported_parameters)  
         self.state      = state
         self.geodata    = geodata
@@ -34,6 +54,15 @@ class Save(Core):
     def do(self):
         """
         Save all Matplotlib plots, mapping grids
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         self.print('\n**Write results to files begin**') 
             
@@ -63,7 +92,17 @@ class Save(Core):
         
         self.print('**Write results to files end**\n')  
         
-    def save_maps(self, fig_name=None, file_stem=None): 
+    def save_maps(self, fig_name=None, file_stem=None):  
+        """
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """  
         self.print('Saving maps...') 
         if file_stem is None:
             file_stem = os.path.realpath(os.path.join(*self.geodata.export_path,
@@ -75,6 +114,7 @@ class Save(Core):
         nxp = nx+pad*2
         nyp = ny+pad*2
         pslice = np.index_exp[pad:-pad,pad:-pad]
+        pdebug(type(pslice))
         format = 'tif'
         for obj in obj_list:
             for item in obj.__dict__:
@@ -94,6 +134,16 @@ class Save(Core):
         self.print('...done') 
         
     def save_figs(self, fig_name=None, file_stem=None):
+        """
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """  
         self.print('Saving figs...') 
         fig_items = self.plot.figs.items()
         if file_stem is None:

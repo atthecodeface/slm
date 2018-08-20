@@ -31,11 +31,15 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="kde-py">
-<h1><code class="docutils literal notranslate"><span class="pre">kde.py</span></code><a class="headerlink" href="#kde-py" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-streamlines.kde">
-<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.kde" title="Permalink to this headline">¶</a></h2>
-<p>Kernel density estimation.</p>
+  <div class="section" id="module-streamlines.kde">
+<span id="kde-py"></span><h1><code class="docutils literal notranslate"><span class="pre">kde.py</span></code><a class="headerlink" href="#module-streamlines.kde" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
+<p>Kernel density estimation of 1d and 2d pdfs using <a class="reference external" href="https://www.khronos.org/opencl">OpenCL</a>
+to accelerate kernel smoothing.</p>
+<p>Requires <a class="reference external" href="https://documen.tician.de/pyopencl/index.html">PyOpenCL</a>.</p>
+<p>Imports streamlines module <a class="reference internal" href="pocl.html"><span class="doc">pocl.py</span></a>.
+Imports functions from streamlines module <a class="reference internal" href="useful.html"><span class="doc">useful.py</span></a>.</p>
+<hr class="docutils" />
 <dl class="function">
 <dt id="streamlines.kde.estimate_univariate_pdf">
 <code class="descclassname">streamlines.kde.</code><code class="descname">estimate_univariate_pdf</code><span class="sig-paren">(</span><em>distbn</em>, <em>do_detrend=False</em>, <em>logx_vec=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.kde.estimate_univariate_pdf" title="Permalink to this definition">¶</a></dt>
@@ -47,7 +51,7 @@
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>distbn</strong> (<em>obj</em>) – </li>
 <li><strong>do_detrend</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
-<li><strong>logx_vec</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.14)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>logx_vec</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – </li>
 </ul>
 </td>
 </tr>
@@ -71,11 +75,79 @@
 <p>Returns:</p>
 </dd></dl>
 
-</div>
+<dl class="function">
+<dt id="streamlines.kde.gpu_compute">
+<code class="descclassname">streamlines.kde.</code><code class="descname">gpu_compute</code><span class="sig-paren">(</span><em>device</em>, <em>context</em>, <em>queue</em>, <em>cl_kernel_source</em>, <em>cl_kernel_fn</em>, <em>distbn</em>, <em>action='histogram'</em>, <em>is_bivariate=False</em>, <em>sl_array=None</em>, <em>histogram_array=None</em>, <em>partial_pdf_array=None</em>, <em>pdf_array=None</em>, <em>verbose=False</em>, <em>gpu_verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.kde.gpu_compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Carry out GPU computation of histogram.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>device</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Device</em></a>) – </li>
+<li><strong>context</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Context</em></a>) – </li>
+<li><strong>queue</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_queue.html#pyopencl.CommandQueue" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.CommandQueue</em></a>) – </li>
+<li><strong>cl_kernel_source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </li>
+<li><strong>cl_kernel_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </li>
+<li><strong>distbn</strong> (<em>obj</em>) – </li>
+<li><strong>sl_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>histogram_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.kde.prepare_memory">
+<code class="descclassname">streamlines.kde.</code><code class="descname">prepare_memory</code><span class="sig-paren">(</span><em>context</em>, <em>queue</em>, <em>action='histogram'</em>, <em>is_bivariate=False</em>, <em>n_hist_bins=0</em>, <em>n_pdf_points=0</em>, <em>sl_array=None</em>, <em>histogram_array=None</em>, <em>partial_pdf_array=None</em>, <em>pdf_array=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.kde.prepare_memory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create PyOpenCL buffers and np-workalike arrays to allow CPU-GPU data transfer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>context</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Context</em></a>) – </li>
+<li><strong>queue</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_queue.html#pyopencl.CommandQueue" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.CommandQueue</em></a>) – </li>
+<li><strong>n_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – </li>
+<li><strong>sl_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>histogram_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>pdf_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – </li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">histogram_array or pdf_array, sl_buffer or histogram_buffer,
+histogram_buffer or pdf_buffer</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_memory.html#pyopencl.Buffer" title="(in PyOpenCL v2018.1.1)">pyopencl.Buffer</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_memory.html#pyopencl.Buffer" title="(in PyOpenCL v2018.1.1)">pyopencl.Buffer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Kernel density estimation.</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Kernel density estimation of 1d and 2d pdfs using `OpenCL`_ </span>
+<span class="sd">to accelerate kernel smoothing.</span>
+
+<span class="sd">Requires `PyOpenCL`_.</span>
+
+<span class="sd">Imports streamlines module :doc:`pocl`.</span>
+<span class="sd">Imports functions from streamlines module :doc:`useful`.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">.. _OpenCL: https://www.khronos.org/opencl</span>
+<span class="sd">.. _PyOpenCL: https://documen.tician.de/pyopencl/index.html</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">pyopencl</span> <span class="k">as</span> <span class="nn">cl</span>
@@ -90,7 +162,7 @@
 <span class="kn">from</span> <span class="nn">streamlines.useful</span> <span class="k">import</span> <span class="n">vprint</span><span class="p">,</span> <span class="n">pick_seeds</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;estimate_univariate_pdf&#39;</span><span class="p">,</span><span class="s1">&#39;estimate_bivariate_pdf&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;gpu_compute_1d&#39;</span><span class="p">,</span><span class="s1">&#39;prepare_memory_1d&#39;</span><span class="p">]</span>
+           <span class="s1">&#39;gpu_compute&#39;</span><span class="p">,</span><span class="s1">&#39;prepare_memory&#39;</span><span class="p">]</span>
 
 <span class="n">pdebug</span> <span class="o">=</span> <span class="nb">print</span>
 
@@ -460,7 +532,6 @@
   <h3><a href="../index.html">Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">kde.py</span></code></a><ul>
-<li><a class="reference internal" href="#module-streamlines.kde">Usage</a></li>
 <li><a class="reference internal" href="#code">Code</a></li>
 </ul>
 </li>

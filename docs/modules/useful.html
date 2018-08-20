@@ -31,34 +31,230 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="useful-py">
-<h1><code class="docutils literal notranslate"><span class="pre">useful.py</span></code><a class="headerlink" href="#useful-py" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-streamlines.useful">
-<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.useful" title="Permalink to this headline">¶</a></h2>
-<p>Miscellaneous useful functions for PyOpenCL code</p>
-<dl class="function">
-<dt id="streamlines.useful.read_geotiff">
-<code class="descclassname">streamlines.useful.</code><code class="descname">read_geotiff</code><span class="sig-paren">(</span><em>path</em>, <em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.read_geotiff" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read GeoTIFF file.
-Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
+  <div class="section" id="module-streamlines.useful">
+<span id="useful-py"></span><h1><code class="docutils literal notranslate"><span class="pre">useful.py</span></code><a class="headerlink" href="#module-streamlines.useful" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
+<p>Module providing Data and Info classes, as well as a suite of useful functions.</p>
+<p>Requires <a class="reference external" href="https://www.gdal.org/">gdal</a>/<a class="reference external" href="https://www.osgeo.org/">osgeo</a>, <a class="reference external" href="https://pandas.pydata.org/">pandas</a>, <a class="reference external" href="https://www.scipy.org/">scipy</a>, <a class="reference external" href="https://pythonhosted.org/Pympler/">pympler</a>.</p>
+<hr class="docutils" />
+<dl class="class">
+<dt id="streamlines.useful.Data">
+<em class="property">class </em><code class="descclassname">streamlines.useful.</code><code class="descname">Data</code><span class="sig-paren">(</span><em>info=None</em>, <em>bbox=None</em>, <em>pad=0</em>, <em>mask_array=None</em>, <em>uv_array=None</em>, <em>mapping_array=None</em>, <em>traj_stats_df=None</em>, <em>sla_array=None</em>, <em>slc_array=None</em>, <em>slt_array=None</em>, <em>hsl_array=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.Data" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tbd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="streamlines.useful.Data.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>info=None</em>, <em>bbox=None</em>, <em>pad=0</em>, <em>mask_array=None</em>, <em>uv_array=None</em>, <em>mapping_array=None</em>, <em>traj_stats_df=None</em>, <em>sla_array=None</em>, <em>slc_array=None</em>, <em>slt_array=None</em>, <em>hsl_array=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.Data.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tbd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="streamlines.useful.Info">
+<em class="property">class </em><code class="descclassname">streamlines.useful.</code><code class="descname">Info</code><span class="sig-paren">(</span><em>state</em>, <em>trace</em>, <em>pixel_size</em>, <em>mapping=None</em>, <em>n_seed_points=None</em>, <em>coarse_label=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.Info" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tbd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="streamlines.useful.Info.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>state</em>, <em>trace</em>, <em>pixel_size</em>, <em>mapping=None</em>, <em>n_seed_points=None</em>, <em>coarse_label=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.Info.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tbd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.useful.Info.set_thresholds">
+<code class="descname">set_thresholds</code><span class="sig-paren">(</span><em>segmentation_threshold=None</em>, <em>channel_threshold=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.Info.set_thresholds" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tbd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.useful.Info.set_xy">
+<code class="descname">set_xy</code><span class="sig-paren">(</span><em>nx</em>, <em>ny</em>, <em>pad</em>, <em>bbox=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.Info.set_xy" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tbd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.useful.get_bbox">
+<code class="descclassname">streamlines.useful.</code><code class="descname">get_bbox</code><span class="sig-paren">(</span><em>array</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.get_bbox" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tbd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.useful.check_sizes">
+<code class="descclassname">streamlines.useful.</code><code class="descname">check_sizes</code><span class="sig-paren">(</span><em>nx</em>, <em>ny</em>, <em>array_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.check_sizes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tbd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.useful.read_geotiff">
+<code class="descclassname">streamlines.useful.</code><code class="descname">read_geotiff</code><span class="sig-paren">(</span><em>path</em>, <em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.read_geotiff" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to folder containing GeoTIFF file to be read</li>
 <li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – GeoTIFF filename</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first">ValueError if file cannot be opened for reading</p>
-</td>
+</tbody>
+</table>
+<p>Import a pixel grid from a GeoTIFF file along with its metadata.</p>
+<p>Assumes the file contains a single-band 2d grid of equal x-y dimension pixels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">ValueError if file cannot be opened for reading.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Numpy array of GeoTIFF grid; size (in meters) of a grid pixel</p>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Imported GeoTIFF grid; size of a grid pixel in meters</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></p>
-</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></td>
 </tr>
 </tbody>
 </table>
@@ -67,22 +263,46 @@ Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
 <dl class="function">
 <dt id="streamlines.useful.write_geotiff">
 <code class="descclassname">streamlines.useful.</code><code class="descname">write_geotiff</code><span class="sig-paren">(</span><em>path</em>, <em>file_name</em>, <em>array</em>, <em>nx</em>, <em>ny</em>, <em>npd</em>, <em>pslice</em>, <em>geodata</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.write_geotiff" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write GeoTIFF file.
-Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to folder containing GeoTIFF file to be read</li>
+<li><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – GeoTIFF filename</li>
+<li><strong>array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – grid to be written</li>
+<li><strong>nx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – x dimension of grid</li>
+<li><strong>ny</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – y dimension of grid</li>
+<li><strong>npd</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – depth (number of values) per pixel - not fully implemented</li>
+<li><strong>pslice</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a>) – of form np.index_exp[xmin:xmax,ymin:ymax]</li>
+<li><strong>geodata</strong> (<em>obj</em>) – slm geodata object containing projection &amp; transform metadata</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Write an slm grid of arbitrary type to a GeoTIFF file with full geometadata.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.useful.npamem">
+<code class="descclassname">streamlines.useful.</code><code class="descname">npamem</code><span class="sig-paren">(</span><em>obj</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.npamem" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to folder containing GeoTIFF file to be read</li>
-<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – GeoTIFF filename</li>
-<li><strong>float</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a><em>,</em>) – Numpy array of GeoTIFF grid, size (in meters)
-of a grid pixel</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">ValueError if file cannot be opened for writing</p>
-</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
 </tr>
 </tbody>
 </table>
@@ -90,21 +310,61 @@ of a grid pixel</li>
 
 <dl class="function">
 <dt id="streamlines.useful.true_size">
-<code class="descclassname">streamlines.useful.</code><code class="descname">true_size</code><span class="sig-paren">(</span><em>subobject</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.true_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>TBD</p>
+<code class="descclassname">streamlines.useful.</code><code class="descname">true_size</code><span class="sig-paren">(</span><em>python_object</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.true_size" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>python_object</strong> (<em>obj</em>) – (sub)object whose memory allocation we wish to know</td>
+</tr>
+</tbody>
+</table>
+<p>Find the size of a Python object. Uses Pympler to do this.
+Copies the object (!)
+temporarily to improve the accuracy of the measurement (not sure why this helps,
+but it does).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">size of memory allocation of object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="streamlines.useful.neatly">
-<code class="descclassname">streamlines.useful.</code><code class="descname">neatly</code><span class="sig-paren">(</span><em>byte_size</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.neatly" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a human readable string reprentation of bytes</p>
+<code class="descclassname">streamlines.useful.</code><code class="descname">neatly</code><span class="sig-paren">(</span><em>size_in_bytes</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.neatly" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size_in_bytes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – </td>
+</tr>
+</tbody>
+</table>
+<p>Convert a number for a memory (etc) size given in bytes into
+rounded, easily readable version (as a string) with appropriate units,
+e.g., 10753 =&gt; ‘11kB’</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">readable_size</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="streamlines.useful.vprint">
 <code class="descclassname">streamlines.useful.</code><code class="descname">vprint</code><span class="sig-paren">(</span><em>verbose</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.vprint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapper for print() with verbose flag to suppress output if desired</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -117,17 +377,41 @@ of a grid pixel</li>
 </tr>
 </tbody>
 </table>
+<p>Wrapper for print() with verbose flag to suppress output if desired.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="streamlines.useful.create_seeds">
 <code class="descclassname">streamlines.useful.</code><code class="descname">create_seeds</code><span class="sig-paren">(</span><em>mask</em>, <em>pad</em>, <em>n_work_items</em>, <em>n_seed_points=None</em>, <em>do_shuffle=True</em>, <em>rng_seed=1</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.create_seeds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate seed points for tracing of streamline trajectories.</p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mask</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – pixel mask array</li>
+<li><strong>pad</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – grid boundary padding with in pixels</li>
+<li><strong>n_work_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – OpenCL work group size (number of items per), which is used
+to pad the seed point list into a length divisible by this number</li>
+<li><strong>n_seed_points</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of seed points</li>
+<li><strong>do_shuffle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – flag indicating whether to randomize the seed sequence</li>
+<li><strong>rng_seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – initializer or “seed” value for RNG</li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – verbose mode flag</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Generate a list (np array) of seed point coordinates defining the initial pixels
+for each streamline trajectory.
+Only unmasked pixel locations are considered.
+If do_shuffle is True, the list of pixel coordinates is randomly ordered.
+The list length is set by n_seed_points; if not given, the default is to
+choose all unmasked pixels.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">seed point array, n_seed_points, n_padded_seed_points</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">seed point coordinates array, n_seed_points, n_padded_seed_points</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></td>
 </tr>
@@ -138,12 +422,11 @@ of a grid pixel</li>
 <dl class="function">
 <dt id="streamlines.useful.pick_seeds">
 <code class="descclassname">streamlines.useful.</code><code class="descname">pick_seeds</code><span class="sig-paren">(</span><em>mask=None</em>, <em>map=None</em>, <em>flag=None</em>, <em>pad=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.pick_seeds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a vector array of seed points to send to the GPU/OpenCl device</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>mask</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – pixel mask array</li>
 <li><strong>map</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – mapping array (as generated by mapping())</li>
 <li><strong>flag</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – binary flag ORed with mapping array to pick seed pixels</li>
@@ -151,11 +434,16 @@ of a grid pixel</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">seed point array</p>
-</td>
+</tbody>
+</table>
+<p>Generate a vector array of seed points to send to the GPU/OpenCl device.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">seed point coordinates array</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></p>
-</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></td>
 </tr>
 </tbody>
 </table>
@@ -164,14 +452,11 @@ of a grid pixel</li>
 <dl class="function">
 <dt id="streamlines.useful.compute_stats">
 <code class="descclassname">streamlines.useful.</code><code class="descname">compute_stats</code><span class="sig-paren">(</span><em>traj_length_array</em>, <em>traj_nsteps_array</em>, <em>pixel_size</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.compute_stats" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute streamline integration point spacing and trajectory length statistics
-(min, mean, max) for the sets of both downstream and upstream trajectories.
-Return them as a small Pandas dataframe table.</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>traj_length_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – </li>
 <li><strong>traj_nsteps_array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – </li>
 <li><strong>pixel_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – </li>
@@ -179,21 +464,75 @@ Return them as a small Pandas dataframe table.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">lnds_stats_df</p>
-</td>
+</tbody>
+</table>
+<p>Compute streamline integration point spacing and trajectory length statistics
+(min, mean, max) for the sets of both downstream and upstream trajectories.
+Return them as a small Pandas dataframe table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">lnds_stats_df</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.23.4)">pandas.DataFrame</a></p>
-</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.23.4)">pandas.DataFrame</a></td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
-</div>
+<dl class="function">
+<dt id="streamlines.useful.dilate">
+<code class="descclassname">streamlines.useful.</code><code class="descname">dilate</code><span class="sig-paren">(</span><em>array</em>, <em>n_iterations=1</em>, <em>out=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.dilate" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – input boolean pixel grid (output too if in-place operation)</li>
+<li><strong>n_iterations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of dilations to perform</li>
+<li><strong>out</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><em>numpy.ndarray</em></a>) – output grid; if not given, default to in-place operation</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Perform binary dilation on (aka fatten) a boolean pixel grid with
+an 8-direction kernel.</p>
+<p>Uses scipy.ndimage.morphology.
+Defaults to doing the dilation once and in place.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">dilated pixel grid</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Miscellaneous useful functions for PyOpenCL code</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Module providing Data and Info classes, as well as a suite of useful functions.</span>
+
+<span class="sd">Requires `gdal`_/`osgeo`_, `pandas`_, `scipy`_, `pympler`_.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">.. _pandas: https://pandas.pydata.org/</span>
+<span class="sd">.. _sklearn: http://scikit-learn.org/</span>
+<span class="sd">.. _skimage: https://scikit-image.org/</span>
+<span class="sd">.. _scipy: https://www.scipy.org/</span>
+<span class="sd">.. _skfmm: https://pythonhosted.org/scikit-fmm/</span>
+<span class="sd">.. _osgeo: https://www.osgeo.org/</span>
+<span class="sd">.. _gdal: https://www.gdal.org/</span>
+<span class="sd">.. _pympler: https://pythonhosted.org/Pympler/</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -207,13 +546,23 @@ Return them as a small Pandas dataframe table.</p>
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYTHONUNBUFFERED&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;True&#39;</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Data&#39;</span><span class="p">,</span> <span class="s1">&#39;Info&#39;</span><span class="p">,</span> <span class="s1">&#39;get_bbox&#39;</span><span class="p">,</span><span class="s1">&#39;check_sizes&#39;</span><span class="p">,</span> <span class="s1">&#39;prepare_data&#39;</span><span class="p">,</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Data&#39;</span><span class="p">,</span> <span class="s1">&#39;Info&#39;</span><span class="p">,</span> <span class="s1">&#39;get_bbox&#39;</span><span class="p">,</span><span class="s1">&#39;check_sizes&#39;</span><span class="p">,</span> 
            <span class="s1">&#39;read_geotiff&#39;</span><span class="p">,</span><span class="s1">&#39;write_geotiff&#39;</span><span class="p">,</span><span class="s1">&#39;npamem&#39;</span><span class="p">,</span><span class="s1">&#39;true_size&#39;</span><span class="p">,</span><span class="s1">&#39;neatly&#39;</span><span class="p">,</span><span class="s1">&#39;vprint&#39;</span><span class="p">,</span>
            <span class="s1">&#39;create_seeds&#39;</span><span class="p">,</span><span class="s1">&#39;pick_seeds&#39;</span><span class="p">,</span><span class="s1">&#39;compute_stats&#39;</span><span class="p">,</span><span class="s1">&#39;dilate&#39;</span><span class="p">]</span>
 
 <span class="n">pdebug</span> <span class="o">=</span> <span class="nb">print</span>
 
 <span class="k">class</span> <span class="nc">Data</span><span class="p">():</span>    
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        tbd (str): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
+<span class="sd">    &quot;&quot;&quot;</span>  
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                  <span class="n">mask_array</span>      <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">uv_array</span>        <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -223,6 +572,17 @@ Return them as a small Pandas dataframe table.</p>
                  <span class="n">slc_array</span>       <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">slt_array</span>       <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">hsl_array</span>       <span class="o">=</span> <span class="kc">None</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            tbd (str): </span>
+<span class="sd">        </span>
+<span class="sd">        TBD</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            TBD: </span>
+<span class="sd">            TBD</span>
+<span class="sd">        &quot;&quot;&quot;</span>  
+
 <span class="c1">#     self.print(&#39;Preparing data...&#39;,end=&#39;&#39;)  </span>
 <span class="c1">#     self.verbose  = verbose</span>
         <span class="k">if</span> <span class="n">bbox</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -271,9 +631,30 @@ Return them as a small Pandas dataframe table.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">hsl_array</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="c1">#     self.print(&#39;done&#39;)</span>
 
-<span class="k">class</span> <span class="nc">Info</span><span class="p">():</span>    
+<span class="k">class</span> <span class="nc">Info</span><span class="p">():</span>  
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        tbd (str): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">,</span> 
                  <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_seed_points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coarse_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            tbd (str): </span>
+<span class="sd">        </span>
+<span class="sd">        TBD</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            TBD: </span>
+<span class="sd">            TBD</span>
+<span class="sd">        &quot;&quot;&quot;</span>  
+
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span>   <span class="o">=</span> <span class="n">state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trace</span>   <span class="o">=</span> <span class="n">trace</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="n">mapping</span>
@@ -352,6 +733,17 @@ Return them as a small Pandas dataframe table.</p>
         <span class="p">[</span><span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">flag</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">idx</span><span class="p">))</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">flag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">flags</span><span class="p">)]</span>
 
     <span class="k">def</span> <span class="nf">set_xy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            tbd (str): </span>
+<span class="sd">        </span>
+<span class="sd">        TBD</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            TBD: </span>
+<span class="sd">            TBD</span>
+<span class="sd">        &quot;&quot;&quot;</span>  
+
         <span class="bp">self</span><span class="o">.</span><span class="n">bbox</span> <span class="o">=</span> <span class="n">bbox</span>        
         <span class="c1"># essentials.cl...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pad_width</span> <span class="o">=</span> <span class="n">pad</span>
@@ -364,12 +756,32 @@ Return them as a small Pandas dataframe table.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">ny_padded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ny</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_width</span><span class="o">*</span><span class="mi">2</span>
 
     <span class="k">def</span> <span class="nf">set_thresholds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segmentation_threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">channel_threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            tbd (str): </span>
+<span class="sd">        </span>
+<span class="sd">        TBD</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            TBD: </span>
+<span class="sd">            TBD</span>
+<span class="sd">        &quot;&quot;&quot;</span>  
         <span class="k">if</span> <span class="n">segmentation_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>        
             <span class="bp">self</span><span class="o">.</span><span class="n">segmentation_threshold</span> <span class="o">=</span> <span class="n">segmentation_threshold</span>
         <span class="k">if</span> <span class="n">channel_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">channel_threshold</span> <span class="o">=</span> <span class="n">channel_threshold</span>
                     
 <span class="k">def</span> <span class="nf">get_bbox</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        tbd (str): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
+<span class="sd">    &quot;&quot;&quot;</span>  
     <span class="c1"># True for each column that has an element&gt;0, false for columns with all zeros</span>
     <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="c1"># True for each row that has an element&gt;0, false for rows with all zeros</span>
@@ -381,6 +793,16 @@ Return them as a small Pandas dataframe table.</p>
     <span class="k">return</span> <span class="p">(</span><span class="n">x_min</span><span class="p">,</span><span class="n">x_max</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span><span class="n">y_max</span><span class="p">),</span> <span class="p">(</span><span class="n">x_max</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="n">x_min</span><span class="p">),</span> <span class="p">(</span><span class="n">y_max</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="n">y_min</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">check_sizes</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span><span class="n">array_dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        tbd (str): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
+<span class="sd">    &quot;&quot;&quot;</span>  
     <span class="k">for</span> <span class="n">ad_item</span> <span class="ow">in</span> <span class="n">array_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">array_name</span> <span class="o">=</span> <span class="n">ad_item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">array_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;seed_point&#39;</span><span class="p">,</span><span class="s1">&#39;subsegment_hsl&#39;</span><span class="p">):</span>
@@ -396,19 +818,20 @@ Return them as a small Pandas dataframe table.</p>
             
 <span class="k">def</span> <span class="nf">read_geotiff</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Read GeoTIFF file.</span>
-<span class="sd">    Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</span>
-
 <span class="sd">    Args:</span>
 <span class="sd">        path (str): Path to folder containing GeoTIFF file to be read</span>
 <span class="sd">        filename (str): GeoTIFF filename</span>
 <span class="sd">    </span>
+<span class="sd">    Import a pixel grid from a GeoTIFF file along with its metadata.</span>
+<span class="sd">    </span>
+<span class="sd">    Assumes the file contains a single-band 2d grid of equal x-y dimension pixels.</span>
+
 <span class="sd">    Raises:</span>
-<span class="sd">        ValueError if file cannot be opened for reading</span>
+<span class="sd">        ValueError if file cannot be opened for reading.</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        numpy.ndarray, float: </span>
-<span class="sd">        Numpy array of GeoTIFF grid; size (in meters) of a grid pixel</span>
+<span class="sd">        Imported GeoTIFF grid; size of a grid pixel in meters</span>
 <span class="sd">    &quot;&quot;&quot;</span>          
     <span class="n">fullpath_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">filename</span><span class="p">)</span>
     <span class="n">tiff</span><span class="o">=</span><span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">fullpath_filename</span><span class="p">)</span>
@@ -429,18 +852,21 @@ Return them as a small Pandas dataframe table.</p>
         
 <span class="k">def</span> <span class="nf">write_geotiff</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span><span class="n">npd</span><span class="p">,</span> <span class="n">pslice</span><span class="p">,</span> <span class="n">geodata</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Write GeoTIFF file.</span>
-<span class="sd">    Assumes file contains a single-band 2d grid of equal x-y dimension pixels.</span>
-
 <span class="sd">    Args:</span>
 <span class="sd">        path (str): Path to folder containing GeoTIFF file to be read</span>
-<span class="sd">        filename (str): GeoTIFF filename</span>
-<span class="sd">        numpy.ndarray, float: Numpy array of GeoTIFF grid, size (in meters) </span>
-<span class="sd">                                of a grid pixel</span>
+<span class="sd">        file_name (str): GeoTIFF filename</span>
+<span class="sd">        array (numpy.ndarray):  grid to be written</span>
+<span class="sd">        nx (int): x dimension of grid</span>
+<span class="sd">        ny (int): y dimension of grid</span>
+<span class="sd">        npd (int): depth (number of values) per pixel - not fully implemented</span>
+<span class="sd">        pslice (tuple): of form np.index_exp[xmin:xmax,ymin:ymax]</span>
+<span class="sd">        geodata (obj): slm geodata object containing projection &amp; transform metadata</span>
 <span class="sd">    </span>
-<span class="sd">    Raises:</span>
-<span class="sd">        ValueError if file cannot be opened for writing</span>
+<span class="sd">    Write an slm grid of arbitrary type to a GeoTIFF file with full geometadata.</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>          
+<span class="c1">#     Raises:</span>
+<span class="c1">#         ValueError if file cannot be opened for writing</span>
     <span class="n">driver</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s1">&#39;GTiff&#39;</span><span class="p">)</span>
     <span class="n">np_to_gdal_type_dict</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>    <span class="p">:</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Byte</span><span class="p">,</span>
@@ -465,7 +891,17 @@ Return them as a small Pandas dataframe table.</p>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">dataset</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">WriteArray</span><span class="p">(</span><span class="n">rotated_array</span><span class="p">)</span>
         
-<span class="k">def</span> <span class="nf">npamem</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">npamem</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
+<span class="sd">    &quot;&quot;&quot;</span>  
     <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">array</span> <span class="o">=</span> <span class="n">obj</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{0:x}</span><span class="s1"> = </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">__array_interface__</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
@@ -476,38 +912,59 @@ Return them as a small Pandas dataframe table.</p>
                                     <span class="n">array</span><span class="o">.</span><span class="n">__array_interface__</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
                                     <span class="n">neatly</span><span class="p">(</span><span class="n">asizeof</span><span class="p">(</span><span class="n">array</span><span class="p">))</span>  <span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">true_size</span><span class="p">(</span><span class="n">subobject</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">true_size</span><span class="p">(</span><span class="n">python_object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    TBD</span>
+<span class="sd">    Args:</span>
+<span class="sd">        python_object (obj):  (sub)object whose memory allocation we wish to know</span>
+
+<span class="sd">    Find the size of a Python object. Uses Pympler to do this.</span>
+<span class="sd">    Copies the object (!)</span>
+<span class="sd">    temporarily to improve the accuracy of the measurement (not sure why this helps,</span>
+<span class="sd">    but it does).</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        int: size of memory allocation of object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># For semi-obscure reasons, Pympler does better if we enquire about a hard copy of the object</span>
+    <span class="c1"># For semi-obscure reasons, Pympler does better if we enquire about </span>
+    <span class="c1"># a hard copy of the object</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">sizeof</span> <span class="o">=</span> <span class="n">asizeof</span><span class="p">(</span><span class="n">subobject</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="n">sizeof</span> <span class="o">=</span> <span class="n">asizeof</span><span class="p">(</span><span class="n">python_object</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
     <span class="k">except</span><span class="p">:</span>
-        <span class="n">sizeof</span> <span class="o">=</span> <span class="n">asizeof</span><span class="p">(</span><span class="n">subobject</span><span class="p">)</span>            
+        <span class="n">sizeof</span> <span class="o">=</span> <span class="n">asizeof</span><span class="p">(</span><span class="n">python_object</span><span class="p">)</span>            
     <span class="k">return</span> <span class="n">sizeof</span>
     
-<span class="k">def</span> <span class="nf">neatly</span><span class="p">(</span><span class="n">byte_size</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a human readable string reprentation of bytes&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">neatly</span><span class="p">(</span><span class="n">size_in_bytes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        size_in_bytes (int):  </span>
+
+<span class="sd">    Convert a number for a memory (etc) size given in bytes into </span>
+<span class="sd">    rounded, easily readable version (as a string) with appropriate units, </span>
+<span class="sd">    e.g., 10753 =&gt; &#39;11kB&#39;</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: readable_size</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">units</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;B &#39;</span><span class="p">,</span><span class="s1">&#39;kB&#39;</span><span class="p">,</span><span class="s1">&#39;MB&#39;</span><span class="p">,</span><span class="s1">&#39;GB&#39;</span><span class="p">]</span>  <span class="c1"># Note: actually MiB etc</span>
     <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">units</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">byte_size</span><span class="o">&gt;=</span><span class="mi">1024</span><span class="p">:</span>
-            <span class="n">byte_size</span> <span class="o">=</span> <span class="n">byte_size</span><span class="o">/</span><span class="mf">1024.0</span>
+        <span class="k">if</span> <span class="n">size_in_bytes</span><span class="o">&gt;=</span><span class="mi">1024</span><span class="p">:</span>
+            <span class="n">size_in_bytes</span> <span class="o">=</span> <span class="n">size_in_bytes</span><span class="o">/</span><span class="mf">1024.0</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">break</span>
     <span class="k">if</span> <span class="n">unit</span><span class="o">==</span><span class="s1">&#39;GB&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.5</span><span class="o">+</span><span class="mi">10</span><span class="o">*</span><span class="n">byte_size</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">+</span><span class="n">unit</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.5</span><span class="o">+</span><span class="mi">10</span><span class="o">*</span><span class="n">size_in_bytes</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">+</span><span class="n">unit</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.5</span><span class="o">+</span><span class="n">byte_size</span><span class="p">))</span><span class="o">+</span><span class="n">unit</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.5</span><span class="o">+</span><span class="n">size_in_bytes</span><span class="p">))</span><span class="o">+</span><span class="n">unit</span>
 
 <span class="k">def</span> <span class="nf">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Wrapper for print() with verbose flag to suppress output if desired</span>
-<span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        verbose  (bool): turn printing on or off</span>
 <span class="sd">        *args (str): print() function args</span>
 <span class="sd">        **kwargs (str): print() function keyword args</span>
+
+<span class="sd">    Wrapper for print() with verbose flag to suppress output if desired.</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -517,11 +974,27 @@ Return them as a small Pandas dataframe table.</p>
 <span class="k">def</span> <span class="nf">create_seeds</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="n">n_work_items</span><span class="p">,</span> <span class="n">n_seed_points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">do_shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rng_seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate seed points for tracing of streamline trajectories.   </span>
+<span class="sd">    Args:</span>
+<span class="sd">        mask (numpy.ndarray): pixel mask array</span>
+<span class="sd">        pad (int): grid boundary padding with in pixels</span>
+<span class="sd">        n_work_items (int): OpenCL work group size (number of items per), which is used</span>
+<span class="sd">                       to pad the seed point list into a length divisible by this number</span>
+<span class="sd">        n_seed_points (int): number of seed points</span>
+<span class="sd">        do_shuffle (bool): flag indicating whether to randomize the seed sequence</span>
+<span class="sd">        rng_seed (int): initializer or &quot;seed&quot; value for RNG</span>
+<span class="sd">        verbose (bool): verbose mode flag</span>
+
+<span class="sd">    Generate a list (np array) of seed point coordinates defining the initial pixels</span>
+<span class="sd">    for each streamline trajectory. </span>
+<span class="sd">    Only unmasked pixel locations are considered.</span>
+<span class="sd">    If do_shuffle is True, the list of pixel coordinates is randomly ordered.</span>
+<span class="sd">    The list length is set by n_seed_points; if not given, the default is to</span>
+<span class="sd">    choose all unmasked pixels.</span>
+<span class="sd">    </span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        numpy.ndarray, int, int: </span>
-<span class="sd">        seed point array, n_seed_points, n_padded_seed_points  </span>
+<span class="sd">        seed point coordinates array, n_seed_points, n_padded_seed_points  </span>
 <span class="sd">    &quot;&quot;&quot;</span>    
     <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;Generating seed points...&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">seed_point_array</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">-</span><span class="n">pad</span><span class="p">))</span>
@@ -549,16 +1022,16 @@ Return them as a small Pandas dataframe table.</p>
 
 <span class="k">def</span> <span class="nf">pick_seeds</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">map</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate a vector array of seed points to send to the GPU/OpenCl device</span>
-<span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        mask (numpy.ndarray): pixel mask array</span>
 <span class="sd">        map (numpy.ndarray):  mapping array (as generated by mapping())</span>
 <span class="sd">        flag (bool): binary flag ORed with mapping array to pick seed pixels</span>
 <span class="sd">        pad (int): grid boundary padding with in pixels</span>
 <span class="sd">    </span>
+<span class="sd">    Generate a vector array of seed points to send to the GPU/OpenCl device.</span>
+<span class="sd">    </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        numpy.ndarray: seed point array</span>
+<span class="sd">        numpy.ndarray: seed point coordinates array</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">seed_point_array</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">((</span><span class="nb">map</span> <span class="o">&amp;</span> <span class="n">flag</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">-</span><span class="n">pad</span><span class="p">)</span>
@@ -570,16 +1043,16 @@ Return them as a small Pandas dataframe table.</p>
     
 <span class="k">def</span> <span class="nf">compute_stats</span><span class="p">(</span><span class="n">traj_length_array</span><span class="p">,</span> <span class="n">traj_nsteps_array</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute streamline integration point spacing and trajectory length statistics </span>
-<span class="sd">    (min, mean, max) for the sets of both downstream and upstream trajectories.</span>
-<span class="sd">    Return them as a small Pandas dataframe table.</span>
-<span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        traj_length_array (numpy.ndarray):</span>
 <span class="sd">        traj_nsteps_array (numpy.ndarray):</span>
 <span class="sd">        pixel_size (float):</span>
 <span class="sd">        verbose (bool):</span>
 <span class="sd">        </span>
+<span class="sd">    Compute streamline integration point spacing and trajectory length statistics </span>
+<span class="sd">    (min, mean, max) for the sets of both downstream and upstream trajectories.</span>
+<span class="sd">    Return them as a small Pandas dataframe table.</span>
+<span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        pandas.DataFrame:  lnds_stats_df</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -602,6 +1075,21 @@ Return them as a small Pandas dataframe table.</p>
     <span class="k">return</span> <span class="n">lnds_stats_df</span>
 
 <span class="k">def</span> <span class="nf">dilate</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">n_iterations</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        array (numpy.ndarray): input boolean pixel grid (output too if in-place operation)</span>
+<span class="sd">        n_iterations (int): number of dilations to perform</span>
+<span class="sd">        out (numpy.ndarray): output grid; if not given, default to in-place operation</span>
+<span class="sd">    </span>
+<span class="sd">    Perform binary dilation on (aka fatten) a boolean pixel grid with </span>
+<span class="sd">    an 8-direction kernel.</span>
+<span class="sd">    </span>
+<span class="sd">    Uses scipy.ndimage.morphology.</span>
+<span class="sd">    Defaults to doing the dilation once and in place.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray: dilated pixel grid</span>
+<span class="sd">    &quot;&quot;&quot;</span>  
     <span class="n">dilation_structure</span> <span class="o">=</span> <span class="n">generate_binary_structure</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">binary_dilation</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">dilation_structure</span><span class="p">,</span> 
                            <span class="n">iterations</span><span class="o">=</span><span class="n">n_iterations</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
@@ -654,7 +1142,6 @@ Return them as a small Pandas dataframe table.</p>
   <h3><a href="../index.html">Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">useful.py</span></code></a><ul>
-<li><a class="reference internal" href="#module-streamlines.useful">Usage</a></li>
 <li><a class="reference internal" href="#code">Code</a></li>
 </ul>
 </li>

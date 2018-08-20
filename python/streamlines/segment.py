@@ -1,5 +1,20 @@
 """
-Segment downstream.
+---------------------------------------------------------------------
+
+Wrapper module to downstream-wise channel segmentation using `OpenCL`_.
+
+Requires `PyOpenCL`_.
+
+Imports streamlines module :doc:`pocl`.
+Imports functions from streamlines module :doc:`useful`.
+
+
+---------------------------------------------------------------------
+
+.. _OpenCL: https://www.khronos.org/opencl
+.. _PyOpenCL: https://documen.tician.de/pyopencl/index.html
+
+
 """
 
 import pyopencl as cl

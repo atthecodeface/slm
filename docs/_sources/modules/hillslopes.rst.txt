@@ -2,8 +2,7 @@
 =======================================
 
 
-Usage
--------
+
 .. automodule:: streamlines.hillslopes
    :members: 
    :private-members:

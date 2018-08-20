@@ -2,8 +2,7 @@
 =======================================
 
 
-Usage
--------
+
 .. automodule:: streamlines.fields
    :members: 
    :private-members:

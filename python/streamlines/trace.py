@@ -1,8 +1,13 @@
 """
+---------------------------------------------------------------------
+
 Trace streamlines and their density grids
 
 Todo:
     Fix likely bug in parameters file path wrangling
+
+---------------------------------------------------------------------
+    
 """
 
 import sys

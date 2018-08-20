@@ -15,8 +15,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="segment.py" href="segment.html" />
-    <link rel="prev" title="countlink.py" href="countlink.html" />
+    <link rel="next" title="lengths.py" href="lengths.html" />
+    <link rel="prev" title="kde.py" href="kde.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -31,11 +31,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="label-py">
-<h1><code class="docutils literal notranslate"><span class="pre">label.py</span></code><a class="headerlink" href="#label-py" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-streamlines.label">
-<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.label" title="Permalink to this headline">¶</a></h2>
-<p>Label downstream.</p>
+  <div class="section" id="module-streamlines.label">
+<span id="label-py"></span><h1><code class="docutils literal notranslate"><span class="pre">label.py</span></code><a class="headerlink" href="#module-streamlines.label" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
+<p>Wrapper module to classify &amp; label channel confluences using <a class="reference external" href="https://www.khronos.org/opencl">OpenCL</a>.</p>
+<p>Requires <a class="reference external" href="https://documen.tician.de/pyopencl/index.html">PyOpenCL</a>.</p>
+<p>Imports streamlines module <a class="reference internal" href="pocl.html"><span class="doc">pocl.py</span></a>.
+Imports functions from streamlines module <a class="reference internal" href="useful.html"><span class="doc">useful.py</span></a>.</p>
+<hr class="docutils" />
 <dl class="function">
 <dt id="streamlines.label.label_confluences">
 <code class="descclassname">streamlines.label.</code><code class="descname">label_confluences</code><span class="sig-paren">(</span><em>cl_state</em>, <em>info</em>, <em>data</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.label.label_confluences" title="Permalink to this definition">¶</a></dt>
@@ -56,11 +59,24 @@
 </table>
 </dd></dl>
 
-</div>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Label downstream.</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Wrapper module to classify &amp; label channel confluences using `OpenCL`_.</span>
+
+<span class="sd">Requires `PyOpenCL`_.</span>
+
+<span class="sd">Imports streamlines module :doc:`pocl`.</span>
+<span class="sd">Imports functions from streamlines module :doc:`useful`.</span>
+
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">.. _OpenCL: https://www.khronos.org/opencl</span>
+<span class="sd">.. _PyOpenCL: https://documen.tician.de/pyopencl/index.html</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">pyopencl</span> <span class="k">as</span> <span class="nn">cl</span>
@@ -173,7 +189,6 @@
   <h3><a href="../index.html">Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">label.py</span></code></a><ul>
-<li><a class="reference internal" href="#module-streamlines.label">Usage</a></li>
 <li><a class="reference internal" href="#code">Code</a></li>
 </ul>
 </li>
@@ -182,8 +197,8 @@
 <h3>Related</h3>
 <ul>
   <li><a href="../index.html"></a><ul>
-      <li><a href="countlink.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">countlink.py</span></code></a></li>
-      <li><a href="segment.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">segment.py</span></code></a></li>
+      <li><a href="kde.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">kde.py</span></code></a></li>
+      <li><a href="lengths.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">lengths.py</span></code></a></li>
   </ul></li>
 </ul>
 </div>

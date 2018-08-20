@@ -1,5 +1,19 @@
 """
-Kernel density estimation.
+---------------------------------------------------------------------
+
+Kernel density estimation of 1d and 2d pdfs using `OpenCL`_ 
+to accelerate kernel smoothing.
+
+Requires `PyOpenCL`_.
+
+Imports streamlines module :doc:`pocl`.
+Imports functions from streamlines module :doc:`useful`.
+
+---------------------------------------------------------------------
+
+.. _OpenCL: https://www.khronos.org/opencl
+.. _PyOpenCL: https://documen.tician.de/pyopencl/index.html
+
 """
 
 import pyopencl as cl
@@ -14,7 +28,7 @@ from streamlines        import pocl
 from streamlines.useful import vprint, pick_seeds
 
 __all__ = ['estimate_univariate_pdf','estimate_bivariate_pdf',
-           'gpu_compute_1d','prepare_memory_1d']
+           'gpu_compute','prepare_memory']
 
 pdebug = print
 

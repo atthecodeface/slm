@@ -2,9 +2,6 @@
 =======================================
 
 
-
-Usage
--------
 .. automodule:: streamlines.preprocess
    :members: 
    :private-members:

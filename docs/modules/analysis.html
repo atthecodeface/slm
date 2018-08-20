@@ -31,17 +31,15 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="analysis-py">
-<h1><code class="docutils literal notranslate"><span class="pre">analysis.py</span></code><a class="headerlink" href="#analysis-py" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>TBD</li>
-</ul>
-</div>
-<div class="section" id="module-streamlines.analysis">
-<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.analysis" title="Permalink to this headline">¶</a></h2>
-<p>Tools to compute 1d &amp; 2d pdfs, some statistics, and related analyses</p>
+  <div class="section" id="module-streamlines.analysis">
+<span id="analysis-py"></span><h1><code class="docutils literal notranslate"><span class="pre">analysis.py</span></code><a class="headerlink" href="#module-streamlines.analysis" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
+<p>Module providing tools to compute 1d &amp; 2d pdfs, calculate some statistics,
+and perform related analyses.</p>
+<p>Requires <a class="reference external" href="https://www.scipy.org/">scipy</a>, <a class="reference external" href="http://scikit-learn.org/">sklearn</a>.</p>
+<p>Imports streamlines module <a class="reference internal" href="kde.html"><span class="doc">kde.py</span></a>.
+Imports classes &amp; functions from <a class="reference internal" href="core.html"><span class="doc">core.py</span></a>,  <a class="reference internal" href="useful.html"><span class="doc">useful.py</span></a>.</p>
+<hr class="docutils" />
 <dl class="class">
 <dt id="streamlines.analysis.Analysis">
 <em class="property">class </em><code class="descclassname">streamlines.analysis.</code><code class="descname">Analysis</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>geodata</em>, <em>trace</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis" title="Permalink to this definition">¶</a></dt>
@@ -180,11 +178,26 @@ and to find the cluster of points surrounding the mode given a pdf threshold
 and bounding criteria.</p>
 </dd></dl>
 
-</div>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Tools to compute 1d &amp; 2d pdfs, some statistics, and related analyses</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Module providing tools to compute 1d &amp; 2d pdfs, calculate some statistics,</span>
+<span class="sd">and perform related analyses.</span>
+
+
+<span class="sd">Requires `scipy`_, `sklearn`_.</span>
+
+<span class="sd">Imports streamlines module :doc:`kde`.</span>
+<span class="sd">Imports classes &amp; functions from :doc:`core`,  :doc:`useful`.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">.. _sklearn: http://scikit-learn.org/</span>
+<span class="sd">.. _scipy: https://www.scipy.org/</span>
+
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -194,9 +207,9 @@ and bounding criteria.</p>
 <span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">environ</span>
 <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYTHONUNBUFFERED&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;True&#39;</span>
 
+<span class="kn">from</span> <span class="nn">streamlines</span> <span class="k">import</span> <span class="n">kde</span>
 <span class="kn">from</span> <span class="nn">streamlines.core</span>   <span class="k">import</span> <span class="n">Core</span>
 <span class="kn">from</span> <span class="nn">streamlines.useful</span> <span class="k">import</span> <span class="n">vprint</span>
-<span class="kn">from</span> <span class="nn">streamlines</span> <span class="k">import</span> <span class="n">kde</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Analysis&#39;</span><span class="p">,</span><span class="s1">&#39;Univariate_distribution&#39;</span><span class="p">,</span><span class="s1">&#39;Bivariate_distribution&#39;</span><span class="p">]</span>
 
@@ -1032,8 +1045,6 @@ and bounding criteria.</p>
   <h3><a href="../index.html">Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">analysis.py</span></code></a><ul>
-<li><a class="reference internal" href="#summary">Summary</a></li>
-<li><a class="reference internal" href="#module-streamlines.analysis">Usage</a></li>
 <li><a class="reference internal" href="#code">Code</a></li>
 </ul>
 </li>

@@ -1,6 +1,22 @@
 """
-1) Link each channel pixel to its inflow-dominant upstream pixel;
-2) Count pixels downstream from channels heads, ensuring longest dominates;
+---------------------------------------------------------------------
+
+Wrapper module to count, link and flag down channels using `OpenCL`_.
+
+
+1) Link each channel pixel to its inflow-dominant upstream pixel
+2) Count pixels downstream from channels heads, ensuring longest dominates
+
+Requires `PyOpenCL`_.
+
+Imports streamlines module :doc:`pocl`.
+Imports functions from streamlines module :doc:`useful`.
+
+---------------------------------------------------------------------
+
+.. _OpenCL: https://www.khronos.org/opencl
+.. _PyOpenCL: https://documen.tician.de/pyopencl/index.html
+
 """
 
 import pyopencl as cl

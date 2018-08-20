@@ -31,14 +31,18 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="countlink-py">
-<h1><code class="docutils literal notranslate"><span class="pre">countlink.py</span></code><a class="headerlink" href="#countlink-py" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-streamlines.countlink">
-<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.countlink" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="module-streamlines.countlink">
+<span id="countlink-py"></span><h1><code class="docutils literal notranslate"><span class="pre">countlink.py</span></code><a class="headerlink" href="#module-streamlines.countlink" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
+<p>Wrapper module to count, link and flag down channels using <a class="reference external" href="https://www.khronos.org/opencl">OpenCL</a>.</p>
 <ol class="arabic simple">
-<li>Link each channel pixel to its inflow-dominant upstream pixel;</li>
-<li>Count pixels downstream from channels heads, ensuring longest dominates;</li>
+<li>Link each channel pixel to its inflow-dominant upstream pixel</li>
+<li>Count pixels downstream from channels heads, ensuring longest dominates</li>
 </ol>
+<p>Requires <a class="reference external" href="https://documen.tician.de/pyopencl/index.html">PyOpenCL</a>.</p>
+<p>Imports streamlines module <a class="reference internal" href="pocl.html"><span class="doc">pocl.py</span></a>.
+Imports functions from streamlines module <a class="reference internal" href="useful.html"><span class="doc">useful.py</span></a>.</p>
+<hr class="docutils" />
 <dl class="function">
 <dt id="streamlines.countlink.count_downchannels">
 <code class="descclassname">streamlines.countlink.</code><code class="descname">count_downchannels</code><span class="sig-paren">(</span><em>cl_state</em>, <em>info</em>, <em>data</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.countlink.count_downchannels" title="Permalink to this definition">¶</a></dt>
@@ -79,12 +83,27 @@
 </table>
 </dd></dl>
 
-</div>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">1) Link each channel pixel to its inflow-dominant upstream pixel;</span>
-<span class="sd">2) Count pixels downstream from channels heads, ensuring longest dominates;</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Wrapper module to count, link and flag down channels using `OpenCL`_.</span>
+
+
+<span class="sd">1) Link each channel pixel to its inflow-dominant upstream pixel</span>
+<span class="sd">2) Count pixels downstream from channels heads, ensuring longest dominates</span>
+
+<span class="sd">Requires `PyOpenCL`_.</span>
+
+<span class="sd">Imports streamlines module :doc:`pocl`.</span>
+<span class="sd">Imports functions from streamlines module :doc:`useful`.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">.. _OpenCL: https://www.khronos.org/opencl</span>
+<span class="sd">.. _PyOpenCL: https://documen.tician.de/pyopencl/index.html</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">pyopencl</span> <span class="k">as</span> <span class="nn">cl</span>
@@ -247,7 +266,6 @@
   <h3><a href="../index.html">Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">countlink.py</span></code></a><ul>
-<li><a class="reference internal" href="#module-streamlines.countlink">Usage</a></li>
 <li><a class="reference internal" href="#code">Code</a></li>
 </ul>
 </li>

@@ -16,7 +16,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="useful.py" href="useful.html" />
-    <link rel="prev" title="state.py" href="state.html" />
+    <link rel="prev" title="save.py" href="save.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -31,10 +31,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="pocl-py">
-<h1><code class="docutils literal notranslate"><span class="pre">pocl.py</span></code><a class="headerlink" href="#pocl-py" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-streamlines.pocl">
-<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.pocl" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="module-streamlines.pocl">
+<span id="pocl-py"></span><h1><code class="docutils literal notranslate"><span class="pre">pocl.py</span></code><a class="headerlink" href="#module-streamlines.pocl" title="Permalink to this headline">¶</a></h1>
 <p>Prep PyOpenCL kernel</p>
 <dl class="function">
 <dt id="streamlines.pocl.prepare_cl_context">
@@ -145,14 +143,14 @@ array dtype.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – </li>
 <li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </li>
-<li><strong>dtype</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.14)"><em>numpy.dtype</em></a>) – </li>
+<li><strong>dtype</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.15)"><em>numpy.dtype</em></a>) – </li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">processed dtype, cl dtype, CL typedef codelet</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.14)">numpy.dtype</a>, pyopencl.dtype, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.15)">numpy.dtype</a>, pyopencl.dtype, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
 </td>
 </tr>
 </tbody>
@@ -292,7 +290,6 @@ with +1 for downstream and -1 for upstream [‘integration’ mode]</li>
 </table>
 </dd></dl>
 
-</div>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -828,7 +825,6 @@ with +1 for downstream and -1 for upstream [‘integration’ mode]</li>
   <h3><a href="../index.html">Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">pocl.py</span></code></a><ul>
-<li><a class="reference internal" href="#module-streamlines.pocl">Usage</a></li>
 <li><a class="reference internal" href="#code">Code</a></li>
 </ul>
 </li>
@@ -837,7 +833,7 @@ with +1 for downstream and -1 for upstream [‘integration’ mode]</li>
 <h3>Related</h3>
 <ul>
   <li><a href="../index.html"></a><ul>
-      <li><a href="state.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">state.py</span></code></a></li>
+      <li><a href="save.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">save.py</span></code></a></li>
       <li><a href="useful.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">useful.py</span></code></a></li>
   </ul></li>
 </ul>

@@ -1,5 +1,15 @@
 """
-Connect missing links between channel pixels.
+---------------------------------------------------------------------
+
+Wrapper module to connect missing links between channel pixels using `OpenCL`_.
+
+Requires `PyOpenCL`_.
+
+
+---------------------------------------------------------------------
+
+.. _OpenCL: https://www.khronos.org/opencl
+.. _PyOpenCL: https://documen.tician.de/pyopencl/index.html
 
 """
 
@@ -19,13 +29,16 @@ pdebug = print
 
 def connect_channel_pixels(cl_state, info, data, verbose):
     """
-    Connect missing links between channel pixels.
-    
     Args:
         cl_state (obj):
         info (obj):
         data (obj):
         verbose (bool):
+
+    Connect missing links between channel pixels.
+    
+    Returns:
+        bool: flag false if failure occurs because seed points list is empty
     """
     vprint(verbose,'Connecting channel pixels...')
     # Prepare CL essentials

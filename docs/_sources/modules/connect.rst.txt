@@ -2,8 +2,6 @@
 ==================
 
 
-Usage
--------
 .. automodule:: streamlines.connect
    :members: 
    :private-members:

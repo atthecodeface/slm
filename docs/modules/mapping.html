@@ -31,25 +31,20 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="mapping-py">
-<h1><code class="docutils literal notranslate"><span class="pre">mapping.py</span></code><a class="headerlink" href="#mapping-py" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>TBD</li>
-</ul>
-</div>
-<div class="section" id="module-streamlines.mapping">
-<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.mapping" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="module-streamlines.mapping">
+<span id="mapping-py"></span><h1><code class="docutils literal notranslate"><span class="pre">mapping.py</span></code><a class="headerlink" href="#module-streamlines.mapping" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
 <p>HSL mapping module.</p>
-<p>Requires pandas, sklearn, skimage, scipy, skfmm.</p>
-<p>Imports modules from streamlines.core,  streamlines.useful,  streamlines.pocl.</p>
-<p>Imports streamlines modules connect, channelheads, countlink, label,
-segment, hillslopes, lengths.</p>
+<p>Requires <a class="reference external" href="https://pandas.pydata.org/">pandas</a>, <a class="reference external" href="http://scikit-learn.org/">sklearn</a>, <a class="reference external" href="https://scikit-image.org/">skimage</a>, <a class="reference external" href="https://www.scipy.org/">scipy</a>, <a class="reference external" href="https://pythonhosted.org/scikit-fmm/">skfmm</a>.</p>
+<p>Imports streamlines modules <a class="reference internal" href="connect.html"><span class="doc">connect.py</span></a>, <a class="reference internal" href="channelheads.html"><span class="doc">channelheads.py</span></a>,
+<a class="reference internal" href="countlink.html"><span class="doc">countlink.py</span></a>, <a class="reference internal" href="label.html"><span class="doc">label.py</span></a>, <a class="reference internal" href="segment.html"><span class="doc">segment.py</span></a>, <a class="reference internal" href="hillslopes.html"><span class="doc">hillslopes.py</span></a>, <a class="reference internal" href="lengths.html"><span class="doc">lengths.py</span></a>.</p>
+<p>Imports classes &amp; functions from <a class="reference internal" href="core.html"><span class="doc">core.py</span></a>, <a class="reference internal" href="useful.html"><span class="doc">useful.py</span></a>, <a class="reference internal" href="pocl.html"><span class="doc">pocl.py</span></a>.</p>
+<hr class="docutils" />
 <dl class="class">
 <dt id="streamlines.mapping.Mapping">
 <em class="property">class </em><code class="descclassname">streamlines.mapping.</code><code class="descname">Mapping</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>geodata</em>, <em>preprocess</em>, <em>trace</em>, <em>analysis</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.mapping.Mapping" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class providing methods to map HSL.</p>
+<dd><p>Class providing methods to map and characterize hillslope length (HSL)
+across a DTM.</p>
 <p>These methods do the bulk of the hard work in mapping hillslope length,
 in linking to topographic aspect, and in measuring related statistics.
 The master method carries
@@ -147,25 +142,36 @@ very successful).</p>
 <ul class="simple">
 <li>Filter the HSL results into a smoothed, contourable grid.</li>
 <li>Compute filtered terrain aspect and combine with this HSL grid.</li>
-<li>Generate a mean HSL(aspect) function and related statistics</li>
+<li>Generate a mean HSL(aspect) function and related statistics
+to determine whether or not there is a N-S bias.</li>
 </ul>
-<p>to determine whether or not there is a N-S bias.</p>
 </dd></dl>
 
 </dd></dl>
 
-</div>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
 <span class="sd">HSL mapping module. </span>
 
-<span class="sd">Requires pandas, sklearn, skimage, scipy, skfmm.</span>
+<span class="sd">Requires `pandas`_, `sklearn`_, `skimage`_, `scipy`_, `skfmm`_. </span>
 
-<span class="sd">Imports modules from streamlines.core,  streamlines.useful,  streamlines.pocl.</span>
 
-<span class="sd">Imports streamlines modules connect, channelheads, countlink, label, </span>
-<span class="sd">segment, hillslopes, lengths.</span>
+<span class="sd">Imports streamlines modules :doc:`connect`, :doc:`channelheads`, </span>
+<span class="sd">:doc:`countlink`, :doc:`label`, :doc:`segment`, :doc:`hillslopes`, :doc:`lengths`.</span>
+
+<span class="sd">Imports classes &amp; functions from :doc:`core`, :doc:`useful`, :doc:`pocl`.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">.. _pandas: https://pandas.pydata.org/</span>
+<span class="sd">.. _sklearn: http://scikit-learn.org/</span>
+<span class="sd">.. _skimage: https://scikit-image.org/</span>
+<span class="sd">.. _scipy: https://www.scipy.org/</span>
+<span class="sd">.. _skfmm: https://pythonhosted.org/scikit-fmm/</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span>  <span class="k">as</span> <span class="nn">np</span>
@@ -186,10 +192,10 @@ very successful).</p>
 <span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">environ</span>
 <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYTHONUNBUFFERED&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;True&#39;</span>
 
-<span class="kn">from</span> <span class="nn">streamlines.core</span>   <span class="k">import</span> <span class="n">Core</span>
-<span class="kn">from</span> <span class="nn">streamlines.useful</span> <span class="k">import</span> <span class="n">Data</span><span class="p">,</span> <span class="n">Info</span><span class="p">,</span> <span class="n">vprint</span><span class="p">,</span> <span class="n">dilate</span><span class="p">,</span> <span class="n">get_bbox</span><span class="p">,</span> <span class="n">npamem</span>
 <span class="kn">from</span> <span class="nn">streamlines</span>        <span class="k">import</span> <span class="n">connect</span><span class="p">,</span> <span class="n">channelheads</span><span class="p">,</span> <span class="n">countlink</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> \
                                <span class="n">segment</span><span class="p">,</span> <span class="n">hillslopes</span><span class="p">,</span> <span class="n">lengths</span>
+<span class="kn">from</span> <span class="nn">streamlines.core</span>   <span class="k">import</span> <span class="n">Core</span>
+<span class="kn">from</span> <span class="nn">streamlines.useful</span> <span class="k">import</span> <span class="n">Data</span><span class="p">,</span> <span class="n">Info</span><span class="p">,</span> <span class="n">vprint</span><span class="p">,</span> <span class="n">dilate</span><span class="p">,</span> <span class="n">get_bbox</span><span class="p">,</span> <span class="n">npamem</span>
 <span class="kn">from</span> <span class="nn">streamlines.pocl</span>   <span class="k">import</span> <span class="n">Initialize_cl</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Mapping&#39;</span><span class="p">]</span>
@@ -198,13 +204,15 @@ very successful).</p>
 
 <span class="k">class</span> <span class="nc">Mapping</span><span class="p">(</span><span class="n">Core</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class providing methods to map HSL.</span>
+<span class="sd">    Class providing methods to map and characterize hillslope length (HSL) </span>
+<span class="sd">    across a DTM.</span>
 <span class="sd">    </span>
 <span class="sd">    These methods do the bulk of the hard work in mapping hillslope length, </span>
 <span class="sd">    in linking to topographic aspect, and in measuring related statistics. </span>
 <span class="sd">    The master method carries</span>
 <span class="sd">    out three &quot;passes&quot; or processing steps in order to map the slm grids (sla, slt, slc)</span>
 <span class="sd">    into grids of HSL and aspect, as well as to generate derivative data from them.</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span><span class="n">geodata</span><span class="p">,</span><span class="n">preprocess</span><span class="p">,</span><span class="n">trace</span><span class="p">,</span><span class="n">analysis</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -586,8 +594,8 @@ very successful).</p>
 <span class="sd">        </span>
 <span class="sd">        - Filter the HSL results into a smoothed, contourable grid.</span>
 <span class="sd">        - Compute filtered terrain aspect and combine with this HSL grid.</span>
-<span class="sd">        - Generate a mean HSL(aspect) function and related statistics</span>
-<span class="sd">        to determine whether or not there is a N-S bias.</span>
+<span class="sd">        - Generate a mean HSL(aspect) function and related statistics </span>
+<span class="sd">          to determine whether or not there is a N-S bias.</span>
 <span class="sd">        &quot;&quot;&quot;</span>     
         <span class="n">vprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vprogress</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">**Pass#3 begin**&#39;</span><span class="p">)</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">reset_active_masks</span><span class="p">()</span>
@@ -1362,8 +1370,6 @@ very successful).</p>
   <h3><a href="../index.html">Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mapping.py</span></code></a><ul>
-<li><a class="reference internal" href="#summary">Summary</a></li>
-<li><a class="reference internal" href="#module-streamlines.mapping">Usage</a></li>
 <li><a class="reference internal" href="#code">Code</a></li>
 </ul>
 </li>

@@ -16,7 +16,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="countlink.py" href="countlink.html" />
-    <link rel="prev" title="integration.py" href="integration.html" />
+    <link rel="prev" title="channelheads.py" href="channelheads.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -31,16 +31,16 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="connect-py">
-<h1><code class="docutils literal notranslate"><span class="pre">connect.py</span></code><a class="headerlink" href="#connect-py" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-streamlines.connect">
-<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.connect" title="Permalink to this headline">¶</a></h2>
-<p>Connect missing links between channel pixels.</p>
+  <div class="section" id="module-streamlines.connect">
+<span id="connect-py"></span><h1><code class="docutils literal notranslate"><span class="pre">connect.py</span></code><a class="headerlink" href="#module-streamlines.connect" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
+<p>Wrapper module to connect missing links between channel pixels using <a class="reference external" href="https://www.khronos.org/opencl">OpenCL</a>.</p>
+<p>Requires <a class="reference external" href="https://documen.tician.de/pyopencl/index.html">PyOpenCL</a>.</p>
+<hr class="docutils" />
 <dl class="function">
 <dt id="streamlines.connect.connect_channel_pixels">
 <code class="descclassname">streamlines.connect.</code><code class="descname">connect_channel_pixels</code><span class="sig-paren">(</span><em>cl_state</em>, <em>info</em>, <em>data</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.connect.connect_channel_pixels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Connect missing links between channel pixels.</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -54,13 +54,33 @@
 </tr>
 </tbody>
 </table>
+<p>Connect missing links between channel pixels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">flag false if failure occurs because seed points list is empty</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-</div>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Connect missing links between channel pixels.</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Wrapper module to connect missing links between channel pixels using `OpenCL`_.</span>
+
+<span class="sd">Requires `PyOpenCL`_.</span>
+
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">.. _OpenCL: https://www.khronos.org/opencl</span>
+<span class="sd">.. _PyOpenCL: https://documen.tician.de/pyopencl/index.html</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -80,13 +100,16 @@
 
 <span class="k">def</span> <span class="nf">connect_channel_pixels</span><span class="p">(</span><span class="n">cl_state</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Connect missing links between channel pixels.</span>
-<span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        cl_state (obj):</span>
 <span class="sd">        info (obj):</span>
 <span class="sd">        data (obj):</span>
 <span class="sd">        verbose (bool):</span>
+
+<span class="sd">    Connect missing links between channel pixels.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: flag false if failure occurs because seed points list is empty</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;Connecting channel pixels...&#39;</span><span class="p">)</span>
     <span class="c1"># Prepare CL essentials</span>
@@ -172,7 +195,6 @@
   <h3><a href="../index.html">Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">connect.py</span></code></a><ul>
-<li><a class="reference internal" href="#module-streamlines.connect">Usage</a></li>
 <li><a class="reference internal" href="#code">Code</a></li>
 </ul>
 </li>
@@ -181,7 +203,7 @@
 <h3>Related</h3>
 <ul>
   <li><a href="../index.html"></a><ul>
-      <li><a href="integration.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">integration.py</span></code></a></li>
+      <li><a href="channelheads.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">channelheads.py</span></code></a></li>
       <li><a href="countlink.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">countlink.py</span></code></a></li>
   </ul></li>
 </ul>

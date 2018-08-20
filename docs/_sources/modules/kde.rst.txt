@@ -2,8 +2,7 @@
 =======================================
 
 
-Usage
--------
+
 .. automodule:: streamlines.kde
    :members: 
    :private-members:

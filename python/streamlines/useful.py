@@ -1,5 +1,21 @@
 """
-Miscellaneous useful functions for PyOpenCL code
+---------------------------------------------------------------------
+
+Module providing Data and Info classes, as well as a suite of useful functions.
+
+Requires `gdal`_/`osgeo`_, `pandas`_, `scipy`_, `pympler`_.
+
+---------------------------------------------------------------------
+
+.. _pandas: https://pandas.pydata.org/
+.. _sklearn: http://scikit-learn.org/
+.. _skimage: https://scikit-image.org/
+.. _scipy: https://www.scipy.org/
+.. _skfmm: https://pythonhosted.org/scikit-fmm/
+.. _osgeo: https://www.osgeo.org/
+.. _gdal: https://www.gdal.org/
+.. _pympler: https://pythonhosted.org/Pympler/
+
 """
 
 import numpy as np
@@ -13,13 +29,23 @@ import os
 os.environ['PYTHONUNBUFFERED']='True'
 import sys
 
-__all__ = ['Data', 'Info', 'get_bbox','check_sizes', 'prepare_data',
+__all__ = ['Data', 'Info', 'get_bbox','check_sizes', 
            'read_geotiff','write_geotiff','npamem','true_size','neatly','vprint',
            'create_seeds','pick_seeds','compute_stats','dilate']
 
 pdebug = print
 
 class Data():    
+    """
+    Args:
+        tbd (str): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+    """  
     def __init__(self, info=None, bbox=None, pad=0,
                  mask_array      = None,
                  uv_array        = None,
@@ -29,6 +55,17 @@ class Data():
                  slc_array       = None,
                  slt_array       = None,
                  hsl_array       = None ):
+        """
+        Args:
+            tbd (str): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """  
+
 #     self.print('Preparing data...',end='')  
 #     self.verbose  = verbose
         if bbox is not None:
@@ -77,9 +114,30 @@ class Data():
             self.hsl_array = None
 #     self.print('done')
 
-class Info():    
+class Info():  
+    """
+    Args:
+        tbd (str): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+    """    
     def __init__(self, state, trace, pixel_size, 
                  mapping=None, n_seed_points=None, coarse_label=None):
+        """
+        Args:
+            tbd (str): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """  
+
         self.state   = state
         self.trace   = trace
         self.mapping = mapping
@@ -158,6 +216,17 @@ class Info():
         [setattr(self,flag,np.uint(2**idx)) for idx,flag in enumerate(flags)]
 
     def set_xy(self, nx,ny, pad, bbox=None):
+        """
+        Args:
+            tbd (str): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """  
+
         self.bbox = bbox        
         # essentials.cl...
         self.pad_width = pad
@@ -170,12 +239,32 @@ class Info():
         self.ny_padded = self.ny+self.pad_width*2
 
     def set_thresholds(self,segmentation_threshold=None, channel_threshold=None):
+        """
+        Args:
+            tbd (str): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """  
         if segmentation_threshold is not None:        
             self.segmentation_threshold = segmentation_threshold
         if channel_threshold is not None:
             self.channel_threshold = channel_threshold
                     
 def get_bbox(array):
+    """
+    Args:
+        tbd (str): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+    """  
     # True for each column that has an element>0, false for columns with all zeros
     cols = np.any(array, axis=0)
     # True for each row that has an element>0, false for rows with all zeros
@@ -187,6 +276,16 @@ def get_bbox(array):
     return (x_min,x_max, y_min,y_max), (x_max+1-x_min), (y_max+1-y_min)
 
 def check_sizes(nx,ny,array_dict):
+    """
+    Args:
+        tbd (str): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+    """  
     for ad_item in array_dict.items():
         array_name = ad_item[0]
         if array_name not in ('seed_point','subsegment_hsl'):
@@ -202,19 +301,20 @@ def check_sizes(nx,ny,array_dict):
             
 def read_geotiff(path, filename):
     """
-    Read GeoTIFF file.
-    Assumes file contains a single-band 2d grid of equal x-y dimension pixels.
-
     Args:
         path (str): Path to folder containing GeoTIFF file to be read
         filename (str): GeoTIFF filename
     
+    Import a pixel grid from a GeoTIFF file along with its metadata.
+    
+    Assumes the file contains a single-band 2d grid of equal x-y dimension pixels.
+
     Raises:
-        ValueError if file cannot be opened for reading
+        ValueError if file cannot be opened for reading.
         
     Returns:
         numpy.ndarray, float: 
-        Numpy array of GeoTIFF grid; size (in meters) of a grid pixel
+        Imported GeoTIFF grid; size of a grid pixel in meters
     """          
     fullpath_filename = os.path.join(path,filename)
     tiff=gdal.Open(fullpath_filename)
@@ -235,18 +335,21 @@ def read_geotiff(path, filename):
         
 def write_geotiff(path, file_name, array, nx,ny,npd, pslice, geodata):
     """
-    Write GeoTIFF file.
-    Assumes file contains a single-band 2d grid of equal x-y dimension pixels.
-
     Args:
         path (str): Path to folder containing GeoTIFF file to be read
-        filename (str): GeoTIFF filename
-        numpy.ndarray, float: Numpy array of GeoTIFF grid, size (in meters) 
-                                of a grid pixel
+        file_name (str): GeoTIFF filename
+        array (numpy.ndarray):  grid to be written
+        nx (int): x dimension of grid
+        ny (int): y dimension of grid
+        npd (int): depth (number of values) per pixel - not fully implemented
+        pslice (tuple): of form np.index_exp[xmin:xmax,ymin:ymax]
+        geodata (obj): slm geodata object containing projection & transform metadata
     
-    Raises:
-        ValueError if file cannot be opened for writing
+    Write an slm grid of arbitrary type to a GeoTIFF file with full geometadata.
+    
     """          
+#     Raises:
+#         ValueError if file cannot be opened for writing
     driver = gdal.GetDriverByName('GTiff')
     np_to_gdal_type_dict = {
         np.dtype('bool')    : gdal.GDT_Byte,
@@ -271,7 +374,17 @@ def write_geotiff(path, file_name, array, nx,ny,npd, pslice, geodata):
     else:
         dataset.GetRasterBand(1).WriteArray(rotated_array)
         
-def npamem(obj, name=None):
+def npamem(obj, name=None):  
+    """
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+    """  
     if name is None:
         array = obj
         return '{0:x} = {1}'.format(array.__array_interface__['data'][0],
@@ -282,38 +395,59 @@ def npamem(obj, name=None):
                                     array.__array_interface__['data'][0],
                                     neatly(asizeof(array))  )
 
-def true_size(subobject):
+def true_size(python_object):
     """
-    TBD
+    Args:
+        python_object (obj):  (sub)object whose memory allocation we wish to know
+
+    Find the size of a Python object. Uses Pympler to do this.
+    Copies the object (!)
+    temporarily to improve the accuracy of the measurement (not sure why this helps,
+    but it does).
+        
+    Returns:
+        int: size of memory allocation of object
     """
-    # For semi-obscure reasons, Pympler does better if we enquire about a hard copy of the object
+    # For semi-obscure reasons, Pympler does better if we enquire about 
+    # a hard copy of the object
     try:
-        sizeof = asizeof(subobject.copy())
+        sizeof = asizeof(python_object.copy())
     except:
-        sizeof = asizeof(subobject)            
+        sizeof = asizeof(python_object)            
     return sizeof
     
-def neatly(byte_size):
-    """Returns a human readable string reprentation of bytes"""
+def neatly(size_in_bytes):
+    """
+    Args:
+        size_in_bytes (int):  
+
+    Convert a number for a memory (etc) size given in bytes into 
+    rounded, easily readable version (as a string) with appropriate units, 
+    e.g., 10753 => '11kB'
+        
+    Returns:
+        str: readable_size
+    """
     units=['B ','kB','MB','GB']  # Note: actually MiB etc
     for unit in units:
-        if byte_size>=1024:
-            byte_size = byte_size/1024.0
+        if size_in_bytes>=1024:
+            size_in_bytes = size_in_bytes/1024.0
         else:
             break
     if unit=='GB':
-        return str(int(0.5+10*byte_size)/10)+unit
+        return str(int(0.5+10*size_in_bytes)/10)+unit
     else:
-        return str(int(0.5+byte_size))+unit
+        return str(int(0.5+size_in_bytes))+unit
 
 def vprint(verbose, *args, **kwargs):
     """
-    Wrapper for print() with verbose flag to suppress output if desired
-    
     Args:
         verbose  (bool): turn printing on or off
         *args (str): print() function args
         **kwargs (str): print() function keyword args
+
+    Wrapper for print() with verbose flag to suppress output if desired.
+    
     """
     if verbose:
         print(*args, **kwargs, flush=True)
@@ -323,11 +457,27 @@ def vprint(verbose, *args, **kwargs):
 def create_seeds(mask, pad, n_work_items, n_seed_points=None,
                  do_shuffle=True, rng_seed=1, verbose=False):
     """
-    Generate seed points for tracing of streamline trajectories.   
+    Args:
+        mask (numpy.ndarray): pixel mask array
+        pad (int): grid boundary padding with in pixels
+        n_work_items (int): OpenCL work group size (number of items per), which is used
+                       to pad the seed point list into a length divisible by this number
+        n_seed_points (int): number of seed points
+        do_shuffle (bool): flag indicating whether to randomize the seed sequence
+        rng_seed (int): initializer or "seed" value for RNG
+        verbose (bool): verbose mode flag
+
+    Generate a list (np array) of seed point coordinates defining the initial pixels
+    for each streamline trajectory. 
+    Only unmasked pixel locations are considered.
+    If do_shuffle is True, the list of pixel coordinates is randomly ordered.
+    The list length is set by n_seed_points; if not given, the default is to
+    choose all unmasked pixels.
+    
         
     Returns:
         numpy.ndarray, int, int: 
-        seed point array, n_seed_points, n_padded_seed_points  
+        seed point coordinates array, n_seed_points, n_padded_seed_points  
     """    
     vprint(verbose,'Generating seed points...', end='')
     seed_point_array = ((np.argwhere(~mask).astype(np.float32)-pad))
@@ -355,16 +505,16 @@ def create_seeds(mask, pad, n_work_items, n_seed_points=None,
 
 def pick_seeds(mask=None, map=None, flag=None, pad=None):
     """
-    Generate a vector array of seed points to send to the GPU/OpenCl device
-    
     Args:
         mask (numpy.ndarray): pixel mask array
         map (numpy.ndarray):  mapping array (as generated by mapping())
         flag (bool): binary flag ORed with mapping array to pick seed pixels
         pad (int): grid boundary padding with in pixels
     
+    Generate a vector array of seed points to send to the GPU/OpenCl device.
+    
     Returns:
-        numpy.ndarray: seed point array
+        numpy.ndarray: seed point coordinates array
     """
     if mask is None and map is not None:
         seed_point_array = (np.argwhere((map & flag)>0).astype(np.float32)-pad)
@@ -376,16 +526,16 @@ def pick_seeds(mask=None, map=None, flag=None, pad=None):
     
 def compute_stats(traj_length_array, traj_nsteps_array, pixel_size, verbose):
     """
-    Compute streamline integration point spacing and trajectory length statistics 
-    (min, mean, max) for the sets of both downstream and upstream trajectories.
-    Return them as a small Pandas dataframe table.
-    
     Args:
         traj_length_array (numpy.ndarray):
         traj_nsteps_array (numpy.ndarray):
         pixel_size (float):
         verbose (bool):
         
+    Compute streamline integration point spacing and trajectory length statistics 
+    (min, mean, max) for the sets of both downstream and upstream trajectories.
+    Return them as a small Pandas dataframe table.
+    
     Returns:
         pandas.DataFrame:  lnds_stats_df
     """
@@ -408,6 +558,21 @@ def compute_stats(traj_length_array, traj_nsteps_array, pixel_size, verbose):
     return lnds_stats_df
 
 def dilate(array, n_iterations=1, out=None):
+    """
+    Args:
+        array (numpy.ndarray): input boolean pixel grid (output too if in-place operation)
+        n_iterations (int): number of dilations to perform
+        out (numpy.ndarray): output grid; if not given, default to in-place operation
+    
+    Perform binary dilation on (aka fatten) a boolean pixel grid with 
+    an 8-direction kernel.
+    
+    Uses scipy.ndimage.morphology.
+    Defaults to doing the dilation once and in place.
+
+    Returns:
+        numpy.ndarray: dilated pixel grid
+    """  
     dilation_structure = generate_binary_structure(2, 2)
     return binary_dilation(array, structure=dilation_structure, 
                            iterations=n_iterations, output=out)

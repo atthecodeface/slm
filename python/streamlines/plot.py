@@ -1,5 +1,9 @@
 """
-Map and graph plotting
+Module handling map and graph plotting.
+
+Requires matplotlib, random, mpl_toolkits, colorsys, scipy.
+
+Imports modules from streamlines.core.
 """
 # Notes on potentially useful mpl:
 #  plt.style.use('classic')

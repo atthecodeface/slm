@@ -1,9 +1,22 @@
 """
-GPU-based streamline integration.
+---------------------------------------------------------------------
+
+Perform GPU-based streamline integration using `OpenCL`_.
 
 Provides PyOpenCL-accelerated functions to integrate streamlines using
 2nd-order Runge-Kutta and (streamline tail-step only) Euler methods.
 Basins of interest can be delimited by masking. 
+
+Requires `PyOpenCL`_.
+
+Imports streamlines module :doc:`pocl`.
+Imports functions from streamlines module :doc:`useful`.
+
+
+---------------------------------------------------------------------
+
+.. _OpenCL: https://www.khronos.org/opencl
+.. _PyOpenCL: https://documen.tician.de/pyopencl/index.html
 
 """
 

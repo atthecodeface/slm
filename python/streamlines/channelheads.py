@@ -1,5 +1,18 @@
 """
-Locate channel heads.
+---------------------------------------------------------------------
+
+Wrapper module to locate channel heads using `OpenCL`_.
+
+Requires `PyOpenCL`_.
+
+Imports streamlines module :doc:`pocl`.
+Imports functions from streamlines module :doc:`useful`.
+
+---------------------------------------------------------------------
+
+
+.. _OpenCL: https://www.khronos.org/opencl
+.. _PyOpenCL: https://documen.tician.de/pyopencl/index.html
 
 """
 
@@ -19,13 +32,17 @@ pdebug = print
 
 def map_channel_heads(cl_state, info, data, verbose):
     """
-    Find channel head pixels.
-    
     Args:
         cl_state (obj):
         info (obj):
         data (obj):
         verbose (bool):
+
+    Find channel head pixels.
+    
+    Returns:
+        bool: flag false if failure occurs because seed points list is empty
+    
     """
     vprint(verbose,'Mapping channel heads...')
     # Prepare CL essentials
@@ -64,13 +81,15 @@ def map_channel_heads(cl_state, info, data, verbose):
 
 def prune_channel_heads(cl_state, info, data, verbose):
     """
-    Prune channel head pixels.
-    
     Args:
         cl_state (obj):
         info (obj):
         data (obj):
         verbose (bool):
+
+    Prune channel head pixels.
+    
+
     """
     vprint(verbose,'Pruning channel heads...')
     # Prepare CL essentials
@@ -96,4 +115,4 @@ def prune_channel_heads(cl_state, info, data, verbose):
     pocl.gpu_compute(cl_state, info, array_dict, info.verbose)
     
     # Done
-    vprint(verbose,'...done')  
+    vprint(verbose,'...done')

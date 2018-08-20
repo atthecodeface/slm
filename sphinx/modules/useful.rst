@@ -2,8 +2,6 @@
 =======================================
 
 
-Usage
--------
 .. automodule:: streamlines.useful
    :members: 
    :private-members:

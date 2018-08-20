@@ -1,5 +1,21 @@
 """
-Tools to compute 1d & 2d pdfs, some statistics, and related analyses
+---------------------------------------------------------------------
+
+Module providing tools to compute 1d & 2d pdfs, calculate some statistics,
+and perform related analyses.
+
+
+Requires `scipy`_, `sklearn`_.
+
+Imports streamlines module :doc:`kde`.
+Imports classes & functions from :doc:`core`,  :doc:`useful`.
+
+---------------------------------------------------------------------
+
+.. _sklearn: http://scikit-learn.org/
+.. _scipy: https://www.scipy.org/
+
+
 """
 
 import numpy as np
@@ -9,9 +25,9 @@ from sklearn.neighbors import KernelDensity
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
+from streamlines import kde
 from streamlines.core   import Core
 from streamlines.useful import vprint
-from streamlines import kde
 
 __all__ = ['Analysis','Univariate_distribution','Bivariate_distribution']
 

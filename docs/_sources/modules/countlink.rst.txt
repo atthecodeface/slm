@@ -2,8 +2,7 @@
 ==================
 
 
-Usage
--------
+
 .. automodule:: streamlines.countlink
    :members: 
    :private-members:

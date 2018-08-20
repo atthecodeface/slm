@@ -2,8 +2,6 @@
 =======================================
 
 
-Usage
--------
 .. automodule:: streamlines.pocl
    :members: 
    :private-members:

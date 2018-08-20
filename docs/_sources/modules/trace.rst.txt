@@ -2,8 +2,6 @@
 ============
 
 
-Usage
--------
 .. automodule:: streamlines.trace
    :members: 
    :private-members:

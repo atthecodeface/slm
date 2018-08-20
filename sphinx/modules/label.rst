@@ -2,8 +2,7 @@
 ==================
 
 
-Usage
--------
+
 .. automodule:: streamlines.label
    :members: 
    :private-members:

@@ -1,5 +1,18 @@
 """
-Link each hillslope pixel to its inflow-dominant upstream pixel.
+---------------------------------------------------------------------
+
+Wrapper module to `OpenCL`_ code to link each hillslope pixel to its inflow-dominant 
+upstream pixel.
+
+Requires `PyOpenCL`_.
+
+Imports streamlines module :doc:`pocl`.
+Imports functions from streamlines module :doc:`useful`.
+
+---------------------------------------------------------------------
+
+.. _OpenCL: https://www.khronos.org/opencl
+.. _PyOpenCL: https://documen.tician.de/pyopencl/index.html
 """
 
 import pyopencl as cl

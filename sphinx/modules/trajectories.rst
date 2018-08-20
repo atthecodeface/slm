@@ -2,8 +2,6 @@
 ===================
 
 
-Usage
--------
 .. automodule:: streamlines.trajectories
    :members: 
    :private-members:

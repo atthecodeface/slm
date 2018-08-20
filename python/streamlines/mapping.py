@@ -1,12 +1,24 @@
 """
+---------------------------------------------------------------------
+
 HSL mapping module. 
 
-Requires pandas, sklearn, skimage, scipy, skfmm.
+Requires `pandas`_, `sklearn`_, `skimage`_, `scipy`_, `skfmm`_. 
 
-Imports modules from streamlines.core,  streamlines.useful,  streamlines.pocl.
 
-Imports streamlines modules connect, channelheads, countlink, label, 
-segment, hillslopes, lengths.
+Imports streamlines modules :doc:`connect`, :doc:`channelheads`, 
+:doc:`countlink`, :doc:`label`, :doc:`segment`, :doc:`hillslopes`, :doc:`lengths`.
+
+Imports classes & functions from :doc:`core`, :doc:`useful`, :doc:`pocl`.
+
+---------------------------------------------------------------------
+
+.. _pandas: https://pandas.pydata.org/
+.. _sklearn: http://scikit-learn.org/
+.. _skimage: https://scikit-image.org/
+.. _scipy: https://www.scipy.org/
+.. _skfmm: https://pythonhosted.org/scikit-fmm/
+
 """
 
 import numpy  as np
@@ -27,10 +39,10 @@ import warnings
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
-from streamlines.core   import Core
-from streamlines.useful import Data, Info, vprint, dilate, get_bbox, npamem
 from streamlines        import connect, channelheads, countlink, label, \
                                segment, hillslopes, lengths
+from streamlines.core   import Core
+from streamlines.useful import Data, Info, vprint, dilate, get_bbox, npamem
 from streamlines.pocl   import Initialize_cl
 
 __all__ = ['Mapping']
@@ -39,13 +51,15 @@ pdebug = print
 
 class Mapping(Core):
     """
-    Class providing methods to map HSL.
+    Class providing methods to map and characterize hillslope length (HSL) 
+    across a DTM.
     
     These methods do the bulk of the hard work in mapping hillslope length, 
     in linking to topographic aspect, and in measuring related statistics. 
     The master method carries
     out three "passes" or processing steps in order to map the slm grids (sla, slt, slc)
     into grids of HSL and aspect, as well as to generate derivative data from them.
+    
     """
     def __init__(self,state,imported_parameters,geodata,preprocess,trace,analysis):
         """
@@ -427,8 +441,8 @@ class Mapping(Core):
         
         - Filter the HSL results into a smoothed, contourable grid.
         - Compute filtered terrain aspect and combine with this HSL grid.
-        - Generate a mean HSL(aspect) function and related statistics
-        to determine whether or not there is a N-S bias.
+        - Generate a mean HSL(aspect) function and related statistics 
+          to determine whether or not there is a N-S bias.
         """     
         vprint(self.vprogress,'\n**Pass#3 begin**') 
         self.state.reset_active_masks()

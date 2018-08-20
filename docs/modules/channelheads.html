@@ -31,16 +31,18 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="channelheads-py">
-<h1><code class="docutils literal notranslate"><span class="pre">channelheads.py</span></code><a class="headerlink" href="#channelheads-py" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-streamlines.channelheads">
-<span id="usage"></span><h2>Usage<a class="headerlink" href="#module-streamlines.channelheads" title="Permalink to this headline">¶</a></h2>
-<p>Locate channel heads.</p>
+  <div class="section" id="module-streamlines.channelheads">
+<span id="channelheads-py"></span><h1><code class="docutils literal notranslate"><span class="pre">channelheads.py</span></code><a class="headerlink" href="#module-streamlines.channelheads" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
+<p>Wrapper module to locate channel heads using <a class="reference external" href="https://www.khronos.org/opencl">OpenCL</a>.</p>
+<p>Requires <a class="reference external" href="https://documen.tician.de/pyopencl/index.html">PyOpenCL</a>.</p>
+<p>Imports streamlines module <a class="reference internal" href="pocl.html"><span class="doc">pocl.py</span></a>.
+Imports functions from streamlines module <a class="reference internal" href="useful.html"><span class="doc">useful.py</span></a>.</p>
+<hr class="docutils" />
 <dl class="function">
 <dt id="streamlines.channelheads.map_channel_heads">
 <code class="descclassname">streamlines.channelheads.</code><code class="descname">map_channel_heads</code><span class="sig-paren">(</span><em>cl_state</em>, <em>info</em>, <em>data</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.channelheads.map_channel_heads" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find channel head pixels.</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -51,6 +53,17 @@
 <li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
 </ul>
 </td>
+</tr>
+</tbody>
+</table>
+<p>Find channel head pixels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">flag false if failure occurs because seed points list is empty</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
 </tr>
 </tbody>
 </table>
@@ -59,8 +72,7 @@
 <dl class="function">
 <dt id="streamlines.channelheads.prune_channel_heads">
 <code class="descclassname">streamlines.channelheads.</code><code class="descname">prune_channel_heads</code><span class="sig-paren">(</span><em>cl_state</em>, <em>info</em>, <em>data</em>, <em>verbose</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.channelheads.prune_channel_heads" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prune channel head pixels.</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -74,13 +86,26 @@
 </tr>
 </tbody>
 </table>
+<p>Prune channel head pixels.</p>
 </dd></dl>
 
-</div>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Locate channel heads.</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Wrapper module to locate channel heads using `OpenCL`_.</span>
+
+<span class="sd">Requires `PyOpenCL`_.</span>
+
+<span class="sd">Imports streamlines module :doc:`pocl`.</span>
+<span class="sd">Imports functions from streamlines module :doc:`useful`.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+
+<span class="sd">.. _OpenCL: https://www.khronos.org/opencl</span>
+<span class="sd">.. _PyOpenCL: https://documen.tician.de/pyopencl/index.html</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -100,13 +125,17 @@
 
 <span class="k">def</span> <span class="nf">map_channel_heads</span><span class="p">(</span><span class="n">cl_state</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Find channel head pixels.</span>
-<span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        cl_state (obj):</span>
 <span class="sd">        info (obj):</span>
 <span class="sd">        data (obj):</span>
 <span class="sd">        verbose (bool):</span>
+
+<span class="sd">    Find channel head pixels.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: flag false if failure occurs because seed points list is empty</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;Mapping channel heads...&#39;</span><span class="p">)</span>
     <span class="c1"># Prepare CL essentials</span>
@@ -145,13 +174,15 @@
 
 <span class="k">def</span> <span class="nf">prune_channel_heads</span><span class="p">(</span><span class="n">cl_state</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Prune channel head pixels.</span>
-<span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        cl_state (obj):</span>
 <span class="sd">        info (obj):</span>
 <span class="sd">        data (obj):</span>
 <span class="sd">        verbose (bool):</span>
+
+<span class="sd">    Prune channel head pixels.</span>
+<span class="sd">    </span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;Pruning channel heads...&#39;</span><span class="p">)</span>
     <span class="c1"># Prepare CL essentials</span>
@@ -177,7 +208,7 @@
     <span class="n">pocl</span><span class="o">.</span><span class="n">gpu_compute</span><span class="p">(</span><span class="n">cl_state</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">array_dict</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
     
     <span class="c1"># Done</span>
-    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span>  
+    <span class="n">vprint</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -227,7 +258,6 @@
   <h3><a href="../index.html">Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">channelheads.py</span></code></a><ul>
-<li><a class="reference internal" href="#module-streamlines.channelheads">Usage</a></li>
 <li><a class="reference internal" href="#code">Code</a></li>
 </ul>
 </li>
