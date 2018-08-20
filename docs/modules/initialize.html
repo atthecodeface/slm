@@ -33,11 +33,44 @@
             
   <div class="section" id="module-streamlines.initialize">
 <span id="initialize-py"></span><h1><code class="docutils literal notranslate"><span class="pre">initialize.py</span></code><a class="headerlink" href="#module-streamlines.initialize" title="Permalink to this headline">¶</a></h1>
-<p>Jupyter notebook config</p>
+<hr class="docutils" />
+<p>IPython config.</p>
+<p>Sets up IPython environment if we’re running in a Jupyter notebook (or an IPython console).</p>
+<hr class="docutils" />
+<p>Requires <a class="reference external" href="https://matplotlib.org/">matplotlib</a>, <a class="reference external" href="https://ipython.org/">IPython</a>, and IPython extensions
+<a class="reference external" href="https://ipython.org/ipython-doc/3/config/extensions/autoreload.html">autoreload</a> and <a class="reference external" href="https://github.com/minrk/wurlitzer">Wurlitzer</a>.</p>
+<p><a class="reference external" href="https://github.com/minrk/wurlitzer">Wurlitzer</a> provides C-level stdout/stderr pipes in Python, which allows
+<strong>slm</strong> to connect to pipes of stdout/stderr from OpenCL kernels,
+i.e., to get printf output and error reports from kernel instances, subject
+to the vagaries of GPU-CPU piping.</p>
+<hr class="docutils" />
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Jupyter notebook config</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">IPython config.</span>
+
+<span class="sd">Sets up IPython environment if we&#39;re running in a Jupyter notebook (or an IPython console).</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Requires `matplotlib`_, `IPython`_, and IPython extensions </span>
+<span class="sd">`autoreload`_ and `Wurlitzer`_.</span>
+
+<span class="sd">`Wurlitzer`_ provides C-level stdout/stderr pipes in Python, which allows</span>
+<span class="sd">**slm** to connect to pipes of stdout/stderr from OpenCL kernels, </span>
+<span class="sd">i.e., to get printf output and error reports from kernel instances, subject</span>
+<span class="sd">to the vagaries of GPU-CPU piping.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">.. _matplotlib: https://matplotlib.org/</span>
+<span class="sd">.. _IPython: https://ipython.org/</span>
+<span class="sd">.. _autoreload: https://ipython.org/ipython-doc/3/config/extensions/autoreload.html</span>
+<span class="sd">.. _Wurlitzer: https://github.com/minrk/wurlitzer</span>
+
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># Jupyter `%magic` commands `%load_ext`, `%aimport`, and `%autoreload` </span>

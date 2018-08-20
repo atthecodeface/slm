@@ -5,6 +5,8 @@ Module providing tools to compute 1d & 2d pdfs, calculate some statistics,
 and perform related analyses.
 
 
+---------------------------------------------------------------------
+
 Requires `scipy`_, `sklearn`_.
 
 Imports streamlines module :doc:`kde`.

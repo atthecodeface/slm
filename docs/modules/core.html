@@ -33,12 +33,14 @@
             
   <div class="section" id="module-streamlines.core">
 <span id="core-py"></span><h1><code class="docutils literal notranslate"><span class="pre">core.py</span></code><a class="headerlink" href="#module-streamlines.core" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
 <p>This <a class="reference internal" href="#module-streamlines.core" title="streamlines.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code></a> module provides a base initialization class
 that is inherited by each workflow class.
 On instantiation of each such class, the base initialization parses the parameter
 dictionary loaded from the ‘job’ <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">JSON</span></code></a> file specified at the command line,
 extracts the set of parameters pertaining to the workflow class,
 and assigns the values to the workflow class instance accordingly.</p>
+<hr class="docutils" />
 <p>The following workflow classes inherit
 the <a class="reference internal" href="#module-streamlines.core" title="streamlines.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code></a> class:</p>
 <ul class="simple">
@@ -50,6 +52,7 @@ the <a class="reference internal" href="#module-streamlines.core" title="streaml
 <li><a class="reference internal" href="plot.html#streamlines.plot.Plot" title="streamlines.plot.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.plot.Plot</span></code></a></li>
 <li><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.plot.Export</span></code></li>
 </ul>
+<hr class="docutils" />
 <dl class="class">
 <dt id="streamlines.core.Core">
 <em class="property">class </em><code class="descclassname">streamlines.core.</code><code class="descname">Core</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.core.Core" title="Permalink to this definition">¶</a></dt>
@@ -120,12 +123,16 @@ to record the state of the <a class="reference internal" href="trace.html#stream
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
 <span class="sd">This :mod:`core &lt;streamlines.core&gt;` module provides a base initialization class </span>
 <span class="sd">that is inherited by each workflow class.</span>
 <span class="sd">On instantiation of each such class, the base initialization parses the parameter </span>
 <span class="sd">dictionary loaded from the &#39;job&#39; :py:mod:`JSON &lt;json&gt;` file specified at the command line,</span>
 <span class="sd">extracts the set of parameters pertaining to the workflow class,</span>
 <span class="sd">and assigns the values to the workflow class instance accordingly. </span>
+
+<span class="sd">---------------------------------------------------------------------</span>
 
 <span class="sd">The following workflow classes inherit</span>
 <span class="sd">the :mod:`core &lt;streamlines.core&gt;` class:</span>
@@ -137,6 +144,9 @@ to record the state of the <a class="reference internal" href="trace.html#stream
 <span class="sd">- :class:`streamlines.analysis.Mapping`</span>
 <span class="sd">- :class:`streamlines.plot.Plot`</span>
 <span class="sd">- :class:`streamlines.plot.Export`</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">json</span> <span class="k">import</span> <span class="n">dumps</span>

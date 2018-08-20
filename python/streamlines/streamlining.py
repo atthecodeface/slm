@@ -1,5 +1,42 @@
 """
-Perform slm analysis of topographic structure
+---------------------------------------------------------------------
+
+Perform **slm** analysis of topographic structure, including channels, 
+channel heads, hillslope lengths (HSL), and relationships between HSL, aspect,
+etc.
+
+---------------------------------------------------------------------
+
+Requires `json`_, `datetime`_, `dateutil`_.
+
+Imports the following *Streamlines* modules:
+ - :mod:`connect <streamlines.connect>`
+ - :mod:`channelheads <streamlines.channelheads>`
+ - :mod:`countlink <streamlines.countlink>`
+ - :mod:`label <streamlines.label>`
+ - :mod:`segment <streamlines.segment>`
+ - :mod:`hillslopes <streamlines.hillslopes>`
+ - :mod:`lengths <streamlines.lengths>`
+
+Imports classes from:
+ - :mod:`core <streamlines.core>`
+ - :mod:`state <streamlines.state>`
+ - :mod:`geodata <streamlines.geodata>`
+ - :mod:`preprocess <streamlines.preprocess>`
+ - :mod:`trace <streamlines.trace>`
+ - :mod:`analysis <streamlines.analysis>`
+ - :mod:`mapping <streamlines.mapping>`
+ - :mod:`plot <streamlines.plot>`
+ - :mod:`save <streamlines.save>`
+
+Imports functions from :mod:`useful <streamlines.useful>`.
+
+---------------------------------------------------------------------
+
+.. _json: https://docs.python.org/3/library/json.html
+.. _datetime: https://docs.python.org/3/library/datetime.html
+.. _dateutil: https://pypi.org/project/python-dateutil/
+
 """
 
 from json     import loads
@@ -28,44 +65,51 @@ class Streamlining(Core):
     Class providing set of methods to compute streamline trajectories and 
     densities from raw DTM data.
     
-    Provides top-level methods to: (1) prepare DTM grid for streamline computation
-    by fixing blockages (single-diagonal-outflow pixels) and loops (divergence, curl
-    and net vector magnitude exceeding trio of thresholds); (2) set 'seed' points aka
-    start locations (sub-pixel positions) of all streamlines; (3) generate streamlines
-    from all seed points either upstream or downstream, returning seed point locations
-    if generated in-situ, and returning arrays of streamline points and their mean
-    spacing; (4) generate all streamlines (up and downstream) and compute the overall
-    mean streamline point spacing.
+    Provides top-level methods to: 
+        - prepare DTM grid for streamline computation
+          by fixing blockages (single-diagonal-outflow pixels) and loops 
+          (divergence, curl and net vector magnitude exceeding trio of thresholds)
+        - set 'seed' points aka start locations (sub-pixel positions) of all streamlines 
+        - generate streamlines
+          from all seed points either upstream or downstream, returning seed point 
+          locations if generated in-situ, and returning arrays of streamline points 
+          and their mean spacing
+        - generate all streamlines (up and downstream) and compute the overall
+          mean streamline point spacing
     
     Args:
-        parameters_file (str): Name of JSON parameters file prefixed by full path.
+        parameters_file (class): Name of JSON parameters file prefixed by full path.
 
     Attributes:
         parameters_file (str): Name of JSON parameters file 
-                               (parsed from kwargs 'parameters_file').
+                               (parsed from kwargs 'parameters_file')
         parameters_dir (str): Path to folder containing JSON parameters file 
-                              (parsed from kwargs 'parameters_file').
+                              (parsed from kwargs 'parameters_file')
     
     
         """  
     def __init__(self, **kwargs):
         """
+    
+        Args:
+            **kwargs (list): Keyword arguments.
+    
         Initialize the principal 'streamlines' class instance, whose object
         will contain references to the each of the key class instances of 
         the streamlines workflow, e.g., geodata(), trace(), analysis()
         Each such subobject will contain: 
         
-        (1) attributes corresponding to all the parameters pertinent 
-            to that stage of the workflow, e.g. state.do_plot, trace.do_trace_upstream,
-            parsed the parameters 'dictionary of dictionaries' file;
-        (2) a reference to the inventorize() method, inherited from the Core() class,
-            used to do the parameter parsing;
-        (3) back-references to all the key class instances needed for its work,
-            e.g., trace.geodata(), plot.state();
-        (4) references to methods needed for its work,
-            e.g., preprocess.find_blockages(), trace.do();
-        (5) attributes and references to objects generated during its work, 
-            notably data arrays containing results
+        - attributes corresponding to all the parameters pertinent 
+          to that stage of the workflow, e.g. state.do_plot, trace.do_trace_upstream,
+          parsed the parameters 'dictionary of dictionaries' file;
+        - a reference to the inventorize() method, inherited from the Core() class,
+          used to do the parameter parsing;
+        - back-references to all the key class instances needed for its work,
+          e.g., trace.geodata(), plot.state();
+        - references to methods needed for its work,
+          e.g., preprocess.find_blockages(), trace.do();
+        - attributes and references to objects generated during its work, 
+          notably data arrays containing results
         """
         
         #

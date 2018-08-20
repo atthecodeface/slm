@@ -1,10 +1,14 @@
 """
+---------------------------------------------------------------------
+
 This :mod:`core <streamlines.core>` module provides a base initialization class 
 that is inherited by each workflow class.
 On instantiation of each such class, the base initialization parses the parameter 
 dictionary loaded from the 'job' :py:mod:`JSON <json>` file specified at the command line,
 extracts the set of parameters pertaining to the workflow class,
 and assigns the values to the workflow class instance accordingly. 
+
+---------------------------------------------------------------------
 
 The following workflow classes inherit
 the :mod:`core <streamlines.core>` class:
@@ -16,6 +20,9 @@ the :mod:`core <streamlines.core>` class:
 - :class:`streamlines.analysis.Mapping`
 - :class:`streamlines.plot.Plot`
 - :class:`streamlines.plot.Export`
+
+---------------------------------------------------------------------
+
 """
 
 from json import dumps

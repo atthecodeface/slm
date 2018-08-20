@@ -32,9 +32,9 @@ pdebug = print
 def link_hillslopes( cl_state, info, data, verbose):
     """
     Args:
-        cl_state (obj):
-        info (obj):
-        data (obj):
+        cl_state (object):
+        info (object):
+        data (object):
         verbose (bool):
         
     Link hillslope pixels downstream.

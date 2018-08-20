@@ -33,25 +33,66 @@
             
   <div class="section" id="module-streamlines.streamlining">
 <span id="streamlining-py"></span><h1><code class="docutils literal notranslate"><span class="pre">streamlining.py</span></code><a class="headerlink" href="#module-streamlines.streamlining" title="Permalink to this headline">¶</a></h1>
-<p>Perform slm analysis of topographic structure</p>
+<hr class="docutils" />
+<p>Perform <strong>slm</strong> analysis of topographic structure, including channels,
+channel heads, hillslope lengths (HSL), and relationships between HSL, aspect,
+etc.</p>
+<hr class="docutils" />
+<p>Requires <a class="reference external" href="https://docs.python.org/3/library/json.html">json</a>, <a class="reference external" href="https://docs.python.org/3/library/datetime.html">datetime</a>, <a class="reference external" href="https://pypi.org/project/python-dateutil/">dateutil</a>.</p>
+<dl class="docutils">
+<dt>Imports the following <em>Streamlines</em> modules:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="connect.html#module-streamlines.connect" title="streamlines.connect"><code class="xref py py-mod docutils literal notranslate"><span class="pre">connect</span></code></a></li>
+<li><a class="reference internal" href="channelheads.html#module-streamlines.channelheads" title="streamlines.channelheads"><code class="xref py py-mod docutils literal notranslate"><span class="pre">channelheads</span></code></a></li>
+<li><a class="reference internal" href="countlink.html#module-streamlines.countlink" title="streamlines.countlink"><code class="xref py py-mod docutils literal notranslate"><span class="pre">countlink</span></code></a></li>
+<li><a class="reference internal" href="label.html#module-streamlines.label" title="streamlines.label"><code class="xref py py-mod docutils literal notranslate"><span class="pre">label</span></code></a></li>
+<li><a class="reference internal" href="segment.html#module-streamlines.segment" title="streamlines.segment"><code class="xref py py-mod docutils literal notranslate"><span class="pre">segment</span></code></a></li>
+<li><a class="reference internal" href="hillslopes.html#module-streamlines.hillslopes" title="streamlines.hillslopes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">hillslopes</span></code></a></li>
+<li><a class="reference internal" href="lengths.html#module-streamlines.lengths" title="streamlines.lengths"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lengths</span></code></a></li>
+</ul>
+</dd>
+<dt>Imports classes from:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="core.html#module-streamlines.core" title="streamlines.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code></a></li>
+<li><a class="reference internal" href="state.html#module-streamlines.state" title="streamlines.state"><code class="xref py py-mod docutils literal notranslate"><span class="pre">state</span></code></a></li>
+<li><a class="reference internal" href="geodata.html#module-streamlines.geodata" title="streamlines.geodata"><code class="xref py py-mod docutils literal notranslate"><span class="pre">geodata</span></code></a></li>
+<li><a class="reference internal" href="preprocess.html#module-streamlines.preprocess" title="streamlines.preprocess"><code class="xref py py-mod docutils literal notranslate"><span class="pre">preprocess</span></code></a></li>
+<li><a class="reference internal" href="trace.html#module-streamlines.trace" title="streamlines.trace"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trace</span></code></a></li>
+<li><a class="reference internal" href="analysis.html#module-streamlines.analysis" title="streamlines.analysis"><code class="xref py py-mod docutils literal notranslate"><span class="pre">analysis</span></code></a></li>
+<li><a class="reference internal" href="mapping.html#module-streamlines.mapping" title="streamlines.mapping"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mapping</span></code></a></li>
+<li><a class="reference internal" href="plot.html#module-streamlines.plot" title="streamlines.plot"><code class="xref py py-mod docutils literal notranslate"><span class="pre">plot</span></code></a></li>
+<li><a class="reference internal" href="save.html#module-streamlines.save" title="streamlines.save"><code class="xref py py-mod docutils literal notranslate"><span class="pre">save</span></code></a></li>
+</ul>
+</dd>
+</dl>
+<p>Imports functions from <a class="reference internal" href="useful.html#module-streamlines.useful" title="streamlines.useful"><code class="xref py py-mod docutils literal notranslate"><span class="pre">useful</span></code></a>.</p>
+<hr class="docutils" />
 <dl class="class">
 <dt id="streamlines.streamlining.Streamlining">
 <em class="property">class </em><code class="descclassname">streamlines.streamlining.</code><code class="descname">Streamlining</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.streamlining.Streamlining" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class providing set of methods to compute streamline trajectories and
 densities from raw DTM data.</p>
-<p>Provides top-level methods to: (1) prepare DTM grid for streamline computation
-by fixing blockages (single-diagonal-outflow pixels) and loops (divergence, curl
-and net vector magnitude exceeding trio of thresholds); (2) set ‘seed’ points aka
-start locations (sub-pixel positions) of all streamlines; (3) generate streamlines
-from all seed points either upstream or downstream, returning seed point locations
-if generated in-situ, and returning arrays of streamline points and their mean
-spacing; (4) generate all streamlines (up and downstream) and compute the overall
-mean streamline point spacing.</p>
+<dl class="docutils">
+<dt>Provides top-level methods to:</dt>
+<dd><ul class="first last simple">
+<li>prepare DTM grid for streamline computation
+by fixing blockages (single-diagonal-outflow pixels) and loops
+(divergence, curl and net vector magnitude exceeding trio of thresholds)</li>
+<li>set ‘seed’ points aka start locations (sub-pixel positions) of all streamlines</li>
+<li>generate streamlines
+from all seed points either upstream or downstream, returning seed point
+locations if generated in-situ, and returning arrays of streamline points
+and their mean spacing</li>
+<li>generate all streamlines (up and downstream) and compute the overall
+mean streamline point spacing</li>
+</ul>
+</dd>
+</dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parameters_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of JSON parameters file prefixed by full path.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parameters_file</strong> (<em>class</em>) – Name of JSON parameters file prefixed by full path.</td>
 </tr>
 </tbody>
 </table>
@@ -59,24 +100,32 @@ mean streamline point spacing.</p>
 <dt id="streamlines.streamlining.Streamlining.parameters_file">
 <code class="descname">parameters_file</code><a class="headerlink" href="#streamlines.streamlining.Streamlining.parameters_file" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>str</em> – Name of JSON parameters file
-(parsed from kwargs ‘parameters_file’).</p>
+(parsed from kwargs ‘parameters_file’)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.streamlining.Streamlining.parameters_dir">
 <code class="descname">parameters_dir</code><a class="headerlink" href="#streamlines.streamlining.Streamlining.parameters_dir" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>str</em> – Path to folder containing JSON parameters file
-(parsed from kwargs ‘parameters_file’).</p>
+(parsed from kwargs ‘parameters_file’)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="streamlines.streamlining.Streamlining.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.streamlining.Streamlining.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize the principal ‘streamlines’ class instance, whose object
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>**kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – Keyword arguments.</td>
+</tr>
+</tbody>
+</table>
+<p>Initialize the principal ‘streamlines’ class instance, whose object
 will contain references to the each of the key class instances of
 the streamlines workflow, e.g., geodata(), trace(), analysis()
 Each such subobject will contain:</p>
-<ol class="arabic simple">
+<ul class="simple">
 <li>attributes corresponding to all the parameters pertinent
 to that stage of the workflow, e.g. state.do_plot, trace.do_trace_upstream,
 parsed the parameters ‘dictionary of dictionaries’ file;</li>
@@ -88,7 +137,7 @@ e.g., trace.geodata(), plot.state();</li>
 e.g., preprocess.find_blockages(), trace.do();</li>
 <li>attributes and references to objects generated during its work,
 notably data arrays containing results</li>
-</ol>
+</ul>
 </dd></dl>
 
 </dd></dl>
@@ -96,7 +145,44 @@ notably data arrays containing results</li>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Perform slm analysis of topographic structure</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Perform **slm** analysis of topographic structure, including channels, </span>
+<span class="sd">channel heads, hillslope lengths (HSL), and relationships between HSL, aspect,</span>
+<span class="sd">etc.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Requires `json`_, `datetime`_, `dateutil`_.</span>
+
+<span class="sd">Imports the following *Streamlines* modules:</span>
+<span class="sd"> - :mod:`connect &lt;streamlines.connect&gt;`</span>
+<span class="sd"> - :mod:`channelheads &lt;streamlines.channelheads&gt;`</span>
+<span class="sd"> - :mod:`countlink &lt;streamlines.countlink&gt;`</span>
+<span class="sd"> - :mod:`label &lt;streamlines.label&gt;`</span>
+<span class="sd"> - :mod:`segment &lt;streamlines.segment&gt;`</span>
+<span class="sd"> - :mod:`hillslopes &lt;streamlines.hillslopes&gt;`</span>
+<span class="sd"> - :mod:`lengths &lt;streamlines.lengths&gt;`</span>
+
+<span class="sd">Imports classes from:</span>
+<span class="sd"> - :mod:`core &lt;streamlines.core&gt;`</span>
+<span class="sd"> - :mod:`state &lt;streamlines.state&gt;`</span>
+<span class="sd"> - :mod:`geodata &lt;streamlines.geodata&gt;`</span>
+<span class="sd"> - :mod:`preprocess &lt;streamlines.preprocess&gt;`</span>
+<span class="sd"> - :mod:`trace &lt;streamlines.trace&gt;`</span>
+<span class="sd"> - :mod:`analysis &lt;streamlines.analysis&gt;`</span>
+<span class="sd"> - :mod:`mapping &lt;streamlines.mapping&gt;`</span>
+<span class="sd"> - :mod:`plot &lt;streamlines.plot&gt;`</span>
+<span class="sd"> - :mod:`save &lt;streamlines.save&gt;`</span>
+
+<span class="sd">Imports functions from :mod:`useful &lt;streamlines.useful&gt;`.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">.. _json: https://docs.python.org/3/library/json.html</span>
+<span class="sd">.. _datetime: https://docs.python.org/3/library/datetime.html</span>
+<span class="sd">.. _dateutil: https://pypi.org/project/python-dateutil/</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">json</span>     <span class="k">import</span> <span class="n">loads</span>
@@ -125,44 +211,51 @@ notably data arrays containing results</li>
 <span class="sd">    Class providing set of methods to compute streamline trajectories and </span>
 <span class="sd">    densities from raw DTM data.</span>
 <span class="sd">    </span>
-<span class="sd">    Provides top-level methods to: (1) prepare DTM grid for streamline computation</span>
-<span class="sd">    by fixing blockages (single-diagonal-outflow pixels) and loops (divergence, curl</span>
-<span class="sd">    and net vector magnitude exceeding trio of thresholds); (2) set &#39;seed&#39; points aka</span>
-<span class="sd">    start locations (sub-pixel positions) of all streamlines; (3) generate streamlines</span>
-<span class="sd">    from all seed points either upstream or downstream, returning seed point locations</span>
-<span class="sd">    if generated in-situ, and returning arrays of streamline points and their mean</span>
-<span class="sd">    spacing; (4) generate all streamlines (up and downstream) and compute the overall</span>
-<span class="sd">    mean streamline point spacing.</span>
+<span class="sd">    Provides top-level methods to: </span>
+<span class="sd">        - prepare DTM grid for streamline computation</span>
+<span class="sd">          by fixing blockages (single-diagonal-outflow pixels) and loops </span>
+<span class="sd">          (divergence, curl and net vector magnitude exceeding trio of thresholds)</span>
+<span class="sd">        - set &#39;seed&#39; points aka start locations (sub-pixel positions) of all streamlines </span>
+<span class="sd">        - generate streamlines</span>
+<span class="sd">          from all seed points either upstream or downstream, returning seed point </span>
+<span class="sd">          locations if generated in-situ, and returning arrays of streamline points </span>
+<span class="sd">          and their mean spacing</span>
+<span class="sd">        - generate all streamlines (up and downstream) and compute the overall</span>
+<span class="sd">          mean streamline point spacing</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
-<span class="sd">        parameters_file (str): Name of JSON parameters file prefixed by full path.</span>
+<span class="sd">        parameters_file (class): Name of JSON parameters file prefixed by full path.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        parameters_file (str): Name of JSON parameters file </span>
-<span class="sd">                               (parsed from kwargs &#39;parameters_file&#39;).</span>
+<span class="sd">                               (parsed from kwargs &#39;parameters_file&#39;)</span>
 <span class="sd">        parameters_dir (str): Path to folder containing JSON parameters file </span>
-<span class="sd">                              (parsed from kwargs &#39;parameters_file&#39;).</span>
+<span class="sd">                              (parsed from kwargs &#39;parameters_file&#39;)</span>
 <span class="sd">    </span>
 <span class="sd">    </span>
 <span class="sd">        &quot;&quot;&quot;</span>  
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs (list): Keyword arguments.</span>
+<span class="sd">    </span>
 <span class="sd">        Initialize the principal &#39;streamlines&#39; class instance, whose object</span>
 <span class="sd">        will contain references to the each of the key class instances of </span>
 <span class="sd">        the streamlines workflow, e.g., geodata(), trace(), analysis()</span>
 <span class="sd">        Each such subobject will contain: </span>
 <span class="sd">        </span>
-<span class="sd">        (1) attributes corresponding to all the parameters pertinent </span>
-<span class="sd">            to that stage of the workflow, e.g. state.do_plot, trace.do_trace_upstream,</span>
-<span class="sd">            parsed the parameters &#39;dictionary of dictionaries&#39; file;</span>
-<span class="sd">        (2) a reference to the inventorize() method, inherited from the Core() class,</span>
-<span class="sd">            used to do the parameter parsing;</span>
-<span class="sd">        (3) back-references to all the key class instances needed for its work,</span>
-<span class="sd">            e.g., trace.geodata(), plot.state();</span>
-<span class="sd">        (4) references to methods needed for its work,</span>
-<span class="sd">            e.g., preprocess.find_blockages(), trace.do();</span>
-<span class="sd">        (5) attributes and references to objects generated during its work, </span>
-<span class="sd">            notably data arrays containing results</span>
+<span class="sd">        - attributes corresponding to all the parameters pertinent </span>
+<span class="sd">          to that stage of the workflow, e.g. state.do_plot, trace.do_trace_upstream,</span>
+<span class="sd">          parsed the parameters &#39;dictionary of dictionaries&#39; file;</span>
+<span class="sd">        - a reference to the inventorize() method, inherited from the Core() class,</span>
+<span class="sd">          used to do the parameter parsing;</span>
+<span class="sd">        - back-references to all the key class instances needed for its work,</span>
+<span class="sd">          e.g., trace.geodata(), plot.state();</span>
+<span class="sd">        - references to methods needed for its work,</span>
+<span class="sd">          e.g., preprocess.find_blockages(), trace.do();</span>
+<span class="sd">        - attributes and references to objects generated during its work, </span>
+<span class="sd">          notably data arrays containing results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
         <span class="c1">#</span>

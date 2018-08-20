@@ -3,6 +3,8 @@
 
 Wrapper module to connect missing links between channel pixels using `OpenCL`_.
 
+---------------------------------------------------------------------
+
 Requires `PyOpenCL`_.
 
 

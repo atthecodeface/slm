@@ -1,7 +1,17 @@
 """
+---------------------------------------------------------------------
+
 Read/write/assign the data contained in the :class:`.Streamlining` object, 
 which includes all the parameters used to control streamline computation 
 and all the data arrays used to hold their results.
+
+---------------------------------------------------------------------
+
+Requires `json`_.
+
+---------------------------------------------------------------------
+
+.. _json: https://docs.python.org/3/library/json.html
 
 """
 
@@ -15,6 +25,9 @@ pdebug = print
 
 def read_json_file(parameter_file_list):
     """
+    Args:
+        parameter_file_list (list): JSON parameters files to be read and parsed
+
     Load and parse a list of JSON parameters files into a parameters dict.
 
     Step through a list of JSON parameters files (usually "defaults.json" 
@@ -22,9 +35,6 @@ def read_json_file(parameter_file_list):
     Parse each into a parameters dict, ensuring that subsequent JSON parameters
     override any set by previous JSON files.
     
-    Args:
-        parameter_file_list (list): JSON parameters files to be read and parsed
-
     Return:
         dict:  workflow parameter dictionary
     """
@@ -63,13 +73,13 @@ def read_json_file(parameter_file_list):
 
 def import_parameters(parameters_path, parameters_file): #,do_reload_state=False
     """
-    Load JSON parameters files (defaults and job) and parse them in turn to 
-    generate a workflow parameters dictionary. 
-    
     Args:
         parameters_path (list): path to JSON parameters files (broken out as OS path list)
         parameters_file (str): name of job JSON parameters file
 
+    Load JSON parameters files (defaults and job) and parse them in turn to 
+    generate a workflow parameters dictionary. 
+    
     Return:
         dict:  workflow parameter dictionary
     """        

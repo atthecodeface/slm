@@ -3,6 +3,8 @@
 
 Module handling map and graph plotting.
 
+---------------------------------------------------------------------
+
 Requires `matplotlib`_, `random`_, `mpl_toolkits`_, `colorsys`_, `scipy`_.
 
 Imports Core class :doc:`core`.
@@ -34,9 +36,9 @@ from   matplotlib import streamplot
 import matplotlib.pyplot   as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.ticker   as ticker
-from   matplotlib.pyplot  import streamplot
-from   matplotlib.colors  import LinearSegmentedColormap
-from   matplotlib.patches import ArrowStyle, FancyArrowPatch
+from   matplotlib.pyplot   import streamplot
+from   matplotlib.colors   import LinearSegmentedColormap
+from   matplotlib.patches  import ArrowStyle, FancyArrowPatch
 from   mpl_toolkits.axes_grid1 import make_axes_locatable
 import colorsys
 from   scipy.interpolate import interp1d 
@@ -56,12 +58,21 @@ from streamlines.core import Core
 
 pdebug = print
 
-__all__ = ['Plot']
+__all__ = ['Plot', 'random_colormap']
     
 # Generate random colormap
 def random_colormap(cmap_name='randomized', n_colors=1000,random_seed=1):
     """
     Create a cmap with a randomized sequence of bright colors
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
     """
     ru = np.random.uniform
     np.random.seed(random_seed)
@@ -72,11 +83,27 @@ def random_colormap(cmap_name='randomized', n_colors=1000,random_seed=1):
 class Plot(Core):       
     """
     Plot maps and distributions.
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
     """
     def __init__(self, state, imported_parameters,
                  geodata, preprocess, trace, analysis, mapping):
-        """
+        """    
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         super().__init__(state,imported_parameters)  
         self.geodata = geodata
@@ -89,8 +116,15 @@ class Plot(Core):
     def _new_figure(self, title=None, window_title=None, pdf=False, 
                     x_pixel_scale=1,y_pixel_scale=1,
                     window_size_factor=None, projection=None):
-        """
+        """  
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
 #         mpl.rc( 'savefig', dpi=300)
         mpl.rc( 'figure', autolayout=False,  titlesize='Large',dpi=self.fig_dpi)
@@ -141,8 +175,15 @@ class Plot(Core):
         return fig, axes
           
     def _record_fig(self,fig_name,fig):
-        """
+        """  
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         self.print('Recording figure "{}"'.format(fig_name))
         self.figs.update({fig_name : fig})  
@@ -167,14 +208,30 @@ class Plot(Core):
 
     @staticmethod
     def show():
-        """
+        """  
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         plt.show()
 
     def do(self):
         """
-        Display all output
+        Display all output  
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         self.print('\n**Plot all begin**') 
         if self.do_plot_maps:
@@ -189,6 +246,15 @@ class Plot(Core):
     def plot_maps(self):
         """
         Plot maps
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         self.print('Plotting maps...')
         # Hillshade view of source DTM with correct axis labeling
@@ -221,6 +287,15 @@ class Plot(Core):
     def plot_dtm_shaded_relief(self, window_size_factor=None):
         """
         Hillshade view of source DTM
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
                                     y_pixel_scale=self.geodata.roi_pixel_size,
@@ -237,6 +312,15 @@ class Plot(Core):
     def plot_roi_shaded_relief(self, interp_method=None, window_size_factor=None):
         """
         Hillshade view of ROI of DTM
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
                                     y_pixel_scale=self.geodata.roi_pixel_size,
@@ -253,6 +337,15 @@ class Plot(Core):
                                        interp_method=None):
         """
         Hillshade view of ROI of DTM (overlay method)
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         if self.geodata.do_basin_masking:                
             mask_array = self.state.merge_active_masks()[
@@ -300,6 +393,15 @@ class Plot(Core):
         """
         Hillshade render DTM topo with light from direction azimuth_degrees and tilt
         angle_attitude_degrees
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         x_grad, y_grad = np.gradient(array)
         slope = pi/2.0 - arctan(np.hypot(x_grad,y_grad))
@@ -314,6 +416,15 @@ class Plot(Core):
     def plot_streamlines(self, window_size_factor=None):
         """
         Streamlines, points on semi-transparent shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         fig_name='streamlines'
         window_title='streamlines'
@@ -344,6 +455,18 @@ class Plot(Core):
         self._record_fig(fig_name,fig)
     
     def plot_channels(self, window_size_factor=None, do_reset_mask=True):
+        """
+        Streamlines, points on semi-transparent shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """
         try:
             self.mapping.mapping_array
         except: 
@@ -409,6 +532,18 @@ class Plot(Core):
         self._record_fig(fig_name,fig)
 
     def plot_compound_markers(self, axes, flag, colors, msf=1.0):
+        """
+        Streamlines, points on semi-transparent shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """
         pad = self.geodata.pad_width
         markers_array = (np.flipud(np.argwhere(
                                         self.mapping.mapping_array & flag
@@ -428,6 +563,18 @@ class Plot(Core):
 
     def plot_simple_grid(self,grid_array,mask_array,axes,cmap='Blues',alpha=0.8,
                          do_vlimit=True, v_min=None, v_max=None):
+        """
+        Streamlines, points on semi-transparent shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """
         grid_array = grid_array[self.geodata.pad_width:-self.geodata.pad_width,
                                 self.geodata.pad_width:-self.geodata.pad_width]    
         mask_array = mask_array[self.geodata.pad_width:-self.geodata.pad_width,
@@ -451,6 +598,18 @@ class Plot(Core):
         return im
     
     def plot_flow_maps(self, window_size_factor=None): 
+        """
+        Streamlines, points on semi-transparent shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """
         fig_name='dsla'
         window_title='dsla'     
         tmp_array = self.trace.sla_array[:,:,0].copy()
@@ -475,6 +634,18 @@ class Plot(Core):
                                do_flip_cmap=True, do_balance_cmap=False)
         
     def plot_segments(self,do_shaded_relief=True, window_size_factor=None):
+        """
+        Streamlines, points on semi-transparent shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """
         fig_name='label'
         window_title='label'     
         tmp_array = (self.mapping.coarse_subsegment_array.copy().astype(np.int32))
@@ -496,7 +667,16 @@ class Plot(Core):
                  z_min=None,z_max=None,z_pctile=None, do_shaded_relief=None, 
                  colorbar_size=None, colorbar_aspect=None, grid_alpha=None):
         """
+        Streamlines, points on semi-transparent shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         fig_name='hsl'
         window_title='hsl'     
@@ -550,7 +730,16 @@ class Plot(Core):
                            contour_label_suffix=None,
                            contour_label_fontsize=None, do_plot_contours=None):
         """
+        Streamlines, points on semi-transparent shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         fig_name='hsl_contours'
         window_title='hsl contours'    
@@ -641,7 +830,16 @@ class Plot(Core):
     def plot_aspect(self, window_size_factor=None,cmap=None,do_plot_contours=None,
                     contour_label_suffix=None, contour_label_fontsize=None):
         """
+        Streamlines, points on semi-transparent shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         fig_name='aspect'
         window_title='aspect'
@@ -707,6 +905,18 @@ class Plot(Core):
         self._record_fig(fig_name,fig)
 
     def plot_hsl_aspect_distribution(self, window_size_factor=None, cmap=None):
+        """
+        Streamlines, points on semi-transparent shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """
         try:
             hsl_aspect_array = self.mapping.hsl_aspect_averages_array
         except: 
@@ -806,7 +1016,16 @@ class Plot(Core):
                               contour_interval=None, linewidth=None,
                               contour_label_suffix='m', contour_label_fontsize=12):
         """
+        Streamlines, points on semi-transparent shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         x_pixel_centers_array,y_pixel_centers_array \
             = np.meshgrid(self.geodata.x_roi_n_pixel_centers,
@@ -834,7 +1053,16 @@ class Plot(Core):
 
     def plot_hsl_distributions(self, x_stretch=None):
         """
+        Streamlines, points on semi-transparent shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         self.print('Plotting hillslope length distributions...')
         df = self.mapping.hsl_aspect_df    
@@ -1006,7 +1234,16 @@ class Plot(Core):
                           colorbar_title=None, colorbar_aspect=0.07,
                           colorbar_size=4, grid_alpha=None, extent=None):
         """
+        Streamlines, points on semi-transparent shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         if mask_array is None:
             mask_array = np.zeros_like(grid_array).astype(np.bool)
@@ -1093,6 +1330,15 @@ class Plot(Core):
     def plot_updownstreamlines_overlay(self,axes,do_down=True):
         """
         Up or downstreamlines 
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         if do_down:
             up_or_down_str = 'down'
@@ -1165,6 +1411,15 @@ class Plot(Core):
     def plot_classical_streamlines(self, window_size_factor=None):
         """
         Classic streamlines on color shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
                                     y_pixel_scale=self.geodata.roi_pixel_size,
@@ -1183,6 +1438,15 @@ class Plot(Core):
                                                vec_alpha=None, vec_scale=None):
         """
         Classic streamlines and gradient vector field on color shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
                                     y_pixel_scale=self.geodata.roi_pixel_size,
@@ -1209,6 +1473,15 @@ class Plot(Core):
     def plot_classical_streamlines_overlay(self,axes, sl_color='blue'):
         """
         Classic streamlines (overlay method)
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         x_pixel_centers_array,y_pixel_centers_array \
             = np.meshgrid(self.geodata.x_roi_n_pixel_centers,
@@ -1230,6 +1503,15 @@ class Plot(Core):
                                    vec_color='purple',vec_alpha=0.5, vec_scale=30):
         """
         Topographic gradient vector field on color shaded relief
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
                                     y_pixel_scale=self.geodata.roi_pixel_size,
@@ -1247,6 +1529,15 @@ class Plot(Core):
                                            vec_scale=30):
         """
        Topographic gradient vector field (overlay method)
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         max_dim = max(self.geodata.roi_array.shape)
         if self.gradient_vector_scale!='none':
@@ -1296,6 +1587,15 @@ class Plot(Core):
     def plot_blockages_overlay(self,axes,color='k',shape='s'):
         """
         Blocked zone pixels
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         # Blocked outflows (narrow diagonal outflows)
         if self.state.noisy:
@@ -1325,6 +1625,15 @@ class Plot(Core):
     def plot_loops_overlay(self,axes,color='k',shape='o'):
         """
         Loop zone pixels
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         try:
             self.preprocess.where_looped_array
@@ -1342,6 +1651,15 @@ class Plot(Core):
     def plot_seed_points_overlay(self,axes,color='k',marker=',',size=2):
         """
         Seed points
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         if self.seed_point_marker_size==0:
             marker = marker
@@ -1365,6 +1683,15 @@ class Plot(Core):
     def plot_distributions(self):
         """
         Plot probability distributions of processed streamline data.
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         self.print('Plotting distributions...')
 
@@ -1399,6 +1726,15 @@ class Plot(Core):
                           title='',x_label='',y_label=''):
         """
         TBD
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         window_title=fig_name
 
@@ -1491,6 +1827,15 @@ class Plot(Core):
     def plot_marginal_pdf_dsla(self):
         """
         TBD
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         fig_name = 'marginal_pdf_dsla'
         title = r'Downstreamline length distribution $f(\log(L_{md}))$'
@@ -1507,6 +1852,15 @@ class Plot(Core):
     def plot_marginal_pdf_usla(self):
         """
         TBD
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         fig_name = 'marginal_pdf_usla'
         title = r'Upstreamline length distribution $f(\log(L_{mu}))$'
@@ -1591,6 +1945,15 @@ class Plot(Core):
                        do_plot_mode=True, do_overlay_histogram=False):
         """
         TBD
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         window_title=fig_name
 

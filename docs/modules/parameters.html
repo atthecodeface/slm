@@ -33,13 +33,25 @@
             
   <div class="section" id="module-streamlines.parameters">
 <span id="parameters-py"></span><h1><code class="docutils literal notranslate"><span class="pre">parameters.py</span></code><a class="headerlink" href="#module-streamlines.parameters" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
 <p>Read/write/assign the data contained in the <a class="reference internal" href="streamlining.html#streamlines.streamlining.Streamlining" title="streamlines.streamlining.Streamlining"><code class="xref py py-class docutils literal notranslate"><span class="pre">Streamlining</span></code></a> object,
 which includes all the parameters used to control streamline computation
 and all the data arrays used to hold their results.</p>
+<hr class="docutils" />
+<p>Requires <a class="reference external" href="https://docs.python.org/3/library/json.html">json</a>.</p>
+<hr class="docutils" />
 <dl class="function">
 <dt id="streamlines.parameters.read_json_file">
 <code class="descclassname">streamlines.parameters.</code><code class="descname">read_json_file</code><span class="sig-paren">(</span><em>parameter_file_list</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.parameters.read_json_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load and parse a list of JSON parameters files into a parameters dict.</p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parameter_file_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – JSON parameters files to be read and parsed</td>
+</tr>
+</tbody>
+</table>
+<p>Load and parse a list of JSON parameters files into a parameters dict.</p>
 <p>Step through a list of JSON parameters files (usually “defaults.json”
 and the job JSON file).
 Parse each into a parameters dict, ensuring that subsequent JSON parameters
@@ -48,11 +60,9 @@ override any set by previous JSON files.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parameter_file_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – JSON parameters files to be read and parsed</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">workflow parameter dictionary</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">workflow parameter dictionary</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></td>
 </tr>
 </tbody>
 </table>
@@ -61,23 +71,27 @@ override any set by previous JSON files.</p>
 <dl class="function">
 <dt id="streamlines.parameters.import_parameters">
 <code class="descclassname">streamlines.parameters.</code><code class="descname">import_parameters</code><span class="sig-paren">(</span><em>parameters_path</em>, <em>parameters_file</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.parameters.import_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load JSON parameters files (defaults and job) and parse them in turn to
-generate a workflow parameters dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>parameters_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – path to JSON parameters files (broken out as OS path list)</li>
 <li><strong>parameters_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – name of job JSON parameters file</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">workflow parameter dictionary</p>
-</td>
+</tbody>
+</table>
+<p>Load JSON parameters files (defaults and job) and parse them in turn to
+generate a workflow parameters dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">workflow parameter dictionary</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
-</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></td>
 </tr>
 </tbody>
 </table>
@@ -86,9 +100,19 @@ generate a workflow parameters dictionary.</p>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
 <span class="sd">Read/write/assign the data contained in the :class:`.Streamlining` object, </span>
 <span class="sd">which includes all the parameters used to control streamline computation </span>
 <span class="sd">and all the data arrays used to hold their results.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Requires `json`_.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">.. _json: https://docs.python.org/3/library/json.html</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -102,6 +126,9 @@ generate a workflow parameters dictionary.</p>
 
 <span class="k">def</span> <span class="nf">read_json_file</span><span class="p">(</span><span class="n">parameter_file_list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        parameter_file_list (list): JSON parameters files to be read and parsed</span>
+
 <span class="sd">    Load and parse a list of JSON parameters files into a parameters dict.</span>
 
 <span class="sd">    Step through a list of JSON parameters files (usually &quot;defaults.json&quot; </span>
@@ -109,9 +136,6 @@ generate a workflow parameters dictionary.</p>
 <span class="sd">    Parse each into a parameters dict, ensuring that subsequent JSON parameters</span>
 <span class="sd">    override any set by previous JSON files.</span>
 <span class="sd">    </span>
-<span class="sd">    Args:</span>
-<span class="sd">        parameter_file_list (list): JSON parameters files to be read and parsed</span>
-
 <span class="sd">    Return:</span>
 <span class="sd">        dict:  workflow parameter dictionary</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -150,13 +174,13 @@ generate a workflow parameters dictionary.</p>
 
 <span class="k">def</span> <span class="nf">import_parameters</span><span class="p">(</span><span class="n">parameters_path</span><span class="p">,</span> <span class="n">parameters_file</span><span class="p">):</span> <span class="c1">#,do_reload_state=False</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Load JSON parameters files (defaults and job) and parse them in turn to </span>
-<span class="sd">    generate a workflow parameters dictionary. </span>
-<span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        parameters_path (list): path to JSON parameters files (broken out as OS path list)</span>
 <span class="sd">        parameters_file (str): name of job JSON parameters file</span>
 
+<span class="sd">    Load JSON parameters files (defaults and job) and parse them in turn to </span>
+<span class="sd">    generate a workflow parameters dictionary. </span>
+<span class="sd">    </span>
 <span class="sd">    Return:</span>
 <span class="sd">        dict:  workflow parameter dictionary</span>
 <span class="sd">    &quot;&quot;&quot;</span>        
