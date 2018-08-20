@@ -1,9 +1,19 @@
 """
+---------------------------------------------------------------------
+
 DTM preprocessing steps. 
 
 These include: computing the topographic gradient vector field, fixing loops 
 and blockages, and computing a streamline 'flow speed' field.
 
+Requires `numba`_, `scipy`_.
+
+Imports Core class :doc:`core`.
+
+---------------------------------------------------------------------
+
+.. _numba: https://numba.pydata.org/
+.. _scipy: https://www.scipy.org/
 """
 
 from numba.decorators import njit
@@ -19,16 +29,23 @@ from streamlines.core import Core
 
 pdebug= print
 
-__all__ = ['Preprocess']
+__all__ = ['Preprocess',
+           'compute_topo_gradient_field', 'pad_array', 'pad_arrays',
+           'set_velocity_field', 'set_speed_field',
+           'normalize_velocity_field', 'unnormalize_velocity_field',
+           'compute_gradient_velocity_field', 'get_flow_vector',
+           'check_has_loop', 'break_out_of_loop','find_and_fix_loops',
+           'fix_blockages','has_one_diagonal_outflow','upstream_of_diagonal_outflow'
+           ]
 
 # Not numbarizable
 def compute_topo_gradient_field(roi_array):
     """
-    Differentiate ROI topo in x and y directions using simple numpy method.
-    
     Args:
         roi_array (numpy.array):
-        
+
+    Differentiate ROI topo in x and y directions using simple numpy method.
+    
     Returns:
         numpy.array,numpy.array: ROI topo x gradient, y gradient
     """
@@ -37,12 +54,36 @@ def compute_topo_gradient_field(roi_array):
 # Not numbarizable
 def pad_array(roi_array,pad_width):
     """
+    TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+
+
     Pad ROI-size array around grid edges, repeating edge values.
     """
     return np.pad(roi_array, (int(pad_width),int(pad_width)),'edge')
     
 def pad_arrays(u_array,v_array,pad_width):
     """
+    TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+
+
     Pad gradient vector arrays around grid edges, repeating edge values.
     """
     return pad_array(u_array,pad_width), pad_array(v_array,pad_width)
@@ -50,6 +91,18 @@ def pad_arrays(u_array,v_array,pad_width):
 # @njit(cache=False)
 def set_velocity_field(roi_gradx_array,roi_grady_array):
     """
+    TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+
+
     Convert topo gradient vector field into equivalent 'flow velocity' field.
     """
     return -roi_gradx_array.copy(),-roi_grady_array.copy()
@@ -57,6 +110,17 @@ def set_velocity_field(roi_gradx_array,roi_grady_array):
 # @njit(cache=False)
 def set_speed_field(u_array,v_array):
     """
+    TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+
     Convert 'flow velocity' field into equivalent 'flow speed' field.
     """
     speed_array = np.hypot(u_array,v_array)
@@ -67,13 +131,36 @@ def set_speed_field(u_array,v_array):
 # @njit(cache=False)
 def normalize_velocity_field(u_array,v_array,speed_array):
     """
+    TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+
     Normalize 'flow velocity' field into unit vector field.
     """
     return u_array/speed_array, v_array/speed_array
 
 # @njit(cache=False)
 def unnormalize_velocity_field(u_array,v_array,speed_array):
+    
     """
+    TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+
     Return 'flow velocity' field to true vector magnitudes.
     """
     return u_array*speed_array, v_array*speed_array
@@ -82,16 +169,34 @@ def unnormalize_velocity_field(u_array,v_array,speed_array):
 def compute_gradient_velocity_field(roi_gradx_array, roi_grady_array):
     """
     Compute normalized gradient velocity vector field from ROI topo grid.
-    """
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+    """    
     u_array, v_array = set_velocity_field(roi_gradx_array,roi_grady_array)
     speed_array = set_speed_field(u_array,v_array)
     u_array, v_array = normalize_velocity_field(u_array,v_array,speed_array)
     return u_array, v_array, speed_array
 
 @njit(cache=False)
-def get_flow_vector(nn):
+def get_flow_vector(nn):    
     """
     TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
     """
     dx,dy = np.int8(0),np.int8(0)
     if   nn & 16:   #SW
@@ -113,7 +218,19 @@ def get_flow_vector(nn):
     return dx,dy
 
 @njit(cache=False)
-def check_has_loop(x,y,u,v):
+def check_has_loop(x,y,u,v):    
+    """
+    TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+    """
     uv00 = np.array([u[x,y],v[x,y]],dtype=np.float32)
     uv10 = np.array([u[x+1,y],v[x+1,y]],dtype=np.float32)
     uv11 = np.array([u[x+1,y+1],v[x+1,y+1]],dtype=np.float32)
@@ -138,9 +255,18 @@ def check_has_loop(x,y,u,v):
 def break_out_of_loop(pt, 
                       u_array,v_array,
                       roi_array,
-                      roi_nx,roi_ny):
+                      roi_nx,roi_ny):    
     """
     TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
     """
     def _within_bounds(xi,yi):
         """Return True if point is a valid index of grid"""
@@ -174,9 +300,18 @@ def find_and_fix_loops(roi_array,
                        vecsum_threshold,
                        divergence_threshold,
                        curl_threshold,
-                       verbose):
+                       verbose):    
     """
     TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
     """
     if verbose:
         print('Finding and fixing loops...')
@@ -214,6 +349,15 @@ def fix_blockages(where_blockages_array,
                   verbose):
     """
     TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
     """
     if verbose:
         print('Fixing blockages...')
@@ -236,7 +380,19 @@ def fix_blockages(where_blockages_array,
         
 @njit(cache=False)
 def has_one_diagonal_outflow(pixel_neighborhood):
+    
     """
+    TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+
     Should actually say "has at least one diagonal"
     """
     # Fetch the current (central pixel) elevation
@@ -270,6 +426,15 @@ def has_one_diagonal_outflow(pixel_neighborhood):
 def upstream_of_diagonal_outflow(pixel_neighborhood):
     """
     TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
     """
     nn = np.uint8(0)
     # Scan neighboring pixels
@@ -318,12 +483,33 @@ class Preprocess(Core):
         workflow parameters (various):  TBD
     """   
     def __init__(self,state,imported_parameters,geodata):
+        """
+        TBD
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """
         super().__init__(state,imported_parameters)  
         self.geodata = geodata
 
     def do(self):
         """
         TBD
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         self.print('\n**Preprocess begin**')  
         if self.state.do_condition:
@@ -346,6 +532,18 @@ class Preprocess(Core):
         4. Find and fix loops in gradient vector field
         5. Fix blockages in gradient vector field 
         6. Set initial streamline points ('seeds')
+
+
+        TBD
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         self.print('Precondition gradient vector field by fixing loops & blockages')  
             
@@ -393,6 +591,18 @@ class Preprocess(Core):
 #                                                   self.uv_array[:,:,0]))
     
     def mask_nan_uv(self):
+        """
+        TBD
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """
         self.print('Mask out bad uv pixels...', end='')
         uv_mask_array = np.zeros_like(self.geodata.dtm_mask_array)
         uv_mask_array[  np.isnan(self.uv_array[:,:,0]) 
@@ -403,6 +613,17 @@ class Preprocess(Core):
         
     def raw_gradient_vector_field(self):
         """
+        TBD
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+
         Compute topographic gradient vector field without preconditioning the DTM.
         """     
         self.print('Compute raw gradient vector field')  
@@ -417,6 +638,15 @@ class Preprocess(Core):
     def find_blockages(self):
         """
         TBD
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         self.print('Finding blockages...', end='')
         # Create a blank array - will flag where blockages lie

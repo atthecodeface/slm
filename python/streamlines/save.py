@@ -1,9 +1,17 @@
 """
+---------------------------------------------------------------------
+
 Module providing tools to write results, grids, data to output files.
 
-Requires matplotlib (pyplot).
+Requires `matplotlib`_ (`pyplot`_).
 
-Imports modules from streamlines.core,  streamlines.useful.
+Imports classes and functions from  :doc:`core`, :doc:`useful`.
+
+---------------------------------------------------------------------
+
+.. _matplotlib: https://matplotlib.org/
+.. _pyplot: https://matplotlib.org/api/pyplot_api.html
+
 """
 
 import numpy  as np

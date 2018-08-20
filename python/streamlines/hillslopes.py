@@ -31,13 +31,16 @@ pdebug = print
 
 def link_hillslopes( cl_state, info, data, verbose):
     """
-    Link hillslope pixels downstream.
-    
     Args:
         cl_state (obj):
         info (obj):
         data (obj):
         verbose (bool):
+        
+    Link hillslope pixels downstream.
+    
+    Returns:
+        bool: flag false if failure occurs because seed points list is empty
         
     """
     vprint(verbose,'Linking hillslopes...')

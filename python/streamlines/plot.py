@@ -1,9 +1,20 @@
 """
+---------------------------------------------------------------------
+
 Module handling map and graph plotting.
 
-Requires matplotlib, random, mpl_toolkits, colorsys, scipy.
+Requires `matplotlib`_, `random`_, `mpl_toolkits`_, `colorsys`_, `scipy`_.
 
-Imports modules from streamlines.core.
+Imports Core class :doc:`core`.
+
+---------------------------------------------------------------------
+
+.. _matplotlib: https://matplotlib.org/
+.. _scipy: https://www.scipy.org/
+.. _random: https://docs.python.org/3/library/random.html
+.. _mpl_toolkits: https://matplotlib.org/mpl_toolkits/index.html
+.. _colorsys: https://docs.python.org/3/library/colorsys.html
+
 """
 # Notes on potentially useful mpl:
 #  plt.style.use('classic')

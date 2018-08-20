@@ -1,7 +1,7 @@
 """
 ---------------------------------------------------------------------
 
-HSL mapping module. 
+Hillslope length (HSL) mapping module. 
 
 Requires `pandas`_, `sklearn`_, `skimage`_, `scipy`_, `skfmm`_. 
 

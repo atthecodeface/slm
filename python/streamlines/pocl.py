@@ -1,5 +1,20 @@
 """
-Prep PyOpenCL kernel
+---------------------------------------------------------------------
+
+Helper class and methods for working with an OpenCL kernel.
+
+Requires `PyOpenCL`_.
+
+Imports streamlines module :doc:`pocl`.
+Imports functions from streamlines module :doc:`useful`.
+
+---------------------------------------------------------------------
+
+
+.. _OpenCL: https://www.khronos.org/opencl
+.. _PyOpenCL: https://documen.tician.de/pyopencl/index.html
+
+
 """
 
 import pyopencl       as cl
@@ -22,8 +37,32 @@ __all__ = ['Initialize_cl',
 
 pdebug = print
 
-class Initialize_cl():
-    def __init__(self, cl_src_path, which_cl_platform, which_cl_device ):
+class Initialize_cl():     
+    """
+    TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+    """
+    def __init__(self, cl_src_path, which_cl_platform, which_cl_device ):    
+        """
+        TBD
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """
         # Prepare CL essentials
         self.platform, self.device, self.context \
             = prepare_cl_context(which_cl_platform,which_cl_device)
@@ -331,7 +370,19 @@ def report_build_log(program, device, verbose):
     if len(build_log.replace(' ',''))>0:
         vprint(verbose,'\nOpenCL build log: {}'.format(build_log))
 
-def report_progress(vprogress, x, n, downup_step=None, end=''):
+def report_progress(vprogress, x, n, downup_step=None, end=''):    
+    """
+    TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+    """
     if downup_step[1]==1:
         progress = (x/n)*100.0
     else:
@@ -342,7 +393,19 @@ def report_progress(vprogress, x, n, downup_step=None, end=''):
 def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size, 
                                      n_work_items, chunk_size_factor=10, 
                                      max_time_per_kernel=4.0, downup_step=(1,1),
-                                     verbose=True, vprogress=False):
+                                     verbose=True, vprogress=False):    
+    """
+    TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+    """
     work_size  = n_work_items*int(np.ceil(global_size[0]/n_work_items))
     work_left  = work_size
     chunk_size = min(n_work_items*chunk_size_factor,work_left)
@@ -380,7 +443,19 @@ def adaptive_enqueue_nd_range_kernel(queue, kernel, global_size, local_size,
                     downup_step=downup_step, end='\n')
     return cumulative_time
 
-def read_kernel_source(cl_src_path, cl_files):
+def read_kernel_source(cl_src_path, cl_files):    
+    """
+    TBD
+    
+    Args:
+        TBD (TBD): 
+    
+    TBD
+
+    Returns:
+        TBD: 
+        TBD
+    """
     kernel_source = ''
     for cl_file in cl_files:
         with open(os.path.join(cl_src_path,cl_file), 'r') as fp:

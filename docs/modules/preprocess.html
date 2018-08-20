@@ -33,9 +33,13 @@
             
   <div class="section" id="module-streamlines.preprocess">
 <span id="preprocess-py"></span><h1><code class="docutils literal notranslate"><span class="pre">preprocess.py</span></code><a class="headerlink" href="#module-streamlines.preprocess" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
 <p>DTM preprocessing steps.</p>
 <p>These include: computing the topographic gradient vector field, fixing loops
 and blockages, and computing a streamline ‘flow speed’ field.</p>
+<p>Requires <a class="reference external" href="https://numba.pydata.org/">numba</a>, <a class="reference external" href="https://www.scipy.org/">scipy</a>.</p>
+<p>Imports Core class <a class="reference internal" href="core.html"><span class="doc">core.py</span></a>.</p>
+<hr class="docutils" />
 <dl class="class">
 <dt id="streamlines.preprocess.Preprocess">
 <em class="property">class </em><code class="descclassname">streamlines.preprocess.</code><code class="descname">Preprocess</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>geodata</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.Preprocess" title="Permalink to this definition">¶</a></dt>
@@ -65,6 +69,31 @@ bivariate spline interpolator functions at each grid cell.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="streamlines.preprocess.Preprocess.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>geodata</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.Preprocess.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="streamlines.preprocess.Preprocess.conditioned_gradient_vector_field">
 <code class="descname">conditioned_gradient_vector_field</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.Preprocess.conditioned_gradient_vector_field" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute topographic gradient vector field on a preconditioned DTM.</p>
@@ -77,36 +106,530 @@ bivariate spline interpolator functions at each grid cell.</p>
 <li>Fix blockages in gradient vector field</li>
 <li>Set initial streamline points (‘seeds’)</li>
 </ol>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="streamlines.preprocess.Preprocess.do">
 <code class="descname">do</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.Preprocess.do" title="Permalink to this definition">¶</a></dt>
 <dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="streamlines.preprocess.Preprocess.find_blockages">
 <code class="descname">find_blockages</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.Preprocess.find_blockages" title="Permalink to this definition">¶</a></dt>
 <dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.preprocess.Preprocess.mask_nan_uv">
+<code class="descname">mask_nan_uv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.Preprocess.mask_nan_uv" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="streamlines.preprocess.Preprocess.raw_gradient_vector_field">
 <code class="descname">raw_gradient_vector_field</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.Preprocess.raw_gradient_vector_field" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute topographic gradient vector field without preconditioning the DTM.</p>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+<p>Compute topographic gradient vector field without preconditioning the DTM.</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.preprocess.compute_topo_gradient_field">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">compute_topo_gradient_field</code><span class="sig-paren">(</span><em>roi_array</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.compute_topo_gradient_field" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>roi_array</strong> (<em>numpy.array</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>Differentiate ROI topo in x and y directions using simple numpy method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">ROI topo x gradient, y gradient</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">numpy.array,numpy.array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.preprocess.pad_array">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">pad_array</code><span class="sig-paren">(</span><em>roi_array</em>, <em>pad_width</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.pad_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+<p>Pad ROI-size array around grid edges, repeating edge values.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.preprocess.pad_arrays">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">pad_arrays</code><span class="sig-paren">(</span><em>u_array</em>, <em>v_array</em>, <em>pad_width</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.pad_arrays" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+<p>Pad gradient vector arrays around grid edges, repeating edge values.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.preprocess.set_velocity_field">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">set_velocity_field</code><span class="sig-paren">(</span><em>roi_gradx_array</em>, <em>roi_grady_array</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.set_velocity_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+<p>Convert topo gradient vector field into equivalent ‘flow velocity’ field.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.preprocess.set_speed_field">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">set_speed_field</code><span class="sig-paren">(</span><em>u_array</em>, <em>v_array</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.set_speed_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+<p>Convert ‘flow velocity’ field into equivalent ‘flow speed’ field.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.preprocess.normalize_velocity_field">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">normalize_velocity_field</code><span class="sig-paren">(</span><em>u_array</em>, <em>v_array</em>, <em>speed_array</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.normalize_velocity_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+<p>Normalize ‘flow velocity’ field into unit vector field.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.preprocess.unnormalize_velocity_field">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">unnormalize_velocity_field</code><span class="sig-paren">(</span><em>u_array</em>, <em>v_array</em>, <em>speed_array</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.unnormalize_velocity_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+<p>Return ‘flow velocity’ field to true vector magnitudes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="streamlines.preprocess.compute_gradient_velocity_field">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">compute_gradient_velocity_field</code><span class="sig-paren">(</span><em>roi_gradx_array</em>, <em>roi_grady_array</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.compute_gradient_velocity_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute normalized gradient velocity vector field from ROI topo grid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.preprocess.get_flow_vector">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">get_flow_vector</code><a class="headerlink" href="#streamlines.preprocess.get_flow_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.preprocess.check_has_loop">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">check_has_loop</code><a class="headerlink" href="#streamlines.preprocess.check_has_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.preprocess.break_out_of_loop">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">break_out_of_loop</code><a class="headerlink" href="#streamlines.preprocess.break_out_of_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.preprocess.find_and_fix_loops">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">find_and_fix_loops</code><a class="headerlink" href="#streamlines.preprocess.find_and_fix_loops" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.preprocess.fix_blockages">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">fix_blockages</code><a class="headerlink" href="#streamlines.preprocess.fix_blockages" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.preprocess.has_one_diagonal_outflow">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">has_one_diagonal_outflow</code><a class="headerlink" href="#streamlines.preprocess.has_one_diagonal_outflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+<p>Should actually say “has at least one diagonal”</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.preprocess.upstream_of_diagonal_outflow">
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">upstream_of_diagonal_outflow</code><a class="headerlink" href="#streamlines.preprocess.upstream_of_diagonal_outflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
 <span class="sd">DTM preprocessing steps. </span>
 
 <span class="sd">These include: computing the topographic gradient vector field, fixing loops </span>
 <span class="sd">and blockages, and computing a streamline &#39;flow speed&#39; field.</span>
 
+<span class="sd">Requires `numba`_, `scipy`_.</span>
+
+<span class="sd">Imports Core class :doc:`core`.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">.. _numba: https://numba.pydata.org/</span>
+<span class="sd">.. _scipy: https://www.scipy.org/</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">numba.decorators</span> <span class="k">import</span> <span class="n">njit</span>
@@ -122,16 +645,23 @@ bivariate spline interpolator functions at each grid cell.</p>
 
 <span class="n">pdebug</span><span class="o">=</span> <span class="nb">print</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Preprocess&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Preprocess&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;compute_topo_gradient_field&#39;</span><span class="p">,</span> <span class="s1">&#39;pad_array&#39;</span><span class="p">,</span> <span class="s1">&#39;pad_arrays&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;set_velocity_field&#39;</span><span class="p">,</span> <span class="s1">&#39;set_speed_field&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;normalize_velocity_field&#39;</span><span class="p">,</span> <span class="s1">&#39;unnormalize_velocity_field&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;compute_gradient_velocity_field&#39;</span><span class="p">,</span> <span class="s1">&#39;get_flow_vector&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;check_has_loop&#39;</span><span class="p">,</span> <span class="s1">&#39;break_out_of_loop&#39;</span><span class="p">,</span><span class="s1">&#39;find_and_fix_loops&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;fix_blockages&#39;</span><span class="p">,</span><span class="s1">&#39;has_one_diagonal_outflow&#39;</span><span class="p">,</span><span class="s1">&#39;upstream_of_diagonal_outflow&#39;</span>
+           <span class="p">]</span>
 
 <span class="c1"># Not numbarizable</span>
 <span class="k">def</span> <span class="nf">compute_topo_gradient_field</span><span class="p">(</span><span class="n">roi_array</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Differentiate ROI topo in x and y directions using simple numpy method.</span>
-<span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        roi_array (numpy.array):</span>
-<span class="sd">        </span>
+
+<span class="sd">    Differentiate ROI topo in x and y directions using simple numpy method.</span>
+<span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        numpy.array,numpy.array: ROI topo x gradient, y gradient</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -140,12 +670,36 @@ bivariate spline interpolator functions at each grid cell.</p>
 <span class="c1"># Not numbarizable</span>
 <span class="k">def</span> <span class="nf">pad_array</span><span class="p">(</span><span class="n">roi_array</span><span class="p">,</span><span class="n">pad_width</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TBD</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
+
+
 <span class="sd">    Pad ROI-size array around grid edges, repeating edge values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">roi_array</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pad_width</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="n">pad_width</span><span class="p">)),</span><span class="s1">&#39;edge&#39;</span><span class="p">)</span>
     
 <span class="k">def</span> <span class="nf">pad_arrays</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">,</span><span class="n">pad_width</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TBD</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
+
+
 <span class="sd">    Pad gradient vector arrays around grid edges, repeating edge values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">pad_array</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">pad_width</span><span class="p">),</span> <span class="n">pad_array</span><span class="p">(</span><span class="n">v_array</span><span class="p">,</span><span class="n">pad_width</span><span class="p">)</span>
@@ -153,6 +707,18 @@ bivariate spline interpolator functions at each grid cell.</p>
 <span class="c1"># @njit(cache=False)</span>
 <span class="k">def</span> <span class="nf">set_velocity_field</span><span class="p">(</span><span class="n">roi_gradx_array</span><span class="p">,</span><span class="n">roi_grady_array</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TBD</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
+
+
 <span class="sd">    Convert topo gradient vector field into equivalent &#39;flow velocity&#39; field.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">roi_gradx_array</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span><span class="o">-</span><span class="n">roi_grady_array</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -160,6 +726,17 @@ bivariate spline interpolator functions at each grid cell.</p>
 <span class="c1"># @njit(cache=False)</span>
 <span class="k">def</span> <span class="nf">set_speed_field</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TBD</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
+
 <span class="sd">    Convert &#39;flow velocity&#39; field into equivalent &#39;flow speed&#39; field.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">speed_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">)</span>
@@ -170,13 +747,36 @@ bivariate spline interpolator functions at each grid cell.</p>
 <span class="c1"># @njit(cache=False)</span>
 <span class="k">def</span> <span class="nf">normalize_velocity_field</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">,</span><span class="n">speed_array</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TBD</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
+
 <span class="sd">    Normalize &#39;flow velocity&#39; field into unit vector field.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">u_array</span><span class="o">/</span><span class="n">speed_array</span><span class="p">,</span> <span class="n">v_array</span><span class="o">/</span><span class="n">speed_array</span>
 
 <span class="c1"># @njit(cache=False)</span>
 <span class="k">def</span> <span class="nf">unnormalize_velocity_field</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">,</span><span class="n">speed_array</span><span class="p">):</span>
+    
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TBD</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
+
 <span class="sd">    Return &#39;flow velocity&#39; field to true vector magnitudes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">u_array</span><span class="o">*</span><span class="n">speed_array</span><span class="p">,</span> <span class="n">v_array</span><span class="o">*</span><span class="n">speed_array</span>
@@ -185,16 +785,34 @@ bivariate spline interpolator functions at each grid cell.</p>
 <span class="k">def</span> <span class="nf">compute_gradient_velocity_field</span><span class="p">(</span><span class="n">roi_gradx_array</span><span class="p">,</span> <span class="n">roi_grady_array</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute normalized gradient velocity vector field from ROI topo grid.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
     <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span> <span class="o">=</span> <span class="n">set_velocity_field</span><span class="p">(</span><span class="n">roi_gradx_array</span><span class="p">,</span><span class="n">roi_grady_array</span><span class="p">)</span>
     <span class="n">speed_array</span> <span class="o">=</span> <span class="n">set_speed_field</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">)</span>
     <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span> <span class="o">=</span> <span class="n">normalize_velocity_field</span><span class="p">(</span><span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">,</span><span class="n">speed_array</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span> <span class="n">speed_array</span>
 
 <span class="nd">@njit</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">get_flow_vector</span><span class="p">(</span><span class="n">nn</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_flow_vector</span><span class="p">(</span><span class="n">nn</span><span class="p">):</span>    
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    TBD</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dx</span><span class="p">,</span><span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">if</span>   <span class="n">nn</span> <span class="o">&amp;</span> <span class="mi">16</span><span class="p">:</span>   <span class="c1">#SW</span>
@@ -216,7 +834,19 @@ bivariate spline interpolator functions at each grid cell.</p>
     <span class="k">return</span> <span class="n">dx</span><span class="p">,</span><span class="n">dy</span>
 
 <span class="nd">@njit</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">check_has_loop</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">check_has_loop</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">):</span>    
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TBD</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">uv00</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">],</span><span class="n">v</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
     <span class="n">uv10</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u</span><span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="p">],</span><span class="n">v</span><span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="p">]],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
     <span class="n">uv11</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u</span><span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="n">v</span><span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">]],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
@@ -241,9 +871,18 @@ bivariate spline interpolator functions at each grid cell.</p>
 <span class="k">def</span> <span class="nf">break_out_of_loop</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> 
                       <span class="n">u_array</span><span class="p">,</span><span class="n">v_array</span><span class="p">,</span>
                       <span class="n">roi_array</span><span class="p">,</span>
-                      <span class="n">roi_nx</span><span class="p">,</span><span class="n">roi_ny</span><span class="p">):</span>
+                      <span class="n">roi_nx</span><span class="p">,</span><span class="n">roi_ny</span><span class="p">):</span>    
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    TBD</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">_within_bounds</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return True if point is a valid index of grid&quot;&quot;&quot;</span>
@@ -277,9 +916,18 @@ bivariate spline interpolator functions at each grid cell.</p>
                        <span class="n">vecsum_threshold</span><span class="p">,</span>
                        <span class="n">divergence_threshold</span><span class="p">,</span>
                        <span class="n">curl_threshold</span><span class="p">,</span>
-                       <span class="n">verbose</span><span class="p">):</span>
+                       <span class="n">verbose</span><span class="p">):</span>    
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    TBD</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Finding and fixing loops...&#39;</span><span class="p">)</span>
@@ -317,6 +965,15 @@ bivariate spline interpolator functions at each grid cell.</p>
                   <span class="n">verbose</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    TBD</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Fixing blockages...&#39;</span><span class="p">)</span>
@@ -339,7 +996,19 @@ bivariate spline interpolator functions at each grid cell.</p>
         
 <span class="nd">@njit</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">has_one_diagonal_outflow</span><span class="p">(</span><span class="n">pixel_neighborhood</span><span class="p">):</span>
+    
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TBD</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
+
 <span class="sd">    Should actually say &quot;has at least one diagonal&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Fetch the current (central pixel) elevation</span>
@@ -373,6 +1042,15 @@ bivariate spline interpolator functions at each grid cell.</p>
 <span class="k">def</span> <span class="nf">upstream_of_diagonal_outflow</span><span class="p">(</span><span class="n">pixel_neighborhood</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    TBD</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TBD (TBD): </span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TBD: </span>
+<span class="sd">        TBD</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">nn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="c1"># Scan neighboring pixels</span>
@@ -421,12 +1099,33 @@ bivariate spline interpolator functions at each grid cell.</p>
 <span class="sd">        workflow parameters (various):  TBD</span>
 <span class="sd">    &quot;&quot;&quot;</span>   
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span><span class="n">geodata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TBD</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            TBD (TBD): </span>
+<span class="sd">        </span>
+<span class="sd">        TBD</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            TBD: </span>
+<span class="sd">            TBD</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">)</span>  
         <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span> <span class="o">=</span> <span class="n">geodata</span>
 
     <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TBD</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            TBD (TBD): </span>
+<span class="sd">        </span>
+<span class="sd">        TBD</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            TBD: </span>
+<span class="sd">            TBD</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">**Preprocess begin**&#39;</span><span class="p">)</span>  
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">do_condition</span><span class="p">:</span>
@@ -449,6 +1148,18 @@ bivariate spline interpolator functions at each grid cell.</p>
 <span class="sd">        4. Find and fix loops in gradient vector field</span>
 <span class="sd">        5. Fix blockages in gradient vector field </span>
 <span class="sd">        6. Set initial streamline points (&#39;seeds&#39;)</span>
+
+
+<span class="sd">        TBD</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            TBD (TBD): </span>
+<span class="sd">        </span>
+<span class="sd">        TBD</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            TBD: </span>
+<span class="sd">            TBD</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Precondition gradient vector field by fixing loops &amp; blockages&#39;</span><span class="p">)</span>  
             
@@ -496,6 +1207,18 @@ bivariate spline interpolator functions at each grid cell.</p>
 <span class="c1">#                                                   self.uv_array[:,:,0]))</span>
     
     <span class="k">def</span> <span class="nf">mask_nan_uv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TBD</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            TBD (TBD): </span>
+<span class="sd">        </span>
+<span class="sd">        TBD</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            TBD: </span>
+<span class="sd">            TBD</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Mask out bad uv pixels...&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="n">uv_mask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">dtm_mask_array</span><span class="p">)</span>
         <span class="n">uv_mask_array</span><span class="p">[</span>  <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uv_array</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">])</span> 
@@ -506,6 +1229,17 @@ bivariate spline interpolator functions at each grid cell.</p>
         
     <span class="k">def</span> <span class="nf">raw_gradient_vector_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TBD</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            TBD (TBD): </span>
+<span class="sd">        </span>
+<span class="sd">        TBD</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            TBD: </span>
+<span class="sd">            TBD</span>
+
 <span class="sd">        Compute topographic gradient vector field without preconditioning the DTM.</span>
 <span class="sd">        &quot;&quot;&quot;</span>     
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Compute raw gradient vector field&#39;</span><span class="p">)</span>  
@@ -520,6 +1254,15 @@ bivariate spline interpolator functions at each grid cell.</p>
     <span class="k">def</span> <span class="nf">find_blockages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TBD</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            TBD (TBD): </span>
+<span class="sd">        </span>
+<span class="sd">        TBD</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            TBD: </span>
+<span class="sd">            TBD</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Finding blockages...&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="c1"># Create a blank array - will flag where blockages lie</span>

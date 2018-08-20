@@ -33,14 +33,17 @@ pdebug = print
 
 def segment_channels( cl_state, info, data, verbose ):
     """
-    Label channel confluences.
-    
     Args:
         cl_state (obj):
         info (obj):
         data (obj):
         verbose (bool):
-        
+
+    Segment channels.
+    
+    
+    Returns:
+        bool: flag false if failure occurs because seed points list is empty        
     """
     vprint(verbose,'Segmenting channels...',end='')
     
@@ -91,13 +94,16 @@ def segment_channels( cl_state, info, data, verbose ):
 
 def segment_hillslopes( cl_state, info, data, verbose ):
     """
-    Label hillslope pixels.
-    
     Args:
         cl_state (obj):
         info (obj):
         data (obj):
         verbose (bool):
+    
+    Segment hillslopes.
+    
+    Returns:
+        bool: flag false if failure occurs because seed points list is empty        
         
     """
     vprint(verbose,'Segmenting hillslopes...')
@@ -141,14 +147,17 @@ def segment_hillslopes( cl_state, info, data, verbose ):
 
 def subsegment_flanks( cl_state, info, data, verbose ):
     """
-    Subsegment left (and implicitly right) flanks.
-    
     Args:
         cl_state (obj):
         info (obj):
         data (obj):
         verbose (bool):
         
+    Subsegment left (and implicitly right) flanks.
+    
+    
+    Returns:
+        bool: flag false if failure occurs because seed points list is empty        
     """
     vprint(verbose,'Subsegmenting left & right flanks...',end='')
     
