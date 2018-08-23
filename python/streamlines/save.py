@@ -3,9 +3,11 @@
 
 Module providing tools to write results, grids, data to output files.
 
-Requires `matplotlib`_ (`pyplot`_).
+Requires Python packages/modules:
+  -  :mod:`matplotlib.pyplot`
 
-Imports classes and functions from  :doc:`core`, :doc:`useful`.
+
+Imports :class:`.Core` class and functions from the :mod:`.useful` module.
 
 ---------------------------------------------------------------------
 

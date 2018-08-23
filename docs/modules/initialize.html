@@ -34,41 +34,77 @@
   <div class="section" id="module-streamlines.initialize">
 <span id="initialize-py"></span><h1><code class="docutils literal notranslate"><span class="pre">initialize.py</span></code><a class="headerlink" href="#module-streamlines.initialize" title="Permalink to this headline">¶</a></h1>
 <hr class="docutils" />
-<p>IPython config.</p>
-<p>Sets up IPython environment if we’re running in a Jupyter notebook (or an IPython console).</p>
+<p>Config to run <a class="reference internal" href="../index.html#module-slm" title="slm"><code class="xref py py-mod docutils literal notranslate"><span class="pre">slm</span></code></a> in <a class="reference external" href="https://ipython.readthedocs.io/en/stable/">IPython</a>.</p>
+<p>Sets up <a class="reference external" href="https://ipython.readthedocs.io/en/stable/">IPython</a> environment if we’re running <a class="reference internal" href="../index.html#module-slm" title="slm"><code class="xref py py-mod docutils literal notranslate"><span class="pre">slm</span></code></a> in a <a class="reference external" href="https://jupyter-notebook.readthedocs.io/en/stable/">Jupyter notebook</a> or
+<a class="reference external" href="https://qtconsole.readthedocs.io/en/stable/">Jupyter QtConsole</a>.</p>
+<blockquote>
+<div><ul class="simple">
+<li>prepares Matplotlib to display inline and at a ‘retina’ resolution – if this
+is not available, a benign error report is made and progress continues</li>
+<li>enables automatic reloading of <a class="reference internal" href="../index.html#module-slm" title="slm"><code class="xref py py-mod docutils literal notranslate"><span class="pre">slm</span></code></a> (in case the code has been modded) when
+a notebook is re-run in-situ</li>
+<li>enables piping of print/error output from the GPU OpenCL device – useful for
+monitoring progress of slow jobs, but prone to problems</li>
+</ul>
+</div></blockquote>
 <hr class="docutils" />
-<p>Requires <a class="reference external" href="https://matplotlib.org/">matplotlib</a>, <a class="reference external" href="https://ipython.org/">IPython</a>, and IPython extensions
-<a class="reference external" href="https://ipython.org/ipython-doc/3/config/extensions/autoreload.html">autoreload</a> and <a class="reference external" href="https://github.com/minrk/wurlitzer">Wurlitzer</a>.</p>
-<p><a class="reference external" href="https://github.com/minrk/wurlitzer">Wurlitzer</a> provides C-level stdout/stderr pipes in Python, which allows
-<strong>slm</strong> to connect to pipes of stdout/stderr from OpenCL kernels,
-i.e., to get printf output and error reports from kernel instances, subject
-to the vagaries of GPU-CPU piping.</p>
+<p>Requires <a class="reference external" href="https://matplotlib.org/">matplotlib</a> and <a class="reference external" href="https://ipython.readthedocs.io/en/stable/">IPython</a>.</p>
+<p>Uses IPython extensions <a class="reference external" href="https://ipython.org/ipython-doc/3/config/extensions/autoreload.html">autoreload</a> and <a class="reference external" href="https://github.com/minrk/wurlitzer">Wurlitzer</a>.</p>
+<p>The  <a class="reference external" href="https://ipython.org/ipython-doc/3/config/extensions/autoreload.html">autoreload</a> extension forces the <a class="reference internal" href="../index.html#module-slm" title="slm"><code class="xref py py-mod docutils literal notranslate"><span class="pre">slm</span></code></a> package to be reloaded on
+restart. This makes code modding and subsequent rerunning of a notebook
+smooth and seamless. It is not needed for normal operation, and if unavailable processing
+continues regardless.</p>
+<p>The <a class="reference external" href="https://github.com/minrk/wurlitzer">Wurlitzer</a>  extension provides C-level stdout/stderr pipes in Python, which allows
+<a class="reference internal" href="../index.html#module-slm" title="slm"><code class="xref py py-mod docutils literal notranslate"><span class="pre">slm</span></code></a> to connect to pipes of stdout/stderr from OpenCL kernels,
+i.e., to get to read printf output and error reports from kernel instances, subject
+to the vagaries of GPU-CPU piping. It is useful but not required for normal operation
+of <a class="reference internal" href="../index.html#module-slm" title="slm"><code class="xref py py-mod docutils literal notranslate"><span class="pre">slm</span></code></a>.</p>
 <hr class="docutils" />
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">---------------------------------------------------------------------</span>
 
-<span class="sd">IPython config.</span>
+<span class="sd">Config to run :py:mod:`slm` in `IPython`_.</span>
 
-<span class="sd">Sets up IPython environment if we&#39;re running in a Jupyter notebook (or an IPython console).</span>
+<span class="sd">Sets up `IPython`_ environment if we&#39;re running :py:mod:`slm` in a `Jupyter notebook`_ or </span>
+<span class="sd">`Jupyter QtConsole`_. </span>
+
+<span class="sd"> - prepares Matplotlib to display inline and at a &#39;retina&#39; resolution -- if this</span>
+<span class="sd">   is not available, a benign error report is made and progress continues</span>
+<span class="sd"> - enables automatic reloading of :py:mod:`slm` (in case the code has been modded) when </span>
+<span class="sd">   a notebook is re-run in-situ</span>
+<span class="sd"> - enables piping of print/error output from the GPU OpenCL device -- useful for </span>
+<span class="sd">   monitoring progress of slow jobs, but prone to problems</span>
+
+
 
 <span class="sd">---------------------------------------------------------------------</span>
 
-<span class="sd">Requires `matplotlib`_, `IPython`_, and IPython extensions </span>
-<span class="sd">`autoreload`_ and `Wurlitzer`_.</span>
+<span class="sd">Requires `matplotlib`_ and `IPython`_.</span>
 
-<span class="sd">`Wurlitzer`_ provides C-level stdout/stderr pipes in Python, which allows</span>
-<span class="sd">**slm** to connect to pipes of stdout/stderr from OpenCL kernels, </span>
-<span class="sd">i.e., to get printf output and error reports from kernel instances, subject</span>
-<span class="sd">to the vagaries of GPU-CPU piping.</span>
+<span class="sd">Uses IPython extensions `autoreload`_ and `Wurlitzer`_.</span>
+
+<span class="sd">The  `autoreload`_ extension forces the :py:mod:`slm` package to be reloaded on </span>
+<span class="sd">restart. This makes code modding and subsequent rerunning of a notebook</span>
+<span class="sd">smooth and seamless. It is not needed for normal operation, and if unavailable processing </span>
+<span class="sd">continues regardless.</span>
+
+<span class="sd">The `Wurlitzer`_  extension provides C-level stdout/stderr pipes in Python, which allows</span>
+<span class="sd">:py:mod:`slm` to connect to pipes of stdout/stderr from OpenCL kernels, </span>
+<span class="sd">i.e., to get to read printf output and error reports from kernel instances, subject</span>
+<span class="sd">to the vagaries of GPU-CPU piping. It is useful but not required for normal operation</span>
+<span class="sd">of :py:mod:`slm`.</span>
 
 <span class="sd">---------------------------------------------------------------------</span>
 
 <span class="sd">.. _matplotlib: https://matplotlib.org/</span>
-<span class="sd">.. _IPython: https://ipython.org/</span>
 <span class="sd">.. _autoreload: https://ipython.org/ipython-doc/3/config/extensions/autoreload.html</span>
 <span class="sd">.. _Wurlitzer: https://github.com/minrk/wurlitzer</span>
+<span class="sd">.. _IPython: https://ipython.readthedocs.io/en/stable/</span>
+<span class="sd">.. _Jupyter notebook: https://jupyter-notebook.readthedocs.io/en/stable/</span>
+<span class="sd">.. _Jupyter QtConsole: https://qtconsole.readthedocs.io/en/stable/</span>
+
 
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -81,29 +117,56 @@ to the vagaries of GPU-CPU piping.</p>
 <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
 
 <span class="k">try</span><span class="p">:</span>
+    <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">magic</span><span class="p">(</span><span class="s2">&quot;config InlineBackend.figure_format = &#39;retina&#39;&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error trying to invoke get_ipython(), probably because not running IPython:&#39;</span><span class="p">,</span> 
+          <span class="n">error</span><span class="p">)</span>
+    <span class="k">pass</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Possibly benign error trying to config Matplotlib backend&#39;</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">traceback</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+    <span class="k">pass</span>
+ 
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">magic</span><span class="p">(</span><span class="s1">&#39;matplotlib inline&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error trying to invoke get_ipython(), probably because not running IPython:&#39;</span><span class="p">,</span> 
+          <span class="n">error</span><span class="p">)</span>
+    <span class="k">pass</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Possibly benign error trying to config Matplotlib backend&#39;</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">traceback</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+    <span class="k">pass</span>
+ 
+<span class="k">try</span><span class="p">:</span>
     <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">magic</span><span class="p">(</span><span class="s1">&#39;load_ext autoreload&#39;</span><span class="p">)</span>
     <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">magic</span><span class="p">(</span><span class="s1">&#39;autoreload 2&#39;</span><span class="p">)</span>
     <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">magic</span><span class="p">(</span><span class="s1">&#39;aimport streamlines&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error trying to invoke get_ipython(), probably because not running IPython:&#39;</span><span class="p">,</span> 
+          <span class="n">error</span><span class="p">)</span>
+    <span class="k">pass</span>
 <span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Possibly benign error trying to config autoreload&#39;</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">traceback</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
     <span class="k">pass</span>
  
 <span class="k">try</span><span class="p">:</span>
     <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">magic</span><span class="p">(</span><span class="s1">&#39;load_ext wurlitzer&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error trying to invoke get_ipython(), probably because not running IPython:&#39;</span><span class="p">,</span> 
+          <span class="n">error</span><span class="p">)</span>
+    <span class="k">pass</span>
 <span class="k">except</span><span class="p">:</span>
-<span class="c1">#     print(&#39;Possibly benign error loading Python &quot;wurlitzer&quot; package,&#39;</span>
-<span class="c1">#           +&#39; used to pipe stdout from GPU back to Jupyter notebook&#39;)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Possibly benign error loading Python &quot;wurlitzer&quot; package,&#39;</span>
+          <span class="o">+</span><span class="s1">&#39; used to pipe stdout from GPU back to Jupyter notebook&#39;</span><span class="p">)</span>
 <span class="c1">#     import traceback</span>
 <span class="c1">#     print(traceback.format_exc())</span>
     <span class="k">pass</span>
  
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">magic</span><span class="p">(</span><span class="s2">&quot;config InlineBackend.figure_format = &#39;retina&#39;&quot;</span><span class="p">)</span>
-    <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">magic</span><span class="p">(</span><span class="s1">&#39;matplotlib inline&#39;</span><span class="p">)</span>
-<span class="k">except</span><span class="p">:</span>
-<span class="c1">#     print(&#39;Possibly benign error trying to config Matplotlib backend&#39;)</span>
-<span class="c1">#     import traceback</span>
-<span class="c1">#     print(traceback.format_exc())</span>
-    <span class="k">pass</span>
 </pre></div>
 </div>
 </div>
@@ -117,7 +180,7 @@ to the vagaries of GPU-CPU piping.</p>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    <img class="logo" src="../_static/../_images/icon3.png" alt="Logo"/>
     
     <h1 class="logo logo-name">Streamlines</h1>
     

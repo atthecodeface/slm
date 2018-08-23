@@ -37,32 +37,43 @@
 <p>This <a class="reference internal" href="#module-streamlines.core" title="streamlines.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code></a> module provides a base initialization class
 that is inherited by each workflow class.
 On instantiation of each such class, the base initialization parses the parameter
-dictionary loaded from the ‘job’ <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">JSON</span></code></a> file specified at the command line,
-extracts the set of parameters pertaining to the workflow class,
+dictionary loaded from the ‘job’ <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">JSON</span></code></a> file specified at the command
+line, extracts the set of parameters pertaining to the workflow class,
 and assigns the values to the workflow class instance accordingly.</p>
 <hr class="docutils" />
-<p>The following workflow classes inherit
-the <a class="reference internal" href="#module-streamlines.core" title="streamlines.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code></a> class:</p>
-<ul class="simple">
-<li><a class="reference internal" href="geodata.html#streamlines.geodata.Geodata" title="streamlines.geodata.Geodata"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.geodata.Geodata</span></code></a></li>
-<li><a class="reference internal" href="preprocess.html#streamlines.preprocess.Preprocess" title="streamlines.preprocess.Preprocess"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.preprocess.Preprocess</span></code></a></li>
-<li><a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.trace.Trace</span></code></a></li>
-<li><a class="reference internal" href="analysis.html#streamlines.analysis.Analysis" title="streamlines.analysis.Analysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.analysis.Analysis</span></code></a></li>
-<li><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.analysis.Mapping</span></code></li>
-<li><a class="reference internal" href="plot.html#streamlines.plot.Plot" title="streamlines.plot.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.plot.Plot</span></code></a></li>
-<li><code class="xref py py-class docutils literal notranslate"><span class="pre">streamlines.plot.Export</span></code></li>
+<p>The following workflow classes inherit the <a class="reference internal" href="#module-streamlines.core" title="streamlines.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code></a> class
+defined here:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="geodata.html#streamlines.geodata.Geodata" title="streamlines.geodata.Geodata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geodata</span></code></a></li>
+<li><a class="reference internal" href="preprocess.html#streamlines.preprocess.Preprocess" title="streamlines.preprocess.Preprocess"><code class="xref py py-class docutils literal notranslate"><span class="pre">Preprocess</span></code></a></li>
+<li><a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a></li>
+<li><a class="reference internal" href="analysis.html#streamlines.analysis.Analysis" title="streamlines.analysis.Analysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">Analysis</span></code></a></li>
+<li><a class="reference internal" href="mapping.html#streamlines.mapping.Mapping" title="streamlines.mapping.Mapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a></li>
+<li><a class="reference internal" href="plot.html#streamlines.plot.Plot" title="streamlines.plot.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a></li>
+<li><a class="reference internal" href="save.html#streamlines.save.Save" title="streamlines.save.Save"><code class="xref py py-class docutils literal notranslate"><span class="pre">Save</span></code></a></li>
 </ul>
+</div></blockquote>
+<hr class="docutils" />
+<dl class="docutils">
+<dt>Requires Python packages/modules:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/3/library/pprint.html#module-pprint" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pprint</span></code></a></li>
+</ul>
+</dd>
+</dl>
 <hr class="docutils" />
 <dl class="class">
 <dt id="streamlines.core.Core">
 <em class="property">class </em><code class="descclassname">streamlines.core.</code><code class="descname">Core</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.core.Core" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class inherited by all workflow classes to provide a one-stop-shop
 initialization that loads up their parameter sets as class instance attributes.</p>
+<p>TBD</p>
 <dl class="method">
 <dt id="streamlines.core.Core.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.core.Core.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize the class instance by loading up parameters as attributes.</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -75,10 +86,11 @@ a <a class="reference external" href="https://docs.python.org/3/library/json.htm
 </tr>
 </tbody>
 </table>
+<p>Initialize the class instance by loading up parameters as attributes.</p>
 <dl class="attribute">
-<dt>
-<code class="descname">Class instance variables</code></dt>
-<dd><p><em>various types</em> – Set according to the parameters sub-dict corresponding to the class name.</p>
+<dt id="streamlines.core.Core.path">
+<code class="descname">path</code><a class="headerlink" href="#streamlines.core.Core.path" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> – path to the <code class="docutils literal notranslate"><span class="pre">Streamlines</span></code> module so we can later find the CL code</p>
 </dd></dl>
 
 <p class="rubric">Example</p>
@@ -118,6 +130,56 @@ will be assigned a sub-dict entitled <em>trace</em> with list items as above
 to record the state of the <a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> object.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="streamlines.core.Core.pprint">
+<code class="descname">pprint</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.core.Core.pprint" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.core.Core.print">
+<code class="descname">print</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.core.Core.print" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TBD</strong> (<em>TBD</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <div class="section" id="code">
@@ -128,22 +190,27 @@ to record the state of the <a class="reference internal" href="trace.html#stream
 <span class="sd">This :mod:`core &lt;streamlines.core&gt;` module provides a base initialization class </span>
 <span class="sd">that is inherited by each workflow class.</span>
 <span class="sd">On instantiation of each such class, the base initialization parses the parameter </span>
-<span class="sd">dictionary loaded from the &#39;job&#39; :py:mod:`JSON &lt;json&gt;` file specified at the command line,</span>
-<span class="sd">extracts the set of parameters pertaining to the workflow class,</span>
+<span class="sd">dictionary loaded from the &#39;job&#39; :py:mod:`JSON &lt;json&gt;` file specified at the command </span>
+<span class="sd">line, extracts the set of parameters pertaining to the workflow class,</span>
 <span class="sd">and assigns the values to the workflow class instance accordingly. </span>
 
 <span class="sd">---------------------------------------------------------------------</span>
 
-<span class="sd">The following workflow classes inherit</span>
-<span class="sd">the :mod:`core &lt;streamlines.core&gt;` class:</span>
+<span class="sd">The following workflow classes inherit the :mod:`core &lt;streamlines.core&gt;` class</span>
+<span class="sd">defined here:</span>
+<span class="sd">  - :class:`.Geodata`</span>
+<span class="sd">  - :class:`.Preprocess`</span>
+<span class="sd">  - :class:`.Trace`</span>
+<span class="sd">  - :class:`.Analysis`</span>
+<span class="sd">  - :class:`.Mapping`</span>
+<span class="sd">  - :class:`.Plot`</span>
+<span class="sd">  - :class:`.Save`</span>
 
-<span class="sd">- :class:`streamlines.geodata.Geodata`</span>
-<span class="sd">- :class:`streamlines.preprocess.Preprocess`</span>
-<span class="sd">- :class:`streamlines.trace.Trace`</span>
-<span class="sd">- :class:`streamlines.analysis.Analysis`</span>
-<span class="sd">- :class:`streamlines.analysis.Mapping`</span>
-<span class="sd">- :class:`streamlines.plot.Plot`</span>
-<span class="sd">- :class:`streamlines.plot.Export`</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Requires Python packages/modules:</span>
+<span class="sd">  -  :mod:`json`</span>
+<span class="sd">  -  :mod:`pprint`</span>
 
 <span class="sd">---------------------------------------------------------------------</span>
 
@@ -163,19 +230,21 @@ to record the state of the <a class="reference internal" href="trace.html#stream
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class inherited by all workflow classes to provide a one-stop-shop </span>
 <span class="sd">    initialization that loads up their parameter sets as class instance attributes.</span>
+<span class="sd">    </span>
+<span class="sd">    TBD</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize the class instance by loading up parameters as attributes.</span>
-
 <span class="sd">        Args:</span>
 <span class="sd">            state (object): The :class:`State &lt;.state.State&gt;` class instance.</span>
 <span class="sd">            imported_parameters (dict): The parameters dictionary loaded from </span>
 <span class="sd">                                         a :py:mod:`JSON &lt;json&gt;` file.</span>
 
+<span class="sd">        Initialize the class instance by loading up parameters as attributes.</span>
+
 <span class="sd">        Attributes:</span>
-<span class="sd">            Class instance variables (various types): </span>
-<span class="sd">                Set according to the parameters sub-dict corresponding to the class name. </span>
+<span class="sd">            path (str): </span>
+<span class="sd">                path to the ``Streamlines`` module so we can later find the CL code</span>
 <span class="sd">        </span>
 <span class="sd">        Example:</span>
 <span class="sd">            When instantiating the :class:`Geodata &lt;.geodata.Geodata&gt;` class, </span>
@@ -272,11 +341,35 @@ to record the state of the <a class="reference internal" href="trace.html#stream
         <span class="n">state</span><span class="o">.</span><span class="n">inventory</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">workflow_class_name</span> <span class="p">:</span> <span class="n">data_dict</span><span class="p">})</span>
 
     <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TBD.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            TBD (TBD): </span>
+<span class="sd">        </span>
+<span class="sd">        TBD</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            TBD: </span>
+<span class="sd">            TBD</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">pprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TBD.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            TBD (TBD): </span>
+<span class="sd">        </span>
+<span class="sd">        TBD</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            TBD: </span>
+<span class="sd">            TBD</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
@@ -294,7 +387,7 @@ to record the state of the <a class="reference internal" href="trace.html#stream
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    <img class="logo" src="../_static/../_images/icon3.png" alt="Logo"/>
     
     <h1 class="logo logo-name">Streamlines</h1>
     

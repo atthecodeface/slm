@@ -3,12 +3,21 @@
 
 DTM preprocessing steps. 
 
-These include: computing the topographic gradient vector field, fixing loops 
-and blockages, and computing a streamline 'flow speed' field.
+These include: 
+ - computing the topographic gradient vector field
+ - fixing loops and blockages
+ - computing a streamline 'flow speed' field
 
-Requires `numba`_, `scipy`_.
+---------------------------------------------------------------------
 
-Imports Core class :doc:`core`.
+Requires Python packages/modules:
+  - :ref:`numba <numba:install_frontpage>` (:ref:`search <numba:search>`)
+  - :mod:`numpy` (linalg.eigvals)
+  - :mod:`scipy.ndimage`
+  - :mod:`dateutil.tz`
+  
+  
+Imports :class:`.Core` class.
 
 ---------------------------------------------------------------------
 
@@ -54,7 +63,7 @@ def compute_topo_gradient_field(roi_array):
 # Not numbarizable
 def pad_array(roi_array,pad_width):
     """
-    TBD
+    Pad ROI-size array around grid edges, repeating edge values.
     
     Args:
         TBD (TBD): 
@@ -65,8 +74,6 @@ def pad_array(roi_array,pad_width):
         TBD: 
         TBD
 
-
-    Pad ROI-size array around grid edges, repeating edge values.
     """
     return np.pad(roi_array, (int(pad_width),int(pad_width)),'edge')
     

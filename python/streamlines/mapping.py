@@ -1,17 +1,36 @@
 """
 ---------------------------------------------------------------------
 
-Hillslope length (HSL) mapping module. 
+Module for mapping channels, channel heads, subcatchment segmentation,
+hillslope length (HSL), and topographic aspect, and for analyzing azimuthal
+variations.
 
 ---------------------------------------------------------------------
 
-Requires `pandas`_, `sklearn`_, `skimage`_, `scipy`_, `skfmm`_. 
+Requires Python packages/modules:
+  -  :mod:`pandas` 
+  -  :mod:`sklearn.preprocessing`
+  -  :mod:`skimage.morphology`
+  -  :mod:`skimage.filters`
+  -  :mod:`scipy.ndimage`
+  -  :mod:`scipy.stats`
+  -  :mod:`scipy.interpolate`
+  -  :mod:`skfmm`
 
+Imports ``Streamlines`` modules:
+  -  :mod:`.connect`
+  -  :mod:`.channelheads`
+  -  :mod:`.countlink`
+  -  :mod:`.label`
+  -  :mod:`.segment`
+  -  :mod:`.hillslopes`
+  -  :mod:`.lengths`
 
-Imports streamlines modules :doc:`connect`, :doc:`channelheads`, 
-:doc:`countlink`, :doc:`label`, :doc:`segment`, :doc:`hillslopes`, :doc:`lengths`.
+Imports classes & functions from:
+  -  :mod:`.core`
+  -  :mod:`.useful`
+  -  :mod:`.pocl`
 
-Imports classes & functions from :doc:`core`, :doc:`useful`, :doc:`pocl`.
 
 ---------------------------------------------------------------------
 
@@ -26,6 +45,7 @@ Imports classes & functions from :doc:`core`, :doc:`useful`, :doc:`pocl`.
 import numpy  as np
 import pandas as pd
 from cmath import rect, polar
+import sklearn
 from sklearn.preprocessing import normalize
 from skimage.morphology    import skeletonize, thin, medial_axis, disk
 from skimage.filters       import gaussian

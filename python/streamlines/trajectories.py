@@ -10,6 +10,7 @@ Basins of interest can be delimited by masking.
 Requires `PyOpenCL`_.
 
 Imports streamlines module :doc:`pocl`.
+
 Imports functions from streamlines module :doc:`useful`.
 
 

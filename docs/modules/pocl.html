@@ -34,10 +34,15 @@
   <div class="section" id="module-streamlines.pocl">
 <span id="pocl-py"></span><h1><code class="docutils literal notranslate"><span class="pre">pocl.py</span></code><a class="headerlink" href="#module-streamlines.pocl" title="Permalink to this headline">¶</a></h1>
 <hr class="docutils" />
-<p>Helper class and methods for working with an OpenCL kernel.</p>
-<p>Requires <a class="reference external" href="https://documen.tician.de/pyopencl/index.html">PyOpenCL</a>.</p>
-<p>Imports streamlines module <a class="reference internal" href="#"><span class="doc">pocl.py</span></a>.
-Imports functions from streamlines module <a class="reference internal" href="useful.html"><span class="doc">useful.py</span></a>.</p>
+<p>Helper tools for working with OpenCL devices via PyOpenCL.</p>
+<dl class="docutils">
+<dt>Requires Python packages/modules:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="https://documen.tician.de/pyopencl/runtime.html#module-pyopencl" title="(in PyOpenCL v2018.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">PyOpenCL</span></code></a></li>
+</ul>
+</dd>
+</dl>
+<p>Imports the <a class="reference internal" href="#module-streamlines.pocl" title="streamlines.pocl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pocl</span></code></a> module as well functions from the <a class="reference internal" href="useful.html#module-streamlines.useful" title="streamlines.useful"><code class="xref py py-mod docutils literal notranslate"><span class="pre">useful</span></code></a> module.</p>
 <hr class="docutils" />
 <dl class="class">
 <dt id="streamlines.pocl.Initialize_cl">
@@ -106,7 +111,7 @@ Imports functions from streamlines module <a class="reference internal" href="us
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">PyOpenCL platform, PyOpenCL device, PyOpenCL context</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Platform" title="(in PyOpenCL v2018.1.1)">pyopencl.Platform</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)">pyopencl.Device</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)">pyopencl.Context</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Platform" title="(in PyOpenCL v2018.2)">pyopencl.Platform</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.2)">pyopencl.Device</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.2)">pyopencl.Context</a></p>
 </td>
 </tr>
 </tbody>
@@ -146,7 +151,7 @@ Imports functions from streamlines module <a class="reference internal" href="us
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>context</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Context</em></a>) – GPU/OpenCL device context</li>
+<li><strong>context</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.2)"><em>pyopencl.Context</em></a>) – GPU/OpenCL device context</li>
 <li><strong>kernel_source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – OpenCL kernel code string</li>
 </ul>
 </td>
@@ -154,7 +159,7 @@ Imports functions from streamlines module <a class="reference internal" href="us
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">PyOpenCL program, PyOpenCL command queue</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Program" title="(in PyOpenCL v2018.1.1)">pyopencl.Program</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_queue.html#pyopencl.CommandQueue" title="(in PyOpenCL v2018.1.1)">pyopencl.CommandQueue</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Program" title="(in PyOpenCL v2018.2)">pyopencl.Program</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_queue.html#pyopencl.CommandQueue" title="(in PyOpenCL v2018.2)">pyopencl.CommandQueue</a></p>
 </td>
 </tr>
 </tbody>
@@ -178,7 +183,7 @@ Imports functions from streamlines module <a class="reference internal" href="us
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">PyOpenCL platform, PyOpenCL device, PyOpenCL context, PyOpenCL program,             PyOpenCL command queue</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Platform" title="(in PyOpenCL v2018.1.1)">pyopencl.Platform</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)">pyopencl.Device</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)">pyopencl.Context</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Program" title="(in PyOpenCL v2018.1.1)">pyopencl.Program</a>,         <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_queue.html#pyopencl.CommandQueue" title="(in PyOpenCL v2018.1.1)">pyopencl.CommandQueue</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Platform" title="(in PyOpenCL v2018.2)">pyopencl.Platform</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.2)">pyopencl.Device</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.2)">pyopencl.Context</a>, <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Program" title="(in PyOpenCL v2018.2)">pyopencl.Program</a>,         <a class="reference external" href="https://documen.tician.de/pyopencl/runtime_queue.html#pyopencl.CommandQueue" title="(in PyOpenCL v2018.2)">pyopencl.CommandQueue</a></p>
 </td>
 </tr>
 </tbody>
@@ -250,8 +255,8 @@ with +1 for downstream and -1 for upstream [‘integration’ mode]</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>device</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Device</em></a>) – </li>
-<li><strong>kernel</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Kernel" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Kernel</em></a>) – </li>
+<li><strong>device</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.2)"><em>pyopencl.Device</em></a>) – </li>
+<li><strong>kernel</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Kernel" title="(in PyOpenCL v2018.2)"><em>pyopencl.Kernel</em></a>) – </li>
 <li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
 </ul>
 </td>
@@ -271,8 +276,8 @@ with +1 for downstream and -1 for upstream [‘integration’ mode]</li>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>cl_platform</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – </li>
 <li><strong>cl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – </li>
-<li><strong>platform</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Platform" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Platform</em></a>) – </li>
-<li><strong>device</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Device</em></a>) – </li>
+<li><strong>platform</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Platform" title="(in PyOpenCL v2018.2)"><em>pyopencl.Platform</em></a>) – </li>
+<li><strong>device</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.2)"><em>pyopencl.Device</em></a>) – </li>
 <li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
 </ul>
 </td>
@@ -290,8 +295,8 @@ with +1 for downstream and -1 for upstream [‘integration’ mode]</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>program</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Program" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Program</em></a>) – </li>
-<li><strong>device</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Device</em></a>) – </li>
+<li><strong>program</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_program.html#pyopencl.Program" title="(in PyOpenCL v2018.2)"><em>pyopencl.Program</em></a>) – </li>
+<li><strong>device</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Device" title="(in PyOpenCL v2018.2)"><em>pyopencl.Device</em></a>) – </li>
 <li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
 </ul>
 </td>
@@ -334,7 +339,7 @@ with +1 for downstream and -1 for upstream [‘integration’ mode]</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>context</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.1.1)"><em>pyopencl.Context</em></a>) – </li>
+<li><strong>context</strong> (<a class="reference external" href="https://documen.tician.de/pyopencl/runtime_platform.html#pyopencl.Context" title="(in PyOpenCL v2018.2)"><em>pyopencl.Context</em></a>) – </li>
 <li><strong>array_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – </li>
 <li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – </li>
 </ul>
@@ -375,12 +380,13 @@ with +1 for downstream and -1 for upstream [‘integration’ mode]</li>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">---------------------------------------------------------------------</span>
 
-<span class="sd">Helper class and methods for working with an OpenCL kernel.</span>
+<span class="sd">Helper tools for working with OpenCL devices via PyOpenCL.</span>
 
-<span class="sd">Requires `PyOpenCL`_.</span>
+<span class="sd">Requires Python packages/modules:</span>
+<span class="sd">  -  :mod:`PyOpenCL &lt;pyopencl&gt;`</span>
 
-<span class="sd">Imports streamlines module :doc:`pocl`.</span>
-<span class="sd">Imports functions from streamlines module :doc:`useful`.</span>
+<span class="sd">Imports the :mod:`.pocl` module as well functions from the :mod:`.useful` module.</span>
+
 
 <span class="sd">---------------------------------------------------------------------</span>
 
@@ -944,7 +950,7 @@ with +1 for downstream and -1 for upstream [‘integration’ mode]</li>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    <img class="logo" src="../_static/../_images/icon3.png" alt="Logo"/>
     
     <h1 class="logo logo-name">Streamlines</h1>
     

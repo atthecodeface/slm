@@ -36,16 +36,16 @@
 <p><a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines</a> workflow can be invoked in several ways.</p>
 <div class="section" id="interactive-ipython-jupyter-notebook">
 <h2>Interactive IPython/Jupyter notebook<a class="headerlink" href="#interactive-ipython-jupyter-notebook" title="Permalink to this headline">¶</a></h2>
-<p>The recommended approach is to deploy <a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines</a> in a Jupyter (browser) session and using
-an IPython notebook.
+<p>The recommended approach is to deploy <a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines</a> in a Jupyter (browser)
+session and using a Jupyter/IPython notebook.
 <a class="reference external" href="https://github.com/cstarknyc/Streamlines/blob/master/Tests">Several example notebooks</a> are provided in the <a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines repo</a>.
-The current development test notebook is: <span class="xref std std-doc">IndianCreekDemo1.ipynb</span></p>
+The current development test notebook is:
+<span class="xref std std-doc">IndianCreekDemo1.ipynb</span></p>
 </div>
 <div class="section" id="non-interactive-python-external-viewer-in-a-unix-shell">
 <h2>Non-interactive Python (external viewer) in a UNIX shell<a class="headerlink" href="#non-interactive-python-external-viewer-in-a-unix-shell" title="Permalink to this headline">¶</a></h2>
 <p>The most direct approach is to invoke <a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines</a> as a Python shell script.
-Instead of using an IPython notebook, execution is determined using command line
-arguments such as these:</p>
+Execution is invoked from the command line with <code class="docutils literal notranslate"><span class="pre">slm</span></code> arguments such as these:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">streamlines</span><span class="o">/</span><span class="n">run</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">f</span> <span class="o">./</span><span class="n">IndianCreekDemo1</span>  <span class="o">-</span><span class="n">a</span> <span class="mi">1</span> <span class="o">-</span><span class="n">p</span> <span class="mi">1</span>
 </pre></div>
 </div>
@@ -55,53 +55,66 @@ arguments such as these:</p>
 </div>
 <p>The main workflow steps can all be turned on or off using such flags:
 The <code class="docutils literal notranslate"><span class="pre">--help</span></code> option explains in full:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">streamlines</span><span class="o">/</span><span class="n">run</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">f</span> <span class="o">./</span><span class="n">IndianCreekDemo1</span>  <span class="o">--</span><span class="n">help</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">streamlines</span><span class="o">/</span><span class="n">run</span><span class="o">.</span><span class="n">py</span>  <span class="o">--</span><span class="n">help</span>
 
-<span class="n">usage</span><span class="p">:</span> <span class="n">run</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span> <span class="n">verbose_flag</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">parameters_file</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">reload_state_flag</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">g</span> <span class="n">geodata_flag</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span> <span class="n">preprocess_flag</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">condition_flag</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">trace_flag</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">analysis_flag</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">maps</span><span class="o">/</span><span class="n">pdfs</span><span class="o">/</span><span class="nb">all</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">save_state_flag</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">x</span> <span class="n">export_flag</span><span class="p">]</span>
+<span class="n">usage</span><span class="p">:</span> <span class="n">slm</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">analysis_flag</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">condition_flag</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">debug_flag</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">-</span><span class="n">e</span> <span class="n">preprocess_flag</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">parameters_file</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">g</span> <span class="n">geodata_flag</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="n">git_info_flag</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">j</span> <span class="n">override_parameters</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">m</span> <span class="n">mapping_flag</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">maps</span><span class="o">/</span><span class="n">pdfs</span><span class="o">/</span><span class="nb">all</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">q</span> <span class="n">display_flag</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">save_flag</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">trace_flag</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span> <span class="n">verbose_flag</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">w</span> <span class="n">n_work_items</span><span class="p">]</span>
 
 <span class="n">Execute</span> <span class="n">DTM</span> <span class="n">streamline</span> <span class="n">computation</span>
 
 <span class="n">optional</span> <span class="n">arguments</span><span class="p">:</span>
   <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>            <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
-  <span class="o">-</span><span class="n">v</span> <span class="n">verbose_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">verbose</span> <span class="n">verbose_flag</span>
-                        <span class="n">verbose</span> <span class="n">mode</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
-  <span class="o">-</span><span class="n">f</span> <span class="n">parameters_file</span><span class="p">,</span> <span class="o">--</span><span class="n">file</span> <span class="n">parameters_file</span>
-                        <span class="kn">import</span> <span class="nn">parameters</span> <span class="n">file</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
-  <span class="o">-</span><span class="n">r</span> <span class="n">reload_state_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">reload</span> <span class="n">reload_state_flag</span>
-                        <span class="n">reload</span> <span class="n">previous</span> <span class="n">runtime</span> <span class="n">state</span> <span class="kn">from</span> <span class="nn">files</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span>
-                        <span class="kc">None</span><span class="p">)</span>
-  <span class="o">-</span><span class="n">g</span> <span class="n">geodata_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">geodata</span> <span class="n">geodata_flag</span>
-                        <span class="n">read</span> <span class="n">geodata</span> <span class="n">files</span> <span class="p">(</span><span class="n">DTM</span><span class="p">,</span> <span class="n">basins</span><span class="p">)</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
-  <span class="o">-</span><span class="n">e</span> <span class="n">preprocess_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">preprocess</span> <span class="n">preprocess_flag</span>
-                        <span class="n">peform</span> <span class="n">preprocessing</span> <span class="p">(</span><span class="n">optionally</span> <span class="n">do</span> <span class="n">conditioning</span><span class="p">;</span>
-                        <span class="n">compute</span> <span class="n">gradients</span><span class="p">)</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
-  <span class="o">-</span><span class="n">c</span> <span class="n">condition_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">condition</span> <span class="n">condition_flag</span>
-                        <span class="n">condition</span> <span class="n">DTM</span> <span class="k">for</span> <span class="n">best</span> <span class="n">tracing</span> <span class="p">(</span><span class="n">fix</span> <span class="n">loops</span> <span class="o">&amp;</span> <span class="n">blockages</span><span class="p">)</span>
-                        <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
-  <span class="o">-</span><span class="n">t</span> <span class="n">trace_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">trace</span> <span class="n">trace_flag</span>
-                        <span class="n">perform</span> <span class="n">streamline</span> <span class="n">tracing</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
   <span class="o">-</span><span class="n">a</span> <span class="n">analysis_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">analysis</span> <span class="n">analysis_flag</span>
                         <span class="n">analyze</span> <span class="n">streamline</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">distributions</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span>
                         <span class="kc">None</span><span class="p">)</span>
+  <span class="o">-</span><span class="n">c</span> <span class="n">condition_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">condition</span> <span class="n">condition_flag</span>
+                        <span class="n">condition</span> <span class="n">DTM</span> <span class="k">for</span> <span class="n">best</span> <span class="n">tracing</span> <span class="p">(</span><span class="n">fix</span> <span class="n">loops</span> <span class="o">&amp;</span> <span class="n">blockages</span><span class="p">)</span>
+                        <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+  <span class="o">-</span><span class="n">d</span> <span class="n">debug_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">debug</span> <span class="n">debug_flag</span>
+                        <span class="n">turn</span> <span class="n">on</span> <span class="n">OpenCL</span> <span class="n">compiler</span> <span class="o">-</span><span class="n">D</span> <span class="n">DEBUG</span> <span class="n">flag</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+  <span class="o">-</span><span class="n">e</span> <span class="n">preprocess_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">preprocess</span> <span class="n">preprocess_flag</span>
+                        <span class="n">peform</span> <span class="n">preprocessing</span> <span class="p">(</span><span class="n">optionally</span> <span class="n">do</span> <span class="n">conditioning</span><span class="p">;</span>
+                        <span class="n">compute</span> <span class="n">gradients</span><span class="p">)</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+  <span class="o">-</span><span class="n">f</span> <span class="n">parameters_file</span><span class="p">,</span> <span class="o">--</span><span class="n">file</span> <span class="n">parameters_file</span>
+                        <span class="kn">import</span> <span class="nn">JSON</span> <span class="n">parameters</span> <span class="n">file</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+  <span class="o">-</span><span class="n">g</span> <span class="n">geodata_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">geodata</span> <span class="n">geodata_flag</span>
+                        <span class="n">read</span> <span class="n">geodata</span> <span class="n">files</span> <span class="p">(</span><span class="n">DTM</span><span class="p">,</span> <span class="n">basins</span><span class="p">)</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+  <span class="o">-</span><span class="n">i</span> <span class="n">git_info_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">info</span> <span class="n">git_info_flag</span>
+                        <span class="n">report</span> <span class="n">info</span> <span class="k">for</span> <span class="n">slm</span> <span class="n">git</span> <span class="n">repos</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+  <span class="o">-</span><span class="n">j</span> <span class="n">override_parameters</span><span class="p">,</span> <span class="o">--</span><span class="n">json</span> <span class="n">override_parameters</span>
+                        <span class="n">JSON</span> <span class="nb">dict</span> <span class="n">of</span> <span class="n">override</span> <span class="n">parameters</span> <span class="o">&amp;</span> <span class="n">values</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span>
+                        <span class="kc">None</span><span class="p">)</span>
+  <span class="o">-</span><span class="n">m</span> <span class="n">mapping_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">mapping</span> <span class="n">mapping_flag</span>
+                        <span class="nb">map</span> <span class="n">channels</span><span class="p">,</span> <span class="n">midlines</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
   <span class="o">-</span><span class="n">p</span> <span class="n">maps</span><span class="o">/</span><span class="n">pdfs</span><span class="o">/</span><span class="nb">all</span><span class="p">,</span> <span class="o">--</span><span class="n">plot</span> <span class="n">maps</span><span class="o">/</span><span class="n">pdfs</span><span class="o">/</span><span class="nb">all</span>
                         <span class="n">carry</span> <span class="n">out</span> <span class="nb">all</span> <span class="n">plotting</span> <span class="nb">set</span> <span class="ow">in</span> <span class="n">parameters</span> <span class="n">files</span>
                         <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
-  <span class="o">-</span><span class="n">s</span> <span class="n">save_state_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">save</span> <span class="n">save_state_flag</span>
-                        <span class="n">save</span> <span class="n">runtime</span> <span class="n">state</span> <span class="n">to</span> <span class="n">files</span> <span class="n">at</span> <span class="n">completion</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">q</span> <span class="n">display_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">display</span> <span class="n">display_flag</span>
+                        <span class="n">display</span> <span class="n">plots</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+  <span class="o">-</span><span class="n">s</span> <span class="n">save_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">save</span> <span class="n">save_flag</span>
+                        <span class="n">save</span> <span class="n">state</span><span class="p">,</span> <span class="n">figs</span><span class="p">,</span> <span class="nb">map</span> <span class="n">grids</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+  <span class="o">-</span><span class="n">t</span> <span class="n">trace_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">trace</span> <span class="n">trace_flag</span>
+                        <span class="n">perform</span> <span class="n">streamline</span> <span class="n">tracing</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+  <span class="o">-</span><span class="n">v</span> <span class="n">verbose_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">verbose</span> <span class="n">verbose_flag</span>
+                        <span class="n">verbose</span> <span class="n">mode</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+  <span class="o">-</span><span class="n">w</span> <span class="n">n_work_items</span><span class="p">,</span> <span class="o">--</span><span class="n">workitems</span> <span class="n">n_work_items</span>
+                        <span class="n">number</span> <span class="n">of</span> <span class="n">OpenCL</span> <span class="n">work</span> <span class="n">items</span> <span class="n">per</span> <span class="n">workgroup</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span>
                         <span class="kc">None</span><span class="p">)</span>
-  <span class="o">-</span><span class="n">x</span> <span class="n">export_flag</span><span class="p">,</span> <span class="o">--</span><span class="n">export</span> <span class="n">export_flag</span>
-                        <span class="n">export</span> <span class="n">figures</span> <span class="n">to</span> <span class="n">files</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="interactive-ipython-jupyter-qtconsole-inline-graphics">
-<h2>Interactive IPython/Jupyter QtConsole (inline graphics)<a class="headerlink" href="#interactive-ipython-jupyter-qtconsole-inline-graphics" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="non-interactive-ipython-jupyter-qtconsole-inline-graphics">
+<h2>Non-interactive IPython/Jupyter QtConsole (inline graphics)<a class="headerlink" href="#non-interactive-ipython-jupyter-qtconsole-inline-graphics" title="Permalink to this headline">¶</a></h2>
 <p>If the necessary shell paths are set appropriately, computation can be invoked
-from a Jupyter <a class="reference external" href="https://ipython.org/ipython-doc/3/interactive/qtconsole.html">QtConsole</a>
-running an <a class="reference external" href="http://ipython.org/ipython-doc/3/interactive/">IPython</a> kernel.</p>
+non-interactivey in a Jupyter <a class="reference external" href="https://ipython.org/ipython-doc/3/interactive/qtconsole.html">QtConsole</a> running an <a class="reference external" href="http://ipython.org/ipython-doc/3/interactive/">IPython</a> kernel.</p>
+</div>
+<div class="section" id="in-a-ipython-jupyter-qtconsole-inline-graphics-interactive-or-non-interactive">
+<h2>In a IPython/Jupyter QtConsole (inline graphics): interactive or non-interactive<a class="headerlink" href="#in-a-ipython-jupyter-qtconsole-inline-graphics-interactive-or-non-interactive" title="Permalink to this headline">¶</a></h2>
+<p>If the necessary shell paths are set appropriately, computation can be invoked
+in a Jupyter <a class="reference external" href="https://ipython.org/ipython-doc/3/interactive/qtconsole.html">QtConsole</a> running an <a class="reference external" href="http://ipython.org/ipython-doc/3/interactive/">IPython</a> kernel.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Jupyter</span> <span class="n">QtConsole</span> <span class="mf">4.3</span><span class="o">.</span><span class="mi">1</span>
 <span class="n">Python</span> <span class="mf">3.6</span><span class="o">.</span><span class="mi">4</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">Dec</span> <span class="mi">21</span> <span class="mi">2017</span><span class="p">,</span> <span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">17</span><span class="p">)</span>
 <span class="n">Type</span> <span class="s1">&#39;copyright&#39;</span><span class="p">,</span> <span class="s1">&#39;credits&#39;</span> <span class="ow">or</span> <span class="s1">&#39;license&#39;</span> <span class="k">for</span> <span class="n">more</span> <span class="n">information</span>
@@ -115,10 +128,16 @@ running an <a class="reference external" href="http://ipython.org/ipython-doc/3/
 </div>
 <p>Graphical output will (depending on <a class="reference internal" href="../modules/initialize.html#module-streamlines.initialize" title="streamlines.initialize"><code class="xref py py-mod docutils literal notranslate"><span class="pre">initialize</span></code></a>
 settings) be displayed inline.</p>
+<p>Alternatively, in the  <a class="reference external" href="https://ipython.org/ipython-doc/3/interactive/qtconsole.html">QtConsole</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">run</span> <span class="o">../</span><span class="n">python</span><span class="o">/</span><span class="n">streamlines</span><span class="o">/</span><span class="n">slm</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">f</span> <span class="n">GuadalupeMtns1</span><span class="o">.</span><span class="n">json</span> <span class="o">-</span><span class="n">q</span> <span class="mi">1</span>
+</pre></div>
 </div>
-<div class="section" id="interactive-ipython-jupyter-console-external-viewer">
-<h2>Interactive IPython/Jupyter console (external viewer)<a class="headerlink" href="#interactive-ipython-jupyter-console-external-viewer" title="Permalink to this headline">¶</a></h2>
-<p>Similarly, computation can be invoked from a Jupyter running IPython.</p>
+<p>TBD: need to tidy up, deal with path issues, possibly with Wurlitzer &amp; caching
+(pycache an nb cache)</p>
+</div>
+<div class="section" id="in-a-ipython-jupyter-console-external-viewer">
+<h2>In a IPython/Jupyter console (external viewer)<a class="headerlink" href="#in-a-ipython-jupyter-console-external-viewer" title="Permalink to this headline">¶</a></h2>
+<p>Similarly, computation can be invoked from a Jupyter console running IPython.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">jupyter</span><span class="o">-</span><span class="n">console</span><span class="o">-</span><span class="mf">3.6</span> <span class="n">IndianCreekDemo1</span><span class="o">.</span><span class="n">ipynb</span>
 <span class="n">Jupyter</span> <span class="n">console</span> <span class="mf">5.2</span><span class="o">.</span><span class="mi">0</span>
 
@@ -145,7 +164,7 @@ settings) be displayed inline.</p>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    <img class="logo" src="../_static/../_images/icon3.png" alt="Logo"/>
     
     <h1 class="logo logo-name">Streamlines</h1>
     
@@ -183,8 +202,9 @@ settings) be displayed inline.</p>
 <li><a class="reference internal" href="#">How to run</a><ul>
 <li><a class="reference internal" href="#interactive-ipython-jupyter-notebook">Interactive IPython/Jupyter notebook</a></li>
 <li><a class="reference internal" href="#non-interactive-python-external-viewer-in-a-unix-shell">Non-interactive Python (external viewer) in a UNIX shell</a></li>
-<li><a class="reference internal" href="#interactive-ipython-jupyter-qtconsole-inline-graphics">Interactive IPython/Jupyter QtConsole (inline graphics)</a></li>
-<li><a class="reference internal" href="#interactive-ipython-jupyter-console-external-viewer">Interactive IPython/Jupyter console (external viewer)</a></li>
+<li><a class="reference internal" href="#non-interactive-ipython-jupyter-qtconsole-inline-graphics">Non-interactive IPython/Jupyter QtConsole (inline graphics)</a></li>
+<li><a class="reference internal" href="#in-a-ipython-jupyter-qtconsole-inline-graphics-interactive-or-non-interactive">In a IPython/Jupyter QtConsole (inline graphics): interactive or non-interactive</a></li>
+<li><a class="reference internal" href="#in-a-ipython-jupyter-console-external-viewer">In a IPython/Jupyter console (external viewer)</a></li>
 </ul>
 </li>
 </ul>

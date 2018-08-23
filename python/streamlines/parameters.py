@@ -1,13 +1,13 @@
 """
 ---------------------------------------------------------------------
 
-Read/write/assign the data contained in the :class:`.Streamlining` object, 
-which includes all the parameters used to control streamline computation 
-and all the data arrays used to hold their results.
+Module to read/write/assign the data contained in the :class:`.Streamlining` 
+class instance. 
 
 ---------------------------------------------------------------------
 
-Requires `json`_.
+Requires Python packages/modules:
+  -  :mod:`json`
 
 ---------------------------------------------------------------------
 

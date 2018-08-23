@@ -1,12 +1,19 @@
 """
-Read/write/assign the data contained in the :class:`.Trajectories` object, which includes all the 
-parameters used to control streamline computation and all the data arrays used to 
-hold their results.
+---------------------------------------------------------------------
 
+Mask wrangling and more.
+    
+---------------------------------------------------------------------
+    
+Requires Python packages/modules:
+  -  :mod:`json`
+  -  :mod:`collections`
 
+Imports :class:`.Core` class
 
-Todo: 
-    Fix issues with HDF5 r/w. There remain issues with writing lists of arrays.
+Imports functions from: :mod:`.useful` module
+ 
+---------------------------------------------------------------------
 """
 import os
 import sys
@@ -53,6 +60,15 @@ class State(Core):
         """
         Build dictionary of lists of workflow class instance variables, grouped 
         according to how they can be exported to files.
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """
         self.print('\n**Inventorize run state begin**')  
         self.inventory = {}
@@ -64,6 +80,15 @@ class State(Core):
     def get_dict_of_jsonables(self):
         """
         Collect lists of JSONable objects in hierarchical dictionary
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """        
         full_jsonable_export_list = []
         total_usage = 0
@@ -90,6 +115,15 @@ class State(Core):
         """
         Collect lists of savezable numpy arrays in hierarchical dictionary
         and save to compressed file (npz)
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """        
         trimmed_obj_list = [obj for obj in self.obj_list 
                             if obj.__module__.split('.')[1]
@@ -114,6 +148,16 @@ class State(Core):
         """
         Collect lists of savezable numpy arrays in hierarchical dictionary
         and calculate their total memory usage
+        
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """        
         trimmed_obj_list = [obj for obj in self.obj_list 
                             if obj.__module__.split('.')[1] in 
@@ -130,6 +174,15 @@ class State(Core):
     def get_streamlines_dict(self, array_list):
         """
         Collect list of streamline numpy arrays 
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """   
         return dict(ChainMap(*[{str(idx):arr} 
                                for idx,arr in enumerate(array_list)]))
@@ -142,8 +195,15 @@ class State(Core):
         
     def save_state(self):
         """
+        Args:
+            TBD (TBD): 
+            
         Save working state to a set of JSON and other files.
-        """
+    
+        Returns:
+            TBD: 
+            TBD
+        """ 
 
         #################################################################
         self.print('\n**Save state begin**')  
@@ -246,8 +306,15 @@ class State(Core):
 
     def write_hdf5(self, filename, nparray_list, nparraylist_list):
         """
+        Args:
+            TBD (TBD): 
+        
         TBD
-        """
+    
+        Returns:
+            TBD: 
+            TBD
+        """ 
         nparray_dict = {}
         for item in nparray_list:
             value = getattr(self, item)
@@ -282,8 +349,15 @@ class State(Core):
                 
     def read_hdf5(self, filename):
         """
+        Args:
+            TBD (TBD): 
+        
         TBD
-        """
+    
+        Returns:
+            TBD: 
+            TBD
+        """ 
         with h5py.File(filename+'.h5', 'r') as hf:
             print('Trying to read HDF5 file "%s"' % (filename+'.h5') )
             arrays = hf[filename][:]
@@ -299,7 +373,14 @@ class State(Core):
         
     def add_active_mask(self, mask_item):
         """
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """ 
         # Don't try to add if already there
         if list(mask_item.keys())[0] not in self.active_masks_dict.keys():
@@ -307,7 +388,14 @@ class State(Core):
         
     def remove_active_mask(self, mask_name):
         """
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """ 
         # Don't try to remove if not there
         if mask_name in self.active_masks_dict.keys():
@@ -315,13 +403,27 @@ class State(Core):
         
     def list_active_masks(self):
         """
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """ 
         return self.active_masks_dict.keys()
         
     def reset_active_masks(self):
         """
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """ 
         # Clear all but the most basic masks
         masks_keep_list = ['dtm', 'basin', 'uv']
@@ -332,7 +434,14 @@ class State(Core):
         
     def merge_active_masks(self, out=None):
         """
+        Args:
+            TBD (TBD): 
+        
         TBD
+    
+        Returns:
+            TBD: 
+            TBD
         """ 
         if self.active_masks_dict=={}:
             return None

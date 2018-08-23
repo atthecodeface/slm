@@ -33,14 +33,32 @@
             
   <div class="section" id="module-streamlines.slm">
 <span id="slm-py"></span><h1><code class="docutils literal notranslate"><span class="pre">slm.py</span></code><a class="headerlink" href="#module-streamlines.slm" title="Permalink to this headline">¶</a></h1>
-<p>Carry out slm workflow.</p>
-<p>This workflow proceeds as follows:</p>
-<ol class="arabic simple">
-<li>Parse command line – in particular to specify the parameters file.</li>
-<li>Create an instance of the <a class="reference internal" href="streamlining.html#streamlines.streamlining.Streamlining" title="streamlines.streamlining.Streamlining"><code class="xref py py-class docutils literal notranslate"><span class="pre">Streamlining</span></code></a> class, which acts
-as a global container for all the data and methods used in the computation.</li>
-<li>TBD…</li>
-</ol>
+<hr class="docutils" />
+<p>Carry out <code class="docutils literal notranslate"><span class="pre">Streamlines</span></code> mapping workflow.</p>
+<dl class="docutils">
+<dt>This workflow proceeds as follows:</dt>
+<dd><ul class="first last">
+<li><p class="first">Parse command line – in particular to specify the parameters file.</p>
+</li>
+<li><p class="first">Create an instance <code class="docutils literal notranslate"><span class="pre">sl</span></code> of the <a class="reference internal" href="streamlining.html#streamlines.streamlining.Streamlining" title="streamlines.streamlining.Streamlining"><code class="xref py py-class docutils literal notranslate"><span class="pre">Streamlining</span></code></a> class, which acts
+as a global container for all the data and methods used in the computation.</p>
+<p>This class and all other principal classes inherit the <a class="reference internal" href="core.html#streamlines.core.Core" title="streamlines.core.Core"><code class="xref py py-class docutils literal notranslate"><span class="pre">Core</span></code></a> class.</p>
+</li>
+</ul>
+</dd>
+</dl>
+<hr class="docutils" />
+<dl class="docutils">
+<dt>Requires Python packages/modules:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="https://docs.python.org/3/library/argparse.html#module-argparse" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">argparse</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/3/library/pprint.html#module-pprint" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pprint</span></code></a></li>
+</ul>
+</dd>
+</dl>
+<p>Imports  <a class="reference internal" href="streamlining.html#streamlines.streamlining.Streamlining" title="streamlines.streamlining.Streamlining"><code class="xref py py-class docutils literal notranslate"><span class="pre">Streamlining</span></code></a> class
+from the <a class="reference internal" href="streamlining.html#module-streamlines.streamlining" title="streamlines.streamlining"><code class="xref py py-mod docutils literal notranslate"><span class="pre">streamlining</span></code></a>  module.</p>
+<hr class="docutils" />
 <dl class="function">
 <dt id="streamlines.slm.run">
 <code class="descclassname">streamlines.slm.</code><code class="descname">run</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.slm.run" title="Permalink to this definition">¶</a></dt>
@@ -52,7 +70,7 @@ called either from command line or Jupyter notebook.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">instance of <a class="reference internal" href="streamlining.html#streamlines.streamlining.Streamlining" title="streamlines.streamlining.Streamlining"><code class="xref py py-class docutils literal notranslate"><span class="pre">Streamlining</span></code></a> class</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)">object</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">obj</td>
 </tr>
 </tbody>
 </table>
@@ -98,16 +116,31 @@ The arguments are assumed to be passed via <cite>_sys.argv[1:]</cite>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Carry out slm workflow.</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Carry out ``Streamlines`` mapping workflow.</span>
 
 <span class="sd">This workflow proceeds as follows:</span>
+<span class="sd">  - Parse command line -- in particular to specify the parameters file.</span>
+<span class="sd">  - Create an instance ``sl`` of the :class:`.Streamlining` class, which acts   </span>
+<span class="sd">    as a global container for all the data and methods used in the computation.</span>
+<span class="sd">     </span>
+<span class="sd">    This class and all other principal classes inherit the :class:`Core &lt;.Core&gt;` class.</span>
 
-<span class="sd">1) Parse command line -- in particular to specify the parameters file.</span>
+<span class="sd">---------------------------------------------------------------------</span>
 
-<span class="sd">2) Create an instance of the :class:`.Streamlining` class, which acts   </span>
-<span class="sd">   as a global container for all the data and methods used in the computation. </span>
+<span class="sd">Requires Python packages/modules:</span>
+<span class="sd">  -  :mod:`argparse`</span>
+<span class="sd">  -  :mod:`pprint`</span>
 
-<span class="sd">3) TBD...</span>
+<span class="sd">Imports  :class:`Streamlining &lt;streamlines.streamlining.Streamlining&gt;` class</span>
+<span class="sd">from the :mod:`streamlining &lt;streamlines.streamlining&gt;`  module.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">.. _argparse: https://docs.python.org/3/library/argparse.html</span>
+<span class="sd">.. _pprint: https://docs.python.org/3/library/pprint.html</span>
+
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -125,7 +158,7 @@ The arguments are assumed to be passed via <cite>_sys.argv[1:]</cite>.</p>
 <span class="sd">    called either from command line or Jupyter notebook.</span>
 <span class="sd">    </span>
 <span class="sd">    Return:</span>
-<span class="sd">        object:  instance of :class:`.Streamlining` class</span>
+<span class="sd">        obj:  instance of :class:`.Streamlining` class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Create the slm workflow object</span>
@@ -301,7 +334,7 @@ The arguments are assumed to be passed via <cite>_sys.argv[1:]</cite>.</p>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    <img class="logo" src="../_static/../_images/icon3.png" alt="Logo"/>
     
     <h1 class="logo logo-name">Streamlines</h1>
     

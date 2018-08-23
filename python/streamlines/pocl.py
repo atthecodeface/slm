@@ -1,12 +1,13 @@
 """
 ---------------------------------------------------------------------
 
-Helper class and methods for working with an OpenCL kernel.
+Helper tools for working with OpenCL devices via PyOpenCL.
 
-Requires `PyOpenCL`_.
+Requires Python packages/modules:
+  -  :mod:`PyOpenCL <pyopencl>`
 
-Imports streamlines module :doc:`pocl`.
-Imports functions from streamlines module :doc:`useful`.
+Imports the :mod:`.pocl` module as well functions from the :mod:`.useful` module.
+
 
 ---------------------------------------------------------------------
 

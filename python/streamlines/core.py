@@ -4,22 +4,27 @@
 This :mod:`core <streamlines.core>` module provides a base initialization class 
 that is inherited by each workflow class.
 On instantiation of each such class, the base initialization parses the parameter 
-dictionary loaded from the 'job' :py:mod:`JSON <json>` file specified at the command line,
-extracts the set of parameters pertaining to the workflow class,
+dictionary loaded from the 'job' :py:mod:`JSON <json>` file specified at the command 
+line, extracts the set of parameters pertaining to the workflow class,
 and assigns the values to the workflow class instance accordingly. 
 
 ---------------------------------------------------------------------
 
-The following workflow classes inherit
-the :mod:`core <streamlines.core>` class:
+The following workflow classes inherit the :mod:`core <streamlines.core>` class
+defined here:
+  - :class:`.Geodata`
+  - :class:`.Preprocess`
+  - :class:`.Trace`
+  - :class:`.Analysis`
+  - :class:`.Mapping`
+  - :class:`.Plot`
+  - :class:`.Save`
 
-- :class:`streamlines.geodata.Geodata`
-- :class:`streamlines.preprocess.Preprocess`
-- :class:`streamlines.trace.Trace`
-- :class:`streamlines.analysis.Analysis`
-- :class:`streamlines.analysis.Mapping`
-- :class:`streamlines.plot.Plot`
-- :class:`streamlines.plot.Export`
+---------------------------------------------------------------------
+
+Requires Python packages/modules:
+  -  :mod:`json`
+  -  :mod:`pprint`
 
 ---------------------------------------------------------------------
 
@@ -39,19 +44,21 @@ class Core():
     """
     Class inherited by all workflow classes to provide a one-stop-shop 
     initialization that loads up their parameter sets as class instance attributes.
+    
+    TBD
     """
     def __init__(self,state,imported_parameters):
         """
-        Initialize the class instance by loading up parameters as attributes.
-
         Args:
             state (object): The :class:`State <.state.State>` class instance.
             imported_parameters (dict): The parameters dictionary loaded from 
                                          a :py:mod:`JSON <json>` file.
 
+        Initialize the class instance by loading up parameters as attributes.
+
         Attributes:
-            Class instance variables (various types): 
-                Set according to the parameters sub-dict corresponding to the class name. 
+            path (str): 
+                path to the ``Streamlines`` module so we can later find the CL code
         
         Example:
             When instantiating the :class:`Geodata <.geodata.Geodata>` class, 
@@ -148,11 +155,35 @@ class Core():
         state.inventory.update({workflow_class_name : data_dict})
 
     def print(self, *args, **kwargs):
+        """
+        TBD.
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """
         if self.state.verbose:
             print(*args, **kwargs, flush=True)
             sys.stdout.flush()
 
     def pprint(self, *args, **kwargs):
+        """
+        TBD.
+        
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """
         if self.state.verbose:
             pprint.pprint(*args, **kwargs)
             sys.stdout.flush()

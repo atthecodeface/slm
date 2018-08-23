@@ -1,9 +1,21 @@
 """
-GeoTIFF data file handling to provide DTM grid and handle masking
+---------------------------------------------------------------------
+
+Module for importing GeoTIFF data files of DTM grids.
 
 Todo:
     For now, only GeoTIFF read and parsing operations are working. 
     Might be useful to get GeoTIFF write working.
+
+---------------------------------------------------------------------
+
+Requires Python packages/modules:
+  -  :mod:`scipy.ndimage`
+  -  :mod:`json`
+
+Imports :class:`.Core` class.
+
+---------------------------------------------------------------------
 """
 
 import os

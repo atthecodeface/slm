@@ -1,13 +1,14 @@
+ .. py:module:: slm
+
 Topographic streamline analysis
 ##########################################
 
-
-Introduction
-************
-
-The `Streamlines`_ project provides a suite of Python tools to study the structure of surface-water flow on large
-digital terrain models (DTMs). It takes the form of a Python 3 package, some demo Jupyter/IPython notebooks, 
-and a custom set of open-source lidar DTM data files for the notebooks to work on.
+The `Streamlines`_ project provides a suite of Python tools to study the 
+structure of surface-water flow on large digital terrain models (DTMs). 
+It takes the form of a Python 3 package, called :py:mod:`slm`, which uses
+:ref:`numba <numba:install_frontpage>` and :mod:`PyOpenCL <pyopencl>` 
+to speed up processing, along with some demo Jupyter/IPython notebooks, 
+and a custom set of `open-source lidar DTM`_ data files for the notebooks to work on.
 
 
 .. warning::
@@ -17,16 +18,24 @@ and a custom set of open-source lidar DTM data files for the notebooks to work o
 
 
 
-The novelty of the `Streamlines`_ method lies in how it computes the convergence and divergence of terrain driven flow. 
-Instead of taking the usual, flow-routing approach at the pixel-scale, it traces topographic streamlines at a sub-pixel resolution
-and then processes them to compute useful properties such as drainage density and hillslope length distributions.
+The novelty of the `Streamlines`_ method lies in how it computes the convergence and 
+divergence of terrain driven flow. 
+Instead of taking the usual, flow-routing approach at the pixel-scale, it traces 
+topographic streamlines at a sub-pixel resolution
+and then processes them to compute useful properties such as drainage density and 
+hillslope length distributions.
 
 The streamlines are derived in the `fluid dynamics sense`_ by treating the gradient vector 
-field of the terrain as a 2D pattern of conservative (zero divergence) steady flow. Flow trajectories are integrated across 
-this vector field from (generally) every DTM grid cell not just in the downstream direction, but also upstream. 
-The pixel-densities of up-streamlines and down-streamlines, together with their stream length distributions, are then computed at the DTM grid resolution.
-It turns out that important geometric and topological properties of the landscape are revealed by analyzing
-these properties. In particular, they help reveal: (1) channel heads and terminations (e.g., on alluvial fans), 
+field of the terrain as a 2D pattern of conservative (zero divergence) steady flow. 
+Flow trajectories are integrated across 
+this vector field from (generally) every DTM grid cell not just in the downstream 
+direction, but also upstream. 
+The pixel-densities of up-streamlines and down-streamlines, together with their 
+stream length distributions, are then computed at the DTM grid resolution.
+It turns out that important geometric and topological properties of the landscape 
+are revealed by analyzing
+these properties. In particular, they help reveal: (1) channel heads and terminations 
+(e.g., on alluvial fans), 
 (2) channel density, and (3) hillslope length.
 
 .. image:: images/Guadalupe_example1.png
@@ -250,6 +259,7 @@ Indexes and search
 .. _OpenCL: https://www.khronos.org/opencl
 .. _@jit: http://numba.pydata.org/numba-doc/dev/user/jit.html
 .. _Doxygen documentation: https://cstarknyc.github.io/slm/opencl/
+.. _open-source lidar DTM: https://www.opentopography.org/
 
 References
 **********

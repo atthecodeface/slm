@@ -34,10 +34,26 @@
   <div class="section" id="module-streamlines.plot">
 <span id="plot-py"></span><h1><code class="docutils literal notranslate"><span class="pre">plot.py</span></code><a class="headerlink" href="#module-streamlines.plot" title="Permalink to this headline">¶</a></h1>
 <hr class="docutils" />
-<p>Module handling map and graph plotting.</p>
+<p>Module for map and graph plotting.</p>
 <hr class="docutils" />
-<p>Requires <a class="reference external" href="https://matplotlib.org/">matplotlib</a>, <a class="reference external" href="https://docs.python.org/3/library/random.html">random</a>, <a class="reference external" href="https://matplotlib.org/mpl_toolkits/index.html">mpl_toolkits</a>, <a class="reference external" href="https://docs.python.org/3/library/colorsys.html">colorsys</a>, <a class="reference external" href="https://www.scipy.org/">scipy</a>.</p>
-<p>Imports Core class <a class="reference internal" href="core.html"><span class="doc">core.py</span></a>.</p>
+<dl class="docutils">
+<dt>Requires Python packages/modules:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="https://docs.python.org/3/library/random.html#module-random" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">random</span></code></a></li>
+<li><a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v2.2.3)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a></li>
+<li><a class="reference external" href="https://matplotlib.org/api/gridspec_api.html#module-matplotlib.gridspec" title="(in Matplotlib v2.2.3)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib.gridspec</span></code></a></li>
+<li><a class="reference external" href="https://matplotlib.org/api/ticker_api.html#module-matplotlib.ticker" title="(in Matplotlib v2.2.3)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib.ticker</span></code></a></li>
+<li><a class="reference external" href="https://matplotlib.org/api/colors_api.html#module-matplotlib.colors" title="(in Matplotlib v2.2.3)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib.colors</span></code></a></li>
+<li><a class="reference external" href="https://matplotlib.org/api/patches_api.html#module-matplotlib.patches" title="(in Matplotlib v2.2.3)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib.patches</span></code></a></li>
+<li><a class="reference external" href="https://matplotlib.org/api/_as_gen/mpl_toolkits.axes_grid1.axes_divider.html#module-mpl_toolkits.axes_grid1.axes_divider" title="(in Matplotlib v2.2.3)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mpl_toolkits.axes_grid1</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/3/library/colorsys.html#module-colorsys" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">colorsys</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/interpolate.html#module-scipy.interpolate" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.interpolate</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/signal.html#module-scipy.signal" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.signal</span></code></a></li>
+</ul>
+</dd>
+</dl>
+<p>Imports <a class="reference internal" href="core.html#streamlines.core.Core" title="streamlines.core.Core"><code class="xref py py-class docutils literal notranslate"><span class="pre">Core</span></code></a> class.</p>
 <hr class="docutils" />
 <dl class="class">
 <dt id="streamlines.plot.Plot">
@@ -1093,13 +1109,24 @@ TBD</dd>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">---------------------------------------------------------------------</span>
 
-<span class="sd">Module handling map and graph plotting.</span>
+<span class="sd">Module for map and graph plotting.</span>
 
 <span class="sd">---------------------------------------------------------------------</span>
 
-<span class="sd">Requires `matplotlib`_, `random`_, `mpl_toolkits`_, `colorsys`_, `scipy`_.</span>
+<span class="sd">Requires Python packages/modules:</span>
+<span class="sd">  -  :mod:`random`</span>
+<span class="sd">  -  :mod:`matplotlib.pyplot`</span>
+<span class="sd">  -  :mod:`matplotlib.gridspec`</span>
+<span class="sd">  -  :mod:`matplotlib.ticker`</span>
+<span class="sd">  -  :mod:`matplotlib.colors`</span>
+<span class="sd">  -  :mod:`matplotlib.patches`</span>
+<span class="sd">  -  :mod:`mpl_toolkits.axes_grid1 &lt;mpl_toolkits.axes_grid1.axes_divider&gt;`</span>
+<span class="sd">  -  :mod:`colorsys`</span>
+<span class="sd">  -  :mod:`scipy.interpolate`</span>
+<span class="sd">  -  :mod:`scipy.stats`</span>
+<span class="sd">  -  :mod:`scipy.signal`</span>
 
-<span class="sd">Imports Core class :doc:`core`.</span>
+<span class="sd">Imports :class:`.Core` class.</span>
 
 <span class="sd">---------------------------------------------------------------------</span>
 
@@ -1124,7 +1151,6 @@ TBD</dd>
 <span class="kn">from</span>   <span class="nn">numpy</span>  <span class="k">import</span> <span class="n">pi</span><span class="p">,</span> <span class="n">arctan</span><span class="p">,</span> <span class="n">arctan2</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sqrt</span>
 <span class="kn">from</span>   <span class="nn">random</span> <span class="k">import</span> <span class="n">shuffle</span><span class="p">,</span> <span class="n">seed</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
-<span class="kn">from</span>   <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">streamplot</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span>   <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">matplotlib.gridspec</span> <span class="k">as</span> <span class="nn">gridspec</span>
 <span class="kn">import</span> <span class="nn">matplotlib.ticker</span>   <span class="k">as</span> <span class="nn">ticker</span>
@@ -1132,6 +1158,7 @@ TBD</dd>
 <span class="kn">from</span>   <span class="nn">matplotlib.colors</span>   <span class="k">import</span> <span class="n">LinearSegmentedColormap</span>
 <span class="kn">from</span>   <span class="nn">matplotlib.patches</span>  <span class="k">import</span> <span class="n">ArrowStyle</span><span class="p">,</span> <span class="n">FancyArrowPatch</span>
 <span class="kn">from</span>   <span class="nn">mpl_toolkits.axes_grid1</span> <span class="k">import</span> <span class="n">make_axes_locatable</span>
+<span class="c1"># from   mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable</span>
 <span class="kn">import</span> <span class="nn">colorsys</span>
 <span class="kn">from</span>   <span class="nn">scipy.interpolate</span> <span class="k">import</span> <span class="n">interp1d</span> 
 <span class="kn">from</span>   <span class="nn">scipy.signal</span>      <span class="k">import</span> <span class="n">decimate</span>
@@ -3431,7 +3458,7 @@ TBD</dd>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    <img class="logo" src="../_static/../_images/icon3.png" alt="Logo"/>
     
     <h1 class="logo logo-name">Streamlines</h1>
     

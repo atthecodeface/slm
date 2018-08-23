@@ -3,15 +3,16 @@
 
 Module providing Data and Info classes, as well as a suite of useful functions.
 
-Requires `gdal`_/`osgeo`_, `pandas`_, `scipy`_, `pympler`_.
+Requires Python packages/modules:
+  -  `GDAL`_  (see also `OSGeo`_)
+  -  :mod:`pandas`
+  -  :mod:`scipy.ndimage <scipy.ndimage>`
+  -  :mod:`pympler.asizeof <pympler.asizeof>` 
 
 ---------------------------------------------------------------------
 
 .. _pandas: https://pandas.pydata.org/
-.. _sklearn: http://scikit-learn.org/
-.. _skimage: https://scikit-image.org/
 .. _scipy: https://www.scipy.org/
-.. _skfmm: https://pythonhosted.org/scikit-fmm/
 .. _osgeo: https://www.osgeo.org/
 .. _gdal: https://www.gdal.org/
 .. _pympler: https://pythonhosted.org/Pympler/
@@ -19,8 +20,6 @@ Requires `gdal`_/`osgeo`_, `pandas`_, `scipy`_, `pympler`_.
 """
 
 import numpy as np
-# Needs GDAL. Had issues with 2.2.0 and had to do:
-#    pip install gdal==2.1.3
 from osgeo import gdal
 import pandas as pd
 from scipy.ndimage.morphology import binary_dilation, generate_binary_structure

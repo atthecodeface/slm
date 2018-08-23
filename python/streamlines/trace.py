@@ -1,18 +1,29 @@
 """
 ---------------------------------------------------------------------
 
-Trace streamlines and their density grids
+Module to trace topographic streamline trajectories and compute their density grids.
 
-Todo:
-    Fix likely bug in parameters file path wrangling
+.. image:: ../images/Guadalupe_example1.png
 
 ---------------------------------------------------------------------
+
+Imports the following:
+    - :class:`.Core` class
+    - :class:`.Trajectories` class
+    - :class:`.Fields` class
+    - :class:`.Data` and :class:`.Info` classes, as well as functions, 
+        from the :mod:`.useful` module
+
+---------------------------------------------------------------------
+
+.. _pandas: https://pandas.pydata.org/
+
+
     
 """
 
 import sys
 import numpy  as np
-import pandas as pd
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
@@ -27,31 +38,29 @@ pdebug = print
 
 class Trace(Core):
     """
-    Class providing set of methods to compute streamline trajectories and densities 
-    from raw DTM data.
+
+    Class providing set of methods to compute topographic streamline trajectories and 
+    their density grids. Specifically, to: 
     
-    Provides top-level methods to: 
-    (1) set seed points aka start locations (sub-pixel positions) of streamlines; 
-    (2) trace streamlines from seed points both upstream amd downstream; 
-    (3) compute gridded measures of mean streamline length and mean effective area.
+    #. set seed points aka start locations (sub-pixel positions) of streamlines; 
+    #. trace streamlines from seed points both upstream amd downstream; 
+    #. compute gridded measures of mean streamline length and mean effective area.
     
-    Args:
-        Core (class):
-    
-        """
+        
+    """
     def __init__(self,state,imported_parameters,geodata,preprocess):
         """
-        Initialize a class instance.
-        
         Args:
-            state (object):
+            state (obj):
             imported_parameters (dict):
-            geodata (object):
-            preprocess (object):
+            geodata (obj):
+            preprocess (obj):
 
+        Initialize a Trace class instance.
+        
         Attributes:
             self.geodata (obj):
-            self.preprocess (object):
+            self.preprocess (obj):
             self.seed_point_array (numpy.ndarray):
             self.perform_RungeKutta2_integration (function):
             

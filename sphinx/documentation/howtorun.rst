@@ -7,18 +7,18 @@ How to run
 Interactive IPython/Jupyter notebook
 ------------------------------------------------------------------------
 
-The recommended approach is to deploy `Streamlines`_ in a Jupyter (browser) session and using
-an IPython notebook. 
+The recommended approach is to deploy `Streamlines`_ in a Jupyter (browser) 
+session and using a Jupyter/IPython notebook. 
 `Several example notebooks`_ are provided in the `Streamlines repo`_.
-The current development test notebook is: :doc:`IndianCreekDemo1.ipynb <../Tests/IndianCreekDemo1_nb>`
+The current development test notebook is: 
+:doc:`IndianCreekDemo1.ipynb <../Tests/IndianCreekDemo1_nb>`
 
 
 Non-interactive Python (external viewer) in a UNIX shell
 -----------------------------------------------------------
 
 The most direct approach is to invoke `Streamlines`_ as a Python shell script.
-Instead of using an IPython notebook, execution is determined using command line  
-arguments such as these::
+Execution is invoked from the command line with ``slm`` arguments such as these::
 
    streamlines/run.py -f ./IndianCreekDemo1  -a 1 -p 1
  
@@ -31,54 +31,69 @@ The ``--help`` option explains in full:
 
 ::
 
-	streamlines/run.py -f ./IndianCreekDemo1  --help
+	streamlines/run.py  --help
 			
-	usage: run.py [-h] [-v verbose_flag] [-f parameters_file]
-	              [-r reload_state_flag] [-g geodata_flag] [-e preprocess_flag]
-	              [-c condition_flag] [-t trace_flag] [-a analysis_flag]
-	              [-p maps/pdfs/all] [-s save_state_flag] [-x export_flag]
+	usage: slm.py [-h] [-a analysis_flag] [-c condition_flag] [-d debug_flag]
+	              [-e preprocess_flag] [-f parameters_file] [-g geodata_flag]
+	              [-i git_info_flag] [-j override_parameters] [-m mapping_flag]
+	              [-p maps/pdfs/all] [-q display_flag] [-s save_flag]
+	              [-t trace_flag] [-v verbose_flag] [-w n_work_items]
 	
 	Execute DTM streamline computation
 	
 	optional arguments:
 	  -h, --help            show this help message and exit
-	  -v verbose_flag, --verbose verbose_flag
-	                        verbose mode (default: None)
-	  -f parameters_file, --file parameters_file
-	                        import parameters file (default: None)
-	  -r reload_state_flag, --reload reload_state_flag
-	                        reload previous runtime state from files (default:
-	                        None)
-	  -g geodata_flag, --geodata geodata_flag
-	                        read geodata files (DTM, basins) (default: None)
-	  -e preprocess_flag, --preprocess preprocess_flag
-	                        peform preprocessing (optionally do conditioning;
-	                        compute gradients) (default: None)
-	  -c condition_flag, --condition condition_flag
-	                        condition DTM for best tracing (fix loops & blockages)
-	                        (default: None)
-	  -t trace_flag, --trace trace_flag
-	                        perform streamline tracing (default: None)
 	  -a analysis_flag, --analysis analysis_flag
 	                        analyze streamline patterns, distributions (default:
 	                        None)
+	  -c condition_flag, --condition condition_flag
+	                        condition DTM for best tracing (fix loops & blockages)
+	                        (default: None)
+	  -d debug_flag, --debug debug_flag
+	                        turn on OpenCL compiler -D DEBUG flag (default: None)
+	  -e preprocess_flag, --preprocess preprocess_flag
+	                        peform preprocessing (optionally do conditioning;
+	                        compute gradients) (default: None)
+	  -f parameters_file, --file parameters_file
+	                        import JSON parameters file (default: None)
+	  -g geodata_flag, --geodata geodata_flag
+	                        read geodata files (DTM, basins) (default: None)
+	  -i git_info_flag, --info git_info_flag
+	                        report info for slm git repos (default: None)
+	  -j override_parameters, --json override_parameters
+	                        JSON dict of override parameters & values (default:
+	                        None)
+	  -m mapping_flag, --mapping mapping_flag
+	                        map channels, midlines (default: None)
 	  -p maps/pdfs/all, --plot maps/pdfs/all
 	                        carry out all plotting set in parameters files
 	                        (default: None)
-	  -s save_state_flag, --save save_state_flag
-	                        save runtime state to files at completion (default:
+	  -q display_flag, --display display_flag
+	                        display plots (default: None)
+	  -s save_flag, --save save_flag
+	                        save state, figs, map grids (default: None)
+	  -t trace_flag, --trace trace_flag
+	                        perform streamline tracing (default: None)
+	  -v verbose_flag, --verbose verbose_flag
+	                        verbose mode (default: None)
+	  -w n_work_items, --workitems n_work_items
+	                        number of OpenCL work items per workgroup (default:
 	                        None)
-	  -x export_flag, --export export_flag
-	                        export figures to files (default: None)
+
+
+
+Non-interactive IPython/Jupyter QtConsole (inline graphics) 
+-----------------------------------------------------------
+If the necessary shell paths are set appropriately, computation can be invoked 
+non-interactivey in a Jupyter `QtConsole`_ running an `IPython`_ kernel. 
 
 
   
-Interactive IPython/Jupyter QtConsole (inline graphics) 
-----------------------------------------------------------------------
+In a IPython/Jupyter QtConsole (inline graphics): interactive or non-interactive
+--------------------------------------------------------------------------------
 
 If the necessary shell paths are set appropriately, computation can be invoked 
-from a Jupyter `QtConsole`_
-running an `IPython`_ kernel. 
+in a Jupyter `QtConsole`_ running an `IPython`_ kernel. 
 
 ::
 
@@ -95,11 +110,21 @@ running an `IPython`_ kernel.
 Graphical output will (depending on :mod:`initialize <streamlines.initialize>` 
 settings) be displayed inline.
 
+Alternatively, in the  `QtConsole`_:
 
-Interactive IPython/Jupyter console (external viewer)  
+::
+
+	run ../python/streamlines/slm.py -f GuadalupeMtns1.json -q 1
+	
+	
+TBD: need to tidy up, deal with path issues, possibly with Wurlitzer & caching 
+(pycache an nb cache)
+
+
+In a IPython/Jupyter console (external viewer)  
 ----------------------------------------------------------------------
 
-Similarly, computation can be invoked from a Jupyter running IPython. 
+Similarly, computation can be invoked from a Jupyter console running IPython. 
 
 ::
 
@@ -116,6 +141,7 @@ Similarly, computation can be invoked from a Jupyter running IPython.
 	**Initialization begin**
 	etc...
 	
+
 Graphical output will be pushed to a viewer external to the shell.
 
 

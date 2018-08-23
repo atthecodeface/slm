@@ -4,19 +4,23 @@
 Module providing tools to compute 1d & 2d pdfs, calculate some statistics,
 and perform related analyses.
 
-
 ---------------------------------------------------------------------
 
-Requires `scipy`_, `sklearn`_.
+Requires Python packages/modules:
+  -  :mod:`scipy.stats`
+  -  :mod:`scipy.signal`
+  -  :mod:`sklearn.neighbors`
 
-Imports streamlines module :doc:`kde`.
-Imports classes & functions from :doc:`core`,  :doc:`useful`.
+Imports ``Streamlines`` module :mod:`.kde`
+
+Imports :class:`.Core` class
+
+Imports functions from: :mod:`.useful` module
 
 ---------------------------------------------------------------------
 
 .. _sklearn: http://scikit-learn.org/
 .. _scipy: https://www.scipy.org/
-
 
 """
 

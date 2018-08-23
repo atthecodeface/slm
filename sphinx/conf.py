@@ -109,7 +109,7 @@ html_theme = 'alabaster'
 # }
 html_theme_options = {
 #     'logo' : '../_images/icon1.png',
-    'logo' : '../_images/icon2.png',
+    'logo' : '../_images/icon3.png',
     'logo_name' : 'true',
     'description' : 'Topographic streamline mapping of landscape structure',
     'description_font_style' : 'italic',
@@ -210,12 +210,39 @@ texinfo_documents = [
 
 
 intersphinx_mapping = {
+   'sphinx': ('http://www.sphinx-doc.org/en/master', None),
+   
    'python': ('https://docs.python.org/3', None),
-   'sphinx': ('http://www.sphinx-doc.org/en/master/', None),
+   
    'matplotlib': ('https://matplotlib.org', None),
-   'pyopencl': ('https://documen.tician.de/pyopencl', None),
-   'pandas': ('http://pandas.pydata.org/pandas-docs/stable/', None),
-   'np': ('https://docs.scipy.org/doc/numpy', None)
+   
+   'mpl_toolkits': ('https://matplotlib.org', None),
+   
+   'PyOpencl': ('https://documen.tician.de/pyopencl', None),
+   
+   'numba': ('https://numba.pydata.org',
+            (None, './_intersphinx/numba-objects.inv')),
+   
+   'pandas': ('http://pandas.pydata.org/pandas-docs/stable', None),
+   
+   'np': ('https://docs.scipy.org/doc/numpy', None),
+   'numpy': ('https://docs.scipy.org/doc/numpy', None),
+   
+   'scipy': ('https://docs.scipy.org/doc/scipy/reference',
+             (None, './_intersphinx/scipy-objects.inv')),
+   
+   'sklearn': ('https://scikit-learn.org/stable',
+            (None, './_intersphinx/sklearn-objects.inv')),
+   
+   'skimage': ('http://scikit-image.org/docs/stable', 
+               (None, './_intersphinx/skimage-objects.inv')),
+               
+   'skfmm': ('https://pythonhosted.org/scikit-fmm', None),
+               
+   'pympler': ('https://pythonhosted.org/Pympler', None),
+   
+   'dateutil': ('https://dateutil.readthedocs.io/en/stable', 
+               (None, './_intersphinx/dateutil-objects.inv'))
    }
 
 # Napoleon settings

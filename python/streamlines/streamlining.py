@@ -1,33 +1,38 @@
 """
 ---------------------------------------------------------------------
 
-Perform **slm** analysis of topographic structure, including channels, 
+Perform ``slm`` analysis of topographic structure, including channels, 
 channel heads, hillslope lengths (HSL), and relationships between HSL, aspect,
 etc.
 
+
 ---------------------------------------------------------------------
 
-Requires `json`_, `datetime`_, `dateutil`_.
+Requires Python packages/modules:
+  - :mod:`json`
+  - :mod:`datetime`
+  - :mod:`dateutil.tz`
 
-Imports the following *Streamlines* modules:
- - :mod:`connect <streamlines.connect>`
- - :mod:`channelheads <streamlines.channelheads>`
- - :mod:`countlink <streamlines.countlink>`
- - :mod:`label <streamlines.label>`
- - :mod:`segment <streamlines.segment>`
- - :mod:`hillslopes <streamlines.hillslopes>`
- - :mod:`lengths <streamlines.lengths>`
 
-Imports classes from:
- - :mod:`core <streamlines.core>`
- - :mod:`state <streamlines.state>`
- - :mod:`geodata <streamlines.geodata>`
- - :mod:`preprocess <streamlines.preprocess>`
- - :mod:`trace <streamlines.trace>`
- - :mod:`analysis <streamlines.analysis>`
- - :mod:`mapping <streamlines.mapping>`
- - :mod:`plot <streamlines.plot>`
- - :mod:`save <streamlines.save>`
+Imports the following ``Streamlines`` modules:
+ - :mod:`.connect`
+ - :mod:`.channelheads`
+ - :mod:`.countlink`
+ - :mod:`.label`
+ - :mod:`.segment`
+ - :mod:`.hillslopes`
+ - :mod:`.lengths`
+
+Imports the folllowing classes:
+ - :class:`.Core`
+ - :class:`.State`
+ - :class:`.Geodata`
+ - :class:`.Preprocess`
+ - :class:`.Trace`
+ - :class:`.Analysis`
+ - :class:`.Mapping`
+ - :class:`.Plot`
+ - :class:`.Save`
 
 Imports functions from :mod:`useful <streamlines.useful>`.
 
@@ -62,10 +67,17 @@ pdebug = print
 
 class Streamlining(Core):
     """
+    Args:
+        **kwargs (list): Keyword arguments.
+
     Class providing set of methods to compute streamline trajectories and 
     densities from raw DTM data.
     
+    Inherits the :class:`Core <.Core>` class.
+
+    
     Provides top-level methods to: 
+        - TBD
         - prepare DTM grid for streamline computation
           by fixing blockages (single-diagonal-outflow pixels) and loops 
           (divergence, curl and net vector magnitude exceeding trio of thresholds)
@@ -76,40 +88,38 @@ class Streamlining(Core):
           and their mean spacing
         - generate all streamlines (up and downstream) and compute the overall
           mean streamline point spacing
-    
-    Args:
-        parameters_file (class): Name of JSON parameters file prefixed by full path.
+          
+    Instantiates and assigns to self attributes each of the principal workflow classes:
+         - :class:`State <.State>` 
+         - :class:`Geodata <.Geodata>` 
+         - :class:`Preprocess <.Preprocess>` 
+         - :class:`Trace <.Trace>` 
+         - :class:`Analysis <.Analysis>` 
+         - :class:`Mapping <.Mapping>` 
+         - :class:`Plot <.Plot>` 
+         - :class:`Save <.Save>` 
 
-    Attributes:
-        parameters_file (str): Name of JSON parameters file 
-                               (parsed from kwargs 'parameters_file')
-        parameters_dir (str): Path to folder containing JSON parameters file 
-                              (parsed from kwargs 'parameters_file')
     
+
     
         """  
     def __init__(self, **kwargs):
         """
-    
         Args:
             **kwargs (list): Keyword arguments.
     
         Initialize the principal 'streamlines' class instance, whose object
         will contain references to the each of the key class instances of 
         the streamlines workflow, e.g., geodata(), trace(), analysis()
-        Each such subobject will contain: 
         
-        - attributes corresponding to all the parameters pertinent 
-          to that stage of the workflow, e.g. state.do_plot, trace.do_trace_upstream,
-          parsed the parameters 'dictionary of dictionaries' file;
-        - a reference to the inventorize() method, inherited from the Core() class,
-          used to do the parameter parsing;
-        - back-references to all the key class instances needed for its work,
-          e.g., trace.geodata(), plot.state();
-        - references to methods needed for its work,
-          e.g., preprocess.find_blockages(), trace.do();
-        - attributes and references to objects generated during its work, 
-          notably data arrays containing results
+
+        Attributes:
+            parameters_file (str): Name of JSON parameters file 
+                                   (parsed from kwargs 'parameters_file')
+            parameters_dir (str): Path to folder containing JSON parameters file 
+                                  (parsed from kwargs 'parameters_file')
+        
+
         """
         
         #

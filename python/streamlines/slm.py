@@ -1,16 +1,31 @@
 #!/usr/bin/env python3
 
 """
-Carry out slm workflow.
+---------------------------------------------------------------------
+
+Carry out ``Streamlines`` mapping workflow.
 
 This workflow proceeds as follows:
+  - Parse command line -- in particular to specify the parameters file.
+  - Create an instance ``sl`` of the :class:`.Streamlining` class, which acts   
+    as a global container for all the data and methods used in the computation.
+     
+    This class and all other principal classes inherit the :class:`Core <.Core>` class.
 
-1) Parse command line -- in particular to specify the parameters file.
+---------------------------------------------------------------------
 
-2) Create an instance of the :class:`.Streamlining` class, which acts   
-   as a global container for all the data and methods used in the computation. 
+Requires Python packages/modules:
+  -  :mod:`argparse`
+  -  :mod:`pprint`
 
-3) TBD...
+Imports  :class:`Streamlining <streamlines.streamlining.Streamlining>` class
+from the :mod:`streamlining <streamlines.streamlining>`  module.
+
+---------------------------------------------------------------------
+
+.. _argparse: https://docs.python.org/3/library/argparse.html
+.. _pprint: https://docs.python.org/3/library/pprint.html
+
 
 """
 
@@ -28,7 +43,7 @@ def run(**kwargs):
     called either from command line or Jupyter notebook.
     
     Return:
-        object:  instance of :class:`.Streamlining` class
+        obj:  instance of :class:`.Streamlining` class
     """
 
     # Create the slm workflow object

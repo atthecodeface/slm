@@ -30,28 +30,39 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="topographic-streamline-analysis">
+  <blockquote>
+<div><span class="target" id="module-slm"></span></div></blockquote>
+<div class="section" id="topographic-streamline-analysis">
 <h1>Topographic streamline analysis<a class="headerlink" href="#topographic-streamline-analysis" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>The <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> project provides a suite of Python tools to study the structure of surface-water flow on large
-digital terrain models (DTMs). It takes the form of a Python 3 package, some demo Jupyter/IPython notebooks,
-and a custom set of open-source lidar DTM data files for the notebooks to work on.</p>
+<p>The <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> project provides a suite of Python tools to study the
+structure of surface-water flow on large digital terrain models (DTMs).
+It takes the form of a Python 3 package, called <a class="reference internal" href="#module-slm" title="slm"><code class="xref py py-mod docutils literal notranslate"><span class="pre">slm</span></code></a>, which uses
+<a class="reference external" href="https://numba.pydata.org/index.html#install-frontpage" title="(in numba v0.12)"><span class="xref std std-ref">numba</span></a> and <a class="reference external" href="https://documen.tician.de/pyopencl/runtime.html#module-pyopencl" title="(in PyOpenCL v2018.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">PyOpenCL</span></code></a>
+to speed up processing, along with some demo Jupyter/IPython notebooks,
+and a custom set of <a class="reference external" href="https://www.opentopography.org/">open-source lidar DTM</a> data files for the notebooks to work on.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">This documentation is a work in progress.
 Recent deployments of OpenCL acceleration
 and splitting of the git repo are being incorporated now.</p>
 </div>
-<p>The novelty of the <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> method lies in how it computes the convergence and divergence of terrain driven flow.
-Instead of taking the usual, flow-routing approach at the pixel-scale, it traces topographic streamlines at a sub-pixel resolution
-and then processes them to compute useful properties such as drainage density and hillslope length distributions.</p>
+<p>The novelty of the <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> method lies in how it computes the convergence and
+divergence of terrain driven flow.
+Instead of taking the usual, flow-routing approach at the pixel-scale, it traces
+topographic streamlines at a sub-pixel resolution
+and then processes them to compute useful properties such as drainage density and
+hillslope length distributions.</p>
 <p>The streamlines are derived in the <a class="reference external" href="https://en.wikipedia.org/wiki/Streamlines,_streaklines,_and_pathlines">fluid dynamics sense</a> by treating the gradient vector
-field of the terrain as a 2D pattern of conservative (zero divergence) steady flow. Flow trajectories are integrated across
-this vector field from (generally) every DTM grid cell not just in the downstream direction, but also upstream.
-The pixel-densities of up-streamlines and down-streamlines, together with their stream length distributions, are then computed at the DTM grid resolution.
-It turns out that important geometric and topological properties of the landscape are revealed by analyzing
-these properties. In particular, they help reveal: (1) channel heads and terminations (e.g., on alluvial fans),
+field of the terrain as a 2D pattern of conservative (zero divergence) steady flow.
+Flow trajectories are integrated across
+this vector field from (generally) every DTM grid cell not just in the downstream
+direction, but also upstream.
+The pixel-densities of up-streamlines and down-streamlines, together with their
+stream length distributions, are then computed at the DTM grid resolution.
+It turns out that important geometric and topological properties of the landscape
+are revealed by analyzing
+these properties. In particular, they help reveal: (1) channel heads and terminations
+(e.g., on alluvial fans),
 (2) channel density, and (3) hillslope length.</p>
 <img alt="_images/Guadalupe_example1.png" src="_images/Guadalupe_example1.png" />
 <p>A key innovation in <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> is a tool to overcome non-zero-divergence artefacts that arise
@@ -65,7 +76,6 @@ trickery prior to calculating the gradient vector field at an oversampled resolu
 algorithms (see the <a class="reference internal" href="modules/preprocess.html#module-streamlines.preprocess" title="streamlines.preprocess"><code class="xref py py-mod docutils literal notranslate"><span class="pre">preprocess</span></code></a> module) that overcome the artefacts
 are applied directly the gradient field at the DTM grid resolution.
 These algorithms require some tuning to overcome all such errors.</p>
-</div>
 <div class="section" id="how-it-works">
 <h2>How it works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>
 <p>Computation of streamlines across a topographic surface involves the following workflow:</p>
@@ -250,7 +260,7 @@ consists of the following:</p>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="#">
-    <img class="logo" src="_static/../_images/icon2.png" alt="Logo"/>
+    <img class="logo" src="_static/../_images/icon3.png" alt="Logo"/>
     
     <h1 class="logo logo-name">Streamlines</h1>
     
@@ -286,7 +296,6 @@ consists of the following:</p>
   <h3><a href="#">Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Topographic streamline analysis</a><ul>
-<li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#how-it-works">How it works</a></li>
 <li><a class="reference internal" href="#technical-stuff">Technical stuff</a><ul>
 <li><a class="reference internal" href="#getting-started">Getting started</a></li>

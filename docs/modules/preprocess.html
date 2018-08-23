@@ -35,10 +35,27 @@
 <span id="preprocess-py"></span><h1><code class="docutils literal notranslate"><span class="pre">preprocess.py</span></code><a class="headerlink" href="#module-streamlines.preprocess" title="Permalink to this headline">¶</a></h1>
 <hr class="docutils" />
 <p>DTM preprocessing steps.</p>
-<p>These include: computing the topographic gradient vector field, fixing loops
-and blockages, and computing a streamline ‘flow speed’ field.</p>
-<p>Requires <a class="reference external" href="https://numba.pydata.org/">numba</a>, <a class="reference external" href="https://www.scipy.org/">scipy</a>.</p>
-<p>Imports Core class <a class="reference internal" href="core.html"><span class="doc">core.py</span></a>.</p>
+<dl class="docutils">
+<dt>These include:</dt>
+<dd><ul class="first last simple">
+<li>computing the topographic gradient vector field</li>
+<li>fixing loops and blockages</li>
+<li>computing a streamline ‘flow speed’ field</li>
+</ul>
+</dd>
+</dl>
+<hr class="docutils" />
+<dl class="docutils">
+<dt>Requires Python packages/modules:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="https://numba.pydata.org/index.html#install-frontpage" title="(in numba v0.12)"><span class="xref std std-ref">numba</span></a> (<a class="reference external" href="https://numba.pydata.org/search.html" title="(in numba v0.12)"><span class="xref std std-ref">search</span></a>)</li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/index.html#module-numpy" title="(in NumPy v1.15)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code></a> (linalg.eigvals)</li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
+<li><a class="reference external" href="https://dateutil.readthedocs.io/en/stable/tz.html#module-dateutil.tz" title="(in dateutil v2.7.3)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dateutil.tz</span></code></a></li>
+</ul>
+</dd>
+</dl>
+<p>Imports <a class="reference internal" href="core.html#streamlines.core.Core" title="streamlines.core.Core"><code class="xref py py-class docutils literal notranslate"><span class="pre">Core</span></code></a> class.</p>
 <hr class="docutils" />
 <dl class="class">
 <dt id="streamlines.preprocess.Preprocess">
@@ -258,7 +275,7 @@ bivariate spline interpolator functions at each grid cell.</p>
 <dl class="function">
 <dt id="streamlines.preprocess.pad_array">
 <code class="descclassname">streamlines.preprocess.</code><code class="descname">pad_array</code><span class="sig-paren">(</span><em>roi_array</em>, <em>pad_width</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.pad_array" title="Permalink to this definition">¶</a></dt>
-<dd><p>TBD</p>
+<dd><p>Pad ROI-size array around grid edges, repeating edge values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -278,7 +295,6 @@ bivariate spline interpolator functions at each grid cell.</p>
 </tr>
 </tbody>
 </table>
-<p>Pad ROI-size array around grid edges, repeating edge values.</p>
 </dd></dl>
 
 <dl class="function">
@@ -619,12 +635,21 @@ bivariate spline interpolator functions at each grid cell.</p>
 
 <span class="sd">DTM preprocessing steps. </span>
 
-<span class="sd">These include: computing the topographic gradient vector field, fixing loops </span>
-<span class="sd">and blockages, and computing a streamline &#39;flow speed&#39; field.</span>
+<span class="sd">These include: </span>
+<span class="sd"> - computing the topographic gradient vector field</span>
+<span class="sd"> - fixing loops and blockages</span>
+<span class="sd"> - computing a streamline &#39;flow speed&#39; field</span>
 
-<span class="sd">Requires `numba`_, `scipy`_.</span>
+<span class="sd">---------------------------------------------------------------------</span>
 
-<span class="sd">Imports Core class :doc:`core`.</span>
+<span class="sd">Requires Python packages/modules:</span>
+<span class="sd">  - :ref:`numba &lt;numba:install_frontpage&gt;` (:ref:`search &lt;numba:search&gt;`)</span>
+<span class="sd">  - :mod:`numpy` (linalg.eigvals)</span>
+<span class="sd">  - :mod:`scipy.ndimage`</span>
+<span class="sd">  - :mod:`dateutil.tz`</span>
+<span class="sd">  </span>
+<span class="sd">  </span>
+<span class="sd">Imports :class:`.Core` class.</span>
 
 <span class="sd">---------------------------------------------------------------------</span>
 
@@ -670,7 +695,7 @@ bivariate spline interpolator functions at each grid cell.</p>
 <span class="c1"># Not numbarizable</span>
 <span class="k">def</span> <span class="nf">pad_array</span><span class="p">(</span><span class="n">roi_array</span><span class="p">,</span><span class="n">pad_width</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    TBD</span>
+<span class="sd">    Pad ROI-size array around grid edges, repeating edge values.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        TBD (TBD): </span>
@@ -681,8 +706,6 @@ bivariate spline interpolator functions at each grid cell.</p>
 <span class="sd">        TBD: </span>
 <span class="sd">        TBD</span>
 
-
-<span class="sd">    Pad ROI-size array around grid edges, repeating edge values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">roi_array</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pad_width</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="n">pad_width</span><span class="p">)),</span><span class="s1">&#39;edge&#39;</span><span class="p">)</span>
     
@@ -1317,7 +1340,7 @@ bivariate spline interpolator functions at each grid cell.</p>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    <img class="logo" src="../_static/../_images/icon3.png" alt="Logo"/>
     
     <h1 class="logo logo-name">Streamlines</h1>
     

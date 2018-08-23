@@ -34,12 +34,42 @@
   <div class="section" id="module-streamlines.mapping">
 <span id="mapping-py"></span><h1><code class="docutils literal notranslate"><span class="pre">mapping.py</span></code><a class="headerlink" href="#module-streamlines.mapping" title="Permalink to this headline">¶</a></h1>
 <hr class="docutils" />
-<p>Hillslope length (HSL) mapping module.</p>
+<p>Module for mapping channels, channel heads, subcatchment segmentation,
+hillslope length (HSL), and topographic aspect, and for analyzing azimuthal
+variations.</p>
 <hr class="docutils" />
-<p>Requires <a class="reference external" href="https://pandas.pydata.org/">pandas</a>, <a class="reference external" href="http://scikit-learn.org/">sklearn</a>, <a class="reference external" href="https://scikit-image.org/">skimage</a>, <a class="reference external" href="https://www.scipy.org/">scipy</a>, <a class="reference external" href="https://pythonhosted.org/scikit-fmm/">skfmm</a>.</p>
-<p>Imports streamlines modules <a class="reference internal" href="connect.html"><span class="doc">connect.py</span></a>, <a class="reference internal" href="channelheads.html"><span class="doc">channelheads.py</span></a>,
-<a class="reference internal" href="countlink.html"><span class="doc">countlink.py</span></a>, <a class="reference internal" href="label.html"><span class="doc">label.py</span></a>, <a class="reference internal" href="segment.html"><span class="doc">segment.py</span></a>, <a class="reference internal" href="hillslopes.html"><span class="doc">hillslopes.py</span></a>, <a class="reference internal" href="lengths.html"><span class="doc">lengths.py</span></a>.</p>
-<p>Imports classes &amp; functions from <a class="reference internal" href="core.html"><span class="doc">core.py</span></a>, <a class="reference internal" href="useful.html"><span class="doc">useful.py</span></a>, <a class="reference internal" href="pocl.html"><span class="doc">pocl.py</span></a>.</p>
+<dl class="docutils">
+<dt>Requires Python packages/modules:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/index.html#module-pandas" title="(in pandas v0.23.4)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing" title="(in scikit-learn v0.16.dev0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code></a></li>
+<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.morphology.html#module-skimage.morphology" title="(in skimage v0.14.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.morphology</span></code></a></li>
+<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.filters.html#module-skimage.filters" title="(in skimage v0.14.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.filters</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/interpolate.html#module-scipy.interpolate" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.interpolate</span></code></a></li>
+<li><a class="reference external" href="https://pythonhosted.org/scikit-fmm/index.html#module-skfmm" title="(in scikit-fmm v0.0.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skfmm</span></code></a></li>
+</ul>
+</dd>
+<dt>Imports <code class="docutils literal notranslate"><span class="pre">Streamlines</span></code> modules:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="connect.html#module-streamlines.connect" title="streamlines.connect"><code class="xref py py-mod docutils literal notranslate"><span class="pre">connect</span></code></a></li>
+<li><a class="reference internal" href="channelheads.html#module-streamlines.channelheads" title="streamlines.channelheads"><code class="xref py py-mod docutils literal notranslate"><span class="pre">channelheads</span></code></a></li>
+<li><a class="reference internal" href="countlink.html#module-streamlines.countlink" title="streamlines.countlink"><code class="xref py py-mod docutils literal notranslate"><span class="pre">countlink</span></code></a></li>
+<li><a class="reference internal" href="label.html#module-streamlines.label" title="streamlines.label"><code class="xref py py-mod docutils literal notranslate"><span class="pre">label</span></code></a></li>
+<li><a class="reference internal" href="segment.html#module-streamlines.segment" title="streamlines.segment"><code class="xref py py-mod docutils literal notranslate"><span class="pre">segment</span></code></a></li>
+<li><a class="reference internal" href="hillslopes.html#module-streamlines.hillslopes" title="streamlines.hillslopes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">hillslopes</span></code></a></li>
+<li><a class="reference internal" href="lengths.html#module-streamlines.lengths" title="streamlines.lengths"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lengths</span></code></a></li>
+</ul>
+</dd>
+<dt>Imports classes &amp; functions from:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="core.html#module-streamlines.core" title="streamlines.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code></a></li>
+<li><a class="reference internal" href="useful.html#module-streamlines.useful" title="streamlines.useful"><code class="xref py py-mod docutils literal notranslate"><span class="pre">useful</span></code></a></li>
+<li><a class="reference internal" href="pocl.html#module-streamlines.pocl" title="streamlines.pocl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pocl</span></code></a></li>
+</ul>
+</dd>
+</dl>
 <hr class="docutils" />
 <dl class="class">
 <dt id="streamlines.mapping.Mapping">
@@ -155,17 +185,36 @@ to determine whether or not there is a N-S bias.</li>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">---------------------------------------------------------------------</span>
 
-<span class="sd">Hillslope length (HSL) mapping module. </span>
+<span class="sd">Module for mapping channels, channel heads, subcatchment segmentation,</span>
+<span class="sd">hillslope length (HSL), and topographic aspect, and for analyzing azimuthal</span>
+<span class="sd">variations.</span>
 
 <span class="sd">---------------------------------------------------------------------</span>
 
-<span class="sd">Requires `pandas`_, `sklearn`_, `skimage`_, `scipy`_, `skfmm`_. </span>
+<span class="sd">Requires Python packages/modules:</span>
+<span class="sd">  -  :mod:`pandas` </span>
+<span class="sd">  -  :mod:`sklearn.preprocessing`</span>
+<span class="sd">  -  :mod:`skimage.morphology`</span>
+<span class="sd">  -  :mod:`skimage.filters`</span>
+<span class="sd">  -  :mod:`scipy.ndimage`</span>
+<span class="sd">  -  :mod:`scipy.stats`</span>
+<span class="sd">  -  :mod:`scipy.interpolate`</span>
+<span class="sd">  -  :mod:`skfmm`</span>
 
+<span class="sd">Imports ``Streamlines`` modules:</span>
+<span class="sd">  -  :mod:`.connect`</span>
+<span class="sd">  -  :mod:`.channelheads`</span>
+<span class="sd">  -  :mod:`.countlink`</span>
+<span class="sd">  -  :mod:`.label`</span>
+<span class="sd">  -  :mod:`.segment`</span>
+<span class="sd">  -  :mod:`.hillslopes`</span>
+<span class="sd">  -  :mod:`.lengths`</span>
 
-<span class="sd">Imports streamlines modules :doc:`connect`, :doc:`channelheads`, </span>
-<span class="sd">:doc:`countlink`, :doc:`label`, :doc:`segment`, :doc:`hillslopes`, :doc:`lengths`.</span>
+<span class="sd">Imports classes &amp; functions from:</span>
+<span class="sd">  -  :mod:`.core`</span>
+<span class="sd">  -  :mod:`.useful`</span>
+<span class="sd">  -  :mod:`.pocl`</span>
 
-<span class="sd">Imports classes &amp; functions from :doc:`core`, :doc:`useful`, :doc:`pocl`.</span>
 
 <span class="sd">---------------------------------------------------------------------</span>
 
@@ -180,6 +229,7 @@ to determine whether or not there is a N-S bias.</li>
 <span class="kn">import</span> <span class="nn">numpy</span>  <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">cmath</span> <span class="k">import</span> <span class="n">rect</span><span class="p">,</span> <span class="n">polar</span>
+<span class="kn">import</span> <span class="nn">sklearn</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">normalize</span>
 <span class="kn">from</span> <span class="nn">skimage.morphology</span>    <span class="k">import</span> <span class="n">skeletonize</span><span class="p">,</span> <span class="n">thin</span><span class="p">,</span> <span class="n">medial_axis</span><span class="p">,</span> <span class="n">disk</span>
 <span class="kn">from</span> <span class="nn">skimage.filters</span>       <span class="k">import</span> <span class="n">gaussian</span>
@@ -1337,7 +1387,7 @@ to determine whether or not there is a N-S bias.</li>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    <img class="logo" src="../_static/../_images/icon3.png" alt="Logo"/>
     
     <h1 class="logo logo-name">Streamlines</h1>
     

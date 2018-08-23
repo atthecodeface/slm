@@ -3,6 +3,7 @@
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
+#SPHINXBUILD   = /usr/local/bin/sphinx-build
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = Streamlines
 SOURCEDIR     = .

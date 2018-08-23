@@ -34,47 +34,52 @@
   <div class="section" id="module-streamlines.trace">
 <span id="trace-py"></span><h1><code class="docutils literal notranslate"><span class="pre">trace.py</span></code><a class="headerlink" href="#module-streamlines.trace" title="Permalink to this headline">¶</a></h1>
 <hr class="docutils" />
-<p>Trace streamlines and their density grids</p>
-<div class="admonition-todo admonition" id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">Fix likely bug in parameters file path wrangling</p>
-</div>
+<p>Module to trace topographic streamline trajectories and compute their density grids.</p>
+<img alt="../_images/Guadalupe_example11.png" src="../_images/Guadalupe_example11.png" />
+<hr class="docutils" />
+<dl class="docutils">
+<dt>Imports the following:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="core.html#streamlines.core.Core" title="streamlines.core.Core"><code class="xref py py-class docutils literal notranslate"><span class="pre">Core</span></code></a> class</li>
+<li><code class="xref py py-class docutils literal notranslate"><span class="pre">Trajectories</span></code> class</li>
+<li><code class="xref py py-class docutils literal notranslate"><span class="pre">Fields</span></code> class</li>
+<li><dl class="first docutils">
+<dt><a class="reference internal" href="useful.html#streamlines.useful.Data" title="streamlines.useful.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a> and <a class="reference internal" href="useful.html#streamlines.useful.Info" title="streamlines.useful.Info"><code class="xref py py-class docutils literal notranslate"><span class="pre">Info</span></code></a> classes, as well as functions,</dt>
+<dd>from the <a class="reference internal" href="useful.html#module-streamlines.useful" title="streamlines.useful"><code class="xref py py-mod docutils literal notranslate"><span class="pre">useful</span></code></a> module</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
 <hr class="docutils" />
 <dl class="class">
 <dt id="streamlines.trace.Trace">
 <em class="property">class </em><code class="descclassname">streamlines.trace.</code><code class="descname">Trace</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>geodata</em>, <em>preprocess</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.trace.Trace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class providing set of methods to compute streamline trajectories and densities
-from raw DTM data.</p>
-<p>Provides top-level methods to:
-(1) set seed points aka start locations (sub-pixel positions) of streamlines;
-(2) trace streamlines from seed points both upstream amd downstream;
-(3) compute gridded measures of mean streamline length and mean effective area.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Core</strong> (<em>class</em>) – </td>
-</tr>
-</tbody>
-</table>
+<dd><p>Class providing set of methods to compute topographic streamline trajectories and
+their density grids. Specifically, to:</p>
+<ol class="arabic simple">
+<li>set seed points aka start locations (sub-pixel positions) of streamlines;</li>
+<li>trace streamlines from seed points both upstream amd downstream;</li>
+<li>compute gridded measures of mean streamline length and mean effective area.</li>
+</ol>
 <dl class="method">
 <dt id="streamlines.trace.Trace.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>geodata</em>, <em>preprocess</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.trace.Trace.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize a class instance.</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – </li>
+<li><strong>state</strong> (<em>obj</em>) – </li>
 <li><strong>imported_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – </li>
-<li><strong>geodata</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – </li>
-<li><strong>preprocess</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – </li>
+<li><strong>geodata</strong> (<em>obj</em>) – </li>
+<li><strong>preprocess</strong> (<em>obj</em>) – </li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<p>Initialize a Trace class instance.</p>
 <dl class="attribute">
 <dt id="streamlines.trace.Trace.self.geodata">
 <code class="descclassname">self.</code><code class="descname">geodata</code><a class="headerlink" href="#streamlines.trace.Trace.self.geodata" title="Permalink to this definition">¶</a></dt>
@@ -84,7 +89,7 @@ from raw DTM data.</p>
 <dl class="attribute">
 <dt id="streamlines.trace.Trace.self.preprocess">
 <code class="descclassname">self.</code><code class="descname">preprocess</code><a class="headerlink" href="#streamlines.trace.Trace.self.preprocess" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>object</em></p>
+<dd><p><em>obj</em></p>
 </dd></dl>
 
 <dl class="attribute">
@@ -175,18 +180,29 @@ and derive mean streamline point spacing.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">---------------------------------------------------------------------</span>
 
-<span class="sd">Trace streamlines and their density grids</span>
+<span class="sd">Module to trace topographic streamline trajectories and compute their density grids.</span>
 
-<span class="sd">Todo:</span>
-<span class="sd">    Fix likely bug in parameters file path wrangling</span>
+<span class="sd">.. image:: ../images/Guadalupe_example1.png</span>
 
 <span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Imports the following:</span>
+<span class="sd">    - :class:`.Core` class</span>
+<span class="sd">    - :class:`.Trajectories` class</span>
+<span class="sd">    - :class:`.Fields` class</span>
+<span class="sd">    - :class:`.Data` and :class:`.Info` classes, as well as functions, </span>
+<span class="sd">        from the :mod:`.useful` module</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">.. _pandas: https://pandas.pydata.org/</span>
+
+
 <span class="sd">    </span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">numpy</span>  <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">environ</span>
 <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYTHONUNBUFFERED&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;True&#39;</span>
 
@@ -201,31 +217,29 @@ and derive mean streamline point spacing.</p>
 
 <span class="k">class</span> <span class="nc">Trace</span><span class="p">(</span><span class="n">Core</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class providing set of methods to compute streamline trajectories and densities </span>
-<span class="sd">    from raw DTM data.</span>
+
+<span class="sd">    Class providing set of methods to compute topographic streamline trajectories and </span>
+<span class="sd">    their density grids. Specifically, to: </span>
 <span class="sd">    </span>
-<span class="sd">    Provides top-level methods to: </span>
-<span class="sd">    (1) set seed points aka start locations (sub-pixel positions) of streamlines; </span>
-<span class="sd">    (2) trace streamlines from seed points both upstream amd downstream; </span>
-<span class="sd">    (3) compute gridded measures of mean streamline length and mean effective area.</span>
+<span class="sd">    #. set seed points aka start locations (sub-pixel positions) of streamlines; </span>
+<span class="sd">    #. trace streamlines from seed points both upstream amd downstream; </span>
+<span class="sd">    #. compute gridded measures of mean streamline length and mean effective area.</span>
 <span class="sd">    </span>
-<span class="sd">    Args:</span>
-<span class="sd">        Core (class):</span>
-<span class="sd">    </span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span><span class="n">geodata</span><span class="p">,</span><span class="n">preprocess</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize a class instance.</span>
-<span class="sd">        </span>
 <span class="sd">        Args:</span>
-<span class="sd">            state (object):</span>
+<span class="sd">            state (obj):</span>
 <span class="sd">            imported_parameters (dict):</span>
-<span class="sd">            geodata (object):</span>
-<span class="sd">            preprocess (object):</span>
+<span class="sd">            geodata (obj):</span>
+<span class="sd">            preprocess (obj):</span>
 
+<span class="sd">        Initialize a Trace class instance.</span>
+<span class="sd">        </span>
 <span class="sd">        Attributes:</span>
 <span class="sd">            self.geodata (obj):</span>
-<span class="sd">            self.preprocess (object):</span>
+<span class="sd">            self.preprocess (obj):</span>
 <span class="sd">            self.seed_point_array (numpy.ndarray):</span>
 <span class="sd">            self.perform_RungeKutta2_integration (function):</span>
 <span class="sd">            </span>
@@ -343,7 +357,7 @@ and derive mean streamline point spacing.</p>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    <img class="logo" src="../_static/../_images/icon3.png" alt="Logo"/>
     
     <h1 class="logo logo-name">Streamlines</h1>
     

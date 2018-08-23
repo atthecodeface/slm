@@ -33,12 +33,24 @@
             
   <div class="section" id="module-streamlines.geodata">
 <span id="geodata-py"></span><h1><code class="docutils literal notranslate"><span class="pre">geodata.py</span></code><a class="headerlink" href="#module-streamlines.geodata" title="Permalink to this headline">¶</a></h1>
-<p>GeoTIFF data file handling to provide DTM grid and handle masking</p>
+<hr class="docutils" />
+<p>Module for importing GeoTIFF data files of DTM grids.</p>
 <div class="admonition-todo admonition" id="index-0">
 <p class="first admonition-title">Todo</p>
 <p class="last">For now, only GeoTIFF read and parsing operations are working.
 Might be useful to get GeoTIFF write working.</p>
 </div>
+<hr class="docutils" />
+<dl class="docutils">
+<dt>Requires Python packages/modules:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code></a></li>
+</ul>
+</dd>
+</dl>
+<p>Imports <a class="reference internal" href="core.html#streamlines.core.Core" title="streamlines.core.Core"><code class="xref py py-class docutils literal notranslate"><span class="pre">Core</span></code></a> class.</p>
+<hr class="docutils" />
 <dl class="class">
 <dt id="streamlines.geodata.Geodata">
 <em class="property">class </em><code class="descclassname">streamlines.geodata.</code><code class="descname">Geodata</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.geodata.Geodata" title="Permalink to this definition">¶</a></dt>
@@ -200,11 +212,23 @@ y coordinates of ROI pixel centers</p>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">GeoTIFF data file handling to provide DTM grid and handle masking</span>
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Module for importing GeoTIFF data files of DTM grids.</span>
 
 <span class="sd">Todo:</span>
 <span class="sd">    For now, only GeoTIFF read and parsing operations are working. </span>
 <span class="sd">    Might be useful to get GeoTIFF write working.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
+
+<span class="sd">Requires Python packages/modules:</span>
+<span class="sd">  -  :mod:`scipy.ndimage`</span>
+<span class="sd">  -  :mod:`json`</span>
+
+<span class="sd">Imports :class:`.Core` class.</span>
+
+<span class="sd">---------------------------------------------------------------------</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
@@ -468,7 +492,7 @@ y coordinates of ROI pixel centers</p>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/../_images/icon2.png" alt="Logo"/>
+    <img class="logo" src="../_static/../_images/icon3.png" alt="Logo"/>
     
     <h1 class="logo logo-name">Streamlines</h1>
     

@@ -1,13 +1,24 @@
 """
 ---------------------------------------------------------------------
 
-Module handling map and graph plotting.
+Module for map and graph plotting.
 
 ---------------------------------------------------------------------
 
-Requires `matplotlib`_, `random`_, `mpl_toolkits`_, `colorsys`_, `scipy`_.
+Requires Python packages/modules:
+  -  :mod:`random`
+  -  :mod:`matplotlib.pyplot`
+  -  :mod:`matplotlib.gridspec`
+  -  :mod:`matplotlib.ticker`
+  -  :mod:`matplotlib.colors`
+  -  :mod:`matplotlib.patches`
+  -  :mod:`mpl_toolkits.axes_grid1 <mpl_toolkits.axes_grid1.axes_divider>`
+  -  :mod:`colorsys`
+  -  :mod:`scipy.interpolate`
+  -  :mod:`scipy.stats`
+  -  :mod:`scipy.signal`
 
-Imports Core class :doc:`core`.
+Imports :class:`.Core` class.
 
 ---------------------------------------------------------------------
 
@@ -32,7 +43,6 @@ import numpy as np
 from   numpy  import pi, arctan, arctan2, sin, cos, sqrt
 from   random import shuffle, seed
 import matplotlib as mpl
-from   matplotlib import streamplot
 import matplotlib.pyplot   as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.ticker   as ticker
@@ -40,6 +50,7 @@ from   matplotlib.pyplot   import streamplot
 from   matplotlib.colors   import LinearSegmentedColormap
 from   matplotlib.patches  import ArrowStyle, FancyArrowPatch
 from   mpl_toolkits.axes_grid1 import make_axes_locatable
+# from   mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 import colorsys
 from   scipy.interpolate import interp1d 
 from   scipy.signal      import decimate
