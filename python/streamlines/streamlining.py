@@ -151,8 +151,8 @@ class Streamlining(Core):
                     break
             # If we still can't find the specified JSON file, bail
             if parameters_path=='':
-                raise ValueError('Cannot find JSON parameters file in {}'
-                                 .format(possible_paths))
+                raise ValueError('Cannot find JSON parameters file "{0}.json" in {1}'
+                                 .format(parameters_file,possible_paths))
             
         # Read in parameters and assign to the Trajectories class instance
         imported_parameters, slm_path, slmdata_path, slmnb_path \

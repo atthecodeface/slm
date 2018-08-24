@@ -1,0 +1,35 @@
+{
+	"geodata": {
+		"title" :         "Guadalupe Mtns ROI1, NM, USA, UTM Zone 13N",
+		"dtm_file" :      "Guadalupe_DTM0_res2m_fill_sinks1deg_cuttest1.tif",
+		"basins_file" :   "Guadalupe_DTM0_res2m_fill_sinks1deg_watershed3k_cuttest1.tif",
+		"data_path" :     [ "..", "data" ],		
+		"export_path" :   [ ".",  "GuadalupeMtns_Test1" ],
+		"do_clip_roi" :   false,
+        "roi_x_bounds" :  [1400,1542],
+        "roi_y_bounds" :  [1400,1640],  
+        "basins" :        [701,702],
+		"do_basin_masking" : true
+	},
+
+	"trace": {
+		"n_trajectory_seed_points" : 100
+	},
+		
+	"analysis": {
+		"marginal_distbn_kde_bandwidth" : 12.0,
+		"search_cdf_max" : 0.999
+	},
+
+	"mapping": {
+		"fine_segmentation_threshold"   : 3,
+		"Xcoarse_segmentation_threshold" : 2000,
+		"Xcoarse_channel_threshold" : 200,
+		"n_hsl_averaging_threshold" : 5
+	},
+	
+	"plot": {
+        "mhsl_pdf_x_stretch" : 1.4,
+        "do_plot_aspect_contours" : true
+	}
+}

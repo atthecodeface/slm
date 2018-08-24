@@ -85,7 +85,7 @@ def import_parameters(parameters_path, parameters_file): #,do_reload_state=False
     """        
     # Parse default and assigned JSON parameters files
     slm_path = os.path.realpath(os.path.join(streamlines.__path__[0],'..','..'))
-    slmdata_path = os.path.realpath(os.path.join(slm_path,'..','slmdata'))
+    slmdata_path = os.path.realpath(os.path.join(slm_path,'..','data'))
     slmnb_path = os.path.realpath(os.path.join(slm_path,'..','slmnb'))
     parameters_files_list \
         = [os.path.realpath(os.path.join(slm_path,'json','defaults')),

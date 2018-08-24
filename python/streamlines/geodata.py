@@ -93,10 +93,14 @@ class Geodata(Core):
         try:
             self.dtm_path
         except:
+            pdebug('here')
+            pdebug(os.path.realpath(self.state.parameters_path))
+            pdebug(*self.data_path)
             self.dtm_path = os.path.dirname(os.path.realpath(
                 os.path.join(os.path.realpath(self.state.parameters_path),
                              *self.data_path,self.dtm_file) 
                 ))
+
         self.print('Reading DTM from GeoTIFF file "%s/%s"'
               % (self.dtm_path,self.dtm_file))
         self.dtm_array, self.tiff, self.pixel_size \
