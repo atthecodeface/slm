@@ -142,8 +142,8 @@ class Plot(Core):
         mpl.rc( 'lines', linewidth=2.0, markersize=10)
         # mpl.rc( 'font', size=14,family='Times New Roman', serif='cm')
         # mpl.rc( 'font', size=14,family='DejaVu Sans', serif='cm')
-        mpl.rc( 'font', size=14)
-        mpl.rc( 'axes', labelsize=14) 
+        mpl.rc( 'font', size=self.general_font_size)
+        mpl.rc( 'axes', labelsize=self.axes_font_size) 
         # mpl.rc( 'legend', fontsize=10)
         mpl.rc( 'text', usetex=False)
         
@@ -181,7 +181,7 @@ class Plot(Core):
 
         axes.set_rasterization_zorder(1)
         fig.canvas.set_window_title(window_title)
-        axes.set_title(title, fontsize=14, fontweight='bold')
+        axes.set_title(title, fontsize=self.title_font_size, fontweight='bold')
         
         return fig, axes
           

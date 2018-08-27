@@ -93,7 +93,6 @@ class Geodata(Core):
         try:
             self.dtm_path
         except:
-            pdebug('here')
             pdebug(os.path.realpath(self.state.parameters_path))
             pdebug(*self.data_path)
             self.dtm_path = os.path.dirname(os.path.realpath(

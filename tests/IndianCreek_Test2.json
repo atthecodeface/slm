@@ -1,13 +1,11 @@
 {
 	"geodata": {
-		"title" :         "Indian Creek Test2, Ohio, USA, UTM Zone 17N",
+		"title" :         "Indian Creek Test#2, Ohio, USA",
 		"dtm_file" :      "IndianCreek_res1m_fillsinks0p01_cuttest2.tif",
 		"basins_file" :   "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed3k_cuttest2.tif",
 		"data_path" :     [ "..", "data" ],
 		"export_path" :   [ ".",  "IndianCreek_Test2" ],
 		"do_clip_roi" :   false,
-		"roi_x_bounds" :  [300,500],
-		"roi_y_bounds" :  [30,230],	
 		"basins" :        [1131,1132],		
 		"do_basin_masking" : true
 	},
@@ -19,6 +17,9 @@
 	},
 
 	"plot": {
+        "general_font_size" : 12,
+        "axes_font_size" : 12,
+        "title_font_size" : 12,
         "mhsl_pdf_x_stretch" : 1.4,
         "do_plot_aspect_contours" : true
 	},

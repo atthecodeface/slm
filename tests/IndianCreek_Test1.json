@@ -12,15 +12,15 @@
 	},
 
 	"geodata": {
-		"title" :          "Indian Creek Test1, Ohio, USA, UTM Zone 17N",
-		"dtm_file" :       "IndianCreek_res1m_fillsinks0p01.tif",
-		"basins_file" :    "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed30k.tif",
+		"title" :          "Indian Creek Test#1, Ohio, USA",
+		"dtm_file" :       "IndianCreek_res1m_fillsinks0p01_cuttest2.tif",
+		"basins_file" :    "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed30k_cuttest2.tif",
 		"data_path" :      ["..", "data"],	
 		"export_path" :    [".","IndianCreek_Test1"],		
 		"no_data_values" : [-99999,0],
 		"do_clip_roi" :    true,
-		"roi_x_bounds" :   [690,715],
-		"roi_y_bounds" :   [240,261],
+		"roi_x_bounds" :   [115,130],
+		"roi_y_bounds" :   [65,80],
 		"basins" :         [161,162,163,164,165,166],
 		"do_basin_masking" : false
 	},
@@ -54,6 +54,9 @@
 	"plot": {   
 		"do_plot_maps" : true,	
 		"do_plot_distributions": true,
+        "general_font_size" : 12,
+        "axes_font_size" : 12,
+        "title_font_size" : 12,
 		
 		"do_plot_dtm" : false,
 		"do_plot_roi" : false,

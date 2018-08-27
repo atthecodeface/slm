@@ -145,6 +145,9 @@
 		"do_plot_maps" : true,	
 		"do_plot_distributions" : true,	
 		"fig_dpi" : 100,
+                "general_font_size" : 14,
+                "axes_font_size" : 14,
+                "title_font_size" : 14,
 		
 		"do_plot_dtm" : false,
 		"do_plot_roi" : false,
