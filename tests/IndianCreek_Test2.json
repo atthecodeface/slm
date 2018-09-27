@@ -11,9 +11,8 @@
 	},
 
 	"mapping": {
-		"fine_segmentation_threshold" : 10,
-		"coarse_segmentation_threshold" : 3000,
-		"coarse_channel_threshold" :     100
+		"coarse_segmentation_threshold" : 200,
+		"coarse_channel_threshold" :      200
 	},
 
 	"plot": {
@@ -23,7 +22,4 @@
         "mhsl_pdf_x_stretch" : 1.4,
         "do_plot_aspect_contours" : true
 	},
-	
-	"save": {
-	}
 }
