@@ -18,6 +18,7 @@
 		"do_trace" : true,	
 		"do_analysis" : false,
 		"do_mapping" : true,
+		"do_extra" : true,
 		"do_plot" : true,
 		"do_save" : true,
 
@@ -29,7 +30,7 @@
 		"title" :          "Untitled",
 		"dtm_file" :       "Unspecified GeoTIFF",
 		"basins_file" :    "",
-		"data_path" :      ["$SLMDATA"],	
+		"data_path" :      [""],	
 		"export_maps_path" :     ["..","Maps"],	
 		"export_figs_path" :     ["..","Figures"],	
 		"export_analyses_path" : ["..","Analyses"],	
@@ -72,6 +73,9 @@
 	},
 
 	"analysis": {
+		"do_extra_analysis" : false,
+		"do_compute_elevation_slope_pdfs" : true,
+		
 		"search_cdf_min" : 0.8,
 		"search_cdf_max" : 0.999,
 		"Xsearch_cdf_max" : 0.995,
@@ -127,6 +131,9 @@
 	},
 
 	"mapping": {
+		"do_pass1" : true,
+		"do_pass2" : true,
+		"do_pass3" : true,
 		"do_measure_hsl_from_ridges" : false,
 		"coarse_segmentation_threshold" : 1000,
 		"coarse_channel_threshold"      : 1000,
@@ -179,6 +186,9 @@
 		"do_plot_flow_vectors" : false,
 		"do_plot_blockages" : false,
 		"do_plot_loops" : false,
+		
+		"do_plot_midslope_elevations_pdf" : false,
+		"do_plot_slope_angles_pdf" : false,
 		
 		"interpolation_method" : "nearest",
 		"n_streamlines_limit" : 1500,
@@ -297,9 +307,10 @@
 	},
 
 	"save": {
-		"do_save_analyses" : true,	
-		"do_save_figs" : true,	
-		"do_save_maps" : true,		
+		"do_save_analyses" : true,
+		"analyses_suffix" : "_results",
+		"do_save_figs" : true,
+		"do_save_maps" : true,
 		"figs_format" : ["pdf"],
 		"figs_options" : {
 			"dpi":300, 

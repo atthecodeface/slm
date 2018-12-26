@@ -5,6 +5,7 @@ Module providing tools to write results, grids, data to output files.
 
 Requires Python packages/modules:
   -  :mod:`matplotlib.pyplot`
+  -  :mod:`json`
 
 
 Imports :class:`.Core` class and functions from the :mod:`.useful` module.
@@ -19,6 +20,7 @@ Imports :class:`.Core` class and functions from the :mod:`.useful` module.
 import numpy  as np
 from matplotlib.pyplot import savefig, figure
 import os
+import json
 
 from streamlines.core   import Core
 from streamlines.useful import write_geotiff
@@ -110,6 +112,15 @@ class Save(Core):
         
         self.print('**Write results to files end**\n')  
         
+    @staticmethod
+    def is_jsonable(item):
+        try:
+            json.dumps(item)
+            return True
+        except:
+            return False
+
+
     def save_analyses(self, analysis_name=None, file_stem=None):  
         """
         Args:
@@ -121,10 +132,36 @@ class Save(Core):
             TBD: 
             TBD
         """  
+#         from pprint   import pprint
         self.print('Saving analyses...') 
         if file_stem is None:
             file_stem = os.path.realpath(os.path.join(*self.geodata.export_analyses_path,
                                                        self.state.parameters_file))
+        file_name = file_stem+self.analyses_suffix+'.json'
+            
+        jsonable_list = []
+        pdict = {}
+        pdict.update({'save': {}})
+        for top_item in self.__dict__.items():
+            top_obj = top_item[0]
+            top_val = top_item[1]
+            if hasattr(top_val, '__dict__'):
+#                 if not hasattr(pdict,top_obj):
+                pdict.update({top_obj : {}})
+                for sub_instance in top_val.__dict__.items():                        
+                    if self.is_jsonable(sub_instance[1]):
+                        pdict[top_obj].update({sub_instance[0] : sub_instance[1]})
+            else:
+                pdict['save'].update({top_obj: top_val})
+#         pprint(pdict)
+    
+        with open(file_name,'w') as json_file:
+            self.print('Writing to "{}"'.format(file_name))
+            try:
+                json.dump(pdict, json_file, sort_keys=True, indent=4)
+            except:
+                print('Failed to write analysis results JSON file')
+                            
         self.print('...done') 
         
     def save_maps(self, fig_name=None, file_stem=None):  

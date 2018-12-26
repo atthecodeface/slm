@@ -42,12 +42,12 @@ variations.</p>
 <dt>Requires Python packages/modules:</dt>
 <dd><ul class="first last simple">
 <li><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/index.html#module-pandas" title="(in pandas v0.23.4)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
-<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing" title="(in scikit-learn v0.20.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code></a></li>
-<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.morphology.html#module-skimage.morphology" title="(in skimage v0.14.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.morphology</span></code></a></li>
-<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.filters.html#module-skimage.filters" title="(in skimage v0.14.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.filters</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/interpolate.html#module-scipy.interpolate" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.interpolate</span></code></a></li>
+<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing" title="(in scikit-learn v0.16.dev0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code></a></li>
+<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.morphology.html#module-skimage.morphology" title="(in skimage v0.14.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.morphology</span></code></a></li>
+<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.filters.html#module-skimage.filters" title="(in skimage v0.14.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.filters</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/interpolate.html#module-scipy.interpolate" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.interpolate</span></code></a></li>
 <li><a class="reference external" href="https://pythonhosted.org/scikit-fmm/index.html#module-skfmm" title="(in scikit-fmm v0.0.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skfmm</span></code></a></li>
 </ul>
 </dd>
@@ -672,9 +672,12 @@ to determine whether or not there is a N-S bias.</li>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">**Mapping begin**&#39;</span><span class="p">)</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">pass1</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pass2</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pass3</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_pass1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pass1</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_pass2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pass2</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_pass3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pass3</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;**Mapping end**</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>  
 
     <span class="k">def</span> <span class="nf">pass1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

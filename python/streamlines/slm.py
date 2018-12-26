@@ -71,13 +71,14 @@ def run(**kwargs):
         sl.trace.do()
 #     if sl.state.do_analysis:
 #         sl.analysis.do()
+    if sl.state.do_analysis:
+        sl.analysis.do()
     if sl.state.do_mapping:
         sl.mapping.do()
+    if sl.state.do_extra:
+        sl.analysis.extra()
     if sl.state.do_plot:
         sl.plot.do()
-#     if sl.state.do_save_state:
-#         sl.state.inventorize_run_state()
-#         sl.state.save_state()
     if sl.state.do_save:
         sl.save.do()
     if sl.state.do_plot:
@@ -195,10 +196,10 @@ def _parse_cmd_line_args():
                         metavar='n_work_items',
                         help='number of OpenCL work items per workgroup')
     
-#     parser.add_argument('-x','--export', dest='do_export', 
-#                         default=None, type=_str2bool, action="store",  
-#                         metavar='export_flag',
-#                         help='export figures to files')
+    parser.add_argument('-x','--extra', dest='do_extra', 
+                        default=None, type=_str2bool, action="store",  
+                        metavar='extra_flag',
+                        help='more analysis')
     
     args = parser.parse_args()
     return args

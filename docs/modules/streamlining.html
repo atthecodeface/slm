@@ -272,6 +272,15 @@ the streamlines workflow, e.g., geodata(), trace(), analysis()</p>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         
+        <span class="c1"># Are we running in a notebook?</span>
+        <span class="n">environment</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;_&#39;</span><span class="p">])</span>
+        <span class="n">notebook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="o">*</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())),</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;..&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s1">&#39;notebook&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">environment</span> <span class="ow">and</span> <span class="s1">&#39;jupyter&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">environment</span> \
+            <span class="ow">and</span>  <span class="s1">&#39;ipython&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">environment</span><span class="p">:</span>
+            <span class="n">environment</span> <span class="o">=</span> <span class="s1">&#39;shell (probably)&#39;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Environment:&#39;</span><span class="p">,</span><span class="n">environment</span><span class="p">)</span>
+        
         <span class="c1">#</span>
         <span class="c1"># Parse workflow parameters in JSON files and command line</span>
         <span class="c1">#</span>
@@ -283,6 +292,7 @@ the streamlines workflow, e.g., geodata(), trace(), analysis()</p>
             <span class="n">parameters_path</span><span class="p">,</span> <span class="n">parameters_file</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;parameters_file&#39;</span><span class="p">])</span>
         <span class="c1"># Remove trailing .json for now if there is one</span>
         <span class="n">parameters_file</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parameters_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        
         <span class="c1"># Look for the JSON file in several likely places</span>
         <span class="k">if</span> <span class="n">parameters_path</span><span class="o">==</span><span class="s1">&#39;&#39;</span><span class="p">:</span>   
             <span class="c1"># Try the current directory - in UNIX, the dir from which slm was invoked         </span>
@@ -293,9 +303,13 @@ the streamlines workflow, e.g., geodata(), trace(), analysis()</p>
             <span class="k">except</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="c1"># Try the likely relative path to JSON parameters file</span>
-            <span class="n">guess</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">),</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;Parameters&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">guess</span><span class="p">):</span>
-                <span class="n">possible_paths</span> <span class="o">+=</span> <span class="p">[</span><span class="n">guess</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">possible_paths</span> <span class="o">+=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">),</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;Parameters&#39;</span><span class="p">)]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+<span class="c1">#             guess = os.path.join(os.path.realpath(&#39;.&#39;),&#39;..&#39;,&#39;Parameters&#39;)</span>
+<span class="c1">#             if os.path.isdir(guess):</span>
+<span class="c1">#                 possible_paths += [guess]</span>
             <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">possible_paths</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span>
                             <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">parameters_file</span><span class="o">+</span><span class="s1">&#39;.json&#39;</span><span class="p">))):</span>
@@ -305,9 +319,10 @@ the streamlines workflow, e.g., geodata(), trace(), analysis()</p>
             <span class="k">if</span> <span class="n">parameters_path</span><span class="o">==</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot find JSON parameters file &quot;</span><span class="si">{0}</span><span class="s1">.json&quot; in </span><span class="si">{1}</span><span class="s1">&#39;</span>
                                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parameters_file</span><span class="p">,</span><span class="n">possible_paths</span><span class="p">))</span>
-            
+        <span class="n">parameters_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">parameters_path</span><span class="p">)</span>
+        
         <span class="c1"># Read in parameters and assign to the State class instance</span>
-        <span class="n">imported_parameters</span><span class="p">,</span> <span class="n">slm_path</span><span class="p">,</span> <span class="n">slmdata_path</span><span class="p">,</span> <span class="n">slmnb_path</span> \
+        <span class="n">imported_parameters</span><span class="p">,</span> <span class="n">slm_path</span><span class="p">,</span> <span class="n">slmnb_path</span> \
             <span class="o">=</span> <span class="n">import_parameters</span><span class="p">(</span><span class="n">parameters_path</span><span class="p">,</span> <span class="n">parameters_file</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="s1">&#39;verbose&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;verbose&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> 
                   <span class="s1">&#39;verbose&#39;</span> <span class="ow">in</span> <span class="n">imported_parameters</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> 
@@ -363,19 +378,37 @@ the streamlines workflow, e.g., geodata(), trace(), analysis()</p>
         <span class="c1"># Used by State.inventorize_run_state() and other State methods</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">obj_list</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">]</span>
         
+        <span class="c1"># Build list of paths to likely git repos</span>
+        <span class="n">repo_search_list</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;slm&#39;</span><span class="p">,</span>  <span class="n">slm_path</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="s1">&#39;notebook&#39;</span> <span class="ow">in</span> <span class="n">environment</span> <span class="ow">or</span> <span class="s1">&#39;jupyter&#39;</span> <span class="ow">in</span> <span class="n">environment</span> \
+            <span class="ow">or</span>  <span class="s1">&#39;ipython&#39;</span> <span class="ow">in</span> <span class="n">environment</span><span class="p">:</span>
+            <span class="n">repo_search_list</span> <span class="o">+=</span> <span class="p">[[</span><span class="s1">&#39;notebook&#39;</span><span class="p">,</span> <span class="n">notebook_path</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">environment</span> <span class="o">=</span> <span class="s1">&#39;shell (probably)&#39;</span>
+            
+        <span class="c1"># Likely git repo for JSON file</span>
+        <span class="n">json_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">parameters_path</span><span class="p">),</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;..&#39;</span><span class="p">))</span>
+        <span class="n">repo_search_list</span> <span class="o">+=</span> <span class="p">[[</span><span class="s1">&#39;parameters&#39;</span><span class="p">,</span> <span class="n">json_path</span><span class="p">]]</span>
+        
+        <span class="c1"># Instantiate slm data class instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span> <span class="o">=</span> <span class="n">Geodata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">)</span>
+        <span class="n">repo_search_list</span> <span class="o">+=</span> <span class="p">[[</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">data_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]]]</span>
+                
+
+<span class="c1">#         print(&#39;repo_search_list:&#39;,repo_search_list)</span>
         <span class="c1"># Try to fetch latest slm-related git repo information</span>
         <span class="c1">#   - notably the commit hash, author, date &amp; time</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">do_git_info</span><span class="p">:</span>
             <span class="c1"># Avoid the need to have the Python git module installed</span>
             <span class="c1">#   by only importing if do_git_info is true</span>
             <span class="kn">import</span> <span class="nn">git</span>
-            <span class="k">for</span> <span class="n">repo_name</span><span class="p">,</span> <span class="n">repo_path</span> <span class="ow">in</span> <span class="p">((</span><span class="s1">&#39;slm&#39;</span><span class="p">,</span><span class="n">slm_path</span><span class="p">),</span>
-                                         <span class="p">(</span><span class="s1">&#39;slmnb&#39;</span><span class="p">,</span><span class="n">slmnb_path</span><span class="p">),</span>
-                                         <span class="p">(</span><span class="s1">&#39;slmdata&#39;</span><span class="p">,</span><span class="n">slmdata_path</span><span class="p">)):</span>
-                <span class="n">pdebug</span><span class="p">(</span><span class="s1">&#39;git repo path:&#39;</span><span class="p">,</span> <span class="n">repo_path</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">repo_name</span><span class="p">,</span> <span class="n">repo_path</span> <span class="ow">in</span> <span class="n">repo_search_list</span><span class="p">:</span>
+<span class="c1">#                 print(repo_name,repo_path)</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="c1"># Create a short-lived git repo class instance</span>
                     <span class="n">repo</span> <span class="o">=</span> <span class="n">git</span><span class="o">.</span><span class="n">Repo</span><span class="p">(</span><span class="n">repo_path</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> repo path: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">repo_name</span><span class="p">,</span><span class="n">repo_path</span><span class="p">))</span>
                     <span class="c1"># Grab its summary - seems to be the fastest way to get git info</span>
                     <span class="n">summary</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">git</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="s1">&#39;--summary&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
                     <span class="n">git_info</span> <span class="o">=</span> <span class="p">[</span>  <span class="p">[</span><span class="n">summary</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">+</span><span class="p">[</span><span class="n">summary</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &lt;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span><span class="o">+</span><span class="p">[</span><span class="n">summary</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> 
@@ -383,13 +416,12 @@ the streamlines workflow, e.g., geodata(), trace(), analysis()</p>
                                 <span class="o">+</span> <span class="p">([</span><span class="n">summary</span><span class="p">[</span><span class="mi">5</span><span class="p">]]</span> <span class="k">if</span> <span class="n">summary</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;&#39;</span> <span class="k">else</span> <span class="p">[])</span> <span class="p">]</span>
                     <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span><span class="n">repo_name</span><span class="o">+</span><span class="s1">&#39;_gitinfo&#39;</span><span class="p">,</span><span class="n">git_info</span><span class="p">)</span>
                     <span class="c1"># Print git info if verbose mode is on</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> git:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">repo_name</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> repo info:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">repo_name</span><span class="p">))</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">git_info</span><span class="p">)</span>
                 <span class="k">except</span><span class="p">:</span>
                     <span class="k">pass</span>
-            
+        
         <span class="c1"># Instantiate slm workflow classes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span>    <span class="o">=</span> <span class="n">Geodata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span> <span class="o">=</span> <span class="n">Preprocess</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trace</span>      <span class="o">=</span> <span class="n">Trace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="p">,</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">)</span>

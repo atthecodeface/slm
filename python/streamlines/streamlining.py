@@ -120,6 +120,15 @@ class Streamlining(Core):
 
         """
         
+        # Are we running in a notebook?
+        environment = os.path.basename(os.environ['_'])
+        notebook_path = os.path.realpath(
+            os.path.join((*os.path.split(os.getcwd())),'..','..'))
+        if 'notebook' not in environment and 'jupyter' not in environment \
+            and  'ipython' not in environment:
+            environment = 'shell (probably)'
+        print('Environment:',environment)
+        
         #
         # Parse workflow parameters in JSON files and command line
         #
@@ -131,6 +140,7 @@ class Streamlining(Core):
             parameters_path, parameters_file  = os.path.split(kwargs['parameters_file'])
         # Remove trailing .json for now if there is one
         parameters_file = ''.join(parameters_file.split('.json',-1))
+        
         # Look for the JSON file in several likely places
         if parameters_path=='':   
             # Try the current directory - in UNIX, the dir from which slm was invoked         
@@ -141,9 +151,13 @@ class Streamlining(Core):
             except:
                 pass
             # Try the likely relative path to JSON parameters file
-            guess = os.path.join(os.path.realpath('.'),'..','Parameters')
-            if os.path.isdir(guess):
-                possible_paths += [guess]
+            try:
+                possible_paths += [os.path.join(os.path.realpath('.'),'..','Parameters')]
+            except:
+                pass
+#             guess = os.path.join(os.path.realpath('.'),'..','Parameters')
+#             if os.path.isdir(guess):
+#                 possible_paths += [guess]
             for path in possible_paths:
                 if os.path.isfile(os.path.realpath(
                             os.path.join(path, parameters_file+'.json'))):
@@ -153,9 +167,10 @@ class Streamlining(Core):
             if parameters_path=='':
                 raise ValueError('Cannot find JSON parameters file "{0}.json" in {1}'
                                  .format(parameters_file,possible_paths))
-            
+        parameters_path = os.path.realpath(parameters_path)
+        
         # Read in parameters and assign to the State class instance
-        imported_parameters, slm_path, slmdata_path, slmnb_path \
+        imported_parameters, slm_path, slmnb_path \
             = import_parameters(parameters_path, parameters_file)
         if ( ('verbose' not in kwargs.keys() or kwargs['verbose'] is None and 
                   'verbose' in imported_parameters['state'].keys() 
@@ -211,19 +226,37 @@ class Streamlining(Core):
         # Used by State.inventorize_run_state() and other State methods
         self.state.obj_list=[self.state]
         
+        # Build list of paths to likely git repos
+        repo_search_list = [['slm',  slm_path]]
+        if 'notebook' in environment or 'jupyter' in environment \
+            or  'ipython' in environment:
+            repo_search_list += [['notebook', notebook_path]]
+        else:
+            environment = 'shell (probably)'
+            
+        # Likely git repo for JSON file
+        json_path = os.path.realpath(
+            os.path.join(os.path.realpath(parameters_path),'..','..'))
+        repo_search_list += [['parameters', json_path]]
+        
+        # Instantiate slm data class instance
+        self.geodata = Geodata(self.state,imported_parameters)
+        repo_search_list += [['data', self.geodata.data_path[0]]]
+                
+
+#         print('repo_search_list:',repo_search_list)
         # Try to fetch latest slm-related git repo information
         #   - notably the commit hash, author, date & time
         if self.state.do_git_info:
             # Avoid the need to have the Python git module installed
             #   by only importing if do_git_info is true
             import git
-            for repo_name, repo_path in (('slm',slm_path),
-                                         ('slmnb',slmnb_path),
-                                         ('slmdata',slmdata_path)):
-                pdebug('git repo path:', repo_path)
+            for repo_name, repo_path in repo_search_list:
+#                 print(repo_name,repo_path)
                 try:
                     # Create a short-lived git repo class instance
                     repo = git.Repo(repo_path)
+                    print('{} repo path: {}'.format(repo_name,repo_path))
                     # Grab its summary - seems to be the fastest way to get git info
                     summary = repo.git.show('--summary').split('\n')
                     git_info = [  [summary[0]]+[summary[1].split(' <')[0]]+[summary[2]] 
@@ -231,13 +264,12 @@ class Streamlining(Core):
                                 + ([summary[5]] if summary[5]!='' else []) ]
                     setattr(self.state,repo_name+'_gitinfo',git_info)
                     # Print git info if verbose mode is on
-                    self.print('{} git:'.format(repo_name))
+                    self.print('{} repo info:'.format(repo_name))
                     self.pprint(git_info)
                 except:
                     pass
-            
+        
         # Instantiate slm workflow classes
-        self.geodata    = Geodata(self.state,imported_parameters)
         self.preprocess = Preprocess(self.state,imported_parameters,self.geodata)
         self.trace      = Trace(self.state,imported_parameters,self.geodata,
                                 self.preprocess)

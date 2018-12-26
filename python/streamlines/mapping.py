@@ -220,9 +220,12 @@ class Mapping(Core):
         
         """
         self.print('\n**Mapping begin**') 
-        self.pass1()
-        self.pass2()
-        self.pass3()
+        if self.do_pass1:
+            self.pass1()
+        if self.do_pass2:
+            self.pass2()
+        if self.do_pass3:
+            self.pass3()
         self.print('**Mapping end**\n')  
 
     def pass1(self):

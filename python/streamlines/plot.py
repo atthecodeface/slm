@@ -1394,7 +1394,7 @@ class Plot(Core):
                   +up_or_down_str+'streamlines'
                   +' randomly sampled from a set of {0:,}'.format(n_streamlines))
         else:
-            self.print('Plotting all {0:,} {1} streamlines'.format(todo,up_or_down_str))
+            self.print('Plotting all {0:,} {1}-streamlines'.format(todo,up_or_down_str))
         self.print('Progress: ', end='')
         progress = 0    
         if todo*self.trace.max_length>=300000:

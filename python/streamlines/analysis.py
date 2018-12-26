@@ -28,6 +28,7 @@ import numpy as np
 from scipy.stats       import gaussian_kde, norm
 from scipy.signal      import argrelextrema
 from sklearn.neighbors import KernelDensity
+import os
 from os import environ
 environ['PYTHONUNBUFFERED']='True'
 
@@ -112,6 +113,10 @@ class Analysis(Core):
 
         self.print('**Analysis end**\n')  
       
+    def extra(self):
+        if self.do_compute_elevation_slope_pdfs:
+            self.compute_elevation_slope_pdfs()  
+    
     def estimate_channel_threshold(self, data, verbose=None):
         """
         TBD

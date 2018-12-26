@@ -40,9 +40,9 @@ and perform related analyses.</p>
 <dl class="docutils">
 <dt>Requires Python packages/modules:</dt>
 <dd><ul class="first last simple">
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/signal.html#module-scipy.signal" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.signal</span></code></a></li>
-<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.neighbors" title="(in scikit-learn v0.20.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.neighbors</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/signal.html#module-scipy.signal" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.signal</span></code></a></li>
+<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.neighbors" title="(in scikit-learn v0.16.dev0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.neighbors</span></code></a></li>
 </ul>
 </dd>
 </dl>
@@ -234,6 +234,7 @@ and bounding criteria.</p>
 <span class="kn">from</span> <span class="nn">scipy.stats</span>       <span class="k">import</span> <span class="n">gaussian_kde</span><span class="p">,</span> <span class="n">norm</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span>      <span class="k">import</span> <span class="n">argrelextrema</span>
 <span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="k">import</span> <span class="n">KernelDensity</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">environ</span>
 <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYTHONUNBUFFERED&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;True&#39;</span>
 
@@ -318,6 +319,10 @@ and bounding criteria.</p>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;**Analysis end**</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>  
       
+    <span class="k">def</span> <span class="nf">extra</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_compute_elevation_slope_pdfs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_elevation_slope_pdfs</span><span class="p">()</span>  
+    
     <span class="k">def</span> <span class="nf">estimate_channel_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TBD</span>

@@ -39,6 +39,7 @@
 <dt>Requires Python packages/modules:</dt>
 <dd><ul class="first last simple">
 <li><a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.0.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code></a></li>
 </ul>
 </dd>
 </dl>
@@ -199,6 +200,7 @@
 
 <span class="sd">Requires Python packages/modules:</span>
 <span class="sd">  -  :mod:`matplotlib.pyplot`</span>
+<span class="sd">  -  :mod:`json`</span>
 
 
 <span class="sd">Imports :class:`.Core` class and functions from the :mod:`.useful` module.</span>
@@ -213,6 +215,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span>  <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="k">import</span> <span class="n">savefig</span><span class="p">,</span> <span class="n">figure</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
 
 <span class="kn">from</span> <span class="nn">streamlines.core</span>   <span class="k">import</span> <span class="n">Core</span>
 <span class="kn">from</span> <span class="nn">streamlines.useful</span> <span class="k">import</span> <span class="n">write_geotiff</span>
@@ -304,6 +307,15 @@
         
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;**Write results to files end**</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>  
         
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_jsonable</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+
     <span class="k">def</span> <span class="nf">save_analyses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">analysis_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_stem</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
@@ -315,10 +327,36 @@
 <span class="sd">            TBD: </span>
 <span class="sd">            TBD</span>
 <span class="sd">        &quot;&quot;&quot;</span>  
+<span class="c1">#         from pprint   import pprint</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Saving analyses...&#39;</span><span class="p">)</span> 
         <span class="k">if</span> <span class="n">file_stem</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">file_stem</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">export_analyses_path</span><span class="p">,</span>
                                                        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">parameters_file</span><span class="p">))</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">file_stem</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">analyses_suffix</span><span class="o">+</span><span class="s1">&#39;.json&#39;</span>
+            
+        <span class="n">jsonable_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">pdict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">pdict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;save&#39;</span><span class="p">:</span> <span class="p">{}})</span>
+        <span class="k">for</span> <span class="n">top_item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">top_obj</span> <span class="o">=</span> <span class="n">top_item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">top_val</span> <span class="o">=</span> <span class="n">top_item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">top_val</span><span class="p">,</span> <span class="s1">&#39;__dict__&#39;</span><span class="p">):</span>
+<span class="c1">#                 if not hasattr(pdict,top_obj):</span>
+                <span class="n">pdict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">top_obj</span> <span class="p">:</span> <span class="p">{}})</span>
+                <span class="k">for</span> <span class="n">sub_instance</span> <span class="ow">in</span> <span class="n">top_val</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>                        
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_jsonable</span><span class="p">(</span><span class="n">sub_instance</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                        <span class="n">pdict</span><span class="p">[</span><span class="n">top_obj</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">sub_instance</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span> <span class="n">sub_instance</span><span class="p">[</span><span class="mi">1</span><span class="p">]})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pdict</span><span class="p">[</span><span class="s1">&#39;save&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">top_obj</span><span class="p">:</span> <span class="n">top_val</span><span class="p">})</span>
+<span class="c1">#         pprint(pdict)</span>
+    
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Writing to &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_name</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pdict</span><span class="p">,</span> <span class="n">json_file</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Failed to write analysis results JSON file&#39;</span><span class="p">)</span>
+                            
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span> 
         
     <span class="k">def</span> <span class="nf">save_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_stem</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  

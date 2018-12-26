@@ -15,7 +15,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="IndianCreek2.json" href="../Tests/IndianCreek2_json.html" />
+    <link rel="next" title="IndianCreek_Test2.json" href="../Tests/IndianCreek_Test2_json.html" />
     <link rel="prev" title="How to run" href="../documentation/howtorun.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -59,6 +59,7 @@
 		<span class="s2">&quot;do_trace&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>	
 		<span class="s2">&quot;do_analysis&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span>
 		<span class="s2">&quot;do_mapping&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+		<span class="s2">&quot;do_extra&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
 		<span class="s2">&quot;do_plot&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
 		<span class="s2">&quot;do_save&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
 
@@ -70,7 +71,7 @@
 		<span class="s2">&quot;title&quot;</span> <span class="p">:</span>          <span class="s2">&quot;Untitled&quot;</span><span class="p">,</span>
 		<span class="s2">&quot;dtm_file&quot;</span> <span class="p">:</span>       <span class="s2">&quot;Unspecified GeoTIFF&quot;</span><span class="p">,</span>
 		<span class="s2">&quot;basins_file&quot;</span> <span class="p">:</span>    <span class="s2">&quot;&quot;</span><span class="p">,</span>
-		<span class="s2">&quot;data_path&quot;</span> <span class="p">:</span>      <span class="p">[</span><span class="s2">&quot;$SLMDATA&quot;</span><span class="p">],</span>	
+		<span class="s2">&quot;data_path&quot;</span> <span class="p">:</span>      <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">],</span>	
 		<span class="s2">&quot;export_maps_path&quot;</span> <span class="p">:</span>     <span class="p">[</span><span class="s2">&quot;..&quot;</span><span class="p">,</span><span class="s2">&quot;Maps&quot;</span><span class="p">],</span>	
 		<span class="s2">&quot;export_figs_path&quot;</span> <span class="p">:</span>     <span class="p">[</span><span class="s2">&quot;..&quot;</span><span class="p">,</span><span class="s2">&quot;Figures&quot;</span><span class="p">],</span>	
 		<span class="s2">&quot;export_analyses_path&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;..&quot;</span><span class="p">,</span><span class="s2">&quot;Analyses&quot;</span><span class="p">],</span>	
@@ -113,6 +114,9 @@
 	<span class="p">},</span>
 
 	<span class="s2">&quot;analysis&quot;</span><span class="p">:</span> <span class="p">{</span>
+		<span class="s2">&quot;do_extra_analysis&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+		<span class="s2">&quot;do_compute_elevation_slope_pdfs&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+		
 		<span class="s2">&quot;search_cdf_min&quot;</span> <span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
 		<span class="s2">&quot;search_cdf_max&quot;</span> <span class="p">:</span> <span class="mf">0.999</span><span class="p">,</span>
 		<span class="s2">&quot;Xsearch_cdf_max&quot;</span> <span class="p">:</span> <span class="mf">0.995</span><span class="p">,</span>
@@ -168,6 +172,9 @@
 	<span class="p">},</span>
 
 	<span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="p">{</span>
+		<span class="s2">&quot;do_pass1&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+		<span class="s2">&quot;do_pass2&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+		<span class="s2">&quot;do_pass3&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
 		<span class="s2">&quot;do_measure_hsl_from_ridges&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span>
 		<span class="s2">&quot;coarse_segmentation_threshold&quot;</span> <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
 		<span class="s2">&quot;coarse_channel_threshold&quot;</span>      <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
@@ -220,6 +227,9 @@
 		<span class="s2">&quot;do_plot_flow_vectors&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span>
 		<span class="s2">&quot;do_plot_blockages&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span>
 		<span class="s2">&quot;do_plot_loops&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+		
+		<span class="s2">&quot;do_plot_midslope_elevations_pdf&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+		<span class="s2">&quot;do_plot_slope_angles_pdf&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span>
 		
 		<span class="s2">&quot;interpolation_method&quot;</span> <span class="p">:</span> <span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
 		<span class="s2">&quot;n_streamlines_limit&quot;</span> <span class="p">:</span> <span class="mi">1500</span><span class="p">,</span>
@@ -338,9 +348,10 @@
 	<span class="p">},</span>
 
 	<span class="s2">&quot;save&quot;</span><span class="p">:</span> <span class="p">{</span>
-		<span class="s2">&quot;do_save_analyses&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>	
-		<span class="s2">&quot;do_save_figs&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>	
-		<span class="s2">&quot;do_save_maps&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>		
+		<span class="s2">&quot;do_save_analyses&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+		<span class="s2">&quot;analyses_suffix&quot;</span> <span class="p">:</span> <span class="s2">&quot;_results&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;do_save_figs&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+		<span class="s2">&quot;do_save_maps&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
 		<span class="s2">&quot;figs_format&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;pdf&quot;</span><span class="p">],</span>
 		<span class="s2">&quot;figs_options&quot;</span> <span class="p">:</span> <span class="p">{</span>
 			<span class="s2">&quot;dpi&quot;</span><span class="p">:</span><span class="mi">300</span><span class="p">,</span> 
@@ -407,7 +418,7 @@
 <ul>
   <li><a href="../index.html"></a><ul>
       <li><a href="../documentation/howtorun.html" title="previous chapter">How to run</a></li>
-      <li><a href="../Tests/IndianCreek2_json.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">IndianCreek2.json</span></code></a></li>
+      <li><a href="../Tests/IndianCreek_Test2_json.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">IndianCreek_Test2.json</span></code></a></li>
   </ul></li>
 </ul>
 </div>

@@ -186,13 +186,14 @@ The arguments are assumed to be passed via <cite>_sys.argv[1:]</cite>.</p>
         <span class="n">sl</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">do</span><span class="p">()</span>
 <span class="c1">#     if sl.state.do_analysis:</span>
 <span class="c1">#         sl.analysis.do()</span>
+    <span class="k">if</span> <span class="n">sl</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">do_analysis</span><span class="p">:</span>
+        <span class="n">sl</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">do</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">sl</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">do_mapping</span><span class="p">:</span>
         <span class="n">sl</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">do</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">sl</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">do_extra</span><span class="p">:</span>
+        <span class="n">sl</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">extra</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">sl</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">do_plot</span><span class="p">:</span>
         <span class="n">sl</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">do</span><span class="p">()</span>
-<span class="c1">#     if sl.state.do_save_state:</span>
-<span class="c1">#         sl.state.inventorize_run_state()</span>
-<span class="c1">#         sl.state.save_state()</span>
     <span class="k">if</span> <span class="n">sl</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">do_save</span><span class="p">:</span>
         <span class="n">sl</span><span class="o">.</span><span class="n">save</span><span class="o">.</span><span class="n">do</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">sl</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">do_plot</span><span class="p">:</span>
@@ -310,10 +311,10 @@ The arguments are assumed to be passed via <cite>_sys.argv[1:]</cite>.</p>
                         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;n_work_items&#39;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;number of OpenCL work items per workgroup&#39;</span><span class="p">)</span>
     
-<span class="c1">#     parser.add_argument(&#39;-x&#39;,&#39;--export&#39;, dest=&#39;do_export&#39;, </span>
-<span class="c1">#                         default=None, type=_str2bool, action=&quot;store&quot;,  </span>
-<span class="c1">#                         metavar=&#39;export_flag&#39;,</span>
-<span class="c1">#                         help=&#39;export figures to files&#39;)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-x&#39;</span><span class="p">,</span><span class="s1">&#39;--extra&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;do_extra&#39;</span><span class="p">,</span> 
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">_str2bool</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store&quot;</span><span class="p">,</span>  
+                        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;extra_flag&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;more analysis&#39;</span><span class="p">)</span>
     
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">args</span>
