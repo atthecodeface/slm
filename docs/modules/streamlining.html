@@ -157,14 +157,12 @@ the streamlines workflow, e.g., geodata(), trace(), analysis()</p>
 <span class="sd">channel heads, hillslope lengths (HSL), and relationships between HSL, aspect,</span>
 <span class="sd">etc.</span>
 
-
 <span class="sd">---------------------------------------------------------------------</span>
 
 <span class="sd">Requires Python packages/modules:</span>
 <span class="sd">  - :mod:`json`</span>
 <span class="sd">  - :mod:`datetime`</span>
 <span class="sd">  - :mod:`dateutil.tz`</span>
-
 
 <span class="sd">Imports the following ``Streamlines`` modules:</span>
 <span class="sd"> - :mod:`.connect`</span>
@@ -277,9 +275,12 @@ the streamlines workflow, e.g., geodata(), trace(), analysis()</p>
         <span class="c1">#</span>
         <span class="c1"># Parse workflow parameters in JSON files and command line</span>
         <span class="c1">#</span>
-        <span class="k">if</span> <span class="s1">&#39;parameters_file&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Must specify a parameters JSON file&#39;</span><span class="p">)</span>
-        <span class="n">parameters_path</span><span class="p">,</span> <span class="n">parameters_file</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;parameters_file&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">&#39;parameters_file&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;parameters_file&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parameters_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="n">parameters_file</span> <span class="o">=</span> <span class="s1">&#39;defaults&#39;</span>
+<span class="c1">#             raise ValueError(&#39;Must specify a parameters JSON file&#39;)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parameters_path</span><span class="p">,</span> <span class="n">parameters_file</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;parameters_file&#39;</span><span class="p">])</span>
         <span class="c1"># Remove trailing .json for now if there is one</span>
         <span class="n">parameters_file</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parameters_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
         <span class="c1"># Look for the JSON file in several likely places</span>
@@ -291,9 +292,8 @@ the streamlines workflow, e.g., geodata(), trace(), analysis()</p>
                 <span class="n">possible_paths</span> <span class="o">+=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;SLM&#39;</span><span class="p">],</span><span class="s1">&#39;json&#39;</span><span class="p">)]</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="k">pass</span>
-            <span class="c1"># If we&#39;re running a Jupyter notebook in slmnb/, try the likely</span>
-            <span class="c1">#   relative path to slm/json/</span>
-            <span class="n">guess</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;slm&#39;</span><span class="p">,</span><span class="s1">&#39;json&#39;</span><span class="p">)</span>
+            <span class="c1"># Try the likely relative path to JSON parameters file</span>
+            <span class="n">guess</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">),</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;Parameters&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">guess</span><span class="p">):</span>
                 <span class="n">possible_paths</span> <span class="o">+=</span> <span class="p">[</span><span class="n">guess</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">possible_paths</span><span class="p">:</span>
@@ -303,10 +303,10 @@ the streamlines workflow, e.g., geodata(), trace(), analysis()</p>
                     <span class="k">break</span>
             <span class="c1"># If we still can&#39;t find the specified JSON file, bail</span>
             <span class="k">if</span> <span class="n">parameters_path</span><span class="o">==</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot find JSON parameters file in </span><span class="si">{}</span><span class="s1">&#39;</span>
-                                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">possible_paths</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot find JSON parameters file &quot;</span><span class="si">{0}</span><span class="s1">.json&quot; in </span><span class="si">{1}</span><span class="s1">&#39;</span>
+                                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parameters_file</span><span class="p">,</span><span class="n">possible_paths</span><span class="p">))</span>
             
-        <span class="c1"># Read in parameters and assign to the Trajectories class instance</span>
+        <span class="c1"># Read in parameters and assign to the State class instance</span>
         <span class="n">imported_parameters</span><span class="p">,</span> <span class="n">slm_path</span><span class="p">,</span> <span class="n">slmdata_path</span><span class="p">,</span> <span class="n">slmnb_path</span> \
             <span class="o">=</span> <span class="n">import_parameters</span><span class="p">(</span><span class="n">parameters_path</span><span class="p">,</span> <span class="n">parameters_file</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="s1">&#39;verbose&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;verbose&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> 
@@ -372,6 +372,7 @@ the streamlines workflow, e.g., geodata(), trace(), analysis()</p>
             <span class="k">for</span> <span class="n">repo_name</span><span class="p">,</span> <span class="n">repo_path</span> <span class="ow">in</span> <span class="p">((</span><span class="s1">&#39;slm&#39;</span><span class="p">,</span><span class="n">slm_path</span><span class="p">),</span>
                                          <span class="p">(</span><span class="s1">&#39;slmnb&#39;</span><span class="p">,</span><span class="n">slmnb_path</span><span class="p">),</span>
                                          <span class="p">(</span><span class="s1">&#39;slmdata&#39;</span><span class="p">,</span><span class="n">slmdata_path</span><span class="p">)):</span>
+                <span class="n">pdebug</span><span class="p">(</span><span class="s1">&#39;git repo path:&#39;</span><span class="p">,</span> <span class="n">repo_path</span><span class="p">)</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="c1"># Create a short-lived git repo class instance</span>
                     <span class="n">repo</span> <span class="o">=</span> <span class="n">git</span><span class="o">.</span><span class="n">Repo</span><span class="p">(</span><span class="n">repo_path</span><span class="p">)</span>
@@ -393,13 +394,14 @@ the streamlines workflow, e.g., geodata(), trace(), analysis()</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">trace</span>      <span class="o">=</span> <span class="n">Trace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="p">,</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span>   <span class="o">=</span> <span class="n">Analysis</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="p">,</span>
-                                    <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">)</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span>    <span class="o">=</span> <span class="n">Mapping</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span>
                                   <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span>       <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="p">,</span>
                                <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">)</span>
         <span class="c1"># Hackish way to allow plotting from mapping</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">_augment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">_augment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span>       <span class="o">=</span> <span class="n">Save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span>
                                <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span><span class="p">,</span> 
                                <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">)</span>

@@ -44,16 +44,27 @@ class Analysis(Core):
     Class providing statistics & probability tools to analyze streamline data and its
     probability distributions.
     """
-    def __init__(self,state,imported_parameters,geodata,trace):
+    def __init__(self,state,imported_parameters,geodata,preprocess,trace):
         """
         TBD
         """
         super().__init__(state,imported_parameters) 
         self.state = state
         self.geodata = geodata
+        self.preprocess = preprocess
         self.trace = trace
+        self.mapping = None
         self.area_correction_factor = 1.0
         self.length_correction_factor = 1.0
+        
+    def _augment(self, mapping):
+        """
+        Args:
+            mapping (reference):  to :class:`.Mapping` instance
+            
+        Add a hook to the :class:`.Mapping` class instance
+        """
+        self.mapping = mapping
 
     def do(self):
         """
@@ -172,13 +183,17 @@ class Analysis(Core):
         uv_distbn.locate_threshold()
         return uv_distbn
    
-    def compute_marginal_distribn_dsla(self, data):
+    def compute_marginal_distribn_dsla(self, data=None):
         """
         TBD
         """
         self.print('Computing marginal distribution "dsla"...')
-        x_array,y_array = data.sla_array, data.slc_array
-        mask_array      = data.mask_array
+        if data is not None:
+            mask_array = data.mask_array
+            x_array,y_array = data.sla_array, data.slc_array
+        else:
+            x_array,y_array = self.trace.sla_array, self.trace.slc_array
+            mask_array = None
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_limits(['pdf_sla_min','pdf_sla_max','pdf_slc_min','pdf_slc_max'])
@@ -208,13 +223,17 @@ class Analysis(Core):
                                              logx_max=logx_max,logy_max=logy_max)
         self.print('...done')            
         
-    def compute_marginal_distribn_dslt(self, data):
+    def compute_marginal_distribn_dslt(self, data=None):
         """
         TBD
         """
         self.print('Computing marginal distribution "dslt"...')
-        x_array,y_array = data.slt_array, data.sla_array
-        mask_array      = data.mask_array
+        if data is not None:
+            mask_array = data.mask_array
+            x_array,y_array = data.slt_array, data.sla_array
+        else:
+            x_array,y_array = self.trace.slt_array, self.trace.sla_array
+            mask_array = None
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_limits(['pdf_slt_min','pdf_slt_max','pdf_sla_min','pdf_sla_max'])
@@ -244,13 +263,18 @@ class Analysis(Core):
                                              logx_max=logx_max,logy_max=logy_max)
         self.print('...done')            
 
-    def compute_marginal_distribn_dslc(self, data):
+    def compute_marginal_distribn_dslc(self, data=None):
         """
         TBD
         """
         self.print('Computing marginal distribution "dslc"...')
-        x_array,y_array = data.slc_array, data.sla_array
-        mask_array      = data.mask_array
+        
+        if data is not None:
+            mask_array = data.mask_array
+            x_array,y_array = data.slc_array, data.sla_array
+        else:
+            x_array,y_array = self.trace.slc_array, self.trace.sla_array
+            mask_array = None
         up_down_idx_x, up_down_idx_y = 0, 0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_limits(['pdf_slc_min','pdf_slc_max','pdf_sla_min','pdf_sla_max'])
@@ -338,13 +362,17 @@ class Analysis(Core):
         bv_distbn.find_mode()
         return bv_distbn
 
-    def compute_joint_distribn_dsla_usla(self, data):
+    def compute_joint_distribn_dsla_usla(self, data=None):
         """
         TBD
         """
         self.print('Computing joint distribution "dsla_usla"...')
-        x_array,y_array = data.sla_array, data.sla_array
-        mask_array      = data.mask_array
+        if data is not None:
+            mask_array = data.mask_array
+            x_array,y_array = data.sla_array, data.sla_array
+        else:
+            x_array,y_array = self.trace.sla_array, self.trace.sla_array
+            mask_array = None
         up_down_idx_x,up_down_idx_y = 0,1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_limits(['pdf_sla_min','pdf_sla_max','pdf_sla_min','pdf_sla_max'])
@@ -356,13 +384,17 @@ class Analysis(Core):
                                           logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
-    def compute_joint_distribn_dsla_dslt(self, data):
+    def compute_joint_distribn_dsla_dslt(self, data=None):
         """
         TBD
         """
         self.print('Computing joint distribution "dsla_dslt"...')
-        x_array,y_array = data.sla_array, data.slt_array
-        mask_array      = data.mask_array
+        if data is not None:
+            mask_array = data.mask_array
+            x_array,y_array = data.slt_array, data.sla_array
+        else:
+            x_array,y_array = self.trace.slt_array, self.trace.sla_array
+            mask_array = None
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_limits(['pdf_sla_min','pdf_sla_max','pdf_slt_min','pdf_slt_max'])
@@ -379,13 +411,17 @@ class Analysis(Core):
                                           logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
-    def compute_joint_distribn_dslt_dslc(self, data):
+    def compute_joint_distribn_dslt_dslc(self, data=None):
         """
         TBD
         """
         self.print('Computing joint distribution "dslt_dslc"...')
-        x_array,y_array = data.slt_array, data.slc_array
-        mask_array      = data.mask_array
+        if data is not None:
+            mask_array = data.mask_array
+            x_array,y_array = data.slt_array, data.slc_array
+        else:
+            x_array,y_array = self.trace.slt_array, self.trace.slc_array
+            mask_array = None
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_limits(['pdf_slt_min','pdf_slt_max','pdf_slc_min','pdf_slc_max'])
@@ -437,13 +473,17 @@ class Analysis(Core):
                                           logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
-    def compute_joint_distribn_dsla_dslc(self, data):
+    def compute_joint_distribn_dsla_dslc(self, data=None):
         """
         TBD
         """
         self.print('Computing joint distribution "dsla_dslc"...')
-        x_array,y_array = data.sla_array, data.slc_array
-        mask_array      = data.mask_array
+        if data is not None:
+            mask_array = data.mask_array
+            x_array,y_array = data.sla_array, data.slc_array
+        else:
+            x_array,y_array = self.trace.sla_array, self.trace.slc_array
+            mask_array = None
         up_down_idx_x,up_down_idx_y = 0,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_limits(['pdf_sla_min','pdf_sla_max','pdf_slc_min','pdf_slc_max'])
@@ -501,7 +541,86 @@ class Analysis(Core):
         return [np.log(getattr(self,attr)) if hasattr(self,attr) else None 
                 for attr in attr_list]
         
-            
+        
+    def compute_elevation_slope_pdfs(self, bw_method=None,
+                                     h_min=None, h_max=None, h_steps=None,
+                                     bw_factor_h_midline=None, bw_factor_h_all=None, 
+                                     h_midline_max_bound=None,
+                                     slope_min=None, slope_max=None, slope_steps=None,
+                                     bw_factor_slope=None):
+        
+        if bw_method is None:
+            bw_method = self.pdf_bw_method
+        if h_min is None:
+            h_min = self.pdf_h_min
+        if h_max is None:
+            h_max = self.pdf_h_max
+        if h_steps is None:
+            h_steps = self.pdf_h_steps
+        if bw_factor_h_midline is None:
+            bw_factor_h_midline = self.pdf_bw_factor_h_midline
+        if bw_factor_h_all is None:
+            bw_factor_h_all = self.pdf_bw_factor_h_all
+        if h_midline_max_bound is None:
+            h_midline_max_bound = self.pdf_h_midline_max_bound
+        if slope_min is None:
+            slope_min = self.pdf_slope_min
+        if slope_max is None:
+            slope_max = self.pdf_slope_max
+        if slope_steps is None:
+            slope_steps = self.pdf_slope_steps
+        if bw_factor_slope is None:
+            bw_factor_slope = self.pdf_bw_factor_slope
+        
+        self.mapping.midslope_array \
+            = (self.mapping.mapping_array 
+               & self.mapping.info.is_midslope).copy().astype(np.bool)
+        
+        h_midline_pts \
+            = self.geodata.roi_array[self.mapping.midslope_array[2:-2,2:-2]].ravel()
+        h_all_pts \
+          = self.geodata.roi_array[~self.geodata.basin_mask_array[2:-2,2:-2]].ravel()
+        slope_midline_pts \
+          = np.abs(self.preprocess.slope_array[self.mapping.midslope_array].ravel())
+        slope_midline_pts \
+            = np.concatenate([slope_midline_pts,-slope_midline_pts])
+                    
+        h_array = np.linspace(h_min,h_max,h_steps)
+        slope_array = np.linspace(slope_min,slope_max,slope_max*slope_steps+1)
+        
+        h_midline_pdf     = gaussian_kde(h_midline_pts, bw_method=bw_method)
+        h_all_pdf         = gaussian_kde(h_all_pts, bw_method=bw_method)
+        slope_midline_pdf = gaussian_kde(slope_midline_pts,bw_method=bw_method)
+        
+        h_midline_pdf.set_bandwidth(h_midline_pdf.factor*bw_factor_h_midline)
+        h_all_pdf.set_bandwidth(h_all_pdf.factor*bw_factor_h_all)
+        slope_midline_pdf.set_bandwidth(slope_midline_pdf.factor*bw_factor_slope)
+        h_midline_pdf.factor
+        h_all_pdf.factor
+        slope_midline_pdf.factor
+        
+        h_midline_pdf_array = h_midline_pdf.evaluate(points=h_array)
+        h_all_pdf_array = h_all_pdf.evaluate(points=h_array)
+        slope_midline_pdf_array = slope_midline_pdf.evaluate(points=slope_array)
+        sf = np.max(h_midline_pdf_array)
+        
+        h_midline_pdf_max1 = np.max(h_midline_pdf_array[h_array>h_midline_max_bound])
+        h_midline_pdf_max1_h = h_array[h_midline_pdf_array==h_midline_pdf_max1]
+        slope_midline_pdf_max = np.max(slope_midline_pdf_array[slope_array>=10])
+        slope_midline_pdf_max_slope \
+            = slope_array[slope_midline_pdf_array==slope_midline_pdf_max]
+        
+        self.h_midline_pdf_array  = h_midline_pdf_array
+        self.h_midline_pdf_max1   = h_midline_pdf_max1
+        self.h_midline_pdf_max1_h = h_midline_pdf_max1_h
+        self.h_all_pdf_array      = h_all_pdf_array
+        self.h_array              = h_array
+        self.h_pdf_sf             = sf
+        self.slope_midline_pdf_array     = slope_midline_pdf_array
+        self.slope_midline_pdf_max       = slope_midline_pdf_max
+        self.slope_midline_pdf_max_slope = slope_midline_pdf_max_slope
+        self.slope_array                 = slope_array
+                    
 class Univariate_distribution():
     """
     Class for making and recording kernel-density estimate of univariate 

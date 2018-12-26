@@ -55,6 +55,8 @@ import colorsys
 from   scipy.interpolate import interp1d 
 from   scipy.signal      import decimate
 from   scipy.stats import norm
+from scipy.ndimage.morphology import binary_dilation, generate_binary_structure
+                                     
 from   os import environ
 environ['PYTHONUNBUFFERED']='True'
 import warnings
@@ -142,7 +144,7 @@ class Plot(Core):
         mpl.rc( 'lines', linewidth=2.0, markersize=10)
         # mpl.rc( 'font', size=14,family='Times New Roman', serif='cm')
         # mpl.rc( 'font', size=14,family='DejaVu Sans', serif='cm')
-        mpl.rc( 'font', size=self.general_font_size)
+        mpl.rc( 'font', size=self.general_font_size, family='Arial')
         mpl.rc( 'axes', labelsize=self.axes_font_size) 
         # mpl.rc( 'legend', fontsize=10)
         mpl.rc( 'text', usetex=False)
@@ -308,8 +310,8 @@ class Plot(Core):
             TBD: 
             TBD
         """
-        fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
-                                    y_pixel_scale=self.geodata.roi_pixel_size,
+        fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size/self.units,
+                                    y_pixel_scale=self.geodata.roi_pixel_size/self.units,
                                     window_size_factor=window_size_factor)
         dtm_hillshade_array = self.generate_hillshade(self.geodata.dtm_array,
                                                       self.hillshade_azimuth,
@@ -333,8 +335,8 @@ class Plot(Core):
             TBD: 
             TBD
         """
-        fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size,
-                                    y_pixel_scale=self.geodata.roi_pixel_size,
+        fig,axes = self._new_figure(x_pixel_scale=self.geodata.roi_pixel_size/self.units,
+                                    y_pixel_scale=self.geodata.roi_pixel_size/self.units,
                                     window_size_factor=window_size_factor)
         self.plot_roi_shaded_relief_overlay(axes, 
                                     color_alpha=self.shaded_relief_color_alpha,
@@ -373,12 +375,6 @@ class Plot(Core):
                                                                self.hillshade_angle)
         if interp_method is None:
             interp_method = self.interpolation_method
-            
-#         rounded_pixel_sf = (self.geodata.roi_pixel_size
-#                             /np.round(self.geodata.roi_pixel_size))
-#         rounded_bounds = [*self.geodata.roi_x_bounds/rounded_pixel_sf,
-#                           *self.geodata.roi_y_bounds/rounded_pixel_sf]
-#         pdebug('rounded_bounds',rounded_bounds)
         
         if do_plot_color_relief is None:
             do_plot_color_relief = self.do_plot_color_shaded_relief
@@ -389,15 +385,15 @@ class Plot(Core):
             else:
                 masked_array = self.geodata.roi_array
             axes.imshow(np.fliplr(masked_array).T,
-                      cmap=self.terrain_cmap, 
-                      extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds], 
-                      alpha=color_alpha,
-                      interpolation=interp_method)
+                        cmap=self.terrain_cmap, 
+                        extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds], 
+                        alpha=color_alpha,
+                        interpolation=interp_method)
         axes.imshow(np.fliplr(self.roi_hillshade_array).T,
-                  cmap='Greys', 
-                  extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds], 
-                  alpha=hillshade_alpha,
-                  interpolation=interp_method)
+                    cmap='Greys', 
+                    extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds], 
+                    alpha=hillshade_alpha,
+                    interpolation=interp_method)
 
     @staticmethod
     def generate_hillshade(array, azimuth_degrees, angle_altitude_degrees):
@@ -460,8 +456,10 @@ class Plot(Core):
             self.plot_loops_overlay(axes)
         # Force map limits to match those of the ROI
         #   - turn this off to check for boundary overflow errors in e.g. streamlines
-        axes.set_xlim(xmin=self.geodata.roi_x_bounds[0],xmax=self.geodata.roi_x_bounds[1])
-        axes.set_ylim(ymin=self.geodata.roi_y_bounds[0],ymax=self.geodata.roi_y_bounds[1])
+        axes.set_xlim(left=self.geodata.roi_x_bounds[0],
+                      right=self.geodata.roi_x_bounds[1])
+        axes.set_ylim(bottom=self.geodata.roi_y_bounds[0],
+                      top=self.geodata.roi_y_bounds[1])
         self._force_display(fig)
         self._record_fig(fig_name,fig)
     
@@ -492,8 +490,8 @@ class Plot(Core):
         do_balance_cmap=True
                     
         fig,axes = self._new_figure(window_title=window_title,
-                                    x_pixel_scale=self.geodata.roi_pixel_size,
-                                    y_pixel_scale=self.geodata.roi_pixel_size,
+                                    x_pixel_scale=self.geodata.roi_pixel_size/self.units,
+                                    y_pixel_scale=self.geodata.roi_pixel_size/self.units,
                                     window_size_factor=window_size_factor)
 
         self.plot_roi_shaded_relief_overlay(axes,
@@ -523,22 +521,35 @@ class Plot(Core):
         self.plot_simple_grid(grid_array, mask_array, axes, cmap='Blues', alpha=0.8)
 
         grid_array = (self.mapping.mapping_array & is_midslope).copy().astype(np.bool)
-        mask_array = active_mask_array | ~(grid_array)
-        self.plot_simple_grid(grid_array, mask_array, axes, cmap='Greens', alpha=0.8)
+        fat_grid_array = np.zeros_like(grid_array, dtype=np.bool)
+        dilation_structure = generate_binary_structure(2, 2)
+        binary_dilation(grid_array, structure=dilation_structure, 
+                        iterations=self.n_midslope_iterations, 
+                        output=fat_grid_array)
+        mask_array = active_mask_array | ~(fat_grid_array)
+        self.plot_simple_grid(fat_grid_array, mask_array, axes, cmap='Greens', alpha=0.8)
         
         grid_array = (self.mapping.mapping_array & is_ridge).copy().astype(np.bool)
-        mask_array = active_mask_array | ~(grid_array)
-        self.plot_simple_grid(grid_array, mask_array, axes, cmap='Oranges', alpha=0.8)
+        fat_grid_array = np.zeros_like(grid_array, dtype=np.bool)
+        dilation_structure = generate_binary_structure(2, 2)
+        binary_dilation(grid_array, structure=dilation_structure,
+                        iterations=self.n_ridge_iterations, 
+                        output=fat_grid_array)
+        mask_array = active_mask_array | ~(fat_grid_array)
+        self.plot_simple_grid(fat_grid_array, mask_array, axes, cmap='Oranges', alpha=0.8)
         
 #         self.plot_compound_markers(axes, is_majorconfluence, ['blue','black'])
 #         self.plot_compound_markers(axes, is_loop,     ['pink','black'], msf=2)
-        self.plot_compound_markers(axes, is_channeltail,     ['cyan','black'], msf=1.5)
+        if self.do_plot_tails:
+            self.plot_compound_markers(axes, is_channeltail,    ['cyan','black'], msf=1.5)
 #         self.plot_compound_markers(axes, is_leftflank,     ['purple','black'], msf=0.2)
-        self.plot_compound_markers(axes, is_channelhead,     ['blue','black'], msf=0.5)
-#         self.plot_compound_markers(axes, was_channelhead,    ['orange','black'], msf=0.3)
-#         self.plot_compound_markers(axes, is_subsegmenthead,  ['orange','black'], msf=0.25)
+        if self.do_plot_heads:
+            self.plot_compound_markers(axes, is_channelhead,    ['blue','black'], msf=0.5)
+#         self.plot_compound_markers(axes, was_channelhead,   ['orange','black'], msf=0.3)
+#         self.plot_compound_markers(axes, is_subsegmenthead,['orange','black'], msf=0.25)
 #         self.plot_compound_markers(axes, is_midslope,        ['purple','black'])
 #         self.plot_compound_markers(axes, is_ridge,        ['purple','black'])
+
         self._force_display(fig)
         self._record_fig(fig_name,fig)
 
@@ -833,8 +844,10 @@ class Plot(Core):
                                        contour_label_fontsize=contour_label_fontsize)
         # Force map limits to match those of the ROI
         #   - turn this off to check for boundary overflow errors in e.g. streamlines
-        axes.set_xlim(xmin=self.geodata.roi_x_bounds[0],xmax=self.geodata.roi_x_bounds[1])
-        axes.set_ylim(ymin=self.geodata.roi_y_bounds[0],ymax=self.geodata.roi_y_bounds[1])
+        axes.set_xlim(left=self.geodata.roi_x_bounds[0],
+                      right=self.geodata.roi_x_bounds[1])
+        axes.set_ylim(bottom=self.geodata.roi_y_bounds[0],
+                      top=self.geodata.roi_y_bounds[1])
         self._force_display(fig)
         self._record_fig(fig_name,fig)
     
@@ -1439,8 +1452,10 @@ class Plot(Core):
                         color_alpha=self.streamline_shaded_relief_color_alpha,
                         hillshade_alpha=self.streamline_shaded_relief_hillshade_alpha)
         self.plot_classical_streamlines_overlay(axes)
-        axes.set_xlim(xmin=self.geodata.roi_x_bounds[0],xmax=self.geodata.roi_x_bounds[1])
-        axes.set_ylim(ymin=self.geodata.roi_y_bounds[0],ymax=self.geodata.roi_y_bounds[1])
+        axes.set_xlim(left=self.geodata.roi_x_bounds[0],
+                      right=self.geodata.roi_x_bounds[1])
+        axes.set_ylim(bottom=self.geodata.roi_y_bounds[0],
+                      top=self.geodata.roi_y_bounds[1])
         self._force_display(fig)
         self._record_fig('classical_streamlines',fig)
 
@@ -1476,8 +1491,10 @@ class Plot(Core):
         self.plot_gradient_vector_field_overlay(axes, vec_color=vec_color,
                                                 vec_alpha=vec_alpha, vec_scale=vec_scale)
         self.plot_classical_streamlines_overlay(axes, sl_color=sl_color)
-        axes.set_xlim(xmin=self.geodata.roi_x_bounds[0],xmax=self.geodata.roi_x_bounds[1])
-        axes.set_ylim(ymin=self.geodata.roi_y_bounds[0],ymax=self.geodata.roi_y_bounds[1])
+        axes.set_xlim(left=self.geodata.roi_x_bounds[0],
+                      right=self.geodata.roi_x_bounds[1])
+        axes.set_ylim(bottom=self.geodata.roi_y_bounds[0],
+                      top=self.geodata.roi_y_bounds[1])
         self._force_display(fig)
         self._record_fig('classical_streamlines_and_vectors',fig)
 
@@ -1690,7 +1707,85 @@ class Plot(Core):
                 alpha=self.seed_point_marker_alpha,
                 fillstyle='full')
 
+    def plot_midslope_elevations_pdf(self):
+        """
+        Plot distribution of midslope as kernel-smoothed pdf
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """
+        fig_name = 'midslope_elevations_pdf'
+        window_title = 'midslope_elevations_pdf'
+        title = self.geodata.title+':  Elevation distribution'  
+        fig,axes = self._new_figure(window_title=window_title, title=title)
 
+        h_midline_pdf_array  = self.analysis.h_midline_pdf_array
+        h_midline_pdf_max1   = self.analysis.h_midline_pdf_max1
+        h_midline_pdf_max1_h = self.analysis.h_midline_pdf_max1_h
+        h_all_pdf_array      = self.analysis.h_all_pdf_array
+        h_array              = self.analysis.h_array
+        sf                   = self.analysis.h_pdf_sf        
+        plt.plot(h_midline_pdf_array/sf, h_array,label='midline', c='k')
+        plt.plot(h_midline_pdf_max1/sf, h_midline_pdf_max1_h, 'o', c='k', ms=8,
+                 label='{:4}$\,$m'.format(np.int(h_midline_pdf_max1_h))  )
+        # plt.plot(h_midline_pdf_max2/sf, h_midline_pdf_max_h2, 's', c='k', ms=8,
+        #          label='{:4}$\,$m'.format(np.int(h_midline_pdf_max_h2))  )
+        plt.plot(h_all_pdf_array/sf, h_array,label='all', c='b')
+        plt.autoscale(enable=True, tight=True, axis='y')
+        plt.xlim(-0.002,)
+        plt.grid('on',ls=':')
+        plt.legend()
+#         plt.title(title)
+        plt.ylabel('Elevation $h$  [m]')
+        plt.xlabel('Density $p(h)$  [rescaled m$^{-1}$]')
+        self._record_fig(fig_name,fig)
+
+    def plot_slope_angles_pdf(self):
+        """
+        Plot distribution of slope angles as kernel-smoothed pdf
+          
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """
+        fig_name='slope_angles_pdf'
+        window_title='slope_angles_pdf'
+        title = self.geodata.title+':  Midslope angle distribution'   
+        fig,axes = self._new_figure(window_title=window_title, title=title)
+        
+        slope_midline_pdf_array     = self.analysis.slope_midline_pdf_array
+        slope_midline_pdf_max       = self.analysis.slope_midline_pdf_max
+        slope_midline_pdf_max_slope = self.analysis.slope_midline_pdf_max_slope
+        slope_array                 = self.analysis.slope_array        
+        plt.plot(slope_midline_pdf_array/slope_midline_pdf_max, slope_array, c='k')
+        plt.plot(slope_midline_pdf_max/slope_midline_pdf_max, 
+                 slope_midline_pdf_max_slope, 'o', 
+                 c='k', ms=8,
+                 label='modal slope ={:4}$^\circ$'
+                 .format(np.int(slope_midline_pdf_max_slope))  )
+        plt.autoscale(enable=True, tight=True, axis='y')
+        plt.xlim(-0.002,)
+        plt.grid('on',ls=':')
+        plt.legend()
+#         plt.title(title)
+        plt.ylabel('Slope angle   $\\mathrm{atan}|\\nabla{h}|$  [$^{\circ}$]')
+        plt.xlabel('Density  $p(\\mathrm{atan}|\\nabla{h}|)$  [rescaled 1/$^{\circ}$]')
+        # plt.xlabel(
+        #     'Relative frequency $p(|\\nabla{h}|)$  [rescaled 1/$^{\circ}$]')
+        self._record_fig(fig_name,fig)
+        
+        
     def plot_distributions(self):
         """
         Plot probability distributions of processed streamline data.
@@ -1828,8 +1923,8 @@ class Plot(Core):
             warnings.simplefilter("ignore")
             axes.legend(legend, loc=loc,fontsize=14,framealpha=0.97)
 
-        axes.set_xlim(xmin=0.99, xmax=x_max*1.001)
-        axes.set_ylim(ymin=0,ymax=y_max*1.1)
+        axes.set_xlim(left=0.99, right=x_max*1.001)
+        axes.set_ylim(bottom=0,top=y_max*1.1)
 
         # Display & record
         self._force_display(fig)
@@ -2106,8 +2201,8 @@ class Plot(Core):
         plt.xticks(x_ticks,x_ticks)
         plt.yticks(y_ticks,y_ticks)
         try:
-            axes.set_xlim(xmin=0.999,xmax=x_max*1.001)
-            axes.set_ylim(ymin=y_min*0.999,ymax=y_max*1.001)
+            axes.set_xlim(left=0.999,right=x_max*1.001)
+            axes.set_ylim(bottom=y_min*0.999,top=y_max*1.001)
         except:
             self.print('x,y min,max not provided')
         axes.grid(color='gray', linestyle='dotted', linewidth=0.5, which='both')
@@ -2121,18 +2216,23 @@ class Plot(Core):
         TBD
         """
         fig_name = 'joint_pdf_dsla_usla'
-        title = r'Streamline length distribution$ f(L_{md},L_{mu}$'
+        title = r'Streamline length distribution$ f(L_{md},L_{mu})$'
         x_label = r'Downstreamline mean length  $L_{md}$ [m]'
         y_label = r'Upstreamline mean length  $L_{mu}$ [m]'
         xsym_label = r'$L_{md}^{*}$'
         ysym_label = r'$L_{mu}^{*}$'
         try:
             joint_distbn = self.analysis.jpdf_dsla_usla
-            mx_distbn    = self.analysis.mpdf_dsla
-            my_distbn    = self.analysis.mpdf_usla
         except:
             self.print('"'+title+'" not computed: cannot plot')
             return
+        try:
+            mx_distbn    = self.analysis.mpdf_dsla
+            my_distbn    = self.analysis.mpdf_usla
+        except:
+            mx_distbn    = None
+            my_distbn    = None
+
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
                             fig_name=fig_name, 
                             title=title, x_label=x_label, y_label=y_label,

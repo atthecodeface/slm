@@ -5,14 +5,12 @@ Perform ``slm`` analysis of topographic structure, including channels,
 channel heads, hillslope lengths (HSL), and relationships between HSL, aspect,
 etc.
 
-
 ---------------------------------------------------------------------
 
 Requires Python packages/modules:
   - :mod:`json`
   - :mod:`datetime`
   - :mod:`dateutil.tz`
-
 
 Imports the following ``Streamlines`` modules:
  - :mod:`.connect`
@@ -125,9 +123,12 @@ class Streamlining(Core):
         #
         # Parse workflow parameters in JSON files and command line
         #
-        if 'parameters_file' not in kwargs.keys():
-            raise ValueError('Must specify a parameters JSON file')
-        parameters_path, parameters_file  = os.path.split(kwargs['parameters_file'])
+        if 'parameters_file' not in kwargs.keys() or kwargs['parameters_file'] is None:
+            parameters_path = ''
+            parameters_file = 'defaults'
+#             raise ValueError('Must specify a parameters JSON file')
+        else:
+            parameters_path, parameters_file  = os.path.split(kwargs['parameters_file'])
         # Remove trailing .json for now if there is one
         parameters_file = ''.join(parameters_file.split('.json',-1))
         # Look for the JSON file in several likely places
@@ -139,9 +140,8 @@ class Streamlining(Core):
                 possible_paths += [os.path.join(os.environ['SLM'],'json')]
             except:
                 pass
-            # If we're running a Jupyter notebook in slmnb/, try the likely
-            #   relative path to slm/json/
-            guess = os.path.join('..','..','slm','json')
+            # Try the likely relative path to JSON parameters file
+            guess = os.path.join(os.path.realpath('.'),'..','Parameters')
             if os.path.isdir(guess):
                 possible_paths += [guess]
             for path in possible_paths:
@@ -154,7 +154,7 @@ class Streamlining(Core):
                 raise ValueError('Cannot find JSON parameters file "{0}.json" in {1}'
                                  .format(parameters_file,possible_paths))
             
-        # Read in parameters and assign to the Trajectories class instance
+        # Read in parameters and assign to the State class instance
         imported_parameters, slm_path, slmdata_path, slmnb_path \
             = import_parameters(parameters_path, parameters_file)
         if ( ('verbose' not in kwargs.keys() or kwargs['verbose'] is None and 
@@ -220,6 +220,7 @@ class Streamlining(Core):
             for repo_name, repo_path in (('slm',slm_path),
                                          ('slmnb',slmnb_path),
                                          ('slmdata',slmdata_path)):
+                pdebug('git repo path:', repo_path)
                 try:
                     # Create a short-lived git repo class instance
                     repo = git.Repo(repo_path)
@@ -241,13 +242,14 @@ class Streamlining(Core):
         self.trace      = Trace(self.state,imported_parameters,self.geodata,
                                 self.preprocess)
         self.analysis   = Analysis(self.state,imported_parameters,self.geodata,
-                                    self.trace)
+                                    self.preprocess, self.trace)
         self.mapping    = Mapping(self.state,imported_parameters,
                                   self.geodata,self.preprocess,self.trace,self.analysis)
         self.plot       = Plot(self.state,imported_parameters, self.geodata,
                                self.preprocess, self.trace, self.analysis, self.mapping)
         # Hackish way to allow plotting from mapping
         self.mapping._augment(self.plot)
+        self.analysis._augment(self.mapping)
         self.save       = Save(self.state,imported_parameters,
                                self.geodata, self.preprocess, self.analysis, 
                                self.trace, self.mapping, self.plot)

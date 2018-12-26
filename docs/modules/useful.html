@@ -40,7 +40,7 @@
 <dd><ul class="first last simple">
 <li><a class="reference external" href="https://www.gdal.org/">GDAL</a>  (see also <a class="reference external" href="https://www.osgeo.org/">OSGeo</a>)</li>
 <li><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/index.html#module-pandas" title="(in pandas v0.23.4)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
 <li><a class="reference external" href="https://pythonhosted.org/Pympler/library/asizeof.html#module-pympler.asizeof" title="(in Pympler v0.5)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pympler.asizeof</span></code></a></li>
 </ul>
 </dd>
@@ -604,7 +604,8 @@ Defaults to doing the dilation once and in place.</p>
         <span class="c1">#   and we want to generate new arrays that can be monkeyed with</span>
         <span class="c1">#   without having to worry about the source arrays being affected</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mask_array</span>    <span class="o">=</span> <span class="n">mask_array</span><span class="p">[</span><span class="n">bounds_grid</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span> <span class="o">=</span> <span class="n">mapping_array</span><span class="p">[</span><span class="n">bounds_grid</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">mapping_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span> <span class="o">=</span> <span class="n">mapping_array</span><span class="p">[</span><span class="n">bounds_grid</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">uv_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">uv_array</span>  <span class="o">=</span> <span class="n">uv_array</span><span class="p">[</span><span class="n">bounds_slx</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>

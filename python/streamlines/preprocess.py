@@ -48,7 +48,7 @@ __all__ = ['Preprocess',
            ]
 
 # Not numbarizable
-def compute_topo_gradient_field(roi_array):
+def compute_topo_gradient_field(roi_array, pixel_size):
     """
     Args:
         roi_array (numpy.array):
@@ -58,7 +58,8 @@ def compute_topo_gradient_field(roi_array):
     Returns:
         numpy.array,numpy.array: ROI topo x gradient, y gradient
     """
-    return np.gradient(roi_array, axis=0), np.gradient(roi_array, axis=1)
+    return (np.gradient(roi_array, axis=0)/pixel_size, 
+            np.gradient(roi_array, axis=1)/pixel_size)
 
 # Not numbarizable
 def pad_array(roi_array,pad_width):
@@ -560,7 +561,8 @@ class Preprocess(Core):
             self.find_blockages()    
             
         self.roi_gradx_array, self.roi_grady_array \
-            = compute_topo_gradient_field(self.geodata.roi_array.astype(np.float32))
+            = compute_topo_gradient_field(self.geodata.roi_array.astype(np.float32),
+                                          self.geodata.pixel_size)
         u_array, v_array, raw_speed_array \
             = compute_gradient_velocity_field(self.roi_gradx_array, self.roi_grady_array)
         

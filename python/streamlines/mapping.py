@@ -2,7 +2,7 @@
 ---------------------------------------------------------------------
 
 Module for mapping channels, channel heads, subcatchment segmentation,
-hillslope length (HSL), and topographic aspect, and for analyzing azimuthal
+hillslope length (HSL), and filtered topographic aspect, and for analyzing azimuthal
 variations.
 
 ---------------------------------------------------------------------
@@ -17,7 +17,7 @@ Requires Python packages/modules:
   -  :mod:`scipy.interpolate`
   -  :mod:`skfmm`
 
-Imports ``Streamlines`` modules:
+Imports ``slm`` modules:
   -  :mod:`.connect`
   -  :mod:`.channelheads`
   -  :mod:`.countlink`
@@ -26,8 +26,9 @@ Imports ``Streamlines`` modules:
   -  :mod:`.hillslopes`
   -  :mod:`.lengths`
 
+Imports the :class:`.Core` class.
+
 Imports classes & functions from:
-  -  :mod:`.core`
   -  :mod:`.useful`
   -  :mod:`.pocl`
 
@@ -79,17 +80,88 @@ class Mapping(Core):
     These methods do the bulk of the hard work in mapping hillslope length, 
     in linking to topographic aspect, and in measuring related statistics. 
     The master method carries
-    out three "passes" or processing steps in order to map the slm grids (sla, slt, slc)
+    out three "passes" or processing steps in order to map the ``slm`` grids
+    (sla, slt, slc)
     into grids of HSL and aspect, as well as to generate derivative data from them.
-    
+
+    Attributes:
+        geodata (instance):    of :class:`.Geodata` class
+        preprocess (instance): of :class:`.Preprocess` class
+        trace (instance):      of :class:`.Trace` class
+        analysis (instance):   of :class:`.Analysis` class
+        cl_state (instance):   of :class:`.Initialize_cl` class
+        
+        mapping_array (numpy.ndarray): map grid of uint32 pixel 
+            container values, each a set of flags using during mapping
+        merged_coarse_mask_array (numpy.ndarray): map grid of boolean pixel flags
+            indicating if the pixel is masked after merging
+            the set of coarsely subsegmented catchments
+        coarse_subsegment_array (numpy.ndarray):  map grid of int32 pixel values of  
+            coarsely subsegmented catchment index 
+        coarse_subsegments_list_array (numpy.ndarray): sorted list of int32
+            coarsely subsegmented catchment indexes
+        n_coarse_subsegments (int): number of unique values of
+            coarsely subsegmented catchment indexes
+
+        hsl_array (numpy.ndarray): map grid of float32 pixel values 
+            of the estimated hillslope length (HSL)
+        hsl_mean_array (numpy.ndarray): list of float32 mean HSL values
+        hsl_stats_df (pandas.DataFrame): container for HSL analysis & statistics
+
+        aspect_array (numpy.ndarray):  map grid of float32 pixel values of  
+            filtered topographic aspect aka hillslope azimuth
+        aspect_mask_array (numpy.ndarray): map grid of boolean pixel flags
+            indicating if aspect computation is masked
+        channelhead_array (numpy.ndarray):  map grid of boolean pixel flags
+            indicating if at a channel head
+        midslope_array (numpy.ndarray):  map grid of boolean pixel flags
+            indicating if on a mid-slope band
+        ridge_array (numpy.ndarray):  map grid of boolean pixel flags
+            indicating if on a ridge
+        thinchannel_array (numpy.ndarray): map grid of boolean pixel flags
+            indicating if on a 'thinned' channel
+
+
+        hsl_ns_ks (list):          results of K-S test of HSL N-S anisotropy 
+        hsl_ns_ks_nm (float):      K-S test of HSL N-S anisotropy, 
+           partial :math:`D_\\alpha`
+        hsl_ns_ks_nmfactor (float): K-S test of HSL N-S anisotropy, 
+           partial :math:`D_\\alpha`
+        hsl_ns_ttest (list):       results of Student's t-test of HSL N-S anisotropy 
+        hsl_ns_mannwhitney (list): results of Mann-Whitney test of HSL N-S anisotropy 
+        hsl_ns_ranksum (list):     results of rank-sum test of HSL N-S anisotropy 
+        hsl_ns_welch (list):       results of Welch test of HSL N-S anisotropy 
+        hsl_ns_min (float):        HSL N-S minimum
+        hsl_ns_max (float):        HSL N-S maximum
+
+        verbose (bool):         general print verbosity flag
+        vbackup (bool):         temporary print verbosity flag
+        vprogress (bool):       progress print verbosity flag
+        
+        
+        
+
     """
     def __init__(self,state,imported_parameters,geodata,preprocess,trace,analysis):
         """
+        Args:
+            state (instance):      of :class:`.State` class
+            imported_parameters (dict): parameters dictionary loaded from 
+                                         an ``slm``  :py:mod:`JSON <json>` file.
+            geodata (instance):    of :class:`.Geodata` class
+            preprocess (instance): of :class:`.Preprocess` class
+            trace (instance):      of :class:`.Trace` class
+            analysis (instance):   of :class:`.Analysis` class
+            
         Initialize a mapping class instance.
-        
-        Provides hooks to geodata, preprocess, trace and analysis modules.
+
+        Provides hooks to key classes in :mod:`.geodata`, :mod:`.preprocess`, 
+        :mod:`.trace`, and :mod:`.analysis` modules.
         Initializes the OpenCL device and a context, and creates a command queue.
-        Initializes (nulls) HSL statistics variables.
+        Initializes (nulls) HSL statistics attributes.
+        
+
+            
         """
         super().__init__(state,imported_parameters)  
         self.geodata = geodata
@@ -114,35 +186,48 @@ class Mapping(Core):
         self.hsl_ns_max         = None
     
     def _augment(self, plot):
+        """
+        Args:
+            plot (reference):  to :class:`.Plot` instance
+            
+        Add a hook to the :class:`.Plot` class to facilitate debug graphing.
+        Invoked in :mod:`.streamlining` module, not here.
+        """
         self.plot = plot
      
      
     def do(self):
         """
-        Master method to carry out all steps of HSL and related mapping, as well
-        as computation of statistics.
+        Master method to carry out all three steps of HSL & related mapping
+        and computation of statistics:
+        
+        TBD TBD TBD TBD TBD TBD TBD TBD TBD 
+        
+        1) Estimate the DTM-wide channel threshold and use it 
+           to coarsely subsegment into "moderate"-size watersheds
+           - where "sub" means split into L and R flanks along channels
+
+        2) Iterate over the coarse subsegments and in each:
+            - estimate the channel threshold
+            - map channels, ridges & midslopes
+            - measure HSL from either ridges or midslopes to channels
+            - merge the HSL and (TBD) channel mapping into "global" results grid(s)
+
+        3) Filter the HSL results into a smoothed, contourable grid
+           Compute filtered terrain aspect and combine with this HSL grid
+           Generate a mean HSL(aspect) function and related statistics
+           to determine whether or not there is a N-S bias
+        
         """
         self.print('\n**Mapping begin**') 
-        # Estimate the DTM-wide channel threshold and use it 
-        #   to coarsely subsegment into "moderate"-size watersheds
-        #   - where "sub" means split into L and R flanks along channels
         self.pass1()
-        # Iterate over the coarse subsegments and in each:
-        #   - estimate the channel threshold
-        #   - map channels, ridges & midslopes
-        #   - measure HSL from either ridges or midslopes to channels
-        #   - merge the HSL and (TBD) channel mapping into "global" results grid(s)
         self.pass2()
-        # Filter the HSL results into a smoothed, contourable grid
-        # Compute filtered terrain aspect and combine with this HSL grid
-        # Generate a mean HSL(aspect) function and related statistics
-        #    to determine whether or not there is a N-S bias
         self.pass3()
         self.print('**Mapping end**\n')  
 
     def pass1(self):
         """
-        Pass or step 1 of HSL mapping.
+        Pass or stage 1 of HSL mapping.
         
         Estimate the DTM-wide channel threshold and use it 
         to coarsely subsegment into "moderate"-size watersheds.
@@ -150,6 +235,12 @@ class Mapping(Core):
         into left and right flanks along its channel, with an attempt made to 
         subdivide symmetrically above each channel head (this is not always
         very successful).
+        
+        Key steps:
+            1) Generate a mask that excludes non-mappable pixels; record its bounding box
+            2) Map channels & catchments (sub)segments in a preliminary, coarse fashion
+            3) Generate a mask that includes all coarse subsegment pixels
+            4) Map mid-slope and ridge pixels using sla values only
 
         """
         vprint(self.vprogress,'\n**Pass#1 begin**')
@@ -159,9 +250,9 @@ class Mapping(Core):
         nxp = self.geodata.roi_nx+pad*2
         nyp = self.geodata.roi_ny+pad*2
         # Create arrays for mapping and coarse subsegmentation
-        self.mapping_array           = np.zeros((nxp,nyp), dtype=np.uint32)
-        self.coarse_subsegment_array = np.zeros((nxp,nyp), dtype=np.int32)
-        self.merged_coarse_mask_array      = np.ones((nxp,nyp),  dtype=np.bool)
+        self.mapping_array            = np.zeros((nxp,nyp), dtype=np.uint32)
+        self.coarse_subsegment_array  = np.zeros((nxp,nyp), dtype=np.int32)
+        self.merged_coarse_mask_array = np.ones((nxp,nyp),  dtype=np.bool)
         # Create an info object for passing parameters to CL wrappers etc
         info = Info(self.state, self.trace, self.geodata.roi_pixel_size, mapping=self)
         # Revert to 'dtm', 'basin' (if set), and 'uv' masks only
@@ -185,31 +276,38 @@ class Mapping(Core):
                      mask_array    = mask_array,
                      uv_array      = self.preprocess.uv_array,
                      slc_array     = self.trace.slc_array,
-                     slt_array     = self.trace.slt_array )
+                     slt_array     = self.trace.slt_array,
+                     sla_array     = self.trace.sla_array )
+        
+        # Map midslope lines 
+        self.map_midslopes(info, data)
+        self.map_ridges(info, data)
+        
         # Do the forced coarse channel mapping & subsegmentation
-        self.do_map_channels_segments(info, data)
+        #   - the flag 'do_map_channels_from_scratch' will default to true
+        if not self.do_map_channels_segments(info, data):
+            self.print('A problem during mapping channels & segments')
+    
         # Save the coarse subsegmentation labels
         #   - inserted into full size grid arrays using the data.bounds_grid slice
         self.mapping_array[data.bounds_grid]           = data.mapping_array
         self.coarse_subsegment_array[data.bounds_grid] = data.label_array
         # Make a list of all the subsegments with enough ridge/midslope pixels for HSL
-        coarse_subsegments        = np.unique(data.label_array[~data.mask_array])
+        coarse_subsegments = np.unique(data.label_array[~data.mask_array])
         self.coarse_subsegments_list_array \
             = np.sort(coarse_subsegments[coarse_subsegments!=0])
         self.n_coarse_subsegments = self.coarse_subsegments_list_array.shape[0]
         # Make a mask to select all coarse subsegments
-#         pdebug('merged_coarse_mask_array',self.merged_coarse_mask_array[self.merged_coarse_mask_array==False].shape)
-#         pdebug('coarse_subsegment_array',self.coarse_subsegment_array[self.coarse_subsegment_array!=0].shape)
         for label in self.coarse_subsegments_list_array:
-#             pdebug('merging',label)
             self.merged_coarse_mask_array[self.coarse_subsegment_array==label] = False
-#             pdebug(self.merged_coarse_mask_array[self.merged_coarse_mask_array==False].shape)
         # Copy the coarse subsegments so they can be readily visualized
-#         self.label_array = self.coarse_subsegment_array.copy()
-#         self._switch_back_to_verbose_mode()
+    #         self.label_array = self.coarse_subsegment_array.copy()
+    #         self._switch_back_to_verbose_mode()
+    
         del info, data
         self.state.reset_active_masks()
-        
+            
+        # Map HSL
         self.print('Prepare for mapping HSL from {}'.format(
             ('ridges' if self.do_measure_hsl_from_ridges else 'midslopes')))
         mask_array = self.state.merge_active_masks()
@@ -217,18 +315,11 @@ class Mapping(Core):
         info = Info(self.state, self.trace, self.geodata.roi_pixel_size, mapping=self)
         info.set_xy(nxb,nyb, pad)
         info.set_thresholds(segmentation_threshold=self.fine_segmentation_threshold)
+        # Here data.bounds_grid is computed
         data = Data( info=info, bbox=bbox, pad=pad,
                      mapping_array = self.mapping_array,
-                     mask_array    = mask_array,
-                     uv_array      = self.preprocess.uv_array,
-                     slc_array     = self.trace.slc_array,
-                     slt_array     = self.trace.slt_array,
-                     sla_array     = self.trace.sla_array )
-        # Map ridge lines and midslope lines 
-        #   - default (now) is to map HSL from midslope pixels to thin channel pixels
-        #   - can optionally map instead from ridge pixels
-        self.map_midslopes(info, data)
-        self.map_ridges(info, data)
+                     mask_array    = mask_array)
+#                          sla_array     = self.trace.sla_array )
         self.info = info
         bounds = data.bounds_grid
         # Should we zero out all but ridge & midslope flags? 
@@ -247,14 +338,14 @@ class Mapping(Core):
                                      raw_mask, dilated_mask):
         """
         Args:
-            coarse_subsegment (int): index of catchment coarse subsegment
+            coarse_subsegment (int): index of coarse catchment subsegment
             is_left_or_right (str): string-flag indicating if subsegment is left or right
                                     flank ("left" subsegments need dilation=2, 
                                     "right" need dilation=1)
             raw_mask (numpy.ndarray): empty grid for raw coarse subsegment mask
             dilated_mask (numpy.ndarray): empty grid for dilated coarse subsegment mask
         
-        Create a boolean mask grid for the given catchment coarse subsegment.
+        Create a boolean mask grid for the given coarse catchment subsegment.
         Returns masks in the raw_mask and dilated_mask grids by modifying in place.
         Computes bounding box (grid coords) of the dilated mask in bbox_dilated_mask  
         and its dimensions nxd,nyd.
@@ -285,7 +376,7 @@ class Mapping(Core):
 
     def pass2(self):
         """
-        Pass or step 2 of HSL mapping.
+        Pass or stage 2 of HSL mapping.
         
         Iterate over the coarse subsegments and in each:
           - estimate the channel threshold
@@ -459,7 +550,7 @@ class Mapping(Core):
                 
     def pass3(self):   
         """
-        Pass or step 3 of HSL mapping.
+        Pass or stage 3 of HSL mapping.
         
         - Filter the HSL results into a smoothed, contourable grid.
         - Compute filtered terrain aspect and combine with this HSL grid.
@@ -505,11 +596,6 @@ class Mapping(Core):
         self.map_hsl(info)
         # Map smoothed terrain aspect aka orientation relative to east from uv array
         self.map_aspect(info)
-        # Calculate an empirical HSL(aspect) function and related statistics
-        self.combine_hsl_aspect()
-        self.hsl_aspect_stats()
-#         self.state.remove_active_mask('merged_coarse')
-        self.info = info
         # Make 1-byte boolean arrays of selected mapping flags
         self.thinchannel_array = np.zeros((nxp,nyp), dtype=np.bool)
         self.channelhead_array = np.zeros((nxp,nyp), dtype=np.bool)
@@ -519,6 +605,12 @@ class Mapping(Core):
         self.channelhead_array[(self.mapping_array & info.is_channelhead)>0] = True
         self.midslope_array[   (self.mapping_array & info.is_midslope)>0]    = True
         self.ridge_array[      (self.mapping_array & info.is_ridge)>0]       = True
+        # Calculate an empirical HSL(aspect) function and related statistics
+        if not self.do_skip_hsl:
+            self.combine_hsl_aspect()
+            self.hsl_aspect_stats()
+#         self.state.remove_active_mask('merged_coarse')
+        self.info = info
         vprint(self.vprogress,'**Pass#3 end**') 
                 
     def do_map_channels_segments(self, info, data, 
@@ -532,7 +624,7 @@ class Mapping(Core):
             if do_map_channels_from_scratch:
                 self.map_channels(info, data)
             # Join up disconnected channel pixels if they are not too widely spaced
-            if not self.connect_channel_pixels(info, data):
+            if not self.connect_channel_pixels(info, data):                
                 return False
             # Skeletonize channel pixels into thin network
             self.thin_channels(info, data)
@@ -681,6 +773,7 @@ class Mapping(Core):
         nxp  = info.nx_padded
         nyp  = info.ny_padded
         midslope_array = np.zeros((nxp,nyp), dtype=np.bool)
+#         pdebug('self.midslope_filter_sigma', self.midslope_filter_sigma)
         midslope_array[ (~mask) & (np.fabs(
             gaussian_filter((np.arctan2(dsla,usla)-np.pi/4), self.midslope_filter_sigma))
                              <=self.midslope_threshold)] = True
@@ -941,7 +1034,7 @@ class Mapping(Core):
                    | ((self.mapping_array & info.is_channel)==info.is_channel) ] = True
 #         self.aspect_array = np.ma.masked_array( np.arctan2(uvy_array,uvx_array), 
 #                                                 mask=mask_array )
-        self.aspect_array = np.arctan2(uvy_array,uvx_array)
+        self.aspect_array = np.arctan2(uvy_array,uvx_array).astype(np.float32)
         self.aspect_mask_array = mask_array
         self.print('done')  
                                                          
@@ -968,6 +1061,13 @@ class Mapping(Core):
         # Fetch non-masked aspect and HSL values
         aspect_array = self.aspect_array[pslice][~mask_array]
         hsl_array    = self.hsl_smoothed_array[pslice][~mask_array]
+        
+        # HACK!!!!
+        if hsl_array.shape==(0,):
+            print('here')
+            aspect_array = self.aspect_array[pslice]
+            hsl_array    = self.hsl_smoothed_array[pslice]
+            
         # Convert aspect to degrees
         np.rad2deg(aspect_array, out=aspect_array)
         # Combine into HSL(aspect) array

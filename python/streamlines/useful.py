@@ -78,7 +78,8 @@ class Data():
         #   and we want to generate new arrays that can be monkeyed with
         #   without having to worry about the source arrays being affected
         self.mask_array    = mask_array[bounds_grid].copy()
-        self.mapping_array = mapping_array[bounds_grid].copy()
+        if mapping_array is not None:
+            self.mapping_array = mapping_array[bounds_grid].copy()
         if uv_array is not None:
             self.uv_array  = uv_array[bounds_slx].copy()
         else:

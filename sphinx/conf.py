@@ -223,7 +223,8 @@ intersphinx_mapping = {
    'numba': ('https://numba.pydata.org',
             (None, './_intersphinx/numba-objects.inv')),
    
-   'pandas': ('http://pandas.pydata.org/pandas-docs/stable', None),
+   'pandas': ('http://pandas.pydata.org/pandas-docs/stable', 
+             (None, './_intersphinx/pandas-objects.inv')),
    
    'np': ('https://docs.scipy.org/doc/numpy', None),
    'numpy': ('https://docs.scipy.org/doc/numpy', None),

@@ -75,32 +75,57 @@ class Save(Core):
             TBD
         """
         self.print('\n**Write results to files begin**') 
-            
-        if not os.path.exists(os.path.join(*self.geodata.export_path)):
-            self.print('Creating export directory "{}"'
-                       .format(os.path.join(*self.geodata.export_path)))  
-            try:
-                os.mkdir(os.path.join(*self.geodata.export_path))
-            except:
-                raise OSError('Cannot create export directory "'
-                              + str(os.path.join(*self.geodata.export_path)) + '"')
-        else:
-            if not os.path.isdir(os.path.join(*self.geodata.export_path)):
-                err = '"'+os.path.join(*self.geodata.export_path) +'" is not a directory'
-                print("OS error: {0}".format(err))
-                raise OSError
-            
-        file_stem = os.path.realpath(os.path.join(*self.geodata.export_path,
-                                                 self.state.parameters_file))
         
+        file_stem_list =[None]*3
+        for idx, export_path in enumerate([self.geodata.export_analyses_path, 
+                                           self.geodata.export_maps_path, 
+                                           self.geodata.export_figs_path]):
+            
+            if not os.path.exists(os.path.join(*export_path)):
+                self.print('Creating export directory "{}"'
+                           .format(os.path.join(*export_path)))  
+                try:
+                    os.mkdir(os.path.join(*export_path))
+                except:
+                    raise OSError('Cannot create export directory "'
+                                  + str(os.path.join(*export_path)) + '"')
+            else:
+                if not os.path.isdir(os.path.join(*export_path)):
+                    err = '"'+os.path.join(*export_path) +'" is not a directory'
+                    print("OS error: {0}".format(err))
+                    raise OSError
+                
+            file_stem_list[idx] = os.path.realpath(os.path.join(*export_path,
+                                                   self.state.parameters_file))
+
+        # Save myriad analyses
+        if self.do_save_analyses:
+            self.save_analyses(file_stem=file_stem_list[0])
         # Save mapping grids
         if self.do_save_maps:
-            self.save_maps(file_stem=file_stem)
+            self.save_maps(file_stem=file_stem_list[1])
         # Save graphics
         if self.do_save_figs:
-            self.save_figs(file_stem=file_stem)
+            self.save_figs(file_stem=file_stem_list[2])
         
         self.print('**Write results to files end**\n')  
+        
+    def save_analyses(self, analysis_name=None, file_stem=None):  
+        """
+        Args:
+            TBD (TBD): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """  
+        self.print('Saving analyses...') 
+        if file_stem is None:
+            file_stem = os.path.realpath(os.path.join(*self.geodata.export_analyses_path,
+                                                       self.state.parameters_file))
+        self.print('...done') 
         
     def save_maps(self, fig_name=None, file_stem=None):  
         """
@@ -115,7 +140,7 @@ class Save(Core):
         """  
         self.print('Saving maps...') 
         if file_stem is None:
-            file_stem = os.path.realpath(os.path.join(*self.geodata.export_path,
+            file_stem = os.path.realpath(os.path.join(*self.geodata.export_maps_path,
                                                        self.state.parameters_file))
         obj_list = [self.geodata,self.preprocess,self.trace,self.mapping]
         pad = self.geodata.pad_width
@@ -157,7 +182,7 @@ class Save(Core):
         self.print('Saving figs...') 
         fig_items = self.plot.figs.items()
         if file_stem is None:
-            file_stem = os.path.realpath(os.path.join(*self.geodata.export_path,
+            file_stem = os.path.realpath(os.path.join(*self.geodata.export_figs_path,
                                                        self.state.parameters_file))
         for fig_item in fig_items:
             if fig_name is not None and fig_item[0]!=fig_name:   

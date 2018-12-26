@@ -10,15 +10,14 @@ and assigns the values to the workflow class instance accordingly.
 
 ---------------------------------------------------------------------
 
-The following workflow classes inherit the :mod:`core <streamlines.core>` class
-defined here:
-  - :class:`.Geodata`
-  - :class:`.Preprocess`
-  - :class:`.Trace`
-  - :class:`.Analysis`
-  - :class:`.Mapping`
-  - :class:`.Plot`
-  - :class:`.Save`
+The following workflow classes inherit the :mod:`core <streamlines.core>` class defined here:
+   -  :class:`.Geodata`
+   -  :class:`.Preprocess`
+   -  :class:`.Trace`
+   -  :class:`.Analysis`
+   -  :class:`.Mapping`
+   -  :class:`.Plot`
+   -  :class:`.Save`
 
 ---------------------------------------------------------------------
 

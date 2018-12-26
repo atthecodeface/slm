@@ -30,7 +30,9 @@
 		"dtm_file" :       "Unspecified GeoTIFF",
 		"basins_file" :    "",
 		"data_path" :      ["$SLMDATA"],	
-		"export_path" :    ["$SLMXPT"],	
+		"export_maps_path" :     ["..","Maps"],	
+		"export_figs_path" :     ["..","Figures"],	
+		"export_analyses_path" : ["..","Analyses"],	
 		"no_data_values" : [-99999,0],
 		"do_clip_roi" :    false,
         "roi_x_bounds" :   [],
@@ -108,7 +110,20 @@
 		"joint_distbn_kde_bw_method" : "scott",
         "joint_distbn_mode_threshold_list" : [0.9, 0.00001],
         "joint_distbn_mode2_tilt" : 3,
-		"joint_distbn_mode2_nearness_factor": 30
+		"joint_distbn_mode2_nearness_factor": 30,
+		
+		"pdf_bw_method"           : "scott",
+		"pdf_bw_factor_h_midline" : 0.6,
+		"pdf_bw_factor_h_all"     : 0.6,
+		"pdf_bw_factor_slope"     : 0.2,
+		"pdf_h_min"               : 0,
+		"pdf_h_max"               : 4000,
+		"pdf_h_max"               : 4000,
+		"pdf_h_steps"             : 200,
+		"pdf_h_midline_max_bound" : 1000,
+		"pdf_slope_min"           : 0,
+		"pdf_slope_max"           : 80,
+		"pdf_slope_steps"         : 100
 	},
 
 	"mapping": {
@@ -116,10 +131,6 @@
 		"coarse_segmentation_threshold" : 1000,
 		"coarse_channel_threshold"      : 1000,
 		"fine_segmentation_threshold"   : 10,
-		"Yfine_segmentation_threshold"   : 20,
-		"Xcoarse_segmentation_threshold" : 3000,
-		"Xcoarse_channel_threshold"      : 1000,
-		"Xfine_segmentation_threshold"   : 300,
 		"min_channel_threshold" : 10,
 		"guess_channel_threshold" : 150,
 		"max_channel_threshold" : 1000,
@@ -138,7 +149,8 @@
 		"ridge_threshold" : 0.8,
 		"aspect_slope_threshold" : 15.0,
 		"do_aspect_median_filtering" : true,
-		"aspect_median_filter_radius" : 4
+		"aspect_median_filter_radius" : 4,
+		"do_skip_hsl" : false
 	},
 
 	"plot": {        
@@ -216,10 +228,17 @@
 		"channel_head_marker_colors" : ["cyan","darkblue"],
 		"channel_head_marker_alpha" : 0.8,
 		"channel_shaded_relief_hillshade_alpha" : 0.5,
-		
+        "do_plot_heads" : false,
+        "do_plot_tails" : false,
+        
+        "units" : 1,
+
 		"gradient_vector_color" : "purple",
 		"gradient_vector_alpha" : 0.7,
 		"gradient_vector_scale" : 30,
+		
+		"n_midslope_iterations" : 3,
+		"n_ridge_iterations" : 3,
 	
 		"blockage_marker_size" : 20,
 		"loops_marker_size" : 20,
@@ -278,6 +297,7 @@
 	},
 
 	"save": {
+		"do_save_analyses" : true,	
 		"do_save_figs" : true,	
 		"do_save_maps" : true,		
 		"figs_format" : ["pdf"],

@@ -35,23 +35,23 @@
 <span id="mapping-py"></span><h1><code class="docutils literal notranslate"><span class="pre">mapping.py</span></code><a class="headerlink" href="#module-streamlines.mapping" title="Permalink to this headline">¶</a></h1>
 <hr class="docutils" />
 <p>Module for mapping channels, channel heads, subcatchment segmentation,
-hillslope length (HSL), and topographic aspect, and for analyzing azimuthal
+hillslope length (HSL), and filtered topographic aspect, and for analyzing azimuthal
 variations.</p>
 <hr class="docutils" />
 <dl class="docutils">
 <dt>Requires Python packages/modules:</dt>
 <dd><ul class="first last simple">
 <li><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/index.html#module-pandas" title="(in pandas v0.23.4)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
-<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing" title="(in scikit-learn v0.16.dev0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code></a></li>
-<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.morphology.html#module-skimage.morphology" title="(in skimage v0.14.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.morphology</span></code></a></li>
-<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.filters.html#module-skimage.filters" title="(in skimage v0.14.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.filters</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/interpolate.html#module-scipy.interpolate" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.interpolate</span></code></a></li>
+<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing" title="(in scikit-learn v0.20.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code></a></li>
+<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.morphology.html#module-skimage.morphology" title="(in skimage v0.14.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.morphology</span></code></a></li>
+<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.filters.html#module-skimage.filters" title="(in skimage v0.14.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.filters</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/interpolate.html#module-scipy.interpolate" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.interpolate</span></code></a></li>
 <li><a class="reference external" href="https://pythonhosted.org/scikit-fmm/index.html#module-skfmm" title="(in scikit-fmm v0.0.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skfmm</span></code></a></li>
 </ul>
 </dd>
-<dt>Imports <code class="docutils literal notranslate"><span class="pre">Streamlines</span></code> modules:</dt>
+<dt>Imports <code class="docutils literal notranslate"><span class="pre">slm</span></code> modules:</dt>
 <dd><ul class="first last simple">
 <li><a class="reference internal" href="connect.html#module-streamlines.connect" title="streamlines.connect"><code class="xref py py-mod docutils literal notranslate"><span class="pre">connect</span></code></a></li>
 <li><a class="reference internal" href="channelheads.html#module-streamlines.channelheads" title="streamlines.channelheads"><code class="xref py py-mod docutils literal notranslate"><span class="pre">channelheads</span></code></a></li>
@@ -62,9 +62,11 @@ variations.</p>
 <li><a class="reference internal" href="lengths.html#module-streamlines.lengths" title="streamlines.lengths"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lengths</span></code></a></li>
 </ul>
 </dd>
+</dl>
+<p>Imports the <a class="reference internal" href="core.html#streamlines.core.Core" title="streamlines.core.Core"><code class="xref py py-class docutils literal notranslate"><span class="pre">Core</span></code></a> class.</p>
+<dl class="docutils">
 <dt>Imports classes &amp; functions from:</dt>
 <dd><ul class="first last simple">
-<li><a class="reference internal" href="core.html#module-streamlines.core" title="streamlines.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code></a></li>
 <li><a class="reference internal" href="useful.html#module-streamlines.useful" title="streamlines.useful"><code class="xref py py-mod docutils literal notranslate"><span class="pre">useful</span></code></a></li>
 <li><a class="reference internal" href="pocl.html#module-streamlines.pocl" title="streamlines.pocl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pocl</span></code></a></li>
 </ul>
@@ -79,22 +81,278 @@ across a DTM.</p>
 <p>These methods do the bulk of the hard work in mapping hillslope length,
 in linking to topographic aspect, and in measuring related statistics.
 The master method carries
-out three “passes” or processing steps in order to map the slm grids (sla, slt, slc)
+out three “passes” or processing steps in order to map the <code class="docutils literal notranslate"><span class="pre">slm</span></code> grids
+(sla, slt, slc)
 into grids of HSL and aspect, as well as to generate derivative data from them.</p>
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.geodata">
+<code class="descname">geodata</code><a class="headerlink" href="#streamlines.mapping.Mapping.geodata" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance</em> – of <a class="reference internal" href="geodata.html#streamlines.geodata.Geodata" title="streamlines.geodata.Geodata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geodata</span></code></a> class</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.preprocess">
+<code class="descname">preprocess</code><a class="headerlink" href="#streamlines.mapping.Mapping.preprocess" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance</em> – of <a class="reference internal" href="preprocess.html#streamlines.preprocess.Preprocess" title="streamlines.preprocess.Preprocess"><code class="xref py py-class docutils literal notranslate"><span class="pre">Preprocess</span></code></a> class</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.trace">
+<code class="descname">trace</code><a class="headerlink" href="#streamlines.mapping.Mapping.trace" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance</em> – of <a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> class</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.analysis">
+<code class="descname">analysis</code><a class="headerlink" href="#streamlines.mapping.Mapping.analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance</em> – of <a class="reference internal" href="analysis.html#streamlines.analysis.Analysis" title="streamlines.analysis.Analysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">Analysis</span></code></a> class</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.cl_state">
+<code class="descname">cl_state</code><a class="headerlink" href="#streamlines.mapping.Mapping.cl_state" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance</em> – of <a class="reference internal" href="pocl.html#streamlines.pocl.Initialize_cl" title="streamlines.pocl.Initialize_cl"><code class="xref py py-class docutils literal notranslate"><span class="pre">Initialize_cl</span></code></a> class</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.mapping_array">
+<code class="descname">mapping_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.mapping_array" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – map grid of uint32 pixel
+container values, each a set of flags using during mapping</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.merged_coarse_mask_array">
+<code class="descname">merged_coarse_mask_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.merged_coarse_mask_array" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – map grid of boolean pixel flags
+indicating if the pixel is masked after merging
+the set of coarsely subsegmented catchments</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.coarse_subsegment_array">
+<code class="descname">coarse_subsegment_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.coarse_subsegment_array" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – map grid of int32 pixel values of
+coarsely subsegmented catchment index</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.coarse_subsegments_list_array">
+<code class="descname">coarse_subsegments_list_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.coarse_subsegments_list_array" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – sorted list of int32
+coarsely subsegmented catchment indexes</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.n_coarse_subsegments">
+<code class="descname">n_coarse_subsegments</code><a class="headerlink" href="#streamlines.mapping.Mapping.n_coarse_subsegments" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – number of unique values of
+coarsely subsegmented catchment indexes</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.hsl_array">
+<code class="descname">hsl_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_array" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – map grid of float32 pixel values
+of the estimated hillslope length (HSL)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.hsl_mean_array">
+<code class="descname">hsl_mean_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_mean_array" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – list of float32 mean HSL values</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.hsl_stats_df">
+<code class="descname">hsl_stats_df</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_stats_df" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>pandas.DataFrame</em> – container for HSL analysis &amp; statistics</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.aspect_array">
+<code class="descname">aspect_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.aspect_array" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – map grid of float32 pixel values of
+filtered topographic aspect aka hillslope azimuth</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.aspect_mask_array">
+<code class="descname">aspect_mask_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.aspect_mask_array" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – map grid of boolean pixel flags
+indicating if aspect computation is masked</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.channelhead_array">
+<code class="descname">channelhead_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.channelhead_array" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – map grid of boolean pixel flags
+indicating if at a channel head</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.midslope_array">
+<code class="descname">midslope_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.midslope_array" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – map grid of boolean pixel flags
+indicating if on a mid-slope band</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.ridge_array">
+<code class="descname">ridge_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.ridge_array" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – map grid of boolean pixel flags
+indicating if on a ridge</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.thinchannel_array">
+<code class="descname">thinchannel_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.thinchannel_array" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – map grid of boolean pixel flags
+indicating if on a ‘thinned’ channel</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.hsl_ns_ks">
+<code class="descname">hsl_ns_ks</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_ks" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list</em> – results of K-S test of HSL N-S anisotropy</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.hsl_ns_ks_nm">
+<code class="descname">hsl_ns_ks_nm</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_ks_nm" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – K-S test of HSL N-S anisotropy,
+partial <img class="math" src="../_images/math/09638d80aa315dddb31ee28d00fb299ae9a5488e.png" alt="D_\alpha"/></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.hsl_ns_ks_nmfactor">
+<code class="descname">hsl_ns_ks_nmfactor</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_ks_nmfactor" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – K-S test of HSL N-S anisotropy,
+partial <img class="math" src="../_images/math/09638d80aa315dddb31ee28d00fb299ae9a5488e.png" alt="D_\alpha"/></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.hsl_ns_ttest">
+<code class="descname">hsl_ns_ttest</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_ttest" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list</em> – results of Student’s t-test of HSL N-S anisotropy</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.hsl_ns_mannwhitney">
+<code class="descname">hsl_ns_mannwhitney</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_mannwhitney" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list</em> – results of Mann-Whitney test of HSL N-S anisotropy</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.hsl_ns_ranksum">
+<code class="descname">hsl_ns_ranksum</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_ranksum" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list</em> – results of rank-sum test of HSL N-S anisotropy</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.hsl_ns_welch">
+<code class="descname">hsl_ns_welch</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_welch" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list</em> – results of Welch test of HSL N-S anisotropy</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.hsl_ns_min">
+<code class="descname">hsl_ns_min</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_min" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – HSL N-S minimum</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.hsl_ns_max">
+<code class="descname">hsl_ns_max</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_max" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – HSL N-S maximum</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.verbose">
+<code class="descname">verbose</code><a class="headerlink" href="#streamlines.mapping.Mapping.verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – general print verbosity flag</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.vbackup">
+<code class="descname">vbackup</code><a class="headerlink" href="#streamlines.mapping.Mapping.vbackup" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – temporary print verbosity flag</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="streamlines.mapping.Mapping.vprogress">
+<code class="descname">vprogress</code><a class="headerlink" href="#streamlines.mapping.Mapping.vprogress" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – progress print verbosity flag</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="streamlines.mapping.Mapping.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>geodata</em>, <em>preprocess</em>, <em>trace</em>, <em>analysis</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.mapping.Mapping.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize a mapping class instance.</p>
-<p>Provides hooks to geodata, preprocess, trace and analysis modules.
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>state</strong> (<em>instance</em>) – of <a class="reference internal" href="state.html#streamlines.state.State" title="streamlines.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> class</li>
+<li><strong>imported_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – parameters dictionary loaded from
+an <code class="docutils literal notranslate"><span class="pre">slm</span></code>  <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">JSON</span></code></a> file.</li>
+<li><strong>geodata</strong> (<em>instance</em>) – of <a class="reference internal" href="geodata.html#streamlines.geodata.Geodata" title="streamlines.geodata.Geodata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geodata</span></code></a> class</li>
+<li><strong>preprocess</strong> (<em>instance</em>) – of <a class="reference internal" href="preprocess.html#streamlines.preprocess.Preprocess" title="streamlines.preprocess.Preprocess"><code class="xref py py-class docutils literal notranslate"><span class="pre">Preprocess</span></code></a> class</li>
+<li><strong>trace</strong> (<em>instance</em>) – of <a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> class</li>
+<li><strong>analysis</strong> (<em>instance</em>) – of <a class="reference internal" href="analysis.html#streamlines.analysis.Analysis" title="streamlines.analysis.Analysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">Analysis</span></code></a> class</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Initialize a mapping class instance.</p>
+<p>Provides hooks to key classes in <a class="reference internal" href="geodata.html#module-streamlines.geodata" title="streamlines.geodata"><code class="xref py py-mod docutils literal notranslate"><span class="pre">geodata</span></code></a>, <a class="reference internal" href="preprocess.html#module-streamlines.preprocess" title="streamlines.preprocess"><code class="xref py py-mod docutils literal notranslate"><span class="pre">preprocess</span></code></a>,
+<a class="reference internal" href="trace.html#module-streamlines.trace" title="streamlines.trace"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trace</span></code></a>, and <a class="reference internal" href="analysis.html#module-streamlines.analysis" title="streamlines.analysis"><code class="xref py py-mod docutils literal notranslate"><span class="pre">analysis</span></code></a> modules.
 Initializes the OpenCL device and a context, and creates a command queue.
-Initializes (nulls) HSL statistics variables.</p>
+Initializes (nulls) HSL statistics attributes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.mapping.Mapping._augment">
+<code class="descname">_augment</code><span class="sig-paren">(</span><em>plot</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.mapping.Mapping._augment" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>plot</strong> (<em>reference</em>) – to <a class="reference internal" href="plot.html#streamlines.plot.Plot" title="streamlines.plot.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Add a hook to the <a class="reference internal" href="plot.html#streamlines.plot.Plot" title="streamlines.plot.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a> class to facilitate debug graphing.
+Invoked in <a class="reference internal" href="streamlining.html#module-streamlines.streamlining" title="streamlines.streamlining"><code class="xref py py-mod docutils literal notranslate"><span class="pre">streamlining</span></code></a> module, not here.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="streamlines.mapping.Mapping.do">
 <code class="descname">do</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.mapping.Mapping.do" title="Permalink to this definition">¶</a></dt>
-<dd><p>Master method to carry out all steps of HSL and related mapping, as well
-as computation of statistics.</p>
+<dd><p>Master method to carry out all three steps of HSL &amp; related mapping
+and computation of statistics:</p>
+<p>TBD TBD TBD TBD TBD TBD TBD TBD TBD</p>
+<ol class="arabic simple">
+<li>Estimate the DTM-wide channel threshold and use it
+to coarsely subsegment into “moderate”-size watersheds
+- where “sub” means split into L and R flanks along channels</li>
+<li><dl class="first docutils">
+<dt>Iterate over the coarse subsegments and in each:</dt>
+<dd><ul class="first last">
+<li>estimate the channel threshold</li>
+<li>map channels, ridges &amp; midslopes</li>
+<li>measure HSL from either ridges or midslopes to channels</li>
+<li>merge the HSL and (TBD) channel mapping into “global” results grid(s)</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>Filter the HSL results into a smoothed, contourable grid
+Compute filtered terrain aspect and combine with this HSL grid
+Generate a mean HSL(aspect) function and related statistics
+to determine whether or not there is a N-S bias</li>
+</ol>
 </dd></dl>
 
 <dl class="method">
@@ -111,7 +369,7 @@ as computation of statistics.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>coarse_subsegment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – index of catchment coarse subsegment</li>
+<li><strong>coarse_subsegment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – index of coarse catchment subsegment</li>
 <li><strong>is_left_or_right</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – string-flag indicating if subsegment is left or right
 flank (“left” subsegments need dilation=2,
 “right” need dilation=1)</li>
@@ -122,7 +380,7 @@ flank (“left” subsegments need dilation=2,
 </tr>
 </tbody>
 </table>
-<p>Create a boolean mask grid for the given catchment coarse subsegment.
+<p>Create a boolean mask grid for the given coarse catchment subsegment.
 Returns masks in the raw_mask and dilated_mask grids by modifying in place.
 Computes bounding box (grid coords) of the dilated mask in bbox_dilated_mask
 and its dimensions nxd,nyd.</p>
@@ -141,19 +399,29 @@ and its dimensions nxd,nyd.</p>
 <dl class="method">
 <dt id="streamlines.mapping.Mapping.pass1">
 <code class="descname">pass1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.mapping.Mapping.pass1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pass or step 1 of HSL mapping.</p>
+<dd><p>Pass or stage 1 of HSL mapping.</p>
 <p>Estimate the DTM-wide channel threshold and use it
 to coarsely subsegment into “moderate”-size watersheds.
 Note that the “sub” prefix means that each segment is split
 into left and right flanks along its channel, with an attempt made to
 subdivide symmetrically above each channel head (this is not always
 very successful).</p>
+<dl class="docutils">
+<dt>Key steps:</dt>
+<dd><ol class="first last arabic simple">
+<li>Generate a mask that excludes non-mappable pixels; record its bounding box</li>
+<li>Map channels &amp; catchments (sub)segments in a preliminary, coarse fashion</li>
+<li>Generate a mask that includes all coarse subsegment pixels</li>
+<li>Map mid-slope and ridge pixels using sla values only</li>
+</ol>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="streamlines.mapping.Mapping.pass2">
 <code class="descname">pass2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.mapping.Mapping.pass2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pass or step 2 of HSL mapping.</p>
+<dd><p>Pass or stage 2 of HSL mapping.</p>
 <dl class="docutils">
 <dt>Iterate over the coarse subsegments and in each:</dt>
 <dd><ul class="first last simple">
@@ -169,7 +437,7 @@ very successful).</p>
 <dl class="method">
 <dt id="streamlines.mapping.Mapping.pass3">
 <code class="descname">pass3</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.mapping.Mapping.pass3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pass or step 3 of HSL mapping.</p>
+<dd><p>Pass or stage 3 of HSL mapping.</p>
 <ul class="simple">
 <li>Filter the HSL results into a smoothed, contourable grid.</li>
 <li>Compute filtered terrain aspect and combine with this HSL grid.</li>
@@ -186,7 +454,7 @@ to determine whether or not there is a N-S bias.</li>
 <span class="sd">---------------------------------------------------------------------</span>
 
 <span class="sd">Module for mapping channels, channel heads, subcatchment segmentation,</span>
-<span class="sd">hillslope length (HSL), and topographic aspect, and for analyzing azimuthal</span>
+<span class="sd">hillslope length (HSL), and filtered topographic aspect, and for analyzing azimuthal</span>
 <span class="sd">variations.</span>
 
 <span class="sd">---------------------------------------------------------------------</span>
@@ -201,7 +469,7 @@ to determine whether or not there is a N-S bias.</li>
 <span class="sd">  -  :mod:`scipy.interpolate`</span>
 <span class="sd">  -  :mod:`skfmm`</span>
 
-<span class="sd">Imports ``Streamlines`` modules:</span>
+<span class="sd">Imports ``slm`` modules:</span>
 <span class="sd">  -  :mod:`.connect`</span>
 <span class="sd">  -  :mod:`.channelheads`</span>
 <span class="sd">  -  :mod:`.countlink`</span>
@@ -210,8 +478,9 @@ to determine whether or not there is a N-S bias.</li>
 <span class="sd">  -  :mod:`.hillslopes`</span>
 <span class="sd">  -  :mod:`.lengths`</span>
 
+<span class="sd">Imports the :class:`.Core` class.</span>
+
 <span class="sd">Imports classes &amp; functions from:</span>
-<span class="sd">  -  :mod:`.core`</span>
 <span class="sd">  -  :mod:`.useful`</span>
 <span class="sd">  -  :mod:`.pocl`</span>
 
@@ -263,17 +532,88 @@ to determine whether or not there is a N-S bias.</li>
 <span class="sd">    These methods do the bulk of the hard work in mapping hillslope length, </span>
 <span class="sd">    in linking to topographic aspect, and in measuring related statistics. </span>
 <span class="sd">    The master method carries</span>
-<span class="sd">    out three &quot;passes&quot; or processing steps in order to map the slm grids (sla, slt, slc)</span>
+<span class="sd">    out three &quot;passes&quot; or processing steps in order to map the ``slm`` grids</span>
+<span class="sd">    (sla, slt, slc)</span>
 <span class="sd">    into grids of HSL and aspect, as well as to generate derivative data from them.</span>
-<span class="sd">    </span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        geodata (instance):    of :class:`.Geodata` class</span>
+<span class="sd">        preprocess (instance): of :class:`.Preprocess` class</span>
+<span class="sd">        trace (instance):      of :class:`.Trace` class</span>
+<span class="sd">        analysis (instance):   of :class:`.Analysis` class</span>
+<span class="sd">        cl_state (instance):   of :class:`.Initialize_cl` class</span>
+<span class="sd">        </span>
+<span class="sd">        mapping_array (numpy.ndarray): map grid of uint32 pixel </span>
+<span class="sd">            container values, each a set of flags using during mapping</span>
+<span class="sd">        merged_coarse_mask_array (numpy.ndarray): map grid of boolean pixel flags</span>
+<span class="sd">            indicating if the pixel is masked after merging</span>
+<span class="sd">            the set of coarsely subsegmented catchments</span>
+<span class="sd">        coarse_subsegment_array (numpy.ndarray):  map grid of int32 pixel values of  </span>
+<span class="sd">            coarsely subsegmented catchment index </span>
+<span class="sd">        coarse_subsegments_list_array (numpy.ndarray): sorted list of int32</span>
+<span class="sd">            coarsely subsegmented catchment indexes</span>
+<span class="sd">        n_coarse_subsegments (int): number of unique values of</span>
+<span class="sd">            coarsely subsegmented catchment indexes</span>
+
+<span class="sd">        hsl_array (numpy.ndarray): map grid of float32 pixel values </span>
+<span class="sd">            of the estimated hillslope length (HSL)</span>
+<span class="sd">        hsl_mean_array (numpy.ndarray): list of float32 mean HSL values</span>
+<span class="sd">        hsl_stats_df (pandas.DataFrame): container for HSL analysis &amp; statistics</span>
+
+<span class="sd">        aspect_array (numpy.ndarray):  map grid of float32 pixel values of  </span>
+<span class="sd">            filtered topographic aspect aka hillslope azimuth</span>
+<span class="sd">        aspect_mask_array (numpy.ndarray): map grid of boolean pixel flags</span>
+<span class="sd">            indicating if aspect computation is masked</span>
+<span class="sd">        channelhead_array (numpy.ndarray):  map grid of boolean pixel flags</span>
+<span class="sd">            indicating if at a channel head</span>
+<span class="sd">        midslope_array (numpy.ndarray):  map grid of boolean pixel flags</span>
+<span class="sd">            indicating if on a mid-slope band</span>
+<span class="sd">        ridge_array (numpy.ndarray):  map grid of boolean pixel flags</span>
+<span class="sd">            indicating if on a ridge</span>
+<span class="sd">        thinchannel_array (numpy.ndarray): map grid of boolean pixel flags</span>
+<span class="sd">            indicating if on a &#39;thinned&#39; channel</span>
+
+
+<span class="sd">        hsl_ns_ks (list):          results of K-S test of HSL N-S anisotropy </span>
+<span class="sd">        hsl_ns_ks_nm (float):      K-S test of HSL N-S anisotropy, </span>
+<span class="sd">           partial :math:`D_\\alpha`</span>
+<span class="sd">        hsl_ns_ks_nmfactor (float): K-S test of HSL N-S anisotropy, </span>
+<span class="sd">           partial :math:`D_\\alpha`</span>
+<span class="sd">        hsl_ns_ttest (list):       results of Student&#39;s t-test of HSL N-S anisotropy </span>
+<span class="sd">        hsl_ns_mannwhitney (list): results of Mann-Whitney test of HSL N-S anisotropy </span>
+<span class="sd">        hsl_ns_ranksum (list):     results of rank-sum test of HSL N-S anisotropy </span>
+<span class="sd">        hsl_ns_welch (list):       results of Welch test of HSL N-S anisotropy </span>
+<span class="sd">        hsl_ns_min (float):        HSL N-S minimum</span>
+<span class="sd">        hsl_ns_max (float):        HSL N-S maximum</span>
+
+<span class="sd">        verbose (bool):         general print verbosity flag</span>
+<span class="sd">        vbackup (bool):         temporary print verbosity flag</span>
+<span class="sd">        vprogress (bool):       progress print verbosity flag</span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span><span class="n">geodata</span><span class="p">,</span><span class="n">preprocess</span><span class="p">,</span><span class="n">trace</span><span class="p">,</span><span class="n">analysis</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            state (instance):      of :class:`.State` class</span>
+<span class="sd">            imported_parameters (dict): parameters dictionary loaded from </span>
+<span class="sd">                                         an ``slm``  :py:mod:`JSON &lt;json&gt;` file.</span>
+<span class="sd">            geodata (instance):    of :class:`.Geodata` class</span>
+<span class="sd">            preprocess (instance): of :class:`.Preprocess` class</span>
+<span class="sd">            trace (instance):      of :class:`.Trace` class</span>
+<span class="sd">            analysis (instance):   of :class:`.Analysis` class</span>
+<span class="sd">            </span>
 <span class="sd">        Initialize a mapping class instance.</span>
-<span class="sd">        </span>
-<span class="sd">        Provides hooks to geodata, preprocess, trace and analysis modules.</span>
+
+<span class="sd">        Provides hooks to key classes in :mod:`.geodata`, :mod:`.preprocess`, </span>
+<span class="sd">        :mod:`.trace`, and :mod:`.analysis` modules.</span>
 <span class="sd">        Initializes the OpenCL device and a context, and creates a command queue.</span>
-<span class="sd">        Initializes (nulls) HSL statistics variables.</span>
+<span class="sd">        Initializes (nulls) HSL statistics attributes.</span>
+<span class="sd">        </span>
+
+<span class="sd">            </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">)</span>  
         <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span> <span class="o">=</span> <span class="n">geodata</span>
@@ -298,35 +638,48 @@ to determine whether or not there is a N-S bias.</li>
         <span class="bp">self</span><span class="o">.</span><span class="n">hsl_ns_max</span>         <span class="o">=</span> <span class="kc">None</span>
     
     <span class="k">def</span> <span class="nf">_augment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plot</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            plot (reference):  to :class:`.Plot` instance</span>
+<span class="sd">            </span>
+<span class="sd">        Add a hook to the :class:`.Plot` class to facilitate debug graphing.</span>
+<span class="sd">        Invoked in :mod:`.streamlining` module, not here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="n">plot</span>
      
      
     <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Master method to carry out all steps of HSL and related mapping, as well</span>
-<span class="sd">        as computation of statistics.</span>
+<span class="sd">        Master method to carry out all three steps of HSL &amp; related mapping</span>
+<span class="sd">        and computation of statistics:</span>
+<span class="sd">        </span>
+<span class="sd">        TBD TBD TBD TBD TBD TBD TBD TBD TBD </span>
+<span class="sd">        </span>
+<span class="sd">        1) Estimate the DTM-wide channel threshold and use it </span>
+<span class="sd">           to coarsely subsegment into &quot;moderate&quot;-size watersheds</span>
+<span class="sd">           - where &quot;sub&quot; means split into L and R flanks along channels</span>
+
+<span class="sd">        2) Iterate over the coarse subsegments and in each:</span>
+<span class="sd">            - estimate the channel threshold</span>
+<span class="sd">            - map channels, ridges &amp; midslopes</span>
+<span class="sd">            - measure HSL from either ridges or midslopes to channels</span>
+<span class="sd">            - merge the HSL and (TBD) channel mapping into &quot;global&quot; results grid(s)</span>
+
+<span class="sd">        3) Filter the HSL results into a smoothed, contourable grid</span>
+<span class="sd">           Compute filtered terrain aspect and combine with this HSL grid</span>
+<span class="sd">           Generate a mean HSL(aspect) function and related statistics</span>
+<span class="sd">           to determine whether or not there is a N-S bias</span>
+<span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">**Mapping begin**&#39;</span><span class="p">)</span> 
-        <span class="c1"># Estimate the DTM-wide channel threshold and use it </span>
-        <span class="c1">#   to coarsely subsegment into &quot;moderate&quot;-size watersheds</span>
-        <span class="c1">#   - where &quot;sub&quot; means split into L and R flanks along channels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pass1</span><span class="p">()</span>
-        <span class="c1"># Iterate over the coarse subsegments and in each:</span>
-        <span class="c1">#   - estimate the channel threshold</span>
-        <span class="c1">#   - map channels, ridges &amp; midslopes</span>
-        <span class="c1">#   - measure HSL from either ridges or midslopes to channels</span>
-        <span class="c1">#   - merge the HSL and (TBD) channel mapping into &quot;global&quot; results grid(s)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pass2</span><span class="p">()</span>
-        <span class="c1"># Filter the HSL results into a smoothed, contourable grid</span>
-        <span class="c1"># Compute filtered terrain aspect and combine with this HSL grid</span>
-        <span class="c1"># Generate a mean HSL(aspect) function and related statistics</span>
-        <span class="c1">#    to determine whether or not there is a N-S bias</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pass3</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;**Mapping end**</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>  
 
     <span class="k">def</span> <span class="nf">pass1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Pass or step 1 of HSL mapping.</span>
+<span class="sd">        Pass or stage 1 of HSL mapping.</span>
 <span class="sd">        </span>
 <span class="sd">        Estimate the DTM-wide channel threshold and use it </span>
 <span class="sd">        to coarsely subsegment into &quot;moderate&quot;-size watersheds.</span>
@@ -334,6 +687,12 @@ to determine whether or not there is a N-S bias.</li>
 <span class="sd">        into left and right flanks along its channel, with an attempt made to </span>
 <span class="sd">        subdivide symmetrically above each channel head (this is not always</span>
 <span class="sd">        very successful).</span>
+<span class="sd">        </span>
+<span class="sd">        Key steps:</span>
+<span class="sd">            1) Generate a mask that excludes non-mappable pixels; record its bounding box</span>
+<span class="sd">            2) Map channels &amp; catchments (sub)segments in a preliminary, coarse fashion</span>
+<span class="sd">            3) Generate a mask that includes all coarse subsegment pixels</span>
+<span class="sd">            4) Map mid-slope and ridge pixels using sla values only</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">vprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vprogress</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">**Pass#1 begin**&#39;</span><span class="p">)</span>
@@ -343,9 +702,9 @@ to determine whether or not there is a N-S bias.</li>
         <span class="n">nxp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_nx</span><span class="o">+</span><span class="n">pad</span><span class="o">*</span><span class="mi">2</span>
         <span class="n">nyp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_ny</span><span class="o">+</span><span class="n">pad</span><span class="o">*</span><span class="mi">2</span>
         <span class="c1"># Create arrays for mapping and coarse subsegmentation</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nxp</span><span class="p">,</span><span class="n">nyp</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegment_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nxp</span><span class="p">,</span><span class="n">nyp</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">merged_coarse_mask_array</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nxp</span><span class="p">,</span><span class="n">nyp</span><span class="p">),</span>  <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span>            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nxp</span><span class="p">,</span><span class="n">nyp</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegment_array</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nxp</span><span class="p">,</span><span class="n">nyp</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">merged_coarse_mask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nxp</span><span class="p">,</span><span class="n">nyp</span><span class="p">),</span>  <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
         <span class="c1"># Create an info object for passing parameters to CL wrappers etc</span>
         <span class="n">info</span> <span class="o">=</span> <span class="n">Info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_pixel_size</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="c1"># Revert to &#39;dtm&#39;, &#39;basin&#39; (if set), and &#39;uv&#39; masks only</span>
@@ -369,31 +728,38 @@ to determine whether or not there is a N-S bias.</li>
                      <span class="n">mask_array</span>    <span class="o">=</span> <span class="n">mask_array</span><span class="p">,</span>
                      <span class="n">uv_array</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">uv_array</span><span class="p">,</span>
                      <span class="n">slc_array</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slc_array</span><span class="p">,</span>
-                     <span class="n">slt_array</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slt_array</span> <span class="p">)</span>
+                     <span class="n">slt_array</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slt_array</span><span class="p">,</span>
+                     <span class="n">sla_array</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">sla_array</span> <span class="p">)</span>
+        
+        <span class="c1"># Map midslope lines </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_midslopes</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_ridges</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        
         <span class="c1"># Do the forced coarse channel mapping &amp; subsegmentation</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">do_map_channels_segments</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="c1">#   - the flag &#39;do_map_channels_from_scratch&#39; will default to true</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_map_channels_segments</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;A problem during mapping channels &amp; segments&#39;</span><span class="p">)</span>
+    
         <span class="c1"># Save the coarse subsegmentation labels</span>
         <span class="c1">#   - inserted into full size grid arrays using the data.bounds_grid slice</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">bounds_grid</span><span class="p">]</span>           <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mapping_array</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegment_array</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">bounds_grid</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">label_array</span>
         <span class="c1"># Make a list of all the subsegments with enough ridge/midslope pixels for HSL</span>
-        <span class="n">coarse_subsegments</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">label_array</span><span class="p">[</span><span class="o">~</span><span class="n">data</span><span class="o">.</span><span class="n">mask_array</span><span class="p">])</span>
+        <span class="n">coarse_subsegments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">label_array</span><span class="p">[</span><span class="o">~</span><span class="n">data</span><span class="o">.</span><span class="n">mask_array</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegments_list_array</span> \
             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">coarse_subsegments</span><span class="p">[</span><span class="n">coarse_subsegments</span><span class="o">!=</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_coarse_subsegments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegments_list_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="c1"># Make a mask to select all coarse subsegments</span>
-<span class="c1">#         pdebug(&#39;merged_coarse_mask_array&#39;,self.merged_coarse_mask_array[self.merged_coarse_mask_array==False].shape)</span>
-<span class="c1">#         pdebug(&#39;coarse_subsegment_array&#39;,self.coarse_subsegment_array[self.coarse_subsegment_array!=0].shape)</span>
         <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegments_list_array</span><span class="p">:</span>
-<span class="c1">#             pdebug(&#39;merging&#39;,label)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">merged_coarse_mask_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegment_array</span><span class="o">==</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="c1">#             pdebug(self.merged_coarse_mask_array[self.merged_coarse_mask_array==False].shape)</span>
         <span class="c1"># Copy the coarse subsegments so they can be readily visualized</span>
-<span class="c1">#         self.label_array = self.coarse_subsegment_array.copy()</span>
-<span class="c1">#         self._switch_back_to_verbose_mode()</span>
+    <span class="c1">#         self.label_array = self.coarse_subsegment_array.copy()</span>
+    <span class="c1">#         self._switch_back_to_verbose_mode()</span>
+    
         <span class="k">del</span> <span class="n">info</span><span class="p">,</span> <span class="n">data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">reset_active_masks</span><span class="p">()</span>
-        
+            
+        <span class="c1"># Map HSL</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Prepare for mapping HSL from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="p">(</span><span class="s1">&#39;ridges&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_measure_hsl_from_ridges</span> <span class="k">else</span> <span class="s1">&#39;midslopes&#39;</span><span class="p">)))</span>
         <span class="n">mask_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">merge_active_masks</span><span class="p">()</span>
@@ -401,18 +767,11 @@ to determine whether or not there is a N-S bias.</li>
         <span class="n">info</span> <span class="o">=</span> <span class="n">Info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_pixel_size</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">info</span><span class="o">.</span><span class="n">set_xy</span><span class="p">(</span><span class="n">nxb</span><span class="p">,</span><span class="n">nyb</span><span class="p">,</span> <span class="n">pad</span><span class="p">)</span>
         <span class="n">info</span><span class="o">.</span><span class="n">set_thresholds</span><span class="p">(</span><span class="n">segmentation_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fine_segmentation_threshold</span><span class="p">)</span>
+        <span class="c1"># Here data.bounds_grid is computed</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">pad</span><span class="p">,</span>
                      <span class="n">mapping_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span>
-                     <span class="n">mask_array</span>    <span class="o">=</span> <span class="n">mask_array</span><span class="p">,</span>
-                     <span class="n">uv_array</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">uv_array</span><span class="p">,</span>
-                     <span class="n">slc_array</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slc_array</span><span class="p">,</span>
-                     <span class="n">slt_array</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slt_array</span><span class="p">,</span>
-                     <span class="n">sla_array</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">sla_array</span> <span class="p">)</span>
-        <span class="c1"># Map ridge lines and midslope lines </span>
-        <span class="c1">#   - default (now) is to map HSL from midslope pixels to thin channel pixels</span>
-        <span class="c1">#   - can optionally map instead from ridge pixels</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">map_midslopes</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">map_ridges</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+                     <span class="n">mask_array</span>    <span class="o">=</span> <span class="n">mask_array</span><span class="p">)</span>
+<span class="c1">#                          sla_array     = self.trace.sla_array )</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">info</span>
         <span class="n">bounds</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">bounds_grid</span>
         <span class="c1"># Should we zero out all but ridge &amp; midslope flags? </span>
@@ -431,14 +790,14 @@ to determine whether or not there is a N-S bias.</li>
                                      <span class="n">raw_mask</span><span class="p">,</span> <span class="n">dilated_mask</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
-<span class="sd">            coarse_subsegment (int): index of catchment coarse subsegment</span>
+<span class="sd">            coarse_subsegment (int): index of coarse catchment subsegment</span>
 <span class="sd">            is_left_or_right (str): string-flag indicating if subsegment is left or right</span>
 <span class="sd">                                    flank (&quot;left&quot; subsegments need dilation=2, </span>
 <span class="sd">                                    &quot;right&quot; need dilation=1)</span>
 <span class="sd">            raw_mask (numpy.ndarray): empty grid for raw coarse subsegment mask</span>
 <span class="sd">            dilated_mask (numpy.ndarray): empty grid for dilated coarse subsegment mask</span>
 <span class="sd">        </span>
-<span class="sd">        Create a boolean mask grid for the given catchment coarse subsegment.</span>
+<span class="sd">        Create a boolean mask grid for the given coarse catchment subsegment.</span>
 <span class="sd">        Returns masks in the raw_mask and dilated_mask grids by modifying in place.</span>
 <span class="sd">        Computes bounding box (grid coords) of the dilated mask in bbox_dilated_mask  </span>
 <span class="sd">        and its dimensions nxd,nyd.</span>
@@ -469,7 +828,7 @@ to determine whether or not there is a N-S bias.</li>
 
     <span class="k">def</span> <span class="nf">pass2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Pass or step 2 of HSL mapping.</span>
+<span class="sd">        Pass or stage 2 of HSL mapping.</span>
 <span class="sd">        </span>
 <span class="sd">        Iterate over the coarse subsegments and in each:</span>
 <span class="sd">          - estimate the channel threshold</span>
@@ -643,7 +1002,7 @@ to determine whether or not there is a N-S bias.</li>
                 
     <span class="k">def</span> <span class="nf">pass3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Pass or step 3 of HSL mapping.</span>
+<span class="sd">        Pass or stage 3 of HSL mapping.</span>
 <span class="sd">        </span>
 <span class="sd">        - Filter the HSL results into a smoothed, contourable grid.</span>
 <span class="sd">        - Compute filtered terrain aspect and combine with this HSL grid.</span>
@@ -689,11 +1048,6 @@ to determine whether or not there is a N-S bias.</li>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_hsl</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
         <span class="c1"># Map smoothed terrain aspect aka orientation relative to east from uv array</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_aspect</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
-        <span class="c1"># Calculate an empirical HSL(aspect) function and related statistics</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">combine_hsl_aspect</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hsl_aspect_stats</span><span class="p">()</span>
-<span class="c1">#         self.state.remove_active_mask(&#39;merged_coarse&#39;)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">info</span>
         <span class="c1"># Make 1-byte boolean arrays of selected mapping flags</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">thinchannel_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nxp</span><span class="p">,</span><span class="n">nyp</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channelhead_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nxp</span><span class="p">,</span><span class="n">nyp</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
@@ -703,6 +1057,12 @@ to determine whether or not there is a N-S bias.</li>
         <span class="bp">self</span><span class="o">.</span><span class="n">channelhead_array</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span> <span class="o">&amp;</span> <span class="n">info</span><span class="o">.</span><span class="n">is_channelhead</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">midslope_array</span><span class="p">[</span>   <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span> <span class="o">&amp;</span> <span class="n">info</span><span class="o">.</span><span class="n">is_midslope</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">]</span>    <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ridge_array</span><span class="p">[</span>      <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span> <span class="o">&amp;</span> <span class="n">info</span><span class="o">.</span><span class="n">is_ridge</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">]</span>       <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># Calculate an empirical HSL(aspect) function and related statistics</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_skip_hsl</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">combine_hsl_aspect</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hsl_aspect_stats</span><span class="p">()</span>
+<span class="c1">#         self.state.remove_active_mask(&#39;merged_coarse&#39;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">info</span>
         <span class="n">vprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vprogress</span><span class="p">,</span><span class="s1">&#39;**Pass#3 end**&#39;</span><span class="p">)</span> 
                 
     <span class="k">def</span> <span class="nf">do_map_channels_segments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> 
@@ -716,7 +1076,7 @@ to determine whether or not there is a N-S bias.</li>
             <span class="k">if</span> <span class="n">do_map_channels_from_scratch</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">map_channels</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
             <span class="c1"># Join up disconnected channel pixels if they are not too widely spaced</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect_channel_pixels</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect_channel_pixels</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>                
                 <span class="k">return</span> <span class="kc">False</span>
             <span class="c1"># Skeletonize channel pixels into thin network</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">thin_channels</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
@@ -865,6 +1225,7 @@ to determine whether or not there is a N-S bias.</li>
         <span class="n">nxp</span>  <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">nx_padded</span>
         <span class="n">nyp</span>  <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">ny_padded</span>
         <span class="n">midslope_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nxp</span><span class="p">,</span><span class="n">nyp</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+<span class="c1">#         pdebug(&#39;self.midslope_filter_sigma&#39;, self.midslope_filter_sigma)</span>
         <span class="n">midslope_array</span><span class="p">[</span> <span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span>
             <span class="n">gaussian_filter</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">dsla</span><span class="p">,</span><span class="n">usla</span><span class="p">)</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">midslope_filter_sigma</span><span class="p">))</span>
                              <span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">midslope_threshold</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1125,7 +1486,7 @@ to determine whether or not there is a N-S bias.</li>
                    <span class="o">|</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span> <span class="o">&amp;</span> <span class="n">info</span><span class="o">.</span><span class="n">is_channel</span><span class="p">)</span><span class="o">==</span><span class="n">info</span><span class="o">.</span><span class="n">is_channel</span><span class="p">)</span> <span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="c1">#         self.aspect_array = np.ma.masked_array( np.arctan2(uvy_array,uvx_array), </span>
 <span class="c1">#                                                 mask=mask_array )</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">aspect_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">uvy_array</span><span class="p">,</span><span class="n">uvx_array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aspect_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">uvy_array</span><span class="p">,</span><span class="n">uvx_array</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">aspect_mask_array</span> <span class="o">=</span> <span class="n">mask_array</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;done&#39;</span><span class="p">)</span>  
                                                          
@@ -1152,6 +1513,13 @@ to determine whether or not there is a N-S bias.</li>
         <span class="c1"># Fetch non-masked aspect and HSL values</span>
         <span class="n">aspect_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aspect_array</span><span class="p">[</span><span class="n">pslice</span><span class="p">][</span><span class="o">~</span><span class="n">mask_array</span><span class="p">]</span>
         <span class="n">hsl_array</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hsl_smoothed_array</span><span class="p">[</span><span class="n">pslice</span><span class="p">][</span><span class="o">~</span><span class="n">mask_array</span><span class="p">]</span>
+        
+        <span class="c1"># HACK!!!!</span>
+        <span class="k">if</span> <span class="n">hsl_array</span><span class="o">.</span><span class="n">shape</span><span class="o">==</span><span class="p">(</span><span class="mi">0</span><span class="p">,):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;here&#39;</span><span class="p">)</span>
+            <span class="n">aspect_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aspect_array</span><span class="p">[</span><span class="n">pslice</span><span class="p">]</span>
+            <span class="n">hsl_array</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hsl_smoothed_array</span><span class="p">[</span><span class="n">pslice</span><span class="p">]</span>
+            
         <span class="c1"># Convert aspect to degrees</span>
         <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">aspect_array</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">aspect_array</span><span class="p">)</span>
         <span class="c1"># Combine into HSL(aspect) array</span>

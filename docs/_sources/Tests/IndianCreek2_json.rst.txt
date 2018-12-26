@@ -11,4 +11,4 @@ TBD
 Source
 -------
 
-.. literalinclude:: ../../json/IndianCreek2.json
+.. literalinclude:: ../../tests/IndianCreek2.json

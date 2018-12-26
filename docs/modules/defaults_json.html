@@ -71,7 +71,9 @@
 		<span class="s2">&quot;dtm_file&quot;</span> <span class="p">:</span>       <span class="s2">&quot;Unspecified GeoTIFF&quot;</span><span class="p">,</span>
 		<span class="s2">&quot;basins_file&quot;</span> <span class="p">:</span>    <span class="s2">&quot;&quot;</span><span class="p">,</span>
 		<span class="s2">&quot;data_path&quot;</span> <span class="p">:</span>      <span class="p">[</span><span class="s2">&quot;$SLMDATA&quot;</span><span class="p">],</span>	
-		<span class="s2">&quot;export_path&quot;</span> <span class="p">:</span>    <span class="p">[</span><span class="s2">&quot;$SLMXPT&quot;</span><span class="p">],</span>	
+		<span class="s2">&quot;export_maps_path&quot;</span> <span class="p">:</span>     <span class="p">[</span><span class="s2">&quot;..&quot;</span><span class="p">,</span><span class="s2">&quot;Maps&quot;</span><span class="p">],</span>	
+		<span class="s2">&quot;export_figs_path&quot;</span> <span class="p">:</span>     <span class="p">[</span><span class="s2">&quot;..&quot;</span><span class="p">,</span><span class="s2">&quot;Figures&quot;</span><span class="p">],</span>	
+		<span class="s2">&quot;export_analyses_path&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;..&quot;</span><span class="p">,</span><span class="s2">&quot;Analyses&quot;</span><span class="p">],</span>	
 		<span class="s2">&quot;no_data_values&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">99999</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
 		<span class="s2">&quot;do_clip_roi&quot;</span> <span class="p">:</span>    <span class="n">false</span><span class="p">,</span>
         <span class="s2">&quot;roi_x_bounds&quot;</span> <span class="p">:</span>   <span class="p">[],</span>
@@ -149,7 +151,20 @@
 		<span class="s2">&quot;joint_distbn_kde_bw_method&quot;</span> <span class="p">:</span> <span class="s2">&quot;scott&quot;</span><span class="p">,</span>
         <span class="s2">&quot;joint_distbn_mode_threshold_list&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.00001</span><span class="p">],</span>
         <span class="s2">&quot;joint_distbn_mode2_tilt&quot;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-		<span class="s2">&quot;joint_distbn_mode2_nearness_factor&quot;</span><span class="p">:</span> <span class="mi">30</span>
+		<span class="s2">&quot;joint_distbn_mode2_nearness_factor&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+		
+		<span class="s2">&quot;pdf_bw_method&quot;</span>           <span class="p">:</span> <span class="s2">&quot;scott&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;pdf_bw_factor_h_midline&quot;</span> <span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+		<span class="s2">&quot;pdf_bw_factor_h_all&quot;</span>     <span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+		<span class="s2">&quot;pdf_bw_factor_slope&quot;</span>     <span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+		<span class="s2">&quot;pdf_h_min&quot;</span>               <span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+		<span class="s2">&quot;pdf_h_max&quot;</span>               <span class="p">:</span> <span class="mi">4000</span><span class="p">,</span>
+		<span class="s2">&quot;pdf_h_max&quot;</span>               <span class="p">:</span> <span class="mi">4000</span><span class="p">,</span>
+		<span class="s2">&quot;pdf_h_steps&quot;</span>             <span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+		<span class="s2">&quot;pdf_h_midline_max_bound&quot;</span> <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+		<span class="s2">&quot;pdf_slope_min&quot;</span>           <span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+		<span class="s2">&quot;pdf_slope_max&quot;</span>           <span class="p">:</span> <span class="mi">80</span><span class="p">,</span>
+		<span class="s2">&quot;pdf_slope_steps&quot;</span>         <span class="p">:</span> <span class="mi">100</span>
 	<span class="p">},</span>
 
 	<span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -157,10 +172,6 @@
 		<span class="s2">&quot;coarse_segmentation_threshold&quot;</span> <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
 		<span class="s2">&quot;coarse_channel_threshold&quot;</span>      <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
 		<span class="s2">&quot;fine_segmentation_threshold&quot;</span>   <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
-		<span class="s2">&quot;Yfine_segmentation_threshold&quot;</span>   <span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
-		<span class="s2">&quot;Xcoarse_segmentation_threshold&quot;</span> <span class="p">:</span> <span class="mi">3000</span><span class="p">,</span>
-		<span class="s2">&quot;Xcoarse_channel_threshold&quot;</span>      <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
-		<span class="s2">&quot;Xfine_segmentation_threshold&quot;</span>   <span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
 		<span class="s2">&quot;min_channel_threshold&quot;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
 		<span class="s2">&quot;guess_channel_threshold&quot;</span> <span class="p">:</span> <span class="mi">150</span><span class="p">,</span>
 		<span class="s2">&quot;max_channel_threshold&quot;</span> <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
@@ -179,13 +190,17 @@
 		<span class="s2">&quot;ridge_threshold&quot;</span> <span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
 		<span class="s2">&quot;aspect_slope_threshold&quot;</span> <span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
 		<span class="s2">&quot;do_aspect_median_filtering&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-		<span class="s2">&quot;aspect_median_filter_radius&quot;</span> <span class="p">:</span> <span class="mi">4</span>
+		<span class="s2">&quot;aspect_median_filter_radius&quot;</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+		<span class="s2">&quot;do_skip_hsl&quot;</span> <span class="p">:</span> <span class="n">false</span>
 	<span class="p">},</span>
 
 	<span class="s2">&quot;plot&quot;</span><span class="p">:</span> <span class="p">{</span>        
 		<span class="s2">&quot;do_plot_maps&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>	
 		<span class="s2">&quot;do_plot_distributions&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>	
 		<span class="s2">&quot;fig_dpi&quot;</span> <span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+                <span class="s2">&quot;general_font_size&quot;</span> <span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+                <span class="s2">&quot;axes_font_size&quot;</span> <span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+                <span class="s2">&quot;title_font_size&quot;</span> <span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
 		
 		<span class="s2">&quot;do_plot_dtm&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span>
 		<span class="s2">&quot;do_plot_roi&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span>
@@ -254,10 +269,17 @@
 		<span class="s2">&quot;channel_head_marker_colors&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;cyan&quot;</span><span class="p">,</span><span class="s2">&quot;darkblue&quot;</span><span class="p">],</span>
 		<span class="s2">&quot;channel_head_marker_alpha&quot;</span> <span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
 		<span class="s2">&quot;channel_shaded_relief_hillshade_alpha&quot;</span> <span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
-		
+        <span class="s2">&quot;do_plot_heads&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;do_plot_tails&quot;</span> <span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        
+        <span class="s2">&quot;units&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+
 		<span class="s2">&quot;gradient_vector_color&quot;</span> <span class="p">:</span> <span class="s2">&quot;purple&quot;</span><span class="p">,</span>
 		<span class="s2">&quot;gradient_vector_alpha&quot;</span> <span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
 		<span class="s2">&quot;gradient_vector_scale&quot;</span> <span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+		
+		<span class="s2">&quot;n_midslope_iterations&quot;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+		<span class="s2">&quot;n_ridge_iterations&quot;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
 	
 		<span class="s2">&quot;blockage_marker_size&quot;</span> <span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
 		<span class="s2">&quot;loops_marker_size&quot;</span> <span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
@@ -316,6 +338,7 @@
 	<span class="p">},</span>
 
 	<span class="s2">&quot;save&quot;</span><span class="p">:</span> <span class="p">{</span>
+		<span class="s2">&quot;do_save_analyses&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>	
 		<span class="s2">&quot;do_save_figs&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>	
 		<span class="s2">&quot;do_save_maps&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>		
 		<span class="s2">&quot;figs_format&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;pdf&quot;</span><span class="p">],</span>

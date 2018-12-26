@@ -1,4 +1,4 @@
-``IndianCreek2.ipynb``
+``IndianCreek_Test2.ipynb``
 ============================
 
 Demo IPython/Jupyter notebook #1
@@ -10,7 +10,7 @@ Usage
 
 The `Streamlines`_ workflow is invoked in an IPython/Jupyter notebook as follows::
 
-	JSON_parameters_file = './IndianCreek2'
+	JSON_parameters_file = './IndianCreek_Test2'
 	import streamlines
 	sl = streamlines.run( parameters_file=JSON_parameters_file, \
 	                     do_geodata = False, \
@@ -26,15 +26,15 @@ are ``do_geodata``, ``do_preprocess`` along with ``do_condition``, and ``do_trac
 the subsequent options ``do_postprocess``, ``do_analysis``, ``do_plot``, ``do_save_state``
 and  ``do_export`` are all turned off by default,
 as is the ``do_reload_state`` option.
-The job JSON file, in this case :doc:`IndianCreek2.json <IndianCreek2_json>`, 
+The job JSON file, in this case :doc:`IndianCreek_Test2.json <IndianCreek_Test2_json>`, 
 can override these defaults.
 Finally, the options set as above in the invocation ``streamlines.run()`` 
 will override those set in the the JSON files.
 
 Here the run options mirror the defaults and those set in the job JSON file, 
 such that the main streamline computational steps :mod:`geodata <streamlines.geodata>`, 
-:mod:`preprocess <streamlines.preprocess>` 
-with  :meth:`conditioning <streamlines.preprocess.Preprocess.conditioned_gradient_vector_field>`,
+:mod:`preprocess <streamlines.preprocess>` with  
+:meth:`conditioning <streamlines.preprocess.Preprocess.conditioned_gradient_vector_field>`,
 and :mod:`trace <streamlines.trace>` are  executed.
 The workflow state and all of its functionality are then returned in the 
 :obj:`sl <streamlines.streamlining.Streamlining>` object. 
@@ -52,7 +52,7 @@ Plotting of results can be fine-tuned::
 
 which yields:
 
-.. image:: ../images/IndianCreek2_streamlines.png
+.. image:: ../images/IndianCreek_Test2_streamlines.png
 	
 Currently the set of class instances and public methods provided by 
 :obj:`sl <streamlines.streamlining.Streamlining>` are::
@@ -66,7 +66,7 @@ Currently the set of class instances and public methods provided by
 GitHub render
 -------------
 
-See: `IndianCreek2.ipynb`_
+See: `IndianCreek_Test2.ipynb`_
 
-.. _IndianCreek2.ipynb: https://github.com/cstarknyc/slmnb/blob/master/SmallTests/IndianCreek2.ipynb
+.. _IndianCreek_Test2.ipynb: https://github.com/cstarknyc/slmnb/blob/master/SmallTests/IndianCreek_Test2.ipynb
 .. _Streamlines: https://github.com/cstarknyc/slm

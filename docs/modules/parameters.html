@@ -129,6 +129,30 @@ generate a workflow parameters dictionary.</p>
 
 <span class="n">pdebug</span> <span class="o">=</span> <span class="nb">print</span>
 
+<span class="k">def</span> <span class="nf">import_parameters</span><span class="p">(</span><span class="n">parameters_path</span><span class="p">,</span> <span class="n">parameters_file</span><span class="p">):</span> <span class="c1">#,do_reload_state=False</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        parameters_path (list): path to JSON parameters files (broken out as OS path list)</span>
+<span class="sd">        parameters_file (str): name of job JSON parameters file</span>
+
+<span class="sd">    Load JSON parameters files (defaults and job) and parse them in turn to </span>
+<span class="sd">    generate a workflow parameters dictionary. </span>
+<span class="sd">    </span>
+<span class="sd">    Return:</span>
+<span class="sd">        dict:  workflow parameter dictionary</span>
+<span class="sd">    &quot;&quot;&quot;</span>        
+    <span class="c1"># Parse default and assigned JSON parameters files</span>
+    <span class="n">pwd_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">streamlines</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">pdebug</span><span class="p">(</span><span class="n">pwd_path</span><span class="p">)</span>
+    <span class="n">slm_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">streamlines</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;..&#39;</span><span class="p">))</span>
+    <span class="n">slm_data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">slm_path</span><span class="p">,</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;data&#39;</span><span class="p">))</span>
+    <span class="n">parameters_files_list</span> \
+        <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">slm_path</span><span class="p">,</span><span class="s1">&#39;json&#39;</span><span class="p">,</span><span class="s1">&#39;defaults&#39;</span><span class="p">)),</span>
+           <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pwd_path</span><span class="p">,</span><span class="n">parameters_path</span><span class="p">,</span><span class="n">parameters_file</span><span class="p">))]</span>
+    <span class="n">pdebug</span><span class="p">(</span><span class="n">parameters_files_list</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">read_json_file</span><span class="p">(</span><span class="n">parameters_files_list</span><span class="p">),</span> <span class="n">slm_path</span><span class="p">,</span> <span class="n">slm_data_path</span><span class="p">,</span> <span class="n">pwd_path</span>
+
+
 <span class="k">def</span> <span class="nf">read_json_file</span><span class="p">(</span><span class="n">parameter_file_list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
@@ -176,28 +200,6 @@ generate a workflow parameters dictionary.</p>
                 <span class="c1"># This should not happen if the parameters file is a set</span>
                 <span class="c1">#   of sub-dicts only, one per workflow class instance</span>
     <span class="k">return</span> <span class="n">parameters_dict</span>
-
-<span class="k">def</span> <span class="nf">import_parameters</span><span class="p">(</span><span class="n">parameters_path</span><span class="p">,</span> <span class="n">parameters_file</span><span class="p">):</span> <span class="c1">#,do_reload_state=False</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Args:</span>
-<span class="sd">        parameters_path (list): path to JSON parameters files (broken out as OS path list)</span>
-<span class="sd">        parameters_file (str): name of job JSON parameters file</span>
-
-<span class="sd">    Load JSON parameters files (defaults and job) and parse them in turn to </span>
-<span class="sd">    generate a workflow parameters dictionary. </span>
-<span class="sd">    </span>
-<span class="sd">    Return:</span>
-<span class="sd">        dict:  workflow parameter dictionary</span>
-<span class="sd">    &quot;&quot;&quot;</span>        
-    <span class="c1"># Parse default and assigned JSON parameters files</span>
-    <span class="n">slm_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">streamlines</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;..&#39;</span><span class="p">))</span>
-    <span class="n">slmdata_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">slm_path</span><span class="p">,</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;slmdata&#39;</span><span class="p">))</span>
-    <span class="n">slmnb_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">slm_path</span><span class="p">,</span><span class="s1">&#39;..&#39;</span><span class="p">,</span><span class="s1">&#39;slmnb&#39;</span><span class="p">))</span>
-    <span class="n">parameters_files_list</span> \
-        <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">slm_path</span><span class="p">,</span><span class="s1">&#39;json&#39;</span><span class="p">,</span><span class="s1">&#39;defaults&#39;</span><span class="p">)),</span>
-           <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parameters_path</span><span class="p">,</span><span class="n">parameters_file</span><span class="p">))]</span>
-    <span class="k">return</span> <span class="n">read_json_file</span><span class="p">(</span><span class="n">parameters_files_list</span><span class="p">),</span> <span class="n">slm_path</span><span class="p">,</span> <span class="n">slmdata_path</span><span class="p">,</span> <span class="n">slmnb_path</span>
-
 
 
 

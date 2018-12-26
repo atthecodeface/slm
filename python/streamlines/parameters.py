@@ -23,6 +23,30 @@ __all__ = ['read_json_file','import_parameters']
 
 pdebug = print
 
+def import_parameters(parameters_path, parameters_file): #,do_reload_state=False
+    """
+    Args:
+        parameters_path (list): path to JSON parameters files (broken out as OS path list)
+        parameters_file (str): name of job JSON parameters file
+
+    Load JSON parameters files (defaults and job) and parse them in turn to 
+    generate a workflow parameters dictionary. 
+    
+    Return:
+        dict:  workflow parameter dictionary
+    """        
+    # Parse default and assigned JSON parameters files
+    pwd_path = os.path.realpath(streamlines.__path__[0])
+    pdebug(pwd_path)
+    slm_path = os.path.realpath(os.path.join(streamlines.__path__[0],'..','..'))
+    slm_data_path = os.path.realpath(os.path.join(slm_path,'..','data'))
+    parameters_files_list \
+        = [os.path.realpath(os.path.join(slm_path,'json','defaults')),
+           os.path.realpath(os.path.join(pwd_path,parameters_path,parameters_file))]
+    pdebug(parameters_files_list)
+    return read_json_file(parameters_files_list), slm_path, slm_data_path, pwd_path
+
+
 def read_json_file(parameter_file_list):
     """
     Args:
@@ -70,28 +94,6 @@ def read_json_file(parameter_file_list):
                 # This should not happen if the parameters file is a set
                 #   of sub-dicts only, one per workflow class instance
     return parameters_dict
-
-def import_parameters(parameters_path, parameters_file): #,do_reload_state=False
-    """
-    Args:
-        parameters_path (list): path to JSON parameters files (broken out as OS path list)
-        parameters_file (str): name of job JSON parameters file
-
-    Load JSON parameters files (defaults and job) and parse them in turn to 
-    generate a workflow parameters dictionary. 
-    
-    Return:
-        dict:  workflow parameter dictionary
-    """        
-    # Parse default and assigned JSON parameters files
-    slm_path = os.path.realpath(os.path.join(streamlines.__path__[0],'..','..'))
-    slmdata_path = os.path.realpath(os.path.join(slm_path,'..','data'))
-    slmnb_path = os.path.realpath(os.path.join(slm_path,'..','slmnb'))
-    parameters_files_list \
-        = [os.path.realpath(os.path.join(slm_path,'json','defaults')),
-           os.path.realpath(os.path.join(parameters_path,parameters_file))]
-    return read_json_file(parameters_files_list), slm_path, slmdata_path, slmnb_path
-
 
 
 

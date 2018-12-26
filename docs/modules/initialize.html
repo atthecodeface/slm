@@ -16,7 +16,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="slm.py" href="slm.html" />
-    <link rel="prev" title="IndianCreek2.ipynb" href="../Tests/IndianCreek2_nb.html" />
+    <link rel="prev" title="IndianCreek_Test2.ipynb" href="../Tests/IndianCreek_Test2_nb.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -119,8 +119,8 @@ of <a class="reference internal" href="../index.html#module-slm" title="slm"><co
 <span class="k">try</span><span class="p">:</span>
     <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">magic</span><span class="p">(</span><span class="s2">&quot;config InlineBackend.figure_format = &#39;retina&#39;&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error trying to invoke get_ipython(), probably because not running IPython:&#39;</span><span class="p">,</span> 
-          <span class="n">error</span><span class="p">)</span>
+<span class="c1">#     print(&#39;Error trying to invoke get_ipython(), possibly because not running IPython:&#39;, </span>
+<span class="c1">#           error)</span>
     <span class="k">pass</span>
 <span class="k">except</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Possibly benign error trying to config Matplotlib backend&#39;</span><span class="p">)</span>
@@ -131,8 +131,8 @@ of <a class="reference internal" href="../index.html#module-slm" title="slm"><co
 <span class="k">try</span><span class="p">:</span>
     <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">magic</span><span class="p">(</span><span class="s1">&#39;matplotlib inline&#39;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error trying to invoke get_ipython(), probably because not running IPython:&#39;</span><span class="p">,</span> 
-          <span class="n">error</span><span class="p">)</span>
+<span class="c1">#     print(&#39;Error trying to invoke get_ipython(), possibly because not running IPython:&#39;, </span>
+<span class="c1">#           error)</span>
     <span class="k">pass</span>
 <span class="k">except</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Possibly benign error trying to config Matplotlib backend&#39;</span><span class="p">)</span>
@@ -145,8 +145,8 @@ of <a class="reference internal" href="../index.html#module-slm" title="slm"><co
     <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">magic</span><span class="p">(</span><span class="s1">&#39;autoreload 2&#39;</span><span class="p">)</span>
     <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">magic</span><span class="p">(</span><span class="s1">&#39;aimport streamlines&#39;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error trying to invoke get_ipython(), probably because not running IPython:&#39;</span><span class="p">,</span> 
-          <span class="n">error</span><span class="p">)</span>
+<span class="c1">#     print(&#39;Error trying to invoke get_ipython(), possibly because not running IPython:&#39;, </span>
+<span class="c1">#           error)</span>
     <span class="k">pass</span>
 <span class="k">except</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Possibly benign error trying to config autoreload&#39;</span><span class="p">)</span>
@@ -156,13 +156,13 @@ of <a class="reference internal" href="../index.html#module-slm" title="slm"><co
  
 <span class="k">try</span><span class="p">:</span>
     <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">magic</span><span class="p">(</span><span class="s1">&#39;load_ext wurlitzer&#39;</span><span class="p">)</span>
-<span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error trying to invoke get_ipython(), probably because not running IPython:&#39;</span><span class="p">,</span> 
-          <span class="n">error</span><span class="p">)</span>
+<span class="c1"># except NameError as error:</span>
+<span class="c1">#     print(&#39;Error trying to invoke get_ipython(), possibly because not running IPython:&#39;, </span>
+<span class="c1">#           error)</span>
     <span class="k">pass</span>
 <span class="k">except</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Possibly benign error loading Python &quot;wurlitzer&quot; package,&#39;</span>
-          <span class="o">+</span><span class="s1">&#39; used to pipe stdout from GPU back to Jupyter notebook&#39;</span><span class="p">)</span>
+<span class="c1">#     print(&#39;Possibly benign error loading Python &quot;wurlitzer&quot; package,&#39;</span>
+<span class="c1">#           +&#39; used to pipe stdout from GPU back to Jupyter notebook&#39;)</span>
 <span class="c1">#     import traceback</span>
 <span class="c1">#     print(traceback.format_exc())</span>
     <span class="k">pass</span>
@@ -224,7 +224,7 @@ of <a class="reference internal" href="../index.html#module-slm" title="slm"><co
 <h3>Related</h3>
 <ul>
   <li><a href="../index.html"></a><ul>
-      <li><a href="../Tests/IndianCreek2_nb.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">IndianCreek2.ipynb</span></code></a></li>
+      <li><a href="../Tests/IndianCreek_Test2_nb.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">IndianCreek_Test2.ipynb</span></code></a></li>
       <li><a href="slm.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">slm.py</span></code></a></li>
   </ul></li>
 </ul>

@@ -50,8 +50,8 @@
 <dd><ul class="first last simple">
 <li><a class="reference external" href="https://numba.pydata.org/index.html#install-frontpage" title="(in numba v0.12)"><span class="xref std std-ref">numba</span></a> (<a class="reference external" href="https://numba.pydata.org/search.html" title="(in numba v0.12)"><span class="xref std std-ref">search</span></a>)</li>
 <li><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/index.html#module-numpy" title="(in NumPy v1.15)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code></a> (linalg.eigvals)</li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
-<li><a class="reference external" href="https://dateutil.readthedocs.io/en/stable/tz.html#module-dateutil.tz" title="(in dateutil v2.7.3)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dateutil.tz</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
+<li><a class="reference external" href="https://dateutil.readthedocs.io/en/stable/tz.html#module-dateutil.tz" title="(in dateutil v2.7.5)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dateutil.tz</span></code></a></li>
 </ul>
 </dd>
 </dl>
@@ -250,7 +250,7 @@ bivariate spline interpolator functions at each grid cell.</p>
 
 <dl class="function">
 <dt id="streamlines.preprocess.compute_topo_gradient_field">
-<code class="descclassname">streamlines.preprocess.</code><code class="descname">compute_topo_gradient_field</code><span class="sig-paren">(</span><em>roi_array</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.compute_topo_gradient_field" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">streamlines.preprocess.</code><code class="descname">compute_topo_gradient_field</code><span class="sig-paren">(</span><em>roi_array</em>, <em>pixel_size</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.preprocess.compute_topo_gradient_field" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -680,7 +680,7 @@ bivariate spline interpolator functions at each grid cell.</p>
            <span class="p">]</span>
 
 <span class="c1"># Not numbarizable</span>
-<span class="k">def</span> <span class="nf">compute_topo_gradient_field</span><span class="p">(</span><span class="n">roi_array</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">compute_topo_gradient_field</span><span class="p">(</span><span class="n">roi_array</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
 <span class="sd">        roi_array (numpy.array):</span>
@@ -690,7 +690,8 @@ bivariate spline interpolator functions at each grid cell.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        numpy.array,numpy.array: ROI topo x gradient, y gradient</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">roi_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">roi_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">roi_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="n">pixel_size</span><span class="p">,</span> 
+            <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">roi_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">pixel_size</span><span class="p">)</span>
 
 <span class="c1"># Not numbarizable</span>
 <span class="k">def</span> <span class="nf">pad_array</span><span class="p">(</span><span class="n">roi_array</span><span class="p">,</span><span class="n">pad_width</span><span class="p">):</span>
@@ -1192,7 +1193,8 @@ bivariate spline interpolator functions at each grid cell.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">find_blockages</span><span class="p">()</span>    
             
         <span class="bp">self</span><span class="o">.</span><span class="n">roi_gradx_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">roi_grady_array</span> \
-            <span class="o">=</span> <span class="n">compute_topo_gradient_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+            <span class="o">=</span> <span class="n">compute_topo_gradient_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">pixel_size</span><span class="p">)</span>
         <span class="n">u_array</span><span class="p">,</span> <span class="n">v_array</span><span class="p">,</span> <span class="n">raw_speed_array</span> \
             <span class="o">=</span> <span class="n">compute_gradient_velocity_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_gradx_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">roi_grady_array</span><span class="p">)</span>
         

@@ -156,11 +156,11 @@ postprocessing and plotting are carried out:
    :maxdepth: 1
 
    modules/defaults_json
-   Tests/IndianCreek2_json
-   Tests/IndianCreek2_nb
+   Tests/IndianCreek_Test2_json
+   Tests/IndianCreek_Test2_nb
    
    
-More substantial demo analyses can be found in `IndianCreek2.ipynb`_ and 
+More substantial demo analyses can be found in `IndianCreek_Test2.ipynb`_ and 
 `GuadalupeMtns1.ipynb`_. Rather bigger DTM analyses are illustrated in 
 `GuadalupeMtns2.ipynb`_, `GuadalupeMtns3.ipynb`_ and `IndianCreek3.ipynb`_.
  
@@ -249,7 +249,7 @@ Indexes and search
 .. _Streamlines: https://github.com/cstarknyc/slm
 .. _streamlines package directory: https://github.com/cstarknyc/slm/python/streamlines
 .. _fluid dynamics sense: https://en.wikipedia.org/wiki/Streamlines,_streaklines,_and_pathlines
-.. _IndianCreek2.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/IndianCreek2.ipynb
+.. _IndianCreek_Test2.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/IndianCreek_Test2.ipynb
 .. _IndianCreek3.ipynb: https://github.com/cstarknyc/slmnb/BigTests/IndianCreek3.ipynb
 .. _GuadalupeMtns1.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeMtns1.ipynb
 .. _GuadalupeMtns2.ipynb: https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeMtns2.ipynb

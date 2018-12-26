@@ -40,9 +40,9 @@ and perform related analyses.</p>
 <dl class="docutils">
 <dt>Requires Python packages/modules:</dt>
 <dd><ul class="first last simple">
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/signal.html#module-scipy.signal" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.signal</span></code></a></li>
-<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.neighbors" title="(in scikit-learn v0.16.dev0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.neighbors</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/signal.html#module-scipy.signal" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.signal</span></code></a></li>
+<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.neighbors" title="(in scikit-learn v0.20.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.neighbors</span></code></a></li>
 </ul>
 </dd>
 </dl>
@@ -52,13 +52,27 @@ and perform related analyses.</p>
 <hr class="docutils" />
 <dl class="class">
 <dt id="streamlines.analysis.Analysis">
-<em class="property">class </em><code class="descclassname">streamlines.analysis.</code><code class="descname">Analysis</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>geodata</em>, <em>trace</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">streamlines.analysis.</code><code class="descname">Analysis</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>geodata</em>, <em>preprocess</em>, <em>trace</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class providing statistics &amp; probability tools to analyze streamline data and its
 probability distributions.</p>
 <dl class="method">
 <dt id="streamlines.analysis.Analysis.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>geodata</em>, <em>trace</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>state</em>, <em>imported_parameters</em>, <em>geodata</em>, <em>preprocess</em>, <em>trace</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>TBD</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.analysis.Analysis._augment">
+<code class="descname">_augment</code><span class="sig-paren">(</span><em>mapping</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis._augment" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mapping</strong> (<em>reference</em>) – to <a class="reference internal" href="mapping.html#streamlines.mapping.Mapping" title="streamlines.mapping.Mapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Add a hook to the <a class="reference internal" href="mapping.html#streamlines.mapping.Mapping" title="streamlines.mapping.Mapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a> class instance</p>
 </dd></dl>
 
 <dl class="method">
@@ -69,25 +83,25 @@ probability distributions.</p>
 
 <dl class="method">
 <dt id="streamlines.analysis.Analysis.compute_joint_distribn_dsla_dslc">
-<code class="descname">compute_joint_distribn_dsla_dslc</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.compute_joint_distribn_dsla_dslc" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compute_joint_distribn_dsla_dslc</code><span class="sig-paren">(</span><em>data=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.compute_joint_distribn_dsla_dslc" title="Permalink to this definition">¶</a></dt>
 <dd><p>TBD</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="streamlines.analysis.Analysis.compute_joint_distribn_dsla_dslt">
-<code class="descname">compute_joint_distribn_dsla_dslt</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.compute_joint_distribn_dsla_dslt" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compute_joint_distribn_dsla_dslt</code><span class="sig-paren">(</span><em>data=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.compute_joint_distribn_dsla_dslt" title="Permalink to this definition">¶</a></dt>
 <dd><p>TBD</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="streamlines.analysis.Analysis.compute_joint_distribn_dsla_usla">
-<code class="descname">compute_joint_distribn_dsla_usla</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.compute_joint_distribn_dsla_usla" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compute_joint_distribn_dsla_usla</code><span class="sig-paren">(</span><em>data=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.compute_joint_distribn_dsla_usla" title="Permalink to this definition">¶</a></dt>
 <dd><p>TBD</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="streamlines.analysis.Analysis.compute_joint_distribn_dslt_dslc">
-<code class="descname">compute_joint_distribn_dslt_dslc</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.compute_joint_distribn_dslt_dslc" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compute_joint_distribn_dslt_dslc</code><span class="sig-paren">(</span><em>data=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.compute_joint_distribn_dslt_dslc" title="Permalink to this definition">¶</a></dt>
 <dd><p>TBD</p>
 </dd></dl>
 
@@ -123,19 +137,19 @@ probability distributions.</p>
 
 <dl class="method">
 <dt id="streamlines.analysis.Analysis.compute_marginal_distribn_dsla">
-<code class="descname">compute_marginal_distribn_dsla</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.compute_marginal_distribn_dsla" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compute_marginal_distribn_dsla</code><span class="sig-paren">(</span><em>data=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.compute_marginal_distribn_dsla" title="Permalink to this definition">¶</a></dt>
 <dd><p>TBD</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="streamlines.analysis.Analysis.compute_marginal_distribn_dslc">
-<code class="descname">compute_marginal_distribn_dslc</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.compute_marginal_distribn_dslc" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compute_marginal_distribn_dslc</code><span class="sig-paren">(</span><em>data=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.compute_marginal_distribn_dslc" title="Permalink to this definition">¶</a></dt>
 <dd><p>TBD</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="streamlines.analysis.Analysis.compute_marginal_distribn_dslt">
-<code class="descname">compute_marginal_distribn_dslt</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.compute_marginal_distribn_dslt" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compute_marginal_distribn_dslt</code><span class="sig-paren">(</span><em>data=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.analysis.Analysis.compute_marginal_distribn_dslt" title="Permalink to this definition">¶</a></dt>
 <dd><p>TBD</p>
 </dd></dl>
 
@@ -236,16 +250,27 @@ and bounding criteria.</p>
 <span class="sd">    Class providing statistics &amp; probability tools to analyze streamline data and its</span>
 <span class="sd">    probability distributions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span><span class="n">geodata</span><span class="p">,</span><span class="n">trace</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">,</span><span class="n">geodata</span><span class="p">,</span><span class="n">preprocess</span><span class="p">,</span><span class="n">trace</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TBD</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">imported_parameters</span><span class="p">)</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span> <span class="o">=</span> <span class="n">geodata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span> <span class="o">=</span> <span class="n">preprocess</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">area_correction_factor</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">length_correction_factor</span> <span class="o">=</span> <span class="mf">1.0</span>
+        
+    <span class="k">def</span> <span class="nf">_augment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            mapping (reference):  to :class:`.Mapping` instance</span>
+<span class="sd">            </span>
+<span class="sd">        Add a hook to the :class:`.Mapping` class instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="n">mapping</span>
 
     <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -364,13 +389,17 @@ and bounding criteria.</p>
         <span class="n">uv_distbn</span><span class="o">.</span><span class="n">locate_threshold</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">uv_distbn</span>
    
-    <span class="k">def</span> <span class="nf">compute_marginal_distribn_dsla</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">compute_marginal_distribn_dsla</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TBD</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Computing marginal distribution &quot;dsla&quot;...&#39;</span><span class="p">)</span>
-        <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sla_array</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">slc_array</span>
-        <span class="n">mask_array</span>      <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span>
+            <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sla_array</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">slc_array</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">sla_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slc_array</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">up_down_idx_x</span><span class="p">,</span> <span class="n">up_down_idx_y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
         <span class="p">(</span><span class="n">logx_min</span><span class="p">,</span> <span class="n">logx_max</span><span class="p">,</span> <span class="n">logy_min</span><span class="p">,</span> <span class="n">logy_max</span><span class="p">)</span> \
           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_limits</span><span class="p">([</span><span class="s1">&#39;pdf_sla_min&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_sla_max&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_slc_min&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_slc_max&#39;</span><span class="p">])</span>
@@ -400,13 +429,17 @@ and bounding criteria.</p>
                                              <span class="n">logx_max</span><span class="o">=</span><span class="n">logx_max</span><span class="p">,</span><span class="n">logy_max</span><span class="o">=</span><span class="n">logy_max</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span>            
         
-    <span class="k">def</span> <span class="nf">compute_marginal_distribn_dslt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">compute_marginal_distribn_dslt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TBD</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Computing marginal distribution &quot;dslt&quot;...&#39;</span><span class="p">)</span>
-        <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">slt_array</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">sla_array</span>
-        <span class="n">mask_array</span>      <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span>
+            <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">slt_array</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">sla_array</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slt_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">sla_array</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">up_down_idx_x</span><span class="p">,</span> <span class="n">up_down_idx_y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
         <span class="p">(</span><span class="n">logx_min</span><span class="p">,</span> <span class="n">logx_max</span><span class="p">,</span> <span class="n">logy_min</span><span class="p">,</span> <span class="n">logy_max</span><span class="p">)</span> \
           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_limits</span><span class="p">([</span><span class="s1">&#39;pdf_slt_min&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_slt_max&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_sla_min&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_sla_max&#39;</span><span class="p">])</span>
@@ -436,13 +469,18 @@ and bounding criteria.</p>
                                              <span class="n">logx_max</span><span class="o">=</span><span class="n">logx_max</span><span class="p">,</span><span class="n">logy_max</span><span class="o">=</span><span class="n">logy_max</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span>            
 
-    <span class="k">def</span> <span class="nf">compute_marginal_distribn_dslc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">compute_marginal_distribn_dslc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TBD</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Computing marginal distribution &quot;dslc&quot;...&#39;</span><span class="p">)</span>
-        <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">slc_array</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">sla_array</span>
-        <span class="n">mask_array</span>      <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span>
+        
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span>
+            <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">slc_array</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">sla_array</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slc_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">sla_array</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">up_down_idx_x</span><span class="p">,</span> <span class="n">up_down_idx_y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
         <span class="p">(</span><span class="n">logx_min</span><span class="p">,</span> <span class="n">logx_max</span><span class="p">,</span> <span class="n">logy_min</span><span class="p">,</span> <span class="n">logy_max</span><span class="p">)</span> \
           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_limits</span><span class="p">([</span><span class="s1">&#39;pdf_slc_min&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_slc_max&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_sla_min&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_sla_max&#39;</span><span class="p">])</span>
@@ -530,13 +568,17 @@ and bounding criteria.</p>
         <span class="n">bv_distbn</span><span class="o">.</span><span class="n">find_mode</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">bv_distbn</span>
 
-    <span class="k">def</span> <span class="nf">compute_joint_distribn_dsla_usla</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">compute_joint_distribn_dsla_usla</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TBD</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Computing joint distribution &quot;dsla_usla&quot;...&#39;</span><span class="p">)</span>
-        <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sla_array</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">sla_array</span>
-        <span class="n">mask_array</span>      <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span>
+            <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sla_array</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">sla_array</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">sla_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">sla_array</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">up_down_idx_x</span><span class="p">,</span><span class="n">up_down_idx_y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="mi">1</span>
         <span class="p">(</span><span class="n">logx_min</span><span class="p">,</span> <span class="n">logx_max</span><span class="p">,</span> <span class="n">logy_min</span><span class="p">,</span> <span class="n">logy_max</span><span class="p">)</span> \
           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_limits</span><span class="p">([</span><span class="s1">&#39;pdf_sla_min&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_sla_max&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_sla_min&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_sla_max&#39;</span><span class="p">])</span>
@@ -548,13 +590,17 @@ and bounding criteria.</p>
                                           <span class="n">logx_max</span><span class="o">=</span><span class="n">logx_max</span><span class="p">,</span><span class="n">logy_max</span><span class="o">=</span><span class="n">logy_max</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">compute_joint_distribn_dsla_dslt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">compute_joint_distribn_dsla_dslt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TBD</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Computing joint distribution &quot;dsla_dslt&quot;...&#39;</span><span class="p">)</span>
-        <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sla_array</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">slt_array</span>
-        <span class="n">mask_array</span>      <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span>
+            <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">slt_array</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">sla_array</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slt_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">sla_array</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">up_down_idx_x</span><span class="p">,</span><span class="n">up_down_idx_y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span>
         <span class="p">(</span><span class="n">logx_min</span><span class="p">,</span> <span class="n">logx_max</span><span class="p">,</span> <span class="n">logy_min</span><span class="p">,</span> <span class="n">logy_max</span><span class="p">)</span> \
           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_limits</span><span class="p">([</span><span class="s1">&#39;pdf_sla_min&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_sla_max&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_slt_min&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_slt_max&#39;</span><span class="p">])</span>
@@ -571,13 +617,17 @@ and bounding criteria.</p>
                                           <span class="n">logx_max</span><span class="o">=</span><span class="n">logx_max</span><span class="p">,</span><span class="n">logy_max</span><span class="o">=</span><span class="n">logy_max</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">compute_joint_distribn_dslt_dslc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">compute_joint_distribn_dslt_dslc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TBD</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Computing joint distribution &quot;dslt_dslc&quot;...&#39;</span><span class="p">)</span>
-        <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">slt_array</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">slc_array</span>
-        <span class="n">mask_array</span>      <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span>
+            <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">slt_array</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">slc_array</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slt_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slc_array</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">up_down_idx_x</span><span class="p">,</span><span class="n">up_down_idx_y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span>
         <span class="p">(</span><span class="n">logx_min</span><span class="p">,</span> <span class="n">logx_max</span><span class="p">,</span> <span class="n">logy_min</span><span class="p">,</span> <span class="n">logy_max</span><span class="p">)</span> \
           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_limits</span><span class="p">([</span><span class="s1">&#39;pdf_slt_min&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_slt_max&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_slc_min&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_slc_max&#39;</span><span class="p">])</span>
@@ -629,13 +679,17 @@ and bounding criteria.</p>
                                           <span class="n">logx_max</span><span class="o">=</span><span class="n">logx_max</span><span class="p">,</span><span class="n">logy_max</span><span class="o">=</span><span class="n">logy_max</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">compute_joint_distribn_dsla_dslc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">compute_joint_distribn_dsla_dslc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        TBD</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Computing joint distribution &quot;dsla_dslc&quot;...&#39;</span><span class="p">)</span>
-        <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sla_array</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">slc_array</span>
-        <span class="n">mask_array</span>      <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mask_array</span>
+            <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sla_array</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">slc_array</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_array</span><span class="p">,</span><span class="n">y_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">sla_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slc_array</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">up_down_idx_x</span><span class="p">,</span><span class="n">up_down_idx_y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span>
         <span class="p">(</span><span class="n">logx_min</span><span class="p">,</span> <span class="n">logx_max</span><span class="p">,</span> <span class="n">logy_min</span><span class="p">,</span> <span class="n">logy_max</span><span class="p">)</span> \
           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_limits</span><span class="p">([</span><span class="s1">&#39;pdf_sla_min&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_sla_max&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_slc_min&#39;</span><span class="p">,</span><span class="s1">&#39;pdf_slc_max&#39;</span><span class="p">])</span>
@@ -693,7 +747,86 @@ and bounding criteria.</p>
         <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">attr</span><span class="p">))</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">attr</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span> 
                 <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attr_list</span><span class="p">]</span>
         
-            
+        
+    <span class="k">def</span> <span class="nf">compute_elevation_slope_pdfs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bw_method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">h_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">bw_factor_h_midline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bw_factor_h_all</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                                     <span class="n">h_midline_max_bound</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">slope_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slope_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slope_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">bw_factor_slope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        
+        <span class="k">if</span> <span class="n">bw_method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bw_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_bw_method</span>
+        <span class="k">if</span> <span class="n">h_min</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">h_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_h_min</span>
+        <span class="k">if</span> <span class="n">h_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">h_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_h_max</span>
+        <span class="k">if</span> <span class="n">h_steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">h_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_h_steps</span>
+        <span class="k">if</span> <span class="n">bw_factor_h_midline</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bw_factor_h_midline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_bw_factor_h_midline</span>
+        <span class="k">if</span> <span class="n">bw_factor_h_all</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bw_factor_h_all</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_bw_factor_h_all</span>
+        <span class="k">if</span> <span class="n">h_midline_max_bound</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">h_midline_max_bound</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_h_midline_max_bound</span>
+        <span class="k">if</span> <span class="n">slope_min</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">slope_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_slope_min</span>
+        <span class="k">if</span> <span class="n">slope_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">slope_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_slope_max</span>
+        <span class="k">if</span> <span class="n">slope_steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">slope_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_slope_steps</span>
+        <span class="k">if</span> <span class="n">bw_factor_slope</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bw_factor_slope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_bw_factor_slope</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">midslope_array</span> \
+            <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">mapping_array</span> 
+               <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">is_midslope</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        
+        <span class="n">h_midline_pts</span> \
+            <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">midslope_array</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">h_all_pts</span> \
+          <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_array</span><span class="p">[</span><span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">slope_midline_pts</span> \
+          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">slope_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">midslope_array</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+        <span class="n">slope_midline_pts</span> \
+            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">slope_midline_pts</span><span class="p">,</span><span class="o">-</span><span class="n">slope_midline_pts</span><span class="p">])</span>
+                    
+        <span class="n">h_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">h_min</span><span class="p">,</span><span class="n">h_max</span><span class="p">,</span><span class="n">h_steps</span><span class="p">)</span>
+        <span class="n">slope_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">slope_min</span><span class="p">,</span><span class="n">slope_max</span><span class="p">,</span><span class="n">slope_max</span><span class="o">*</span><span class="n">slope_steps</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="n">h_midline_pdf</span>     <span class="o">=</span> <span class="n">gaussian_kde</span><span class="p">(</span><span class="n">h_midline_pts</span><span class="p">,</span> <span class="n">bw_method</span><span class="o">=</span><span class="n">bw_method</span><span class="p">)</span>
+        <span class="n">h_all_pdf</span>         <span class="o">=</span> <span class="n">gaussian_kde</span><span class="p">(</span><span class="n">h_all_pts</span><span class="p">,</span> <span class="n">bw_method</span><span class="o">=</span><span class="n">bw_method</span><span class="p">)</span>
+        <span class="n">slope_midline_pdf</span> <span class="o">=</span> <span class="n">gaussian_kde</span><span class="p">(</span><span class="n">slope_midline_pts</span><span class="p">,</span><span class="n">bw_method</span><span class="o">=</span><span class="n">bw_method</span><span class="p">)</span>
+        
+        <span class="n">h_midline_pdf</span><span class="o">.</span><span class="n">set_bandwidth</span><span class="p">(</span><span class="n">h_midline_pdf</span><span class="o">.</span><span class="n">factor</span><span class="o">*</span><span class="n">bw_factor_h_midline</span><span class="p">)</span>
+        <span class="n">h_all_pdf</span><span class="o">.</span><span class="n">set_bandwidth</span><span class="p">(</span><span class="n">h_all_pdf</span><span class="o">.</span><span class="n">factor</span><span class="o">*</span><span class="n">bw_factor_h_all</span><span class="p">)</span>
+        <span class="n">slope_midline_pdf</span><span class="o">.</span><span class="n">set_bandwidth</span><span class="p">(</span><span class="n">slope_midline_pdf</span><span class="o">.</span><span class="n">factor</span><span class="o">*</span><span class="n">bw_factor_slope</span><span class="p">)</span>
+        <span class="n">h_midline_pdf</span><span class="o">.</span><span class="n">factor</span>
+        <span class="n">h_all_pdf</span><span class="o">.</span><span class="n">factor</span>
+        <span class="n">slope_midline_pdf</span><span class="o">.</span><span class="n">factor</span>
+        
+        <span class="n">h_midline_pdf_array</span> <span class="o">=</span> <span class="n">h_midline_pdf</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">h_array</span><span class="p">)</span>
+        <span class="n">h_all_pdf_array</span> <span class="o">=</span> <span class="n">h_all_pdf</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">h_array</span><span class="p">)</span>
+        <span class="n">slope_midline_pdf_array</span> <span class="o">=</span> <span class="n">slope_midline_pdf</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">slope_array</span><span class="p">)</span>
+        <span class="n">sf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">h_midline_pdf_array</span><span class="p">)</span>
+        
+        <span class="n">h_midline_pdf_max1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">h_midline_pdf_array</span><span class="p">[</span><span class="n">h_array</span><span class="o">&gt;</span><span class="n">h_midline_max_bound</span><span class="p">])</span>
+        <span class="n">h_midline_pdf_max1_h</span> <span class="o">=</span> <span class="n">h_array</span><span class="p">[</span><span class="n">h_midline_pdf_array</span><span class="o">==</span><span class="n">h_midline_pdf_max1</span><span class="p">]</span>
+        <span class="n">slope_midline_pdf_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">slope_midline_pdf_array</span><span class="p">[</span><span class="n">slope_array</span><span class="o">&gt;=</span><span class="mi">10</span><span class="p">])</span>
+        <span class="n">slope_midline_pdf_max_slope</span> \
+            <span class="o">=</span> <span class="n">slope_array</span><span class="p">[</span><span class="n">slope_midline_pdf_array</span><span class="o">==</span><span class="n">slope_midline_pdf_max</span><span class="p">]</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">h_midline_pdf_array</span>  <span class="o">=</span> <span class="n">h_midline_pdf_array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h_midline_pdf_max1</span>   <span class="o">=</span> <span class="n">h_midline_pdf_max1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h_midline_pdf_max1_h</span> <span class="o">=</span> <span class="n">h_midline_pdf_max1_h</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h_all_pdf_array</span>      <span class="o">=</span> <span class="n">h_all_pdf_array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h_array</span>              <span class="o">=</span> <span class="n">h_array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h_pdf_sf</span>             <span class="o">=</span> <span class="n">sf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slope_midline_pdf_array</span>     <span class="o">=</span> <span class="n">slope_midline_pdf_array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slope_midline_pdf_max</span>       <span class="o">=</span> <span class="n">slope_midline_pdf_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slope_midline_pdf_max_slope</span> <span class="o">=</span> <span class="n">slope_midline_pdf_max_slope</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slope_array</span>                 <span class="o">=</span> <span class="n">slope_array</span>
+                    
 <span class="k">class</span> <span class="nc">Univariate_distribution</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for making and recording kernel-density estimate of univariate </span>

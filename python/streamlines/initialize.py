@@ -55,8 +55,8 @@ import matplotlib as mpl
 try:
     get_ipython().magic("config InlineBackend.figure_format = 'retina'")
 except NameError as error:
-    print('Error trying to invoke get_ipython(), probably because not running IPython:', 
-          error)
+#     print('Error trying to invoke get_ipython(), possibly because not running IPython:', 
+#           error)
     pass
 except:
     print('Possibly benign error trying to config Matplotlib backend')
@@ -67,8 +67,8 @@ except:
 try:
     get_ipython().magic('matplotlib inline')
 except NameError as error:
-    print('Error trying to invoke get_ipython(), probably because not running IPython:', 
-          error)
+#     print('Error trying to invoke get_ipython(), possibly because not running IPython:', 
+#           error)
     pass
 except:
     print('Possibly benign error trying to config Matplotlib backend')
@@ -81,8 +81,8 @@ try:
     get_ipython().magic('autoreload 2')
     get_ipython().magic('aimport streamlines')
 except NameError as error:
-    print('Error trying to invoke get_ipython(), probably because not running IPython:', 
-          error)
+#     print('Error trying to invoke get_ipython(), possibly because not running IPython:', 
+#           error)
     pass
 except:
     print('Possibly benign error trying to config autoreload')
@@ -92,13 +92,13 @@ except:
  
 try:
     get_ipython().magic('load_ext wurlitzer')
-except NameError as error:
-    print('Error trying to invoke get_ipython(), probably because not running IPython:', 
-          error)
+# except NameError as error:
+#     print('Error trying to invoke get_ipython(), possibly because not running IPython:', 
+#           error)
     pass
 except:
-    print('Possibly benign error loading Python "wurlitzer" package,'
-          +' used to pipe stdout from GPU back to Jupyter notebook')
+#     print('Possibly benign error loading Python "wurlitzer" package,'
+#           +' used to pipe stdout from GPU back to Jupyter notebook')
 #     import traceback
 #     print(traceback.format_exc())
     pass
