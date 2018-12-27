@@ -122,12 +122,11 @@
 		"pdf_bw_factor_slope"     : 0.2,
 		"pdf_h_min"               : 0,
 		"pdf_h_max"               : 4000,
-		"pdf_h_max"               : 4000,
 		"pdf_h_steps"             : 200,
 		"pdf_h_midline_max_bound" : 1000,
 		"pdf_slope_min"           : 0,
 		"pdf_slope_max"           : 80,
-		"pdf_slope_steps"         : 100
+		"pdf_slope_steps"         : 10
 	},
 
 	"mapping": {
@@ -308,6 +307,7 @@
 
 	"save": {
 		"do_save_analyses" : true,
+		"max_nparray_size" : 10000,
 		"analyses_suffix" : "_results",
 		"do_save_figs" : true,
 		"do_save_maps" : true,

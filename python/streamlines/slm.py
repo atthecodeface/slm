@@ -80,7 +80,7 @@ def run(**kwargs):
     if sl.state.do_plot:
         sl.plot.do()
     if sl.state.do_save:
-        sl.save.do()
+        sl.save.do(sl)
     if sl.state.do_plot:
         if sl.state.do_display:
             try:

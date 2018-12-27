@@ -43,10 +43,10 @@ def import_parameters(parameters_path, parameters_file): #,do_reload_state=False
     return read_json_file(parameters_files_list), slm_path, parameters_path
 
 
-def read_json_file(parameter_file_list):
+def read_json_file(parameters_file_name_list):
     """
     Args:
-        parameter_file_list (list): JSON parameters files to be read and parsed
+        parameters_file_name_list (list): JSON parameters files to be read and parsed
 
     Load and parse a list of JSON parameters files into a parameters dict.
 
@@ -61,11 +61,11 @@ def read_json_file(parameter_file_list):
     # Start wit a clean parameters dictionary
     parameters_dict = {}
     # Step through each JSON parameters file in turn
-    for parameter_file in parameter_file_list:
-        parameter_file += ".json"
+    for parameters_file_name in parameters_file_name_list:
+        parameters_file_name += ".json"
         # Read in the parameters file
-        with open(parameter_file) as json_data:
-            parameters = load(json_data)
+        with open(parameters_file_name) as json_file:
+            parameters = load(json_file)
         # Step through all the dict items in turn
         # We do this so that we can replace a (sub-)dict item
         #   if the second (etc) JSON file needs to override

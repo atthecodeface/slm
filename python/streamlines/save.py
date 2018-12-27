@@ -54,7 +54,7 @@ class Save(Core):
             TBD: 
             TBD
         """  
-        super().__init__(state,imported_parameters)  
+        super().__init__(state,imported_parameters)
         self.state      = state
         self.geodata    = geodata
         self.preprocess = preprocess
@@ -63,7 +63,7 @@ class Save(Core):
         self.mapping    = mapping
         self.plot       = plot
         
-    def do(self):
+    def do(self,sl):
         """
         Save all Matplotlib plots, mapping grids
         
@@ -102,7 +102,7 @@ class Save(Core):
 
         # Save myriad analyses
         if self.do_save_analyses:
-            self.save_analyses(file_stem=file_stem_list[0])
+            self.save_analyses(sl, file_stem=file_stem_list[0])
         # Save mapping grids
         if self.do_save_maps:
             self.save_maps(file_stem=file_stem_list[1])
@@ -121,7 +121,7 @@ class Save(Core):
             return False
 
 
-    def save_analyses(self, analysis_name=None, file_stem=None):  
+    def save_analyses(self, sl, analysis_name=None, file_stem=None):  
         """
         Args:
             TBD (TBD): 
@@ -136,21 +136,45 @@ class Save(Core):
         self.print('Saving analyses...') 
         if file_stem is None:
             file_stem = os.path.realpath(os.path.join(*self.geodata.export_analyses_path,
-                                                       self.state.parameters_file))
-        file_name = file_stem+self.analyses_suffix+'.json'
+                                    self.state.parameters_file))
+        file_name = file_stem.replace('.json','')+self.analyses_suffix+'.json'
             
         jsonable_list = []
         pdict = {}
         pdict.update({'save': {}})
-        for top_item in self.__dict__.items():
+        for top_item in sl.__dict__.items():
             top_obj = top_item[0]
             top_val = top_item[1]
             if hasattr(top_val, '__dict__'):
 #                 if not hasattr(pdict,top_obj):
                 pdict.update({top_obj : {}})
-                for sub_instance in top_val.__dict__.items():                        
-                    if self.is_jsonable(sub_instance[1]):
-                        pdict[top_obj].update({sub_instance[0] : sub_instance[1]})
+                for sub_item in top_val.__dict__.items():                        
+                    sub_obj = sub_item[0]
+                    sub_val = sub_item[1]
+                    if self.is_jsonable(sub_val):
+#                         pdebug('jsonable:',top_obj,sub_obj)
+                        pdict[top_obj].update({sub_obj : sub_val})
+                    elif isinstance(sub_val, (list,tuple) ):
+#                         pdebug('list/tuple:',top_obj,sub_obj)
+                        if isinstance(sub_val[0], np.ndarray ) \
+                                and sub_val[0].size<=self.max_nparray_size:
+                            pass
+#                             pdict[top_obj].update({sub_obj : 
+# #                              ['{}'.format(sub_val_arrray).replace('\n','')
+#                              [list(sub_val_arrray)
+#                               for sub_val_arrray in sub_val]})
+                    elif isinstance(sub_val, np.ndarray ):
+#                         pdebug('ndarray:',top_obj,sub_obj)
+                        if sub_val.size<=self.max_nparray_size:
+#                             print(list(sub_val))
+                            if self.is_jsonable(list(sub_val)):
+                                pdict[top_obj].update({sub_obj : 
+                                                       list(sub_val)})
+#                                                    '{}'.format(sub_val).replace('\n','')})
+                    else:
+#                         pdebug('other:',top_obj,sub_obj)
+                        pass
+#                         pdict[top_obj].update({sub_obj : '{}'.format(sub_val)})
             else:
                 pdict['save'].update({top_obj: top_val})
 #         pprint(pdict)

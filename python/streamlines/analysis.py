@@ -591,7 +591,7 @@ class Analysis(Core):
             = np.concatenate([slope_midline_pts,-slope_midline_pts])
                     
         h_array = np.linspace(h_min,h_max,h_steps)
-        slope_array = np.linspace(slope_min,slope_max,slope_max*slope_steps+1)
+        slope_array = np.linspace(slope_min,slope_max,(slope_max-slope_min)*slope_steps+1)
         
         h_midline_pdf     = gaussian_kde(h_midline_pts, bw_method=bw_method)
         h_all_pdf         = gaussian_kde(h_all_pts, bw_method=bw_method)
