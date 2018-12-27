@@ -40,9 +40,9 @@ and perform related analyses.</p>
 <dl class="docutils">
 <dt>Requires Python packages/modules:</dt>
 <dd><ul class="first last simple">
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/signal.html#module-scipy.signal" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.signal</span></code></a></li>
-<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.neighbors" title="(in scikit-learn v0.16.dev0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.neighbors</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/signal.html#module-scipy.signal" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.signal</span></code></a></li>
+<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.neighbors" title="(in scikit-learn v0.20.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.neighbors</span></code></a></li>
 </ul>
 </dd>
 </dl>
@@ -797,7 +797,7 @@ and bounding criteria.</p>
             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">slope_midline_pts</span><span class="p">,</span><span class="o">-</span><span class="n">slope_midline_pts</span><span class="p">])</span>
                     
         <span class="n">h_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">h_min</span><span class="p">,</span><span class="n">h_max</span><span class="p">,</span><span class="n">h_steps</span><span class="p">)</span>
-        <span class="n">slope_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">slope_min</span><span class="p">,</span><span class="n">slope_max</span><span class="p">,</span><span class="n">slope_max</span><span class="o">*</span><span class="n">slope_steps</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">slope_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">slope_min</span><span class="p">,</span><span class="n">slope_max</span><span class="p">,(</span><span class="n">slope_max</span><span class="o">-</span><span class="n">slope_min</span><span class="p">)</span><span class="o">*</span><span class="n">slope_steps</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
         
         <span class="n">h_midline_pdf</span>     <span class="o">=</span> <span class="n">gaussian_kde</span><span class="p">(</span><span class="n">h_midline_pts</span><span class="p">,</span> <span class="n">bw_method</span><span class="o">=</span><span class="n">bw_method</span><span class="p">)</span>
         <span class="n">h_all_pdf</span>         <span class="o">=</span> <span class="n">gaussian_kde</span><span class="p">(</span><span class="n">h_all_pts</span><span class="p">,</span> <span class="n">bw_method</span><span class="o">=</span><span class="n">bw_method</span><span class="p">)</span>

@@ -40,17 +40,17 @@
 session and using a Jupyter/IPython notebook.
 <a class="reference external" href="https://github.com/cstarknyc/Streamlines/blob/master/Tests">Several example notebooks</a> are provided in the <a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines repo</a>.
 The current development test notebook is:
-<span class="xref std std-doc">IndianCreekDemo1.ipynb</span></p>
+<a class="reference internal" href="../Tests/IndianCreek_Test2_nb.html"><span class="doc">IndianCreek_Test2.ipynb</span></a></p>
 </div>
 <div class="section" id="non-interactive-python-external-viewer-in-a-unix-shell">
 <h2>Non-interactive Python (external viewer) in a UNIX shell<a class="headerlink" href="#non-interactive-python-external-viewer-in-a-unix-shell" title="Permalink to this headline">¶</a></h2>
 <p>The most direct approach is to invoke <a class="reference external" href="https://github.com/cstarknyc/Streamlines">Streamlines</a> as a Python shell script.
 Execution is invoked from the command line with <code class="docutils literal notranslate"><span class="pre">slm</span></code> arguments such as these:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">streamlines</span><span class="o">/</span><span class="n">run</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">f</span> <span class="o">./</span><span class="n">IndianCreekDemo1</span>  <span class="o">-</span><span class="n">a</span> <span class="mi">1</span> <span class="o">-</span><span class="n">p</span> <span class="mi">1</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">streamlines</span><span class="o">/</span><span class="n">run</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">f</span> <span class="o">./</span><span class="n">IndianCreek_Test2</span>  <span class="o">-</span><span class="n">a</span> <span class="mi">1</span> <span class="o">-</span><span class="n">p</span> <span class="mi">1</span>
 </pre></div>
 </div>
 <p>or more flexibly:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">streamlines</span><span class="o">/</span><span class="n">run</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">f</span> <span class="o">./</span><span class="n">IndianCreekDemo1</span>  <span class="o">--</span><span class="n">analysis</span> <span class="n">yes</span> <span class="o">--</span><span class="n">plot</span> <span class="nb">all</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">streamlines</span><span class="o">/</span><span class="n">run</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">f</span> <span class="o">./</span><span class="n">IndianCreek_Test2</span>  <span class="o">--</span><span class="n">analysis</span> <span class="n">yes</span> <span class="o">--</span><span class="n">plot</span> <span class="nb">all</span>
 </pre></div>
 </div>
 <p>The main workflow steps can all be turned on or off using such flags:
@@ -120,7 +120,7 @@ in a Jupyter <a class="reference external" href="https://ipython.org/ipython-doc
 <span class="n">Type</span> <span class="s1">&#39;copyright&#39;</span><span class="p">,</span> <span class="s1">&#39;credits&#39;</span> <span class="ow">or</span> <span class="s1">&#39;license&#39;</span> <span class="k">for</span> <span class="n">more</span> <span class="n">information</span>
 <span class="n">IPython</span> <span class="mf">6.2</span><span class="o">.</span><span class="mi">1</span> <span class="o">--</span> <span class="n">An</span> <span class="n">enhanced</span> <span class="n">Interactive</span> <span class="n">Python</span><span class="o">.</span> <span class="n">Type</span> <span class="s1">&#39;?&#39;</span> <span class="k">for</span> <span class="n">help</span><span class="o">.</span>
 
-<span class="n">run</span> <span class="n">IndianCreekDemo1</span><span class="o">.</span><span class="n">ipynb</span>
+<span class="n">run</span> <span class="n">IndianCreek_Test2</span><span class="o">.</span><span class="n">ipynb</span>
 
 <span class="o">**</span><span class="n">Initialization</span> <span class="n">begin</span><span class="o">**</span>
 <span class="n">etc</span><span class="o">...</span>
@@ -138,14 +138,14 @@ settings) be displayed inline.</p>
 <div class="section" id="in-a-ipython-jupyter-console-external-viewer">
 <h2>In a IPython/Jupyter console (external viewer)<a class="headerlink" href="#in-a-ipython-jupyter-console-external-viewer" title="Permalink to this headline">¶</a></h2>
 <p>Similarly, computation can be invoked from a Jupyter console running IPython.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">jupyter</span><span class="o">-</span><span class="n">console</span><span class="o">-</span><span class="mf">3.6</span> <span class="n">IndianCreekDemo1</span><span class="o">.</span><span class="n">ipynb</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">jupyter</span><span class="o">-</span><span class="n">console</span><span class="o">-</span><span class="mf">3.6</span> <span class="n">IndianCreek_Test2</span><span class="o">.</span><span class="n">ipynb</span>
 <span class="n">Jupyter</span> <span class="n">console</span> <span class="mf">5.2</span><span class="o">.</span><span class="mi">0</span>
 
 <span class="n">Python</span> <span class="mf">3.6</span><span class="o">.</span><span class="mi">4</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">Dec</span> <span class="mi">21</span> <span class="mi">2017</span><span class="p">,</span> <span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">17</span><span class="p">)</span>
 <span class="n">Type</span> <span class="s1">&#39;copyright&#39;</span><span class="p">,</span> <span class="s1">&#39;credits&#39;</span> <span class="ow">or</span> <span class="s1">&#39;license&#39;</span> <span class="k">for</span> <span class="n">more</span> <span class="n">information</span>
 <span class="n">IPython</span> <span class="mf">6.2</span><span class="o">.</span><span class="mi">1</span> <span class="o">--</span> <span class="n">An</span> <span class="n">enhanced</span> <span class="n">Interactive</span> <span class="n">Python</span><span class="o">.</span> <span class="n">Type</span> <span class="s1">&#39;?&#39;</span> <span class="k">for</span> <span class="n">help</span><span class="o">.</span>
 
-<span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">run</span> <span class="n">IndianCreekDemo1</span><span class="o">.</span><span class="n">ipynb</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">run</span> <span class="n">IndianCreek_Test2</span><span class="o">.</span><span class="n">ipynb</span>
 
 
 <span class="o">**</span><span class="n">Initialization</span> <span class="n">begin</span><span class="o">**</span>

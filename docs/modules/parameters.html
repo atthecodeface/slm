@@ -47,12 +47,12 @@ class instance.</p>
 <hr class="docutils" />
 <dl class="function">
 <dt id="streamlines.parameters.read_json_file">
-<code class="descclassname">streamlines.parameters.</code><code class="descname">read_json_file</code><span class="sig-paren">(</span><em>parameter_file_list</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.parameters.read_json_file" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">streamlines.parameters.</code><code class="descname">read_json_file</code><span class="sig-paren">(</span><em>parameters_file_name_list</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.parameters.read_json_file" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parameter_file_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – JSON parameters files to be read and parsed</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parameters_file_name_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – JSON parameters files to be read and parsed</td>
 </tr>
 </tbody>
 </table>
@@ -149,10 +149,10 @@ generate a workflow parameters dictionary.</p>
     <span class="k">return</span> <span class="n">read_json_file</span><span class="p">(</span><span class="n">parameters_files_list</span><span class="p">),</span> <span class="n">slm_path</span><span class="p">,</span> <span class="n">parameters_path</span>
 
 
-<span class="k">def</span> <span class="nf">read_json_file</span><span class="p">(</span><span class="n">parameter_file_list</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">read_json_file</span><span class="p">(</span><span class="n">parameters_file_name_list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
-<span class="sd">        parameter_file_list (list): JSON parameters files to be read and parsed</span>
+<span class="sd">        parameters_file_name_list (list): JSON parameters files to be read and parsed</span>
 
 <span class="sd">    Load and parse a list of JSON parameters files into a parameters dict.</span>
 
@@ -167,11 +167,11 @@ generate a workflow parameters dictionary.</p>
     <span class="c1"># Start wit a clean parameters dictionary</span>
     <span class="n">parameters_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="c1"># Step through each JSON parameters file in turn</span>
-    <span class="k">for</span> <span class="n">parameter_file</span> <span class="ow">in</span> <span class="n">parameter_file_list</span><span class="p">:</span>
-        <span class="n">parameter_file</span> <span class="o">+=</span> <span class="s2">&quot;.json&quot;</span>
+    <span class="k">for</span> <span class="n">parameters_file_name</span> <span class="ow">in</span> <span class="n">parameters_file_name_list</span><span class="p">:</span>
+        <span class="n">parameters_file_name</span> <span class="o">+=</span> <span class="s2">&quot;.json&quot;</span>
         <span class="c1"># Read in the parameters file</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">parameter_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_data</span><span class="p">:</span>
-            <span class="n">parameters</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">parameters_file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
         <span class="c1"># Step through all the dict items in turn</span>
         <span class="c1"># We do this so that we can replace a (sub-)dict item</span>
         <span class="c1">#   if the second (etc) JSON file needs to override</span>

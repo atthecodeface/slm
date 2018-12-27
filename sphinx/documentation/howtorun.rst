@@ -11,7 +11,7 @@ The recommended approach is to deploy `Streamlines`_ in a Jupyter (browser)
 session and using a Jupyter/IPython notebook. 
 `Several example notebooks`_ are provided in the `Streamlines repo`_.
 The current development test notebook is: 
-:doc:`IndianCreekDemo1.ipynb <../Tests/IndianCreekDemo1_nb>`
+:doc:`IndianCreek_Test2.ipynb <../Tests/IndianCreek_Test2_nb>`
 
 
 Non-interactive Python (external viewer) in a UNIX shell
@@ -20,11 +20,11 @@ Non-interactive Python (external viewer) in a UNIX shell
 The most direct approach is to invoke `Streamlines`_ as a Python shell script.
 Execution is invoked from the command line with ``slm`` arguments such as these::
 
-   streamlines/run.py -f ./IndianCreekDemo1  -a 1 -p 1
+   streamlines/run.py -f ./IndianCreek_Test2  -a 1 -p 1
  
 or more flexibly::
 
-   streamlines/run.py -f ./IndianCreekDemo1  --analysis yes --plot all 
+   streamlines/run.py -f ./IndianCreek_Test2  --analysis yes --plot all 
  
 The main workflow steps can all be turned on or off using such flags: 
 The ``--help`` option explains in full:
@@ -102,7 +102,7 @@ in a Jupyter `QtConsole`_ running an `IPython`_ kernel.
 	Type 'copyright', 'credits' or 'license' for more information
 	IPython 6.2.1 -- An enhanced Interactive Python. Type '?' for help.
 	
-	run IndianCreekDemo1.ipynb
+	run IndianCreek_Test2.ipynb
 	
 	**Initialization begin**
 	etc...
@@ -128,14 +128,14 @@ Similarly, computation can be invoked from a Jupyter console running IPython.
 
 ::
 
-	% jupyter-console-3.6 IndianCreekDemo1.ipynb 
+	% jupyter-console-3.6 IndianCreek_Test2.ipynb 
 	Jupyter console 5.2.0
 	
 	Python 3.6.4 (default, Dec 21 2017, 20:33:17) 
 	Type 'copyright', 'credits' or 'license' for more information
 	IPython 6.2.1 -- An enhanced Interactive Python. Type '?' for help.
 	
-	In [1]: run IndianCreekDemo1.ipynb
+	In [1]: run IndianCreek_Test2.ipynb
 	
 	
 	**Initialization begin**
