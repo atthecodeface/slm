@@ -238,6 +238,9 @@ class Streamlining(Core):
         json_path = os.path.realpath(
             os.path.join(os.path.realpath(parameters_path),'..','..'))
         repo_search_list += [['parameters', json_path]]
+        json_path = os.path.realpath(
+            os.path.join(os.path.realpath(parameters_path),'..','..','..'))
+        repo_search_list += [['parameters', json_path]]
         
         # Instantiate slm data class instance
         self.geodata = Geodata(self.state,imported_parameters)
@@ -253,10 +256,10 @@ class Streamlining(Core):
             import git
             for repo_name, repo_path in repo_search_list:
 #                 print(repo_name,repo_path)
+                print('{} repo path: {}'.format(repo_name,repo_path))
                 try:
                     # Create a short-lived git repo class instance
                     repo = git.Repo(repo_path)
-                    print('{} repo path: {}'.format(repo_name,repo_path))
                     # Grab its summary - seems to be the fastest way to get git info
                     summary = repo.git.show('--summary').split('\n')
                     git_info = [  [summary[0]]+[summary[1].split(' <')[0]]+[summary[2]] 

@@ -1733,7 +1733,7 @@ class Plot(Core):
         sf                   = self.analysis.h_pdf_sf        
         plt.plot(h_midline_pdf_array/sf, h_array,label='midline', c='k')
         plt.plot(h_midline_pdf_max1/sf, h_midline_pdf_max1_h, 'o', c='k', ms=8,
-                 label='{:4}$\,$m'.format(np.int(h_midline_pdf_max1_h))  )
+                 label='{:4}$\,$m'.format(np.int(np.round(h_midline_pdf_max1_h)))  )
         # plt.plot(h_midline_pdf_max2/sf, h_midline_pdf_max_h2, 's', c='k', ms=8,
         #          label='{:4}$\,$m'.format(np.int(h_midline_pdf_max_h2))  )
         plt.plot(h_all_pdf_array/sf, h_array,label='all', c='b')
@@ -1773,7 +1773,7 @@ class Plot(Core):
                  slope_midline_pdf_max_slope, 'o', 
                  c='k', ms=8,
                  label='modal slope ={:4}$^\circ$'
-                 .format(np.int(slope_midline_pdf_max_slope))  )
+                 .format(np.int(np.round(slope_midline_pdf_max_slope)))  )
         plt.autoscale(enable=True, tight=True, axis='y')
         plt.xlim(-0.002,)
         plt.grid('on',ls=':')
