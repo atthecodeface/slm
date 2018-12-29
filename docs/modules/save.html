@@ -143,7 +143,7 @@
 
 <dl class="method">
 <dt id="streamlines.save.Save.save_figs">
-<code class="descname">save_figs</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>file_stem=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.save.Save.save_figs" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_figs</code><span class="sig-paren">(</span><em>fig_name=None</em>, <em>file_stem=None</em>, <em>file_format_list=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.save.Save.save_figs" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -424,7 +424,7 @@
                                           <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;...done&#39;</span><span class="p">)</span> 
         
-    <span class="k">def</span> <span class="nf">save_figs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_stem</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">save_figs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_stem</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_format_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            TBD (TBD): </span>
@@ -440,12 +440,14 @@
         <span class="k">if</span> <span class="n">file_stem</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">file_stem</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">export_figs_path</span><span class="p">,</span>
                                                        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">parameters_file</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">file_format_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">file_format_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figs_format</span>
         <span class="k">for</span> <span class="n">fig_item</span> <span class="ow">in</span> <span class="n">fig_items</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">fig_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">fig_item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="n">fig_name</span><span class="p">:</span>   
                 <span class="k">continue</span>
             <span class="n">pdebug</span><span class="p">(</span><span class="n">fig_item</span><span class="p">)</span>
             <span class="n">fig_obj</span> <span class="o">=</span> <span class="n">fig_item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">for</span> <span class="nb">format</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">figs_format</span><span class="p">:</span>
+            <span class="k">for</span> <span class="nb">format</span> <span class="ow">in</span> <span class="n">file_format_list</span><span class="p">:</span>
                 <span class="n">file_name</span> <span class="o">=</span> <span class="n">file_stem</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">fig_item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="nb">format</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Writing &lt;</span><span class="si">{0}</span><span class="s1">&gt; to &quot;</span><span class="si">{1}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">fig_item</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">file_name</span> <span class="p">)</span> <span class="p">)</span>
                 <span class="n">fig_obj</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">figs_options</span><span class="p">)</span>

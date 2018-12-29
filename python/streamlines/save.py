@@ -229,7 +229,7 @@ class Save(Core):
                                           self.geodata)
         self.print('...done') 
         
-    def save_figs(self, fig_name=None, file_stem=None):
+    def save_figs(self, fig_name=None, file_stem=None, file_format_list=None):
         """
         Args:
             TBD (TBD): 
@@ -245,12 +245,14 @@ class Save(Core):
         if file_stem is None:
             file_stem = os.path.realpath(os.path.join(*self.geodata.export_figs_path,
                                                        self.state.parameters_file))
+        if file_format_list is None:
+            file_format_list = self.figs_format
         for fig_item in fig_items:
             if fig_name is not None and fig_item[0]!=fig_name:   
                 continue
             pdebug(fig_item)
             fig_obj = fig_item[1]
-            for format in self.figs_format:
+            for format in file_format_list:
                 file_name = file_stem+'_'+fig_item[0]+'.'+format
                 self.print('Writing <{0}> to "{1}"'.format( fig_item[0],file_name ) )
                 fig_obj.savefig(file_name,format=format,**self.figs_options)

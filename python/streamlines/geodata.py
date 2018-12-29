@@ -93,8 +93,8 @@ class Geodata(Core):
         try:
             self.dtm_path
         except:
-            pdebug(os.path.realpath(self.state.parameters_path))
-            pdebug(*self.data_path)
+#             self.print('Parameters:', os.path.realpath(self.state.parameters_path))
+            self.print('Data source:', *self.data_path)
             self.dtm_path = os.path.dirname(os.path.realpath(
                 os.path.join(os.path.realpath(self.state.parameters_path),
                              *self.data_path,self.dtm_file) 
@@ -123,10 +123,28 @@ class Geodata(Core):
             self.dtm_array[self.dtm_array==self.no_data_value] = np.nan
             
         # Handle empty ROI bounds which imply full DTM
-        if not self.do_clip_roi or self.roi_x_bounds==[]:
+        if not self.do_clip_roi or (self.roi_x_bounds==[] 
+                                    and self.roi_x_bounds_meters==[]):
             self.roi_x_bounds = [0,self.dtm_array.shape[1]]
-        if not self.do_clip_roi or self.roi_y_bounds==[]:
+            self.roi_x_bounds_meters = [0,self.dtm_array.shape[1]*self.pixel_size]
+        if not self.do_clip_roi or (self.roi_y_bounds==[]
+                                    and self.roi_y_bounds_meters==[]):
             self.roi_y_bounds = [0,self.dtm_array.shape[0]]
+            self.roi_y_bounds_meters = [0,self.dtm_array.shape[0]*self.pixel_size]
+            
+        if self.do_clip_roi and self.roi_bounds_units=='meters':
+            self.roi_x_bounds \
+                = [int(np.round(self.roi_x_bounds_meters[0]/self.pixel_size)),
+                   int(np.round(self.roi_x_bounds_meters[1]/self.pixel_size))]
+            self.roi_y_bounds \
+                = [int(np.round(self.roi_y_bounds_meters[0]/self.pixel_size)),
+                   int(np.round(self.roi_y_bounds_meters[1]/self.pixel_size))]
+        else:
+            self.roi_x_bounds_meters = [self.roi_x_bounds[0]*self.pixel_size,
+                                        self.roi_x_bounds[1]*self.pixel_size]
+            self.roi_y_bounds_meters = [self.roi_y_bounds[0]*self.pixel_size,
+                                        self.roi_y_bounds[1]*self.pixel_size]
+
         # Trap ROI bounds error
         if np.any(np.array(self.roi_x_bounds)
                   !=np.clip(np.array(self.roi_x_bounds),0,self.dtm_array.shape[1])):
@@ -157,8 +175,14 @@ class Geodata(Core):
                                           self.roi_array.shape[1], dtype=np.float32)
         self.roi_nx = len(self.x_roi_n_pixel_centers)
         self.roi_ny = len(self.y_roi_n_pixel_centers)        
-        self.print('ROI pixel bounds: ',[[self.roi_x_bounds[0],self.roi_x_bounds[-1]-1], 
-                                         [self.roi_y_bounds[0],self.roi_y_bounds[-1]-1]])
+        self.print('ROI meters bounds: ',[[self.roi_x_bounds_meters[0],
+                                           self.roi_x_bounds_meters[-1]-self.pixel_size], 
+                                         [self.roi_y_bounds_meters[0],
+                                          self.roi_y_bounds_meters[-1]-self.pixel_size]])
+        self.print('ROI pixel bounds: ',[[self.roi_x_bounds[0],
+                                          self.roi_x_bounds[-1]-self.pixel_size], 
+                                         [self.roi_y_bounds[0],
+                                          self.roi_y_bounds[-1]-self.pixel_size]])
         self.print('ROI pixel grid: ',  self.roi_nx, 'x', self.roi_ny, 
                                     '= {:,} pixels'.format(self.roi_nx*self.roi_ny))
 
