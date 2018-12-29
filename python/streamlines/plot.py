@@ -632,28 +632,32 @@ class Plot(Core):
             TBD: 
             TBD
         """
-        fig_name='dsla'
-        window_title='dsla'     
-        tmp_array = self.trace.sla_array[:,:,0].copy()
-        tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)] \
-            = np.sqrt(tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)])
-        
-        self.plot_gridded_data(tmp_array,
-                               'gist_earth', 
-                               fig_name=fig_name, window_size_factor=window_size_factor,
-                               window_title=window_title,
-                               do_flip_cmap=True, do_balance_cmap=False)
-        tmp_array = self.trace.slt_array[:,:,0].copy()
-        tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)] \
-            = np.log(tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)])
+        if self.do_plot_flow_dsla:
+            fig_name='dsla'
+            window_title='dsla'     
+            tmp_array = self.trace.sla_array[:,:,0].copy()
+            tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)] \
+                = np.sqrt(tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)])
             
-        fig_name='dslt'
-        window_title='dslt'     
-        self.plot_gridded_data(tmp_array,
-                               'gist_earth', #'seismic', 
-                               fig_name=fig_name, window_size_factor=window_size_factor,
-                               window_title=window_title,
-                               do_flip_cmap=True, do_balance_cmap=False)
+            self.plot_gridded_data(tmp_array,
+                                   'gist_earth', 
+                                   fig_name=fig_name, 
+                                   window_size_factor=window_size_factor,
+                                   window_title=window_title,
+                                   do_flip_cmap=True, do_balance_cmap=False)
+            tmp_array = self.trace.slt_array[:,:,0].copy()
+            tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)] \
+                = np.log(tmp_array[(~np.isnan(tmp_array)) & (tmp_array>0.0)])
+            
+        if self.do_plot_flow_dslt:
+            fig_name='dslt'
+            window_title='dslt'     
+            self.plot_gridded_data(tmp_array,
+                                   'gist_earth', #'seismic', 
+                                   fig_name=fig_name, 
+                                   window_size_factor=window_size_factor,
+                                   window_title=window_title,
+                                   do_flip_cmap=True, do_balance_cmap=False)
         
     def plot_segments(self,do_shaded_relief=True, window_size_factor=None):
         """

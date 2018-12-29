@@ -286,43 +286,47 @@ class Mapping(Core):
         self.map_midslopes(info, data)
         self.map_ridges(info, data)
         
-        # Do the forced coarse channel mapping & subsegmentation
-        #   - the flag 'do_map_channels_from_scratch' will default to true
-        if not self.do_map_channels_segments(info, data):
-            self.print('A problem during mapping channels & segments')
+        if self.do_map_channels_segments:
+            # Do the forced coarse channel mapping & subsegmentation
+            #   - the flag 'do_map_channels_from_scratch' will default to true
+            if not self.map_channels_segments(info, data):
+                self.print('A problem during mapping channels & segments')
+        
+            # Save the coarse subsegmentation labels
+            #   - inserted into full size grid arrays using the data.bounds_grid slice
+            self.mapping_array[data.bounds_grid]           = data.mapping_array
+            self.coarse_subsegment_array[data.bounds_grid] = data.label_array
+            # Make a list of all the subsegments with enough ridge/midslope pixels for HSL
+            coarse_subsegments = np.unique(data.label_array[~data.mask_array])
+            self.coarse_subsegments_list_array \
+                = np.sort(coarse_subsegments[coarse_subsegments!=0])
+            self.n_coarse_subsegments = self.coarse_subsegments_list_array.shape[0]
+            # Make a mask to select all coarse subsegments
+            for label in self.coarse_subsegments_list_array:
+                self.merged_coarse_mask_array[self.coarse_subsegment_array==label] = False
+            # Copy the coarse subsegments so they can be readily visualized
+        #         self.label_array = self.coarse_subsegment_array.copy()
+        #         self._switch_back_to_verbose_mode()
     
-        # Save the coarse subsegmentation labels
-        #   - inserted into full size grid arrays using the data.bounds_grid slice
-        self.mapping_array[data.bounds_grid]           = data.mapping_array
-        self.coarse_subsegment_array[data.bounds_grid] = data.label_array
-        # Make a list of all the subsegments with enough ridge/midslope pixels for HSL
-        coarse_subsegments = np.unique(data.label_array[~data.mask_array])
-        self.coarse_subsegments_list_array \
-            = np.sort(coarse_subsegments[coarse_subsegments!=0])
-        self.n_coarse_subsegments = self.coarse_subsegments_list_array.shape[0]
-        # Make a mask to select all coarse subsegments
-        for label in self.coarse_subsegments_list_array:
-            self.merged_coarse_mask_array[self.coarse_subsegment_array==label] = False
-        # Copy the coarse subsegments so they can be readily visualized
-    #         self.label_array = self.coarse_subsegment_array.copy()
-    #         self._switch_back_to_verbose_mode()
-    
-        del info, data
         self.state.reset_active_masks()
+        
+        if self.do_map_hsl:
+            del info, data
             
-        # Map HSL
-        self.print('Prepare for mapping HSL from {}'.format(
-            ('ridges' if self.do_measure_hsl_from_ridges else 'midslopes')))
-        mask_array = self.state.merge_active_masks()
-        bbox, nxb,nyb = get_bbox(~mask_array)
-        info = Info(self.state, self.trace, self.geodata.roi_pixel_size, mapping=self)
-        info.set_xy(nxb,nyb, pad)
-        info.set_thresholds(segmentation_threshold=self.fine_segmentation_threshold)
-        # Here data.bounds_grid is computed
-        data = Data( info=info, bbox=bbox, pad=pad,
-                     mapping_array = self.mapping_array,
-                     mask_array    = mask_array)
-#                          sla_array     = self.trace.sla_array )
+            # Map HSL
+            self.print('Prepare for mapping HSL from {}'.format(
+                ('ridges' if self.do_measure_hsl_from_ridges else 'midslopes')))
+            mask_array = self.state.merge_active_masks()
+            bbox, nxb,nyb = get_bbox(~mask_array)
+            info = Info(self.state, self.trace, self.geodata.roi_pixel_size, mapping=self)
+            info.set_xy(nxb,nyb, pad)
+            info.set_thresholds(segmentation_threshold=self.fine_segmentation_threshold)
+            # Here data.bounds_grid is computed
+            data = Data( info=info, bbox=bbox, pad=pad,
+                         mapping_array = self.mapping_array,
+                         mask_array    = mask_array)
+    #                          sla_array     = self.trace.sla_array )
+    
         self.info = info
         bounds = data.bounds_grid
         # Should we zero out all but ridge & midslope flags? 
@@ -334,8 +338,10 @@ class Mapping(Core):
                             ^= info.is_channelhead
         self.mapping_array[(self.mapping_array&info.is_thinchannel)!=0]\
                             ^= info.is_thinchannel
-
+                            
+                            
         vprint(self.vprogress,'**Pass#1 end**') 
+
 
     def make_coarse_subsegment_masks(self, coarse_subsegment, is_left_or_right,
                                      raw_mask, dilated_mask):
@@ -469,7 +475,7 @@ class Mapping(Core):
                                 segmentation_threshold=self.fine_segmentation_threshold)
             
             # Big step - map subsegments using above channel threshold
-            if not self.do_map_channels_segments(info, data):
+            if not self.map_channels_segments(info, data):
                 del data
                 vprint(self.vprogress,'   --- (problem mapping channels & subsegments)')
                 continue
@@ -576,7 +582,7 @@ class Mapping(Core):
                      slc_array     = self.trace.slc_array,
                      slt_array     = self.trace.slt_array,
                      sla_array     = self.trace.sla_array )
-        if not self.do_map_channels_segments(info, data, 
+        if not self.map_channels_segments(info, data, 
                                              do_map_channels_from_scratch=False,
                                              do_map_segments=False):
             self.print('Error occurred during channel mapping')
@@ -616,7 +622,7 @@ class Mapping(Core):
         self.info = info
         vprint(self.vprogress,'**Pass#3 end**') 
                 
-    def do_map_channels_segments(self, info, data, 
+    def map_channels_segments(self, info, data, 
                                  do_map_channels_from_scratch=True,
                                  do_map_segments=True):
         """
@@ -662,7 +668,7 @@ class Mapping(Core):
             return True
         except Exception as error:
             # Failure
-            vprint(self.vbackup, 'Failed in "do_map_channels_segments":\n', error)
+            vprint(self.vbackup, 'Failed in "map_channels_segments":\n', error)
             raise
             # Redundant
             return False

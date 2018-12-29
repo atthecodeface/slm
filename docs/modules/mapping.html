@@ -42,12 +42,12 @@ variations.</p>
 <dt>Requires Python packages/modules:</dt>
 <dd><ul class="first last simple">
 <li><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/index.html#module-pandas" title="(in pandas v0.23.4)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
-<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing" title="(in scikit-learn v0.20.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code></a></li>
-<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.morphology.html#module-skimage.morphology" title="(in skimage v0.14.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.morphology</span></code></a></li>
-<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.filters.html#module-skimage.filters" title="(in skimage v0.14.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.filters</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/interpolate.html#module-scipy.interpolate" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.interpolate</span></code></a></li>
+<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing" title="(in scikit-learn v0.16.dev0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code></a></li>
+<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.morphology.html#module-skimage.morphology" title="(in skimage v0.14.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.morphology</span></code></a></li>
+<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.filters.html#module-skimage.filters" title="(in skimage v0.14.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.filters</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/interpolate.html#module-scipy.interpolate" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.interpolate</span></code></a></li>
 <li><a class="reference external" href="https://pythonhosted.org/scikit-fmm/index.html#module-skfmm" title="(in scikit-fmm v0.0.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skfmm</span></code></a></li>
 </ul>
 </dd>
@@ -356,12 +356,6 @@ to determine whether or not there is a N-S bias</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="streamlines.mapping.Mapping.do_map_channels_segments">
-<code class="descname">do_map_channels_segments</code><span class="sig-paren">(</span><em>info</em>, <em>data</em>, <em>do_map_channels_from_scratch=True</em>, <em>do_map_segments=True</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.mapping.Mapping.do_map_channels_segments" title="Permalink to this definition">¶</a></dt>
-<dd><p>TBD.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="streamlines.mapping.Mapping.make_coarse_subsegment_masks">
 <code class="descname">make_coarse_subsegment_masks</code><span class="sig-paren">(</span><em>coarse_subsegment</em>, <em>is_left_or_right</em>, <em>raw_mask</em>, <em>dilated_mask</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.mapping.Mapping.make_coarse_subsegment_masks" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -394,6 +388,12 @@ and its dimensions nxd,nyd.</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.mapping.Mapping.map_channels_segments">
+<code class="descname">map_channels_segments</code><span class="sig-paren">(</span><em>info</em>, <em>data</em>, <em>do_map_channels_from_scratch=True</em>, <em>do_map_segments=True</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.mapping.Mapping.map_channels_segments" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD.</p>
 </dd></dl>
 
 <dl class="method">
@@ -738,43 +738,47 @@ to determine whether or not there is a N-S bias.</li>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_midslopes</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_ridges</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         
-        <span class="c1"># Do the forced coarse channel mapping &amp; subsegmentation</span>
-        <span class="c1">#   - the flag &#39;do_map_channels_from_scratch&#39; will default to true</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_map_channels_segments</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;A problem during mapping channels &amp; segments&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_map_channels_segments</span><span class="p">:</span>
+            <span class="c1"># Do the forced coarse channel mapping &amp; subsegmentation</span>
+            <span class="c1">#   - the flag &#39;do_map_channels_from_scratch&#39; will default to true</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_channels_segments</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;A problem during mapping channels &amp; segments&#39;</span><span class="p">)</span>
+        
+            <span class="c1"># Save the coarse subsegmentation labels</span>
+            <span class="c1">#   - inserted into full size grid arrays using the data.bounds_grid slice</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">bounds_grid</span><span class="p">]</span>           <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mapping_array</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegment_array</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">bounds_grid</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">label_array</span>
+            <span class="c1"># Make a list of all the subsegments with enough ridge/midslope pixels for HSL</span>
+            <span class="n">coarse_subsegments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">label_array</span><span class="p">[</span><span class="o">~</span><span class="n">data</span><span class="o">.</span><span class="n">mask_array</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegments_list_array</span> \
+                <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">coarse_subsegments</span><span class="p">[</span><span class="n">coarse_subsegments</span><span class="o">!=</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_coarse_subsegments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegments_list_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Make a mask to select all coarse subsegments</span>
+            <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegments_list_array</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">merged_coarse_mask_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegment_array</span><span class="o">==</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="c1"># Copy the coarse subsegments so they can be readily visualized</span>
+        <span class="c1">#         self.label_array = self.coarse_subsegment_array.copy()</span>
+        <span class="c1">#         self._switch_back_to_verbose_mode()</span>
     
-        <span class="c1"># Save the coarse subsegmentation labels</span>
-        <span class="c1">#   - inserted into full size grid arrays using the data.bounds_grid slice</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">bounds_grid</span><span class="p">]</span>           <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mapping_array</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegment_array</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">bounds_grid</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">label_array</span>
-        <span class="c1"># Make a list of all the subsegments with enough ridge/midslope pixels for HSL</span>
-        <span class="n">coarse_subsegments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">label_array</span><span class="p">[</span><span class="o">~</span><span class="n">data</span><span class="o">.</span><span class="n">mask_array</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegments_list_array</span> \
-            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">coarse_subsegments</span><span class="p">[</span><span class="n">coarse_subsegments</span><span class="o">!=</span><span class="mi">0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_coarse_subsegments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegments_list_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="c1"># Make a mask to select all coarse subsegments</span>
-        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegments_list_array</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">merged_coarse_mask_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">coarse_subsegment_array</span><span class="o">==</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="c1"># Copy the coarse subsegments so they can be readily visualized</span>
-    <span class="c1">#         self.label_array = self.coarse_subsegment_array.copy()</span>
-    <span class="c1">#         self._switch_back_to_verbose_mode()</span>
-    
-        <span class="k">del</span> <span class="n">info</span><span class="p">,</span> <span class="n">data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">reset_active_masks</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_map_hsl</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">info</span><span class="p">,</span> <span class="n">data</span>
             
-        <span class="c1"># Map HSL</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Prepare for mapping HSL from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="p">(</span><span class="s1">&#39;ridges&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_measure_hsl_from_ridges</span> <span class="k">else</span> <span class="s1">&#39;midslopes&#39;</span><span class="p">)))</span>
-        <span class="n">mask_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">merge_active_masks</span><span class="p">()</span>
-        <span class="n">bbox</span><span class="p">,</span> <span class="n">nxb</span><span class="p">,</span><span class="n">nyb</span> <span class="o">=</span> <span class="n">get_bbox</span><span class="p">(</span><span class="o">~</span><span class="n">mask_array</span><span class="p">)</span>
-        <span class="n">info</span> <span class="o">=</span> <span class="n">Info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_pixel_size</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">info</span><span class="o">.</span><span class="n">set_xy</span><span class="p">(</span><span class="n">nxb</span><span class="p">,</span><span class="n">nyb</span><span class="p">,</span> <span class="n">pad</span><span class="p">)</span>
-        <span class="n">info</span><span class="o">.</span><span class="n">set_thresholds</span><span class="p">(</span><span class="n">segmentation_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fine_segmentation_threshold</span><span class="p">)</span>
-        <span class="c1"># Here data.bounds_grid is computed</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">pad</span><span class="p">,</span>
-                     <span class="n">mapping_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span>
-                     <span class="n">mask_array</span>    <span class="o">=</span> <span class="n">mask_array</span><span class="p">)</span>
-<span class="c1">#                          sla_array     = self.trace.sla_array )</span>
+            <span class="c1"># Map HSL</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Prepare for mapping HSL from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="p">(</span><span class="s1">&#39;ridges&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_measure_hsl_from_ridges</span> <span class="k">else</span> <span class="s1">&#39;midslopes&#39;</span><span class="p">)))</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">merge_active_masks</span><span class="p">()</span>
+            <span class="n">bbox</span><span class="p">,</span> <span class="n">nxb</span><span class="p">,</span><span class="n">nyb</span> <span class="o">=</span> <span class="n">get_bbox</span><span class="p">(</span><span class="o">~</span><span class="n">mask_array</span><span class="p">)</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">Info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span><span class="o">.</span><span class="n">roi_pixel_size</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">info</span><span class="o">.</span><span class="n">set_xy</span><span class="p">(</span><span class="n">nxb</span><span class="p">,</span><span class="n">nyb</span><span class="p">,</span> <span class="n">pad</span><span class="p">)</span>
+            <span class="n">info</span><span class="o">.</span><span class="n">set_thresholds</span><span class="p">(</span><span class="n">segmentation_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fine_segmentation_threshold</span><span class="p">)</span>
+            <span class="c1"># Here data.bounds_grid is computed</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">pad</span><span class="p">,</span>
+                         <span class="n">mapping_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">,</span>
+                         <span class="n">mask_array</span>    <span class="o">=</span> <span class="n">mask_array</span><span class="p">)</span>
+    <span class="c1">#                          sla_array     = self.trace.sla_array )</span>
+    
         <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">info</span>
         <span class="n">bounds</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">bounds_grid</span>
         <span class="c1"># Should we zero out all but ridge &amp; midslope flags? </span>
@@ -786,8 +790,10 @@ to determine whether or not there is a N-S bias.</li>
                             <span class="o">^=</span> <span class="n">info</span><span class="o">.</span><span class="n">is_channelhead</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping_array</span><span class="o">&amp;</span><span class="n">info</span><span class="o">.</span><span class="n">is_thinchannel</span><span class="p">)</span><span class="o">!=</span><span class="mi">0</span><span class="p">]</span>\
                             <span class="o">^=</span> <span class="n">info</span><span class="o">.</span><span class="n">is_thinchannel</span>
-
+                            
+                            
         <span class="n">vprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vprogress</span><span class="p">,</span><span class="s1">&#39;**Pass#1 end**&#39;</span><span class="p">)</span> 
+
 
     <span class="k">def</span> <span class="nf">make_coarse_subsegment_masks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coarse_subsegment</span><span class="p">,</span> <span class="n">is_left_or_right</span><span class="p">,</span>
                                      <span class="n">raw_mask</span><span class="p">,</span> <span class="n">dilated_mask</span><span class="p">):</span>
@@ -921,7 +927,7 @@ to determine whether or not there is a N-S bias.</li>
                                 <span class="n">segmentation_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fine_segmentation_threshold</span><span class="p">)</span>
             
             <span class="c1"># Big step - map subsegments using above channel threshold</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_map_channels_segments</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_channels_segments</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
                 <span class="k">del</span> <span class="n">data</span>
                 <span class="n">vprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vprogress</span><span class="p">,</span><span class="s1">&#39;   --- (problem mapping channels &amp; subsegments)&#39;</span><span class="p">)</span>
                 <span class="k">continue</span>
@@ -1028,7 +1034,7 @@ to determine whether or not there is a N-S bias.</li>
                      <span class="n">slc_array</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slc_array</span><span class="p">,</span>
                      <span class="n">slt_array</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">slt_array</span><span class="p">,</span>
                      <span class="n">sla_array</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">sla_array</span> <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_map_channels_segments</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> 
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_channels_segments</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> 
                                              <span class="n">do_map_channels_from_scratch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                              <span class="n">do_map_segments</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Error occurred during channel mapping&#39;</span><span class="p">)</span>
@@ -1068,7 +1074,7 @@ to determine whether or not there is a N-S bias.</li>
         <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">info</span>
         <span class="n">vprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vprogress</span><span class="p">,</span><span class="s1">&#39;**Pass#3 end**&#39;</span><span class="p">)</span> 
                 
-    <span class="k">def</span> <span class="nf">do_map_channels_segments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> 
+    <span class="k">def</span> <span class="nf">map_channels_segments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> 
                                  <span class="n">do_map_channels_from_scratch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                  <span class="n">do_map_segments</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1114,7 +1120,7 @@ to determine whether or not there is a N-S bias.</li>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
             <span class="c1"># Failure</span>
-            <span class="n">vprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vbackup</span><span class="p">,</span> <span class="s1">&#39;Failed in &quot;do_map_channels_segments&quot;:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+            <span class="n">vprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vbackup</span><span class="p">,</span> <span class="s1">&#39;Failed in &quot;map_channels_segments&quot;:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
             <span class="k">raise</span>
             <span class="c1"># Redundant</span>
             <span class="k">return</span> <span class="kc">False</span>
