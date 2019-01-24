@@ -210,12 +210,17 @@ class Analysis(Core):
                                              logx_max=logx_max,logy_max=logy_max)
         self.print('...done')            
         
-    def compute_marginal_distribn_usla(self, data):
+    def compute_marginal_distribn_usla(self, data=None):
         """
         TBD
         """
         self.print('Computing marginal distribution "usla"...')
-        x_array,y_array = data.sla_array, data.slc_array
+        if data is not None:
+            mask_array = data.mask_array
+            x_array,y_array = data.sla_array, data.slc_array
+        else:
+            x_array,y_array = self.trace.sla_array, self.trace.slc_array
+            mask_array = None
         mask_array      = data.mask_array
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
@@ -250,13 +255,17 @@ class Analysis(Core):
                                              logx_max=logx_max,logy_max=logy_max)
         self.print('...done')            
         
-    def compute_marginal_distribn_uslt(self, data):
+    def compute_marginal_distribn_uslt(self, data=None):
         """
         TBD
         """
         self.print('Computing marginal distribution "uslt"...')
-        x_array,y_array = data.slt_array, data.sla_array
-        mask_array      = data.mask_array
+        if data is not None:
+            mask_array = data.mask_array
+            x_array,y_array = data.slt_array, data.sla_array
+        else:
+            x_array,y_array = self.trace.slt_array, self.trace.sla_array
+            mask_array = None
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_limits(['pdf_slt_min','pdf_slt_max','pdf_sla_min','pdf_sla_max'])
@@ -291,13 +300,17 @@ class Analysis(Core):
                                              logx_max=logx_max,logy_max=logy_max)
         self.print('...done')            
         
-    def compute_marginal_distribn_uslc(self, data):
+    def compute_marginal_distribn_uslc(self, data=None):
         """
         TBD
         """
         self.print('Computing marginal distribution "uslc"...')
-        x_array,y_array = data.slc_array, data.sla_array
-        mask_array      = data.mask_array
+        if data is not None:
+            mask_array = data.mask_array
+            x_array,y_array = data.slc_array, data.sla_array
+        else:
+            x_array,y_array = self.trace.slc_array, self.trace.sla_array
+            mask_array = None
         up_down_idx_x, up_down_idx_y = 1, 1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_limits(['pdf_slc_min','pdf_slc_max','pdf_sla_min','pdf_sla_max'])
@@ -443,13 +456,17 @@ class Analysis(Core):
                                           logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
-    def compute_joint_distribn_usla_uslt(self, data):
+    def compute_joint_distribn_usla_uslt(self, data=None):
         """
         TBD
         """
         self.print('Computing joint distribution "usla_uslt"...')
-        x_array,y_array = data.sla_array, data.slt_array
-        mask_array      = data.mask_array
+        if data is not None:
+            mask_array = data.mask_array
+            x_array,y_array = data.sla_array, data.slt_array
+        else:
+            x_array,y_array = self.trace.sla_array, self.trace.slt_array
+            mask_array = None
         up_down_idx_x,up_down_idx_y = 1,1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_limits(['pdf_sla_min','pdf_sla_max','pdf_slt_min','pdf_slt_max'])
@@ -461,13 +478,18 @@ class Analysis(Core):
                                           logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
-    def compute_joint_distribn_uslt_dslt(self, data):
+    def compute_joint_distribn_uslt_dslt(self, data=None):
         """
         TBD
         """
         self.print('Computing joint distribution "uslt_dslt"...')
-        x_array,y_array = data.slt_array, data.slt_array
-        mask_array      = data.mask_array
+        if data is not None:
+            mask_array = data.mask_array
+            x_array,y_array = data.slt_array, data.slt_array
+        else:
+            x_array,y_array = self.trace.slt_array, self.trace.slt_array
+            mask_array = None
+        up_down_idx_x,up_down_idx_y = 1,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_limits(['pdf_slt_min','pdf_slt_max','pdf_slt_min','pdf_slt_max'])
         self.jpdf_uslt_dslt \
@@ -505,13 +527,17 @@ class Analysis(Core):
                                           logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
-    def compute_joint_distribn_usla_uslc(self, data):
+    def compute_joint_distribn_usla_uslc(self, data=None):
         """
         TBD
         """
         self.print('Computing joint distribution "usla_uslc"...')
-        x_array,y_array = data.sla_array, data.slc_array
-        mask_array      = data.mask_array
+        if data is not None:
+            mask_array = data.mask_array
+            x_array,y_array = data.sla_array, data.slc_array
+        else:
+            x_array,y_array = self.trace.sla_array, self.trace.slc_array
+            mask_array = None
         up_down_idx_x,up_down_idx_y = 1,1
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_limits(['pdf_sla_min','pdf_sla_max','pdf_slc_min','pdf_slc_max'])
@@ -523,13 +549,17 @@ class Analysis(Core):
                                           logx_max=logx_max,logy_max=logy_max)
         self.print('...done')
 
-    def compute_joint_distribn_uslc_dslc(self, data):
+    def compute_joint_distribn_uslc_dslc(self, data=None):
         """
         TBD
         """
         self.print('Computing joint distribution "uslc_dslc"...')
-        x_array,y_array = data.slc_array, data.slc_array
-        mask_array      = data.mask_array
+        if data is not None:
+            mask_array = data.mask_array
+            x_array,y_array = data.slc_array, data.slc_array
+        else:
+            x_array,y_array = self.trace.slc_array, self.trace.slc_array
+            mask_array = None
         up_down_idx_x, up_down_idx_y = 1,0
         (logx_min, logx_max, logy_min, logy_max) \
           = self._get_limits(['pdf_slc_min','pdf_slc_max','pdf_slc_min','pdf_slc_max'])

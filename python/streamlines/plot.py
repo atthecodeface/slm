@@ -2055,7 +2055,8 @@ class Plot(Core):
                        fig_name=None, title='', swap_xy=False, do_nl_trend=False,
                        x_label='', y_label='', 
                        xsym_label = r'$L_m^{*}$', ysym_label = r'$\sqrt{A_e^*}$', 
-                       do_plot_mode=True, do_overlay_histogram=False):
+                       do_plot_mode=True, do_overlay_histogram=False,
+                       do_legend=True):
         """
         TBD
           
@@ -2124,27 +2125,30 @@ class Plot(Core):
                      colors='k',linewidths=1,alpha=0.5, antialiased=True)
         
         # Plot thresholds
-        try:
-            legend += [r'threshold '+xsym_label
-                       +' = {:.0f}m'.format(np.round(
-                        mx_distbn.channel_threshold_x,0))]
-            legend += [r'threshold '+ysym_label
-                       +' = {:.0f}m'.format(np.round(
-                        my_distbn.channel_threshold_x,0))]
-            if not swap_xy:
-                axes.plot(x_vec*0+mx_distbn.channel_threshold_x,y_vec,
-                          '--', color='blue',linewidth=3,alpha=1.0)
-                axes.plot(x_vec,y_vec*0+my_distbn.channel_threshold_x,
-                          ':', color='navy',linewidth=3,alpha=1.0)
-            else:
-#                 pdebug('swapping xy')
-                axes.plot(x_vec*0+mx_distbn.channel_threshold_x,y_vec,
-                          ':', color='navy',linewidth=3,alpha=1.0)
-                axes.plot(x_vec,y_vec*0+my_distbn.channel_threshold_x,
-                          '--', color='blue',linewidth=3,alpha=1.0)
-            do_extras = True  
-        except:
-            print('Problem with channel threshold')
+        if do_legend:
+            try:
+                legend += [r'threshold '+xsym_label
+                           +' = {:.0f}m'.format(np.round(
+                            mx_distbn.channel_threshold_x,0))]
+                legend += [r'threshold '+ysym_label
+                           +' = {:.0f}m'.format(np.round(
+                            my_distbn.channel_threshold_x,0))]
+                if not swap_xy:
+                    axes.plot(x_vec*0+mx_distbn.channel_threshold_x,y_vec,
+                              '--', color='blue',linewidth=3,alpha=1.0)
+                    axes.plot(x_vec,y_vec*0+my_distbn.channel_threshold_x,
+                              ':', color='navy',linewidth=3,alpha=1.0)
+                else:
+    #                 pdebug('swapping xy')
+                    axes.plot(x_vec*0+mx_distbn.channel_threshold_x,y_vec,
+                              ':', color='navy',linewidth=3,alpha=1.0)
+                    axes.plot(x_vec,y_vec*0+my_distbn.channel_threshold_x,
+                              '--', color='blue',linewidth=3,alpha=1.0)
+                do_extras = True  
+            except:
+                print('Problem with channel threshold')
+                do_extras = False
+        else:
             do_extras = False
 
         if do_extras:
@@ -2195,14 +2199,19 @@ class Plot(Core):
 
         # Presentation
 #         loc = 'lower right'
-        loc = 'upper left'
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            axes.legend(legend, loc=loc,fontsize=12,framealpha=0.97)
+        if do_legend:
+            loc = 'upper left'
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                axes.legend(legend, loc=loc,fontsize=12,framealpha=0.97)
         axes.xaxis.set_major_locator(ticker.LogLocator(base=10.0, numticks=15))
         axes.yaxis.set_major_locator(ticker.LogLocator(base=10.0, numticks=15))
-        axes.set_xlabel(x_label)
-        axes.set_ylabel(y_label)
+        if swap_xy:
+            axes.set_xlabel(y_label)
+            axes.set_ylabel(x_label)
+        else:
+            axes.set_xlabel(x_label)
+            axes.set_ylabel(y_label)
         x_ticks = self._choose_ticks(x_min,x_max)
         y_ticks = self._choose_ticks(y_min,y_max)
         plt.xticks(x_ticks,x_ticks)
@@ -2218,7 +2227,7 @@ class Plot(Core):
         self._force_display(fig)
         self._record_fig(fig_name,fig)
 
-    def plot_joint_pdf_dsla_usla(self):
+    def plot_joint_pdf_dsla_usla(self, do_legend=False):
         """
         TBD
         """
@@ -2243,7 +2252,8 @@ class Plot(Core):
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
                             fig_name=fig_name, 
                             title=title, x_label=x_label, y_label=y_label,
-                            xsym_label=xsym_label, ysym_label=ysym_label)
+                            xsym_label=xsym_label, ysym_label=ysym_label,
+                            do_legend=do_legend)
             
     def plot_joint_pdf_usla_uslt(self):
         """
@@ -2291,7 +2301,7 @@ class Plot(Core):
                             xsym_label=xsym_label, ysym_label=ysym_label,
                             do_plot_mode=True)
 
-    def plot_joint_pdf_dslt_dsla(self):
+    def plot_joint_pdf_dslt_dsla(self,do_legend=True):
         """
         TBD
         """
@@ -2312,9 +2322,9 @@ class Plot(Core):
                             fig_name=fig_name, swap_xy=True,
                             title=title, x_label=x_label, y_label=y_label,
                             xsym_label=xsym_label, ysym_label=ysym_label,
-                            do_plot_mode=True)
+                            do_plot_mode=True, do_legend=do_legend)
 
-    def plot_joint_pdf_uslt_dslt(self):
+    def plot_joint_pdf_uslt_dslt(self,swap_xy=False,do_legend=False):
         """
         TBD
         """
@@ -2334,7 +2344,8 @@ class Plot(Core):
         self.plot_joint_pdf(joint_distbn, mx_distbn=mx_distbn, my_distbn=my_distbn,
                             fig_name=fig_name,
                             title=title, x_label=x_label, y_label=y_label,
-                            xsym_label=xsym_label, ysym_label=ysym_label)
+                            xsym_label=xsym_label, ysym_label=ysym_label,
+                            swap_xy=swap_xy, do_legend=do_legend)
 
     def plot_joint_pdf_usla_uslc(self):
         """
