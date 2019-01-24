@@ -285,6 +285,8 @@ class Mapping(Core):
         # Map midslope lines 
         self.map_midslopes(info, data)
         self.map_ridges(info, data)
+        # Make sure all the flag values are recorded for posterity
+        info.set_flags(self)
         
         if self.do_map_channels_segments:
             # Do the forced coarse channel mapping & subsegmentation

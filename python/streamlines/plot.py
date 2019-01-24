@@ -360,10 +360,13 @@ class Plot(Core):
             TBD: 
             TBD
         """
-        if self.geodata.do_basin_masking:                
-            mask_array = self.state.merge_active_masks()[
-                self.geodata.pad_width:-self.geodata.pad_width,
-                self.geodata.pad_width:-self.geodata.pad_width]
+        if self.geodata.do_basin_masking: 
+            if self.geodata.pad_width>0:               
+                mask_array = self.state.merge_active_masks()[
+                    self.geodata.pad_width:-self.geodata.pad_width,
+                    self.geodata.pad_width:-self.geodata.pad_width]
+            else:
+                mask_array = self.state.merge_active_masks()
         else:
             mask_array = np.zeros_like(self.geodata.roi_array)
 

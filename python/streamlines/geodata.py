@@ -293,3 +293,15 @@ class Geodata(Core):
                                        'constant', constant_values=(True,True))
         self.state.add_active_mask({'basin': self.basin_mask_array})
 
+    def make_padded_roi(self, pad_value=0.0):
+        """
+        TBD.
+
+        Attributes:
+            self.roi_padded_array (numpy.ndarray float32):
+        """ 
+        self.print('Create padded ROI'.format())
+        pad = self.pad_width
+        self.roi_padded_array = np.pad(self.roi_array, (pad,pad), 
+                                       'constant', constant_values=(pad_value,pad_value))
+

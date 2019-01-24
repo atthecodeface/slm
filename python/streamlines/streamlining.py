@@ -159,8 +159,9 @@ class Streamlining(Core):
 #             if os.path.isdir(guess):
 #                 possible_paths += [guess]
             for path in possible_paths:
-                if os.path.isfile(os.path.realpath(
-                            os.path.join(path, parameters_file+'.json'))):
+                real_path = os.path.realpath(os.path.join(path, parameters_file+'.json'))
+#                 pdebug('path?',path,real_path)
+                if os.path.isfile(real_path):
                     parameters_path = path
                     break
             # If we still can't find the specified JSON file, bail

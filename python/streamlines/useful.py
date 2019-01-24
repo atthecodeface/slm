@@ -194,26 +194,7 @@ class Info():
         self.interchannel_max_n_steps    = np.uint32(interchannel_max_n_steps)
         
         self.left_flank_addition = 2147483648
-        flags = [
-            'is_channel',         # 1
-            'is_thinchannel',     # 2
-            'is_interchannel',    # 4
-            'is_channelhead',     # 8
-            'is_channeltail',     # 16
-            'is_majorconfluence', # 32
-            'is_minorconfluence', # 64
-            'is_majorinflow',     # 128
-            'is_minorinflow',     # 256
-            'is_leftflank',       # 512
-            'is_rightflank',      # 1024
-            'is_midslope',        # 2048
-            'is_ridge',           # 4028
-            'was_channelhead',    # 8196
-            'is_subsegmenthead',  # 16384
-            'is_loop',            # 32768
-            'is_blockage'         # 65536
-            ]
-        [setattr(self,flag,np.uint(2**idx)) for idx,flag in enumerate(flags)]
+        self.set_flags(self)
 
     def set_xy(self, nx,ny, pad, bbox=None):
         """
@@ -253,7 +234,39 @@ class Info():
             self.segmentation_threshold = segmentation_threshold
         if channel_threshold is not None:
             self.channel_threshold = channel_threshold
-                    
+
+    def set_flags(self, obj):
+        """
+        Args:
+            tbd (str): 
+        
+        TBD
+    
+        Returns:
+            TBD: 
+            TBD
+        """  
+        flags = [
+            'is_channel',         # 1
+            'is_thinchannel',     # 2
+            'is_interchannel',    # 4
+            'is_channelhead',     # 8
+            'is_channeltail',     # 16
+            'is_majorconfluence', # 32
+            'is_minorconfluence', # 64
+            'is_majorinflow',     # 128
+            'is_minorinflow',     # 256
+            'is_leftflank',       # 512
+            'is_rightflank',      # 1024
+            'is_midslope',        # 2048
+            'is_ridge',           # 4028
+            'was_channelhead',    # 8196
+            'is_subsegmenthead',  # 16384
+            'is_loop',            # 32768
+            'is_blockage'         # 65536
+            ]
+        [setattr(obj,flag,np.uint(2**idx)) for idx,flag in enumerate(flags)]
+
 def get_bbox(array):
     """
     Args:
