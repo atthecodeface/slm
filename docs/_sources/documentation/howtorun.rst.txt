@@ -148,9 +148,9 @@ Graphical output will be pushed to a viewer external to the shell.
 
 
 
-.. _Several example notebooks: https://github.com/cstarknyc/Streamlines/blob/master/Tests
-.. _Streamlines repo: https://github.com/cstarknyc/Streamlines
-.. _Streamlines: https://github.com/cstarknyc/Streamlines
+.. _Several example notebooks: https://github.com/cstarkjp/Streamlines/blob/master/Tests
+.. _Streamlines repo: https://github.com/cstarkjp/Streamlines
+.. _Streamlines: https://github.com/cstarkjp/Streamlines
 .. _QtConsole: https://ipython.org/ipython-doc/3/interactive/qtconsole.html
 .. _IPython: http://ipython.org/ipython-doc/3/interactive/
 

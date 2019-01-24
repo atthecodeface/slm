@@ -9,10 +9,11 @@
     <title>geodata.py &#8212; Streamlines  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="preprocess.py" href="preprocess.html" />
@@ -44,7 +45,7 @@ Might be useful to get GeoTIFF write working.</p>
 <dl class="docutils">
 <dt>Requires Python packages/modules:</dt>
 <dd><ul class="first last simple">
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
 <li><a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code></a></li>
 </ul>
 </dd>
@@ -71,7 +72,15 @@ then to parse basin indices into a mask layer.</p>
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.dtm_path">
 <code class="descclassname">self.</code><code class="descname">dtm_path</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.dtm_path" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – absolute path to DTM file (should really be a list)</p>
+<dd><p>absolute path to DTM file (should really be a list)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -84,7 +93,14 @@ and a list of non-mask indexes.</p>
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.basin_mask_array">
 <code class="descclassname">self.</code><code class="descname">basin_mask_array</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.basin_mask_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray bool</em></p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray bool</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -97,13 +113,46 @@ and the fringing pad pixels. Add it to the list of active masks.</p>
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.dtm_mask_array">
 <code class="descclassname">self.</code><code class="descname">dtm_mask_array</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.dtm_mask_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray bool</em></p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray bool</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.active_masks">
 <code class="descclassname">self.</code><code class="descname">active_masks</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.active_masks" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em></p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.geodata.Geodata.make_padded_roi">
+<code class="descname">make_padded_roi</code><span class="sig-paren">(</span><em>pad_value=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.geodata.Geodata.make_padded_roi" title="Permalink to this definition">¶</a></dt>
+<dd><p>TBD.</p>
+<dl class="attribute">
+<dt id="streamlines.geodata.Geodata.self.roi_padded_array">
+<code class="descclassname">self.</code><code class="descname">roi_padded_array</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.roi_padded_array" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray float32</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -115,7 +164,14 @@ and the fringing pad pixels. Add it to the list of active masks.</p>
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.basins_array">
 <code class="descclassname">self.</code><code class="descname">basins_array</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.basins_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray float32</em></p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray float32</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -131,78 +187,174 @@ In the process, flip array orientation (up-down).</p>
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.roi_nx">
 <code class="descclassname">self.</code><code class="descname">roi_nx</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.roi_nx" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – number of x pixels in ROI</p>
+<dd><p>number of x pixels in ROI</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.roi_ny">
 <code class="descclassname">self.</code><code class="descname">roi_ny</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.roi_ny" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – number of y pixels in ROI</p>
+<dd><p>number of y pixels in ROI</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.roi_x_origin">
 <code class="descclassname">self.</code><code class="descname">roi_x_origin</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.roi_x_origin" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.float32</em> – x coordinate of bottom-left pixel center</p>
+<dd><p>x coordinate of bottom-left pixel center</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.float32</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.roi_y_origin">
 <code class="descclassname">self.</code><code class="descname">roi_y_origin</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.roi_y_origin" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.float32</em> – y coordinate of bottom-left pixel center</p>
+<dd><p>y coordinate of bottom-left pixel center</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.float32</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.pixel_size">
 <code class="descclassname">self.</code><code class="descname">pixel_size</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.pixel_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – size (in meters from GeoTIFF) of pixels
+<dd><p>size (in meters from GeoTIFF) of pixels
 (assuming equant)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.roi_pixel_size">
 <code class="descclassname">self.</code><code class="descname">roi_pixel_size</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.roi_pixel_size" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – size (in meters from GeoTIFF) of pixels in ROI
+<dd><p>size (in meters from GeoTIFF) of pixels in ROI
 (could be downsampled)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.roi_x_bounds">
 <code class="descclassname">self.</code><code class="descname">roi_x_bounds</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.roi_x_bounds" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em> – x bounds on ROI (in grid pixels, not coordinates)</p>
+<dd><p>x bounds on ROI (in grid pixels, not coordinates)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.roi_y_bounds">
 <code class="descclassname">self.</code><code class="descname">roi_y_bounds</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.roi_y_bounds" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em> – y bounds on ROI (in grid pixels, not coordinates)</p>
+<dd><p>y bounds on ROI (in grid pixels, not coordinates)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.dtm_array">
 <code class="descclassname">self.</code><code class="descname">dtm_array</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.dtm_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray float32</em> – DTM topographic grid
+<dd><p>DTM topographic grid
 read from GeoTIFF file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray float32</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.roi_array">
 <code class="descclassname">self.</code><code class="descname">roi_array</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.roi_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray float32</em> – region of interest (ROI) of DTM grid</p>
+<dd><p>region of interest (ROI) of DTM grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray float32</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.x_roi_n_pixel_centers">
 <code class="descclassname">self.</code><code class="descname">x_roi_n_pixel_centers</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.x_roi_n_pixel_centers" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray float32</em> – meshgrid vector of
+<dd><p>meshgrid vector of
 x coordinates of ROI pixel centers</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray float32</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.geodata.Geodata.self.y_roi_n_pixel_centers">
 <code class="descclassname">self.</code><code class="descname">y_roi_n_pixel_centers</code><a class="headerlink" href="#streamlines.geodata.Geodata.self.y_roi_n_pixel_centers" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray float32</em> – meshgrid vector of
+<dd><p>meshgrid vector of
 y coordinates of ROI pixel centers</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.ndarray float32</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -506,6 +658,18 @@ y coordinates of ROI pixel centers</p>
                                        <span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">add_active_mask</span><span class="p">({</span><span class="s1">&#39;basin&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">basin_mask_array</span><span class="p">})</span>
 
+    <span class="k">def</span> <span class="nf">make_padded_roi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pad_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TBD.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            self.roi_padded_array (numpy.ndarray float32):</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Create padded ROI&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">())</span>
+        <span class="n">pad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_padded_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_array</span><span class="p">,</span> <span class="p">(</span><span class="n">pad</span><span class="p">,</span><span class="n">pad</span><span class="p">),</span> 
+                                       <span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="p">(</span><span class="n">pad_value</span><span class="p">,</span><span class="n">pad_value</span><span class="p">))</span>
+
 </pre></div>
 </div>
 </div>
@@ -576,8 +740,8 @@ y coordinates of ROI pixel centers</p>
       &copy;2018, CPS.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="../_sources/modules/geodata.rst.txt"

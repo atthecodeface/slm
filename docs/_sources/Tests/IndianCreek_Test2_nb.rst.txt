@@ -68,5 +68,5 @@ GitHub render
 
 See: `IndianCreek_Test2.ipynb`_
 
-.. _IndianCreek_Test2.ipynb: https://github.com/cstarknyc/slmnb/blob/master/SmallTests/IndianCreek_Test2.ipynb
-.. _Streamlines: https://github.com/cstarknyc/slm
+.. _IndianCreek_Test2.ipynb: https://github.com/cstarkjp/slmnb/blob/master/SmallTests/IndianCreek_Test2.ipynb
+.. _Streamlines: https://github.com/cstarkjp/slm

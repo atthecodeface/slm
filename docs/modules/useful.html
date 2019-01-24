@@ -9,10 +9,11 @@
     <title>useful.py &#8212; Streamlines  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="channelheads.py" href="channelheads.html" />
@@ -119,6 +120,30 @@
 <dl class="method">
 <dt id="streamlines.useful.Info.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>state</em>, <em>trace</em>, <em>pixel_size</em>, <em>mapping=None</em>, <em>n_seed_points=None</em>, <em>coarse_label=None</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.Info.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tbd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </td>
+</tr>
+</tbody>
+</table>
+<p>TBD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TBD</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">TBD</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="streamlines.useful.Info.set_flags">
+<code class="descname">set_flags</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#streamlines.useful.Info.set_flags" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -720,26 +745,7 @@ Defaults to doing the dilation once and in place.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">interchannel_max_n_steps</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">interchannel_max_n_steps</span><span class="p">)</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">left_flank_addition</span> <span class="o">=</span> <span class="mi">2147483648</span>
-        <span class="n">flags</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s1">&#39;is_channel&#39;</span><span class="p">,</span>         <span class="c1"># 1</span>
-            <span class="s1">&#39;is_thinchannel&#39;</span><span class="p">,</span>     <span class="c1"># 2</span>
-            <span class="s1">&#39;is_interchannel&#39;</span><span class="p">,</span>    <span class="c1"># 4</span>
-            <span class="s1">&#39;is_channelhead&#39;</span><span class="p">,</span>     <span class="c1"># 8</span>
-            <span class="s1">&#39;is_channeltail&#39;</span><span class="p">,</span>     <span class="c1"># 16</span>
-            <span class="s1">&#39;is_majorconfluence&#39;</span><span class="p">,</span> <span class="c1"># 32</span>
-            <span class="s1">&#39;is_minorconfluence&#39;</span><span class="p">,</span> <span class="c1"># 64</span>
-            <span class="s1">&#39;is_majorinflow&#39;</span><span class="p">,</span>     <span class="c1"># 128</span>
-            <span class="s1">&#39;is_minorinflow&#39;</span><span class="p">,</span>     <span class="c1"># 256</span>
-            <span class="s1">&#39;is_leftflank&#39;</span><span class="p">,</span>       <span class="c1"># 512</span>
-            <span class="s1">&#39;is_rightflank&#39;</span><span class="p">,</span>      <span class="c1"># 1024</span>
-            <span class="s1">&#39;is_midslope&#39;</span><span class="p">,</span>        <span class="c1"># 2048</span>
-            <span class="s1">&#39;is_ridge&#39;</span><span class="p">,</span>           <span class="c1"># 4028</span>
-            <span class="s1">&#39;was_channelhead&#39;</span><span class="p">,</span>    <span class="c1"># 8196</span>
-            <span class="s1">&#39;is_subsegmenthead&#39;</span><span class="p">,</span>  <span class="c1"># 16384</span>
-            <span class="s1">&#39;is_loop&#39;</span><span class="p">,</span>            <span class="c1"># 32768</span>
-            <span class="s1">&#39;is_blockage&#39;</span>         <span class="c1"># 65536</span>
-            <span class="p">]</span>
-        <span class="p">[</span><span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">flag</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">idx</span><span class="p">))</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">flag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">flags</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">set_xy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span><span class="n">ny</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -779,7 +785,39 @@ Defaults to doing the dilation once and in place.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">segmentation_threshold</span> <span class="o">=</span> <span class="n">segmentation_threshold</span>
         <span class="k">if</span> <span class="n">channel_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">channel_threshold</span> <span class="o">=</span> <span class="n">channel_threshold</span>
-                    
+
+    <span class="k">def</span> <span class="nf">set_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            tbd (str): </span>
+<span class="sd">        </span>
+<span class="sd">        TBD</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            TBD: </span>
+<span class="sd">            TBD</span>
+<span class="sd">        &quot;&quot;&quot;</span>  
+        <span class="n">flags</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;is_channel&#39;</span><span class="p">,</span>         <span class="c1"># 1</span>
+            <span class="s1">&#39;is_thinchannel&#39;</span><span class="p">,</span>     <span class="c1"># 2</span>
+            <span class="s1">&#39;is_interchannel&#39;</span><span class="p">,</span>    <span class="c1"># 4</span>
+            <span class="s1">&#39;is_channelhead&#39;</span><span class="p">,</span>     <span class="c1"># 8</span>
+            <span class="s1">&#39;is_channeltail&#39;</span><span class="p">,</span>     <span class="c1"># 16</span>
+            <span class="s1">&#39;is_majorconfluence&#39;</span><span class="p">,</span> <span class="c1"># 32</span>
+            <span class="s1">&#39;is_minorconfluence&#39;</span><span class="p">,</span> <span class="c1"># 64</span>
+            <span class="s1">&#39;is_majorinflow&#39;</span><span class="p">,</span>     <span class="c1"># 128</span>
+            <span class="s1">&#39;is_minorinflow&#39;</span><span class="p">,</span>     <span class="c1"># 256</span>
+            <span class="s1">&#39;is_leftflank&#39;</span><span class="p">,</span>       <span class="c1"># 512</span>
+            <span class="s1">&#39;is_rightflank&#39;</span><span class="p">,</span>      <span class="c1"># 1024</span>
+            <span class="s1">&#39;is_midslope&#39;</span><span class="p">,</span>        <span class="c1"># 2048</span>
+            <span class="s1">&#39;is_ridge&#39;</span><span class="p">,</span>           <span class="c1"># 4028</span>
+            <span class="s1">&#39;was_channelhead&#39;</span><span class="p">,</span>    <span class="c1"># 8196</span>
+            <span class="s1">&#39;is_subsegmenthead&#39;</span><span class="p">,</span>  <span class="c1"># 16384</span>
+            <span class="s1">&#39;is_loop&#39;</span><span class="p">,</span>            <span class="c1"># 32768</span>
+            <span class="s1">&#39;is_blockage&#39;</span>         <span class="c1"># 65536</span>
+            <span class="p">]</span>
+        <span class="p">[</span><span class="nb">setattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="n">flag</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">idx</span><span class="p">))</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">flag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">flags</span><span class="p">)]</span>
+
 <span class="k">def</span> <span class="nf">get_bbox</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
@@ -1172,8 +1210,8 @@ Defaults to doing the dilation once and in place.</p>
       &copy;2018, CPS.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="../_sources/modules/useful.rst.txt"

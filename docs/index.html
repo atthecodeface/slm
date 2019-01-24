@@ -9,10 +9,11 @@
     <title>Topographic streamline analysis &#8212; Streamlines  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Read DTM and related geodata files" href="documentation/geodata.html" />
@@ -34,7 +35,7 @@
 <div><span class="target" id="module-slm"></span></div></blockquote>
 <div class="section" id="topographic-streamline-analysis">
 <h1>Topographic streamline analysis<a class="headerlink" href="#topographic-streamline-analysis" title="Permalink to this headline">¶</a></h1>
-<p>The <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> project provides a suite of Python tools to study the
+<p>The <a class="reference external" href="https://github.com/cstarkjp/slm">Streamlines</a> project provides a suite of Python tools to study the
 structure of surface-water flow on large digital terrain models (DTMs).
 It takes the form of a Python 3 package, called <a class="reference internal" href="#module-slm" title="slm"><code class="xref py py-mod docutils literal notranslate"><span class="pre">slm</span></code></a>, which uses
 <a class="reference external" href="https://numba.pydata.org/index.html#install-frontpage" title="(in numba v0.12)"><span class="xref std std-ref">numba</span></a> and <a class="reference external" href="https://documen.tician.de/pyopencl/runtime.html#module-pyopencl" title="(in PyOpenCL v2018.2.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">PyOpenCL</span></code></a>
@@ -46,7 +47,7 @@ and a custom set of <a class="reference external" href="https://www.opentopograp
 Recent deployments of OpenCL acceleration
 and splitting of the git repo are being incorporated now.</p>
 </div>
-<p>The novelty of the <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> method lies in how it computes the convergence and
+<p>The novelty of the <a class="reference external" href="https://github.com/cstarkjp/slm">Streamlines</a> method lies in how it computes the convergence and
 divergence of terrain driven flow.
 Instead of taking the usual, flow-routing approach at the pixel-scale, it traces
 topographic streamlines at a sub-pixel resolution
@@ -65,9 +66,9 @@ these properties. In particular, they help reveal: (1) channel heads and termina
 (e.g., on alluvial fans),
 (2) channel density, and (3) hillslope length.</p>
 <img alt="_images/Guadalupe_example1.png" src="_images/Guadalupe_example1.png" />
-<p>A key innovation in <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> is a tool to overcome non-zero-divergence artefacts that arise
+<p>A key innovation in <a class="reference external" href="https://github.com/cstarkjp/slm">Streamlines</a> is a tool to overcome non-zero-divergence artefacts that arise
 when a DTM is preconditioned by having its sinks and pits filled. Pit filling is required of any
-DTM that is to be loaded into and processed by <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> – much as any flow routing software requires.
+DTM that is to be loaded into and processed by <a class="reference external" href="https://github.com/cstarkjp/slm">Streamlines</a> – much as any flow routing software requires.
 The problem is that if the gradient vector field of a ‘corrected’ DTM is computed at the grid resolution,
 there will inevitably be places (particularly at single-diagonal-outflow pixels adjacent to filled pits)
 where gradient vectors <em>appear</em> to converge. If the DTM could be corrected at a sub-pixel resolution (such as
@@ -115,7 +116,7 @@ is that it is excellent preparation for the next step…</p>
 and to adapt the Runge-Kutta integration code into a GPU-compute form.
 This effort was not as tough as expected, since migration to <a class="reference external" href="http://numba.pydata.org/numba-doc/dev/index.html">Numba</a>
 entailed conversion to a form of Python rendered it easy to translate
-into <a class="reference external" href="https://www.khronos.org/opencl">OpenCL</a>. Currently, this GPU-accelerated version of <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a>
+into <a class="reference external" href="https://www.khronos.org/opencl">OpenCL</a>. Currently, this GPU-accelerated version of <a class="reference external" href="https://github.com/cstarkjp/slm">Streamlines</a>
 is <strong>about 1500x faster</strong> than the raw, Pythonic, original Python code.
 Further optimizations are expected to boost the speed further.</p>
 </div>
@@ -130,7 +131,7 @@ Further optimizations are expected to boost the speed further.</p>
 </div>
 <div class="section" id="running-the-code">
 <h3>Running the code<a class="headerlink" href="#running-the-code" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> workflow can be carried out in several ways:</p>
+<p><a class="reference external" href="https://github.com/cstarkjp/slm">Streamlines</a> workflow can be carried out in several ways:</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="documentation/howtorun.html">How to run in a Jupyter notebook,  Jupyter console, QtConsole, or shell</a></li>
@@ -139,12 +140,12 @@ Further optimizations are expected to boost the speed further.</p>
 </div>
 <div class="section" id="controlling-the-workflow">
 <h3>Controlling the workflow<a class="headerlink" href="#controlling-the-workflow" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> computation and analysis is controlled by supplying workflow parameters and (optionally) command line arguments.
+<p><a class="reference external" href="https://github.com/cstarkjp/slm">Streamlines</a> computation and analysis is controlled by supplying workflow parameters and (optionally) command line arguments.
 The parameters are contained in JSON files that are loaded at the beginning of operations.</p>
 <p>First, default parameter values are assigned by parsing the <a class="reference internal" href="modules/defaults_json.html"><span class="doc">defaults.json</span></a>
-file located in the <a class="reference external" href="https://github.com/cstarknyc/slm/python/streamlines">streamlines package directory</a>.
+file located in the <a class="reference external" href="https://github.com/cstarkjp/slm/python/streamlines">streamlines package directory</a>.
 Second, a ‘job’ parameters file is parsed that overrides the default values where needed.
-Third, key workflow parameters may be assigned when invoking <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> computation from the command line or
+Third, key workflow parameters may be assigned when invoking <a class="reference external" href="https://github.com/cstarkjp/slm">Streamlines</a> computation from the command line or
 with an explicit Python call from a script or notebook. Such options override the JSON-parsed values.</p>
 <p>Here is an example sequence of files in which parameters are assigned and streamline computation,
 postprocessing and plotting are carried out:</p>
@@ -155,13 +156,13 @@ postprocessing and plotting are carried out:</p>
 <li class="toctree-l1"><a class="reference internal" href="Tests/IndianCreek_Test2_nb.html"><code class="docutils literal notranslate"><span class="pre">IndianCreek_Test2.ipynb</span></code></a></li>
 </ul>
 </div>
-<p>More substantial demo analyses can be found in <a class="reference external" href="https://github.com/cstarknyc/slmnb/SmallTests/IndianCreek_Test2.ipynb">IndianCreek_Test2.ipynb</a> and
-<a class="reference external" href="https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeMtns1.ipynb">GuadalupeMtns1.ipynb</a>. Rather bigger DTM analyses are illustrated in
-<a class="reference external" href="https://github.com/cstarknyc/slmnb/SmallTests/GuadalupeMtns2.ipynb">GuadalupeMtns2.ipynb</a>, <a class="reference external" href="https://github.com/cstarknyc/slmnb/BigTests/GuadalupeMtns3.ipynb">GuadalupeMtns3.ipynb</a> and <a class="reference external" href="https://github.com/cstarknyc/slmnb/BigTests/IndianCreek3.ipynb">IndianCreek3.ipynb</a>.</p>
+<p>More substantial demo analyses can be found in <a class="reference external" href="https://github.com/cstarkjp/slmnb/SmallTests/IndianCreek_Test2.ipynb">IndianCreek_Test2.ipynb</a> and
+<a class="reference external" href="https://github.com/cstarkjp/slmnb/SmallTests/GuadalupeMtns1.ipynb">GuadalupeMtns1.ipynb</a>. Rather bigger DTM analyses are illustrated in
+<a class="reference external" href="https://github.com/cstarkjp/slmnb/SmallTests/GuadalupeMtns2.ipynb">GuadalupeMtns2.ipynb</a>, <a class="reference external" href="https://github.com/cstarkjp/slmnb/BigTests/GuadalupeMtns3.ipynb">GuadalupeMtns3.ipynb</a> and <a class="reference external" href="https://github.com/cstarkjp/slmnb/BigTests/IndianCreek3.ipynb">IndianCreek3.ipynb</a>.</p>
 </div>
 <div class="section" id="explanation-of-python-modules-and-opencl-programs">
 <h3>Explanation of Python modules and OpenCL programs<a class="headerlink" href="#explanation-of-python-modules-and-opencl-programs" title="Permalink to this headline">¶</a></h3>
-<p>The <a class="reference external" href="https://github.com/cstarknyc/slm">Streamlines</a> Python package is built around the following:</p>
+<p>The <a class="reference external" href="https://github.com/cstarkjp/slm">Streamlines</a> Python package is built around the following:</p>
 <ul class="simple">
 <li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
 </ul>
@@ -219,7 +220,7 @@ consists of the following:</p>
 <li class="toctree-l1"><a class="reference internal" href="modules/writearray.cl.html"><code class="docutils literal notranslate"><span class="pre">writearray.cl</span></code></a></li>
 </ul>
 </div>
-<p>The OpenCL code is best explored in the <a class="reference external" href="https://cstarknyc.github.io/slm/opencl/">Doxygen documentation</a>.</p>
+<p>The OpenCL code is best explored in the <a class="reference external" href="https://cstarkjp.github.io/slm/opencl/">Doxygen documentation</a>.</p>
 </div>
 </div>
 <div class="section" id="indexes-and-search">
@@ -327,8 +328,8 @@ consists of the following:</p>
       &copy;2018, CPS.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/index.rst.txt"

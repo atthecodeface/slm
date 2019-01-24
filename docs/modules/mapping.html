@@ -9,10 +9,11 @@
     <title>mapping.py &#8212; Streamlines  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="plot.py" href="plot.html" />
@@ -42,12 +43,12 @@ variations.</p>
 <dt>Requires Python packages/modules:</dt>
 <dd><ul class="first last simple">
 <li><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/index.html#module-pandas" title="(in pandas v0.23.4)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
-<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing" title="(in scikit-learn v0.16.dev0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code></a></li>
-<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.morphology.html#module-skimage.morphology" title="(in skimage v0.14.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.morphology</span></code></a></li>
-<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.filters.html#module-skimage.filters" title="(in skimage v0.14.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.filters</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
-<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/interpolate.html#module-scipy.interpolate" title="(in SciPy v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.interpolate</span></code></a></li>
+<li><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing" title="(in scikit-learn v0.20.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code></a></li>
+<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.morphology.html#module-skimage.morphology" title="(in skimage v0.14.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.morphology</span></code></a></li>
+<li><a class="reference external" href="http://scikit-image.org/docs/stable/api/skimage.filters.html#module-skimage.filters" title="(in skimage v0.14.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.filters</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html#module-scipy.ndimage" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.ndimage</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a></li>
+<li><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/interpolate.html#module-scipy.interpolate" title="(in SciPy v1.2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.interpolate</span></code></a></li>
 <li><a class="reference external" href="https://pythonhosted.org/scikit-fmm/index.html#module-skfmm" title="(in scikit-fmm v0.0.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skfmm</span></code></a></li>
 </ul>
 </dd>
@@ -87,202 +88,450 @@ into grids of HSL and aspect, as well as to generate derivative data from them.<
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.geodata">
 <code class="descname">geodata</code><a class="headerlink" href="#streamlines.mapping.Mapping.geodata" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>instance</em> – of <a class="reference internal" href="geodata.html#streamlines.geodata.Geodata" title="streamlines.geodata.Geodata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geodata</span></code></a> class</p>
+<dd><p>of <a class="reference internal" href="geodata.html#streamlines.geodata.Geodata" title="streamlines.geodata.Geodata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geodata</span></code></a> class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">instance</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.preprocess">
 <code class="descname">preprocess</code><a class="headerlink" href="#streamlines.mapping.Mapping.preprocess" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>instance</em> – of <a class="reference internal" href="preprocess.html#streamlines.preprocess.Preprocess" title="streamlines.preprocess.Preprocess"><code class="xref py py-class docutils literal notranslate"><span class="pre">Preprocess</span></code></a> class</p>
+<dd><p>of <a class="reference internal" href="preprocess.html#streamlines.preprocess.Preprocess" title="streamlines.preprocess.Preprocess"><code class="xref py py-class docutils literal notranslate"><span class="pre">Preprocess</span></code></a> class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">instance</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.trace">
 <code class="descname">trace</code><a class="headerlink" href="#streamlines.mapping.Mapping.trace" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>instance</em> – of <a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> class</p>
+<dd><p>of <a class="reference internal" href="trace.html#streamlines.trace.Trace" title="streamlines.trace.Trace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">instance</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.analysis">
 <code class="descname">analysis</code><a class="headerlink" href="#streamlines.mapping.Mapping.analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>instance</em> – of <a class="reference internal" href="analysis.html#streamlines.analysis.Analysis" title="streamlines.analysis.Analysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">Analysis</span></code></a> class</p>
+<dd><p>of <a class="reference internal" href="analysis.html#streamlines.analysis.Analysis" title="streamlines.analysis.Analysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">Analysis</span></code></a> class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">instance</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.cl_state">
 <code class="descname">cl_state</code><a class="headerlink" href="#streamlines.mapping.Mapping.cl_state" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>instance</em> – of <a class="reference internal" href="pocl.html#streamlines.pocl.Initialize_cl" title="streamlines.pocl.Initialize_cl"><code class="xref py py-class docutils literal notranslate"><span class="pre">Initialize_cl</span></code></a> class</p>
+<dd><p>of <a class="reference internal" href="pocl.html#streamlines.pocl.Initialize_cl" title="streamlines.pocl.Initialize_cl"><code class="xref py py-class docutils literal notranslate"><span class="pre">Initialize_cl</span></code></a> class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">instance</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.mapping_array">
 <code class="descname">mapping_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.mapping_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – map grid of uint32 pixel
+<dd><p>map grid of uint32 pixel
 container values, each a set of flags using during mapping</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.merged_coarse_mask_array">
 <code class="descname">merged_coarse_mask_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.merged_coarse_mask_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – map grid of boolean pixel flags
+<dd><p>map grid of boolean pixel flags
 indicating if the pixel is masked after merging
 the set of coarsely subsegmented catchments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.coarse_subsegment_array">
 <code class="descname">coarse_subsegment_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.coarse_subsegment_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – map grid of int32 pixel values of
+<dd><p>map grid of int32 pixel values of
 coarsely subsegmented catchment index</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.coarse_subsegments_list_array">
 <code class="descname">coarse_subsegments_list_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.coarse_subsegments_list_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – sorted list of int32
+<dd><p>sorted list of int32
 coarsely subsegmented catchment indexes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.n_coarse_subsegments">
 <code class="descname">n_coarse_subsegments</code><a class="headerlink" href="#streamlines.mapping.Mapping.n_coarse_subsegments" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – number of unique values of
+<dd><p>number of unique values of
 coarsely subsegmented catchment indexes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.hsl_array">
 <code class="descname">hsl_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – map grid of float32 pixel values
+<dd><p>map grid of float32 pixel values
 of the estimated hillslope length (HSL)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.hsl_mean_array">
 <code class="descname">hsl_mean_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_mean_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – list of float32 mean HSL values</p>
+<dd><p>list of float32 mean HSL values</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.hsl_stats_df">
 <code class="descname">hsl_stats_df</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_stats_df" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>pandas.DataFrame</em> – container for HSL analysis &amp; statistics</p>
+<dd><p>container for HSL analysis &amp; statistics</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.23.4)">pandas.DataFrame</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.aspect_array">
 <code class="descname">aspect_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.aspect_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – map grid of float32 pixel values of
+<dd><p>map grid of float32 pixel values of
 filtered topographic aspect aka hillslope azimuth</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.aspect_mask_array">
 <code class="descname">aspect_mask_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.aspect_mask_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – map grid of boolean pixel flags
+<dd><p>map grid of boolean pixel flags
 indicating if aspect computation is masked</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.channelhead_array">
 <code class="descname">channelhead_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.channelhead_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – map grid of boolean pixel flags
+<dd><p>map grid of boolean pixel flags
 indicating if at a channel head</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.midslope_array">
 <code class="descname">midslope_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.midslope_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – map grid of boolean pixel flags
+<dd><p>map grid of boolean pixel flags
 indicating if on a mid-slope band</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.ridge_array">
 <code class="descname">ridge_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.ridge_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – map grid of boolean pixel flags
+<dd><p>map grid of boolean pixel flags
 indicating if on a ridge</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.thinchannel_array">
 <code class="descname">thinchannel_array</code><a class="headerlink" href="#streamlines.mapping.Mapping.thinchannel_array" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>numpy.ndarray</em> – map grid of boolean pixel flags
+<dd><p>map grid of boolean pixel flags
 indicating if on a ‘thinned’ channel</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)">numpy.ndarray</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.hsl_ns_ks">
 <code class="descname">hsl_ns_ks</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_ks" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em> – results of K-S test of HSL N-S anisotropy</p>
+<dd><p>results of K-S test of HSL N-S anisotropy</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.hsl_ns_ks_nm">
 <code class="descname">hsl_ns_ks_nm</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_ks_nm" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – K-S test of HSL N-S anisotropy,
+<dd><p>K-S test of HSL N-S anisotropy,
 partial <img class="math" src="../_images/math/09638d80aa315dddb31ee28d00fb299ae9a5488e.png" alt="D_\alpha"/></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.hsl_ns_ks_nmfactor">
 <code class="descname">hsl_ns_ks_nmfactor</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_ks_nmfactor" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – K-S test of HSL N-S anisotropy,
+<dd><p>K-S test of HSL N-S anisotropy,
 partial <img class="math" src="../_images/math/09638d80aa315dddb31ee28d00fb299ae9a5488e.png" alt="D_\alpha"/></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.hsl_ns_ttest">
 <code class="descname">hsl_ns_ttest</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_ttest" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em> – results of Student’s t-test of HSL N-S anisotropy</p>
+<dd><p>results of Student’s t-test of HSL N-S anisotropy</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.hsl_ns_mannwhitney">
 <code class="descname">hsl_ns_mannwhitney</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_mannwhitney" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em> – results of Mann-Whitney test of HSL N-S anisotropy</p>
+<dd><p>results of Mann-Whitney test of HSL N-S anisotropy</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.hsl_ns_ranksum">
 <code class="descname">hsl_ns_ranksum</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_ranksum" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em> – results of rank-sum test of HSL N-S anisotropy</p>
+<dd><p>results of rank-sum test of HSL N-S anisotropy</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.hsl_ns_welch">
 <code class="descname">hsl_ns_welch</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_welch" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em> – results of Welch test of HSL N-S anisotropy</p>
+<dd><p>results of Welch test of HSL N-S anisotropy</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.hsl_ns_min">
 <code class="descname">hsl_ns_min</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_min" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – HSL N-S minimum</p>
+<dd><p>HSL N-S minimum</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.hsl_ns_max">
 <code class="descname">hsl_ns_max</code><a class="headerlink" href="#streamlines.mapping.Mapping.hsl_ns_max" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – HSL N-S maximum</p>
+<dd><p>HSL N-S maximum</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.verbose">
 <code class="descname">verbose</code><a class="headerlink" href="#streamlines.mapping.Mapping.verbose" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>bool</em> – general print verbosity flag</p>
+<dd><p>general print verbosity flag</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.vbackup">
 <code class="descname">vbackup</code><a class="headerlink" href="#streamlines.mapping.Mapping.vbackup" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>bool</em> – temporary print verbosity flag</p>
+<dd><p>temporary print verbosity flag</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="streamlines.mapping.Mapping.vprogress">
 <code class="descname">vprogress</code><a class="headerlink" href="#streamlines.mapping.Mapping.vprogress" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>bool</em> – progress print verbosity flag</p>
+<dd><p>progress print verbosity flag</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -737,6 +986,8 @@ to determine whether or not there is a N-S bias.</li>
         <span class="c1"># Map midslope lines </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_midslopes</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_ridges</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="c1"># Make sure all the flag values are recorded for posterity</span>
+        <span class="n">info</span><span class="o">.</span><span class="n">set_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_map_channels_segments</span><span class="p">:</span>
             <span class="c1"># Do the forced coarse channel mapping &amp; subsegmentation</span>
@@ -1821,8 +2072,8 @@ to determine whether or not there is a N-S bias.</li>
       &copy;2018, CPS.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="../_sources/modules/mapping.rst.txt"
