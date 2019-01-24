@@ -22,7 +22,7 @@ import sys
 sys.path.insert(0, os.path.abspath('../python/streamlines'))
 sys.path.insert(0, os.path.abspath('../json'))
 sys.path.insert(0, 
-                os.path.abspath('/opt/local/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/osgeo'))
+ os.path.abspath('/opt/local/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/osgeo'))
 
 
 
