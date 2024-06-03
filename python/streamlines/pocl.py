@@ -86,6 +86,7 @@ def prepare_cl_context(cl_platform=0, cl_device=2):
             PyOpenCL platform, PyOpenCL device, PyOpenCL context
     """
     cl_platform, cl_device = choose_platform_and_device(cl_platform,cl_device)
+    print(f"cl_platform={cl_platform}, cl_device={cl_device}")
     platform = cl.get_platforms()[cl_platform]
     devices = platform.get_devices()
     device = devices[cl_device]
@@ -106,12 +107,12 @@ def choose_platform_and_device(cl_platform='env',cl_device='env'):
     """
     if cl_platform=='env':
         try:
-            cl_platform = int(environ['PYOPENCL_CTX'].split(':')[0])
+            cl_platform = int(os.environ['PYOPENCL_CTX'].split(':')[0])
         except:
             cl_platform = 0
     if cl_device=='env':
         try:
-            cl_device = int(environ['PYOPENCL_CTX'].split(':')[1])
+            cl_device = int(os.environ['PYOPENCL_CTX'].split(':')[1])
         except:
             cl_device = 2
     return cl_platform, cl_device
