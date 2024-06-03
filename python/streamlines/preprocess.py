@@ -25,7 +25,7 @@ Imports :class:`.Core` class.
 .. _scipy: https://www.scipy.org/
 """
 
-from numba.decorators import njit
+from numba import njit
 import numpy as np
 from numpy.linalg import eigvals
 from scipy.ndimage.filters import generic_filter

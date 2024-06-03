@@ -1,0 +1,30 @@
+# This file may be used to create a Python/conda environment using conda itself or mamba (faster):
+#   mamba remove --name SLM --all
+#   mamba env create --name SLM --file environment.yml
+name: SLM
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - numba
+  - pyopencl
+  - jupyter
+  - matplotlib
+  - numpy
+  - scipy
+  - gdal
+  - pandas
+  - scikit-learn
+  - scikit-image
+  - scikit-fmm
+  - python-dateutil
+  - pympler
+  - GitPython
+  # - pip
+# conda env config vars set PYTHONPATH="${HOME}/miniconda3/envs/SLM/lib/python3.11/site-packages:${HOME}/Projects/Streamlines/slm/Packages"
+## List them using:
+# conda env config vars list
+variables:
+  PYTHONPATH: /Users/cps/miniconda3/envs/SLM/lib/python3.12/site-packages:/Users/cps/Projects/Streamlines/slm/python
+prefix: /Users/cps/miniconda3/envs/SLM

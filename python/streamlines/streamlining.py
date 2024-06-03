@@ -123,7 +123,7 @@ class Streamlining(Core):
         # Are we running in a notebook?
         environment = os.path.basename(os.environ['_'])
         notebook_path = os.path.realpath(
-            os.path.join((*os.path.split(os.getcwd())),'..','..'))
+            os.path.join(*os.path.split(os.getcwd()),'..','..'))
         if 'notebook' not in environment and 'jupyter' not in environment \
             and  'ipython' not in environment:
             environment = 'shell (probably)'

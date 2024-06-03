@@ -1739,8 +1739,12 @@ class Plot(Core):
         h_array              = self.analysis.h_array
         sf                   = self.analysis.h_pdf_sf        
         plt.plot(h_midline_pdf_array/sf, h_array,label='midline', c='k')
-        plt.plot(h_midline_pdf_max1/sf, h_midline_pdf_max1_h, 'o', c='k', ms=8,
-                 label='{:4}$\,$m'.format(np.int(np.round(h_midline_pdf_max1_h)))  )
+        plt.plot(
+            h_midline_pdf_max1/sf, 
+            h_midline_pdf_max1_h, 
+            'o', c='k', ms=8,
+            label=rf"{np.int(np.round(h_midline_pdf_max1_h)):4}$\,$m"  
+        )
         # plt.plot(h_midline_pdf_max2/sf, h_midline_pdf_max_h2, 's', c='k', ms=8,
         #          label='{:4}$\,$m'.format(np.int(h_midline_pdf_max_h2))  )
         plt.plot(h_all_pdf_array/sf, h_array,label='all', c='b')
@@ -1776,18 +1780,21 @@ class Plot(Core):
         slope_midline_pdf_max_slope = self.analysis.slope_midline_pdf_max_slope
         slope_array                 = self.analysis.slope_array        
         plt.plot(slope_midline_pdf_array/slope_midline_pdf_max, slope_array, c='k')
-        plt.plot(slope_midline_pdf_max/slope_midline_pdf_max, 
-                 slope_midline_pdf_max_slope, 'o', 
-                 c='k', ms=8,
-                 label='modal slope ={:4}$^\circ$'
-                 .format(np.int(np.round(slope_midline_pdf_max_slope)))  )
+        plt.plot(
+            slope_midline_pdf_max/slope_midline_pdf_max, 
+            slope_midline_pdf_max_slope, 
+            'o', 
+            c='k',
+            ms=8,
+            label=rf"modal slope ={np.int(np.round(slope_midline_pdf_max_slope)):4}$^\circ$",
+        )
         plt.autoscale(enable=True, tight=True, axis='y')
         plt.xlim(-0.002,)
         plt.grid('on',ls=':')
         plt.legend()
 #         plt.title(title)
-        plt.ylabel('Slope angle   $\\mathrm{atan}|\\nabla{h}|$  [$^{\circ}$]')
-        plt.xlabel('Density  $p(\\mathrm{atan}|\\nabla{h}|)$  [rescaled 1/$^{\circ}$]')
+        plt.ylabel(r"Slope angle   $\\mathrm{atan}|\\nabla{h}|$  [$^{\circ}$]")
+        plt.xlabel(r"Density  $p(\\mathrm{atan}|\\nabla{h}|)$  [rescaled 1/$^{\circ}$]")
         # plt.xlabel(
         #     'Relative frequency $p(|\\nabla{h}|)$  [rescaled 1/$^{\circ}$]')
         self._record_fig(fig_name,fig)

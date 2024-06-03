@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "/Users/cps/miniconda3/envs/SLM/lib/python3.12/site-packages",
+        "/Users/cps/Projects/Streamlines/slm/python"
+    ]
+}
