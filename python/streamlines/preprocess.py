@@ -192,7 +192,7 @@ def compute_gradient_velocity_field(roi_gradx_array, roi_grady_array):
     u_array, v_array = normalize_velocity_field(u_array,v_array,speed_array)
     return u_array, v_array, speed_array
 
-@njit(cache=False)
+##### HACK: @njit(cache=False)
 def get_flow_vector(nn):    
     """
     TBD
@@ -225,7 +225,7 @@ def get_flow_vector(nn):
         dx,dy =  np.int8(0),np.int8(+1)  
     return dx,dy
 
-@njit(cache=False)
+##### HACK: @njit(cache=False)
 def check_has_loop(x,y,u,v):    
     """
     TBD
@@ -239,10 +239,11 @@ def check_has_loop(x,y,u,v):
         TBD: 
         TBD
     """
+    # HACK: 
     uv00 = np.array([u[x,y],v[x,y]],dtype=np.float32)
-    uv10 = np.array([u[x+1,y],v[x+1,y]],dtype=np.float32)
-    uv11 = np.array([u[x+1,y+1],v[x+1,y+1]],dtype=np.float32)
-    uv01 = np.array([u[x,y+1],v[x,y+1]],dtype=np.float32)
+    uv10 = np.array([u[x+1,y],v[x+1,y]],dtype=np.float32) if x+1<u.shape[0] else np.array([0,0],dtype=np.float32)
+    uv11 = np.array([u[x+1,y+1],v[x+1,y+1]],dtype=np.float32)  if x+1<u.shape[0] and y+1<u.shape[0] else np.array([0,0],dtype=np.float32)
+    uv01 = np.array([u[x,y+1],v[x,y+1]],dtype=np.float32) if y+1<u.shape[0] else np.array([0,0],dtype=np.float32)
     velocity = (uv00+uv10+uv11+uv01)/4.0
     speed = np.float32(np.sqrt(np.dot(velocity,velocity)))
     divergence = (
@@ -259,7 +260,7 @@ def check_has_loop(x,y,u,v):
             )
     return speed,divergence,curl
 
-@njit(cache=False)
+##### HACK: @njit(cache=False)
 def break_out_of_loop(pt, 
                       u_array,v_array,
                       roi_array,
@@ -299,7 +300,7 @@ def break_out_of_loop(pt,
     u_array[x,y] = vec[0]/vec_len
     v_array[x,y] = vec[1]/vec_len
 
-@njit(cache=False)
+##### HACK: @njit(cache=False)
 def find_and_fix_loops(roi_array,
                        u_array, v_array,
                        x_roi_n_pixel_centers,
@@ -348,7 +349,7 @@ def find_and_fix_loops(roi_array,
         print('...done')
     return where_looped_array[:n_loops], n_loops
         
-@njit(cache=False)
+##### HACK: @njit(cache=False)
 def fix_blockages(where_blockages_array,
                   blockages_array,
                   where_blocked_neighbors_array,
@@ -386,7 +387,7 @@ def fix_blockages(where_blockages_array,
         if verbose:
             print('...none to fix')
         
-@njit(cache=False)
+##### HACK: @njit(cache=False)
 def has_one_diagonal_outflow(pixel_neighborhood):
     
     """
@@ -430,7 +431,7 @@ def has_one_diagonal_outflow(pixel_neighborhood):
     else:
         return 0
 
-@njit(cache=False)
+##### HACK: @njit(cache=False)
 def upstream_of_diagonal_outflow(pixel_neighborhood):
     """
     TBD

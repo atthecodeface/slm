@@ -73,6 +73,25 @@ class Initialize_cl():
         self.kernel_source = None
         self.kernel_fn     = ''
 
+def prepare_cl_context_old(cl_platform=0, cl_device=2):
+    """
+    Prepare PyOpenCL platform, device and context.
+    
+    Args:
+        cl_platform (int):
+        cl_device (int):
+    
+    Returns:
+        pyopencl.Platform, pyopencl.Device, pyopencl.Context:
+            PyOpenCL platform, PyOpenCL device, PyOpenCL context
+    """
+    cl_platform, cl_device = choose_platform_and_device(cl_platform,cl_device)
+    platform = cl.get_platforms()[cl_platform]
+    devices = platform.get_devices()
+    device = devices[cl_device]
+    context = cl.Context([device])
+    return platform, device, context
+
 def prepare_cl_context(cl_platform=0, cl_device=2):
     """
     Prepare PyOpenCL platform, device and context.
@@ -86,12 +105,17 @@ def prepare_cl_context(cl_platform=0, cl_device=2):
             PyOpenCL platform, PyOpenCL device, PyOpenCL context
     """
     cl_platform, cl_device = choose_platform_and_device(cl_platform,cl_device)
-    print(f"cl_platform={cl_platform}, cl_device={cl_device}")
-    platform = cl.get_platforms()[cl_platform]
+    # print(f"Want: cl_platform={cl_platform}, cl_device={cl_device}")
+    # HACK: Hard-wiring choice of CL device
+    platform = cl.get_platforms()[0]
     devices = platform.get_devices()
-    device = devices[cl_device]
+    device = devices[0]
     context = cl.Context([device])
+    print(f"Hacking back to life:\nPlatform={platform}")
+    print(f"Device={device}")
+    print(f"Context={context}")
     return platform, device, context
+
 
 def choose_platform_and_device(cl_platform='env',cl_device='env'):
     """

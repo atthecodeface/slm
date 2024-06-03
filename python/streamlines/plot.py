@@ -182,7 +182,8 @@ class Plot(Core):
              raise Exception('Projection not understood') 
 
         axes.set_rasterization_zorder(1)
-        fig.canvas.set_window_title(window_title)
+        # HACK: turning off title because method now missing?
+        # fig.canvas.set_window_title(window_title)
         axes.set_title(title, fontsize=self.title_font_size, fontweight='bold')
         
         return fig, axes
