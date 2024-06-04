@@ -9,6 +9,7 @@ dependencies:
   - python
   - numba
   - pyopencl
+  - pocl  # is this actually needed?
   - jupyter
   - matplotlib
   - numpy
