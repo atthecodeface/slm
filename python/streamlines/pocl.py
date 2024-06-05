@@ -109,7 +109,7 @@ def prepare_cl_context(cl_platform=0, cl_device=2):
     # HACK: Hard-wiring choice of CL device
     platform = cl.get_platforms()[0]
     devices = platform.get_devices()
-    device = devices[0]
+    device = devices[2]
     context = cl.Context([device])
     print(f"Hacking back to life:\nPlatform={platform}")
     print(f"Device={device}")
