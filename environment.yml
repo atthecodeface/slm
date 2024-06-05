@@ -23,9 +23,9 @@ dependencies:
   - pympler
   - GitPython
   # - pip
-# conda env config vars set PYTHONPATH="${HOME}/miniconda3/envs/SLM/lib/python3.12/site-packages:${HOME}/Projects/Streamlines/slm/python"
+# conda env config vars set PYTHONPATH="${HOME}/miniconda3/envs/SLM/lib/python3.12/site-packages:${HOME}/Projects/Streamlines/slm/Packages"
 ## List them using:
 # conda env config vars list
 variables:
-  PYTHONPATH: /Users/cps/miniconda3/envs/SLM/lib/python3.12/site-packages:/Users/cps/Projects/Streamlines/slm/python
+  PYTHONPATH: /Users/cps/miniconda3/envs/SLM/lib/python3.12/site-packages:/Users/cps/Projects/Streamlines/slm/Packages
 prefix: /Users/cps/miniconda3/envs/SLM

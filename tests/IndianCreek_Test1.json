@@ -15,7 +15,7 @@
 		"title" :          "Indian Creek Test#1, Ohio, USA",
 		"dtm_file" :       "IndianCreek_res1m_fillsinks0p01_cuttest2.tif",
 		"basins_file" :    "IndianCreek_DTM0_res1m_fill_sinks1deg_watershed30k_cuttest2.tif",
-		"data_path" :      ["..", "data"],	
+		"data_path" :      ["..", "Data"],	
 		"export_path" :    [".","IndianCreek_Test1"],		
 		"no_data_values" : [-99999,0],
 		"do_clip_roi" :    true,

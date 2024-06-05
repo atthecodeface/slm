@@ -147,7 +147,7 @@ class Streamlining(Core):
             possible_paths = ['.']
             # Try the slm "home" dir given in the SLM environment variable
             try:
-                possible_paths += [os.path.join(os.environ['SLM'],'json')]
+                possible_paths += [os.path.join(os.environ['SLM'],'JSON')]
             except:
                 pass
             # Try the likely relative path to JSON parameters file

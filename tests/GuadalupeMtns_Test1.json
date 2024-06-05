@@ -3,7 +3,7 @@
 		"title" :         "Guadalupe Mtns Test#1, NM, USA",
 		"dtm_file" :      "Guadalupe_DTM0_res2m_fill_sinks1deg_cuttest1.tif",
 		"basins_file" :   "Guadalupe_DTM0_res2m_fill_sinks1deg_watershed3k_cuttest1.tif",
-		"data_path" :     [ "..", "data" ],		
+		"data_path" :     [ "..", "Data" ],		
 		"export_path" :   [ ".",  "GuadalupeMtns_Test1" ],
 		"do_clip_roi" :   false,
         "roi_x_bounds" :  [1400,1542],
