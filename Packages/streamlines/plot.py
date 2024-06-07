@@ -520,12 +520,12 @@ class Plot(Core):
         
         active_mask_array = self.state.merge_active_masks()
         
-        grid_array = (self.mapping.mapping_array & is_thinchannel).copy().astype(np.bool)
+        grid_array = (self.mapping.mapping_array & is_thinchannel).copy().astype(bool)
         mask_array = active_mask_array | ~(grid_array)
         self.plot_simple_grid(grid_array, mask_array, axes, cmap='Blues', alpha=0.8)
 
-        grid_array = (self.mapping.mapping_array & is_midslope).copy().astype(np.bool)
-        fat_grid_array = np.zeros_like(grid_array, dtype=np.bool)
+        grid_array = (self.mapping.mapping_array & is_midslope).copy().astype(bool)
+        fat_grid_array = np.zeros_like(grid_array, dtype=bool)
         dilation_structure = generate_binary_structure(2, 2)
         binary_dilation(grid_array, structure=dilation_structure, 
                         iterations=self.n_midslope_iterations, 
@@ -533,8 +533,8 @@ class Plot(Core):
         mask_array = active_mask_array | ~(fat_grid_array)
         self.plot_simple_grid(fat_grid_array, mask_array, axes, cmap='Greens', alpha=0.8)
         
-        grid_array = (self.mapping.mapping_array & is_ridge).copy().astype(np.bool)
-        fat_grid_array = np.zeros_like(grid_array, dtype=np.bool)
+        grid_array = (self.mapping.mapping_array & is_ridge).copy().astype(bool)
+        fat_grid_array = np.zeros_like(grid_array, dtype=bool)
         dilation_structure = generate_binary_structure(2, 2)
         binary_dilation(grid_array, structure=dilation_structure,
                         iterations=self.n_ridge_iterations, 
@@ -735,7 +735,7 @@ class Plot(Core):
             else:
                 z_max = self.hsl_z_max
         grid_array = np.clip(self.mapping.hsl_array.copy(),z_min,z_max)
-#         mask_array = np.zeros_like(grid_array).astype(np.bool)
+#         mask_array = np.zeros_like(grid_array).astype(bool)
         mask_array = self.state.merge_active_masks()
         mask_array[grid_array<=5] = True
 #         pdebug('list_active_masks',self.state.list_active_masks())
@@ -1278,7 +1278,7 @@ class Plot(Core):
             TBD
         """
         if mask_array is None:
-            mask_array = np.zeros_like(grid_array).astype(np.bool)
+            mask_array = np.zeros_like(grid_array).astype(bool)
         pad = self.geodata.pad_width
         pslice = np.index_exp[pad:-pad,pad:-pad]
         mask_array = mask_array[pslice]
@@ -1309,7 +1309,7 @@ class Plot(Core):
             grid_alpha = 1.0
 
         grid_array = grid_array[pslice]
-#         extra_mask_array = grid_array.astype(np.bool)
+#         extra_mask_array = grid_array.astype(bool)
 #         mask_array = mask_array | (~extra_mask_array)
 #         mask_array &= False
         masked_grid_array = np.ma.masked_array(grid_array, mask=mask_array)
@@ -1346,7 +1346,7 @@ class Plot(Core):
 #         try:
 #             is_thinchannel = self.mapping.info.is_thinchannel
 #             grid_array = ( self.mapping.mapping_array[pslice] 
-#                            & is_thinchannel ).astype(np.bool)
+#                            & is_thinchannel ).astype(bool)
 #             im = axes.imshow(np.flipud(grid_array.T), 
 #                       cmap='Blues', 
 #                       extent=[*self.geodata.roi_x_bounds,*self.geodata.roi_y_bounds],

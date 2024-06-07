@@ -382,7 +382,7 @@ def write_geotiff(path, file_name, array, nx,ny,npd, pslice, geodata):
     dataset.SetProjection(geodata.tiff.GetProjection())
     geotransform = geodata.tiff.GetGeoTransform()
     rotated_array = np.flipud(array[pslice].T)
-    if array.dtype==np.bool:
+    if array.dtype==bool:
         dataset.GetRasterBand(1).WriteArray(rotated_array.astype(np.uint8))
     else:
         dataset.GetRasterBand(1).WriteArray(rotated_array)

@@ -609,7 +609,7 @@ class Analysis(Core):
         
         self.mapping.midslope_array \
             = (self.mapping.mapping_array 
-               & self.mapping.info.is_midslope).copy().astype(np.bool)
+               & self.mapping.info.is_midslope).copy().astype(bool)
         
         h_midline_pts \
             = self.geodata.roi_array[self.mapping.midslope_array[2:-2,2:-2]].ravel()
@@ -894,8 +894,8 @@ class Bivariate_distribution():
         # x,y meshgrid for sampling the bivariate pdf f(x,y)
         # For some weird reason, the numbers of points in x,y need to be complex-valued 
         self.logx_mesh,self.logy_mesh \
-            = np.mgrid[logx_min:logx_max:np.complex(n_pdf_points),
-                       logy_min:logy_max:np.complex(n_pdf_points)]
+            = np.mgrid[logx_min:logx_max:complex(n_pdf_points),
+                       logy_min:logy_max:complex(n_pdf_points)]
         self.logxy_data_indexes = np.vstack([self.logx_mesh.ravel(), 
                                              self.logy_mesh.ravel()]).T
         self.logx_min     = logx_min

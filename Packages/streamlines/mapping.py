@@ -255,7 +255,7 @@ class Mapping(Core):
         # Create arrays for mapping and coarse subsegmentation
         self.mapping_array            = np.zeros((nxp,nyp), dtype=np.uint32)
         self.coarse_subsegment_array  = np.zeros((nxp,nyp), dtype=np.int32)
-        self.merged_coarse_mask_array = np.ones((nxp,nyp),  dtype=np.bool)
+        self.merged_coarse_mask_array = np.ones((nxp,nyp),  dtype=bool)
         # Create an info object for passing parameters to CL wrappers etc
         info = Info(self.state, self.trace, self.geodata.roi_pixel_size, mapping=self)
         # Revert to 'dtm', 'basin' (if set), and 'uv' masks only
@@ -410,9 +410,9 @@ class Mapping(Core):
         self.state.add_active_mask({'merged_coarse': self.merged_coarse_mask_array})
         # Initialize the full ROI-scale HSL grid and a buffer
         # Also a mapping array for channels etc
-        raw_mask_array      = np.zeros((nxp,nyp), dtype=np.bool)
-        dilated_mask_array  = np.zeros((nxp,nyp), dtype=np.bool)
-        merged_mask_array   = np.zeros((nxp,nyp), dtype=np.bool)
+        raw_mask_array      = np.zeros((nxp,nyp), dtype=bool)
+        dilated_mask_array  = np.zeros((nxp,nyp), dtype=bool)
+        merged_mask_array   = np.zeros((nxp,nyp), dtype=bool)
         self.hsl_array      = np.zeros((nxp,nyp), dtype=np.float32)
         self.hsl_mean_array = np.array([], dtype=np.float32)
         self.hsl_stats_df   = None
@@ -608,10 +608,10 @@ class Mapping(Core):
         # Map smoothed terrain aspect aka orientation relative to east from uv array
         self.map_aspect(info)
         # Make 1-byte boolean arrays of selected mapping flags
-        self.thinchannel_array = np.zeros((nxp,nyp), dtype=np.bool)
-        self.channelhead_array = np.zeros((nxp,nyp), dtype=np.bool)
-        self.midslope_array    = np.zeros((nxp,nyp), dtype=np.bool)
-        self.ridge_array       = np.zeros((nxp,nyp), dtype=np.bool)
+        self.thinchannel_array = np.zeros((nxp,nyp), dtype=bool)
+        self.channelhead_array = np.zeros((nxp,nyp), dtype=bool)
+        self.midslope_array    = np.zeros((nxp,nyp), dtype=bool)
+        self.ridge_array       = np.zeros((nxp,nyp), dtype=bool)
         self.thinchannel_array[(self.mapping_array & info.is_thinchannel)>0] = True
         self.channelhead_array[(self.mapping_array & info.is_channelhead)>0] = True
         self.midslope_array[   (self.mapping_array & info.is_midslope)>0]    = True
@@ -709,7 +709,7 @@ class Mapping(Core):
         nxp = info.nx_padded
         nyp = info.ny_padded
         mapping_array = data.mapping_array
-        channel_array = np.zeros((nxp,nyp), dtype=np.bool)
+        channel_array = np.zeros((nxp,nyp), dtype=bool)
         channel_array[  ((mapping_array & info.is_channel)==info.is_channel)
                       | ((mapping_array & info.is_interchannel)==info.is_interchannel)
                      ] = True
@@ -783,7 +783,7 @@ class Mapping(Core):
         mask = data.mask_array
         nxp  = info.nx_padded
         nyp  = info.ny_padded
-        midslope_array = np.zeros((nxp,nyp), dtype=np.bool)
+        midslope_array = np.zeros((nxp,nyp), dtype=bool)
 #         pdebug('self.midslope_filter_sigma', self.midslope_filter_sigma)
         midslope_array[ (~mask) & (np.fabs(
             gaussian_filter((np.arctan2(dsla,usla)-np.pi/4), self.midslope_filter_sigma))
@@ -798,8 +798,8 @@ class Mapping(Core):
         mask = data.mask_array
         nxp  = info.nx_padded
         nyp  = info.ny_padded
-        ridge_array = np.zeros((nxp,nyp), dtype=np.bool)
-        fat_ridge_array = np.zeros((nxp,nyp), dtype=np.bool)
+        ridge_array = np.zeros((nxp,nyp), dtype=bool)
+        fat_ridge_array = np.zeros((nxp,nyp), dtype=bool)
         ridge_array[ (~mask) & ((
             gaussian_filter((np.arctan2(dsla,usla)-np.pi/4), self.ridge_filter_sigma))
                              <= -(np.pi/4)*self.ridge_threshold)] = True
@@ -841,9 +841,9 @@ class Mapping(Core):
     def fmm_lengths(self, info, data):
         data.subsegment_hsl_array = np.zeros_like(data.selected_subsegments_array)
         for idx,subsegment in enumerate(data.selected_subsegments_array):
-            phi_bool = np.zeros_like(data.label_array,dtype=np.bool)
+            phi_bool = np.zeros_like(data.label_array,dtype=bool)
             phi_mod  = np.zeros_like(data.label_array,dtype=np.int32)
-            mask     = np.zeros_like(data.label_array,dtype=np.bool)
+            mask     = np.zeros_like(data.label_array,dtype=bool)
             phi_bool[np.abs(data.label_array)==np.abs(subsegment)]=True
             n_phi_pixels = phi_bool[phi_bool==True].size
             n_erosions = 0
@@ -1030,7 +1030,7 @@ class Mapping(Core):
         # Copy the slope grid because we're going to monkey with it
         slope_array     = self.preprocess.slope_array.copy()
         uv_array        = self.preprocess.uv_array
-        mask_array      = np.zeros((nxp,nyp), dtype=np.bool)
+        mask_array      = np.zeros((nxp,nyp), dtype=bool)
         slope_array[((self.mapping_array & info.is_channel)==info.is_channel)] = 0.0
         median_radius = self.aspect_median_filter_radius/self.geodata.pixel_size
         if self.do_aspect_median_filtering:
